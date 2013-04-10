@@ -18,7 +18,7 @@ class igc_upload_form extends form {
         parent::__construct($fields);
         $this->submit = 'Calculate';
         $this->pre_text = '<p>Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below</p>';
-        $this->post_text = '<p>Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You will be awarded the highest score by default but it is advised that you wait for the track to be optimised before leaving this page. You can still use the other functions of the league while this calculates.</p><p>On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.</p><div id="kml_calc"><a class="calc">Calculate!</a><div id="console"></div></div>';
+        $this->post_text = '<p>Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You will be awarded the highest score by default but it is advised that you wait for the track to be optimised before leaving this page. You can still use the other functions of the league while this calculates.</p><p>On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.</p><div id="kml_calc"><div id="console"><a class="calc">Calculate!</a></div></div>';
         $this->has_submit = false;
         $this->id = 'igc_upload_form';
         $this->h2 = 'Upload Form';

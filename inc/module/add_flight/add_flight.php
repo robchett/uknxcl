@@ -30,7 +30,6 @@ class add_flight extends core_module {
 </div>';
         $script = '
         
-$(document).ready(function () {
     $("body").on("change", "input#defined", function () {
         if ($(this).attr("checked"))
             $(".fieldset_1").show(); else
@@ -58,7 +57,15 @@ $(document).ready(function () {
         $("#" + $(this).attr("id") + "_hidden").val($(this).val());
         return true;
     });
-});';
+    $("body").on("click","div.flight_type_box",function () {
+        $("#add_flight_inner").animate({"left": -710});
+        $("#igc_form_holder").show();
+    });
+
+    $("body").on("click", "#kml_calc a", function () {
+        $("#igc_upload_form").submit();
+        $("#kml_wrapper").removeClass("pass");
+    });';
         if(ajax) {
             ajax::add_script($script);
         } else {
