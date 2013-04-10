@@ -25,7 +25,8 @@ class field_link extends field {
         $html = '';
         $class = core::get_class_from_mid($this->link_mid);
         $field_name = core::get_field_from_fid($this->link_fid);
-        $options = $class::get_all(array(), $this->options);
+        $obj = new $class();
+        $options = $class::get_all(array($field_name,$obj->table_key), $this->options);
         if(!$this->required) {
             $html .= '<option value="0">- Please Select -</option>';
         }
