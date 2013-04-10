@@ -135,16 +135,19 @@ class igc_upload_form extends form {
     public function do_choose_track() {
         $track = new track();
         $track->id = $_REQUEST['track'];
-        $this->create_track($track);
+        $this->create_track($track, $_REQUEST['start'], $_REQUEST['end']);
     }
 
-    private function create_track(track $track) {
+    private function create_track(track $track, $start = 0, $end = 0) {
         $track->console("File upload accepted");
         $track->temp = true;
         $track->create_from_upload();
         $track->console("File moved and backed-up");
 
         $track->parse_IGC();
+        if($end) {
+            $track->truncate($start, $end);
+        }
         $track->pre_calc();
         $track->invis_info = "";
 
@@ -161,7 +164,7 @@ class igc_upload_form extends form {
             $html .= $this->get_choose_track_html($track);
         } else {
             $track->calculate();
-            $html .= $this->get_choose_score_html($track);
+            $html .= $this->get_choose_score_html($track, 1, $start, $end);
         }
         ajax::update('<div id="console">' . $html . '</div>');
         ajax::add_script('map.addFlight(' . $track->id . ',1,1,1);');
@@ -182,20 +185,20 @@ class igc_upload_form extends form {
         return $html;
     }
 
-    private function get_choose_score_html(track $track) {
+    private function get_choose_score_html(track $track, $start, $end) {
         $html = '<ul>';
-        $html .= $this->get_task_select_html($track, 'od');
-        $html .= $this->get_task_select_html($track, 'or');
-        $html .= $this->get_task_select_html($track, 'tr');
+        $html .= $this->get_task_select_html($track, 'od', $start, $end);
+        $html .= $this->get_task_select_html($track, 'or', $start, $end);
+        $html .= $this->get_task_select_html($track, 'tr', $start, $end);
         $html .= '</ul>';
         return $html;
     }
 
-    private function get_task_select_html(track $track, $type) {
+     private function get_task_select_html(track $track, $type, $start, $end) {
         $task = $track->$type;
         return '
         <li>
-            <span>' . $task->title . ' : ' . $task->get_distance(3) . '</span><a data-ajax-click="igc_upload_form:do_choose_score" data-ajax-post=\'{track:' . $track->id . ',"type":"' . $type . '"}\' class="choose">Choose</a>
+            <span>' . $task->title . ' : ' . $task->get_distance(3) . '</span><a class="score_select" data-post=\'{track:' . $track->id . ',"type":"' . $type . '", "start":'.$start.', "end":'.$end.'}\' class="choose">Choose</a>
         </li>';
     }
 
