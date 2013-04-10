@@ -27,7 +27,8 @@ class igc_upload_form extends form {
 
     public function get_html() {
         $html = parent::get_html();
-        $script = 'var dropZoneId = "kml_wrapper";
+        $script = '
+        var dropZoneId = "kml_wrapper";
         var buttonId = "kml_wrapper";
         var mouseOverClass = "";
         var dropZone = $("#" + dropZoneId);
@@ -76,37 +77,7 @@ class igc_upload_form extends form {
                             $("#" + dropZoneId).removeClass(mouseOverClass);
                         }, true);
                 }
-            });
-
-        $("input#coords").change(function () {
-                var arr = $(this).val().split(";");
-                var coord_array = new Coordinate_array();
-                var str = "";
-                for (i in arr) {
-                    var coord = new coordinate();
-                    coord.set_from_OS(arr[i]);
-                if (coord.is_valid_gridref()) {
-                    coord_array.push(coord);
-                } else {
-                    str = "Coordinate " + (i * 1 + 1) + " is not valid";
-                    break;
-                }
-            }
-            if (!str.length) {
-                switch (coord_array.count) {
-                    case 0:
-                        str = "";
-                        break;
-                    case 1:
-                        str = "Please enter at least two coordinates";
-                        break;
-                    case 2:
-                        str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
-                        break;
-                }
-            }
-            $("#defined_info").html(str);
-        });';
+            });';
         if (!isset($this->kml) || empty($this->kml)) {
             $script .= '$("#kml_calc").hide();';
         }
