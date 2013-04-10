@@ -41,8 +41,18 @@ $(document).ready(function () {
 $.fn.ajax_factory = function (module, act, post, options) {
     var options = options || {};
     var post = post || {};
-    if (typeof (options.loading_target) !== 'undefined')
-        $(options.loading_target).prepend('<div class="loading_shroud">Loading shroud</div>');
+    if (typeof (options.loading_target) !== 'undefined') {
+        var div = document.createElement('div');
+        div.className = 'loading_shroud';
+        div.style.width = $(options.loading_target).outerWidth() + 'px';
+        div.style.height = $(options.loading_target).outerHeight() + 'px';
+        div.style.left = 0;
+        div.style.top = 0;
+        if ($(options.loading_target).css('position') != 'absolute' || $(options.loading_target).css('position') != 'relative') {
+            $(options.loading_target).css({'position': 'relative'});
+        }
+        $(options.loading_target).prepend(div);
+    }
     $.extend(post, ({'module': module, 'act': act}));
     $(".error_message").remove();
     $.ajax({
@@ -83,15 +93,15 @@ $('body').on('submit', 'form.ajax', function (e) {
 });
 $('body').on('submit', 'form.noajax', function (e) {
     var ajax_shroud = $(this).attr('data-ajax-shroud');
-    if(typeof ajax_shroud != 'undefined') {
+    if (typeof ajax_shroud != 'undefined') {
         var div = document.createElement('div');
         div.className = 'loading_shroud';
-        div.style.width = $(this).outerWidth() + 'px';
-        div.style.height = $(this).outerHeight() + 'px';
+        div.style.width = $(ajax_shroud).outerWidth() + 'px';
+        div.style.height = $(ajax_shroud).outerHeight() + 'px';
         div.style.left = 0;
         div.style.top = 0;
-        if($(this).css('position') != 'absolute' || $(this).css('position') != 'relative' ) {
-            $(this).css({'position':'relative'});
+        if ($(ajax_shroud).css('position') != 'absolute' || $(ajax_shroud).css('position') != 'relative') {
+            $(ajax_shroud).css({'position': 'relative'});
         }
         $(ajax_shroud).prepend(div);
     }
