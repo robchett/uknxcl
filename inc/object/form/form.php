@@ -145,7 +145,7 @@ class form extends html_element {
                         $fields = array();
                     }
                     if($inner = $field->get_html_wrapper()) {
-                    $fields[] = html_node::create('li', $inner, array('data-for' => $this->id, 'class' => $field->get_wrapper_class()));
+                    $fields[] = html_node::create('li.' . get_class($field) . '_wrapper', $inner, array('data-for' => $this->id, 'class' => $field->get_wrapper_class()));
                     }
                 }
             }
