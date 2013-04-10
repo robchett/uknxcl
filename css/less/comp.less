@@ -1,0 +1,32 @@
+#comp_wrapper {
+  width: 730px;
+  overflow: hidden;
+  #comp_inner {
+    width: 1460px;
+    position: absolute;
+    left: 0;
+  }
+  #comp_view {
+    width: 730px;
+    position: absolute;
+    right: 0;
+  }
+  #comp_list {
+    width: 685px;
+    position: absolute;
+    left: 0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: none;
+      tr {
+        border: none;
+        border-bottom: @default_border;
+        td {
+          text-align: center;
+          padding: 3px;
+        }
+      }
+    }
+  }
+}

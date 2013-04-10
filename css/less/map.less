@@ -1,0 +1,199 @@
+#map_wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  #map_interface {
+    z-index: 99999999;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+
+    #map_interface_padding {
+      padding: 0 10px;
+      height: 100%;
+
+      #graph_wrapper {
+        margin-bottom: 10px;
+        height: 200px;
+      }
+      #slider {
+        margin-bottom: 10px;
+      }
+      #controls {
+        margin-bottom: 10px;
+        #slider_time { position: absolute; z-index: 10000; color: Red; font-weight: bold; font-size: larger; background-color: white; }
+      }
+    }
+  }
+  #map_interface_3d {
+    display: none;
+    position: absolute;
+    z-index: 99999999;
+    height: 100%;
+    width: 200px;
+    background-color: #ffffff;
+    border: 4px solid #75b7fd;
+    .border-radius(0,0,10px,10px);
+    span.show, span.hide {
+      position: absolute;
+      top: 50%;
+      left: -19px;
+      width: 19px;
+      height: 50px;
+      background-image: url(/img/show.png);
+      text-indent: -999999px;
+    }
+    span.hide {
+      background-image: url(/img/hide.png);
+      display: none;
+    }
+  }
+
+  #custom_ui {
+    margin-right: -6px;
+    margin-top: 5px;
+
+    .maps_ui_option {
+      float: left;
+
+      &#airspace_selector {
+        ul {
+          width: 230px;
+          left: 36px;
+        }
+      }
+      &#drawn_flights {
+        ul {
+          width: 230px;
+          left: 0px;
+          li a {
+            width: 180px;
+            float: left;
+            &.remove {
+              width: 30px;
+              float: right;
+            }
+          }
+        }
+      }
+      &#flight_types_selector {
+        ul {
+          width: 130px;
+          left: 0px;
+        }
+      }
+
+      div.title {
+        direction: ltr;
+        overflow: hidden;
+        text-align: center;
+        position: relative;
+        color: rgb(0, 0, 0);
+        font-family: Arial, sans-serif;
+        -webkit-user-select: none;
+        font-size: 13px;
+        background-color: rgb(255, 255, 255);
+        padding: 1px 6px;
+        border: 1px solid rgb(113, 123, 135);
+        -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        font-weight: bold;
+        min-width: 29px;
+        background-position: initial;
+        background-repeat: initial;
+
+        &:hover {
+          background-image: -webkit-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+        }
+      }
+      ul {
+        background-color: white;
+        z-index: -1;
+        padding: 0;
+        width: 130px;
+        border-width: 0px 1px 1px;
+        border-bottom-style: solid;
+        border-left-style: solid;
+        border-bottom-color: rgb(113, 123, 135);
+        border-left-color: rgb(113, 123, 135);
+        -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        position: absolute;
+        left: 0px;
+        top: 7px;
+        text-align: left;
+        display: none;
+
+        li {
+          padding: 0px;
+          margin: 0;
+
+          &:hover {
+            background-color: rgb(235, 235, 235);
+          }
+          a {
+            display: block;
+            padding: 5px;
+            margin: 0;
+          }
+          span {
+            box-sizing: border-box;
+            position: relative;
+            line-height: 0;
+            font-size: 0px;
+            margin: 0px 5px 0px 0px;
+            display: inline-block;
+            background-color: rgb(255, 255, 255);
+            border: 1px solid rgb(198, 198, 198);
+            border-top-left-radius: 1px;
+            border-top-right-radius: 1px;
+            border-bottom-right-radius: 1px;
+            border-bottom-left-radius: 1px;
+            width: 13px;
+            height: 13px;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            vertical-align: middle;
+
+            &.hidden div { display: none; }
+
+            &:hover {
+              -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
+              box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
+            }
+          }
+          div {
+            position: absolute;
+            left: 1px;
+            top: -2px;
+            width: 13px;
+            height: 11px;
+            overflow: hidden;
+            background: url(/img/imgs8.png) -52px -44px no-repeat;
+            .hidden div {
+              display: none;
+            }
+          }
+          p {
+            padding: 5px;
+            cursor: pointer;
+          }
+        }
+        label {
+          vertical-align: middle;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+#map, #map3D {
+  width: 100%;
+  height: 100%;
+}
+
+#superOverlays {
+  width: 100px !important;
+}

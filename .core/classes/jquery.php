@@ -1,0 +1,10 @@
+<?php
+
+class jquery {
+
+    public static $colourbox_defaults  = array('opacity'=>0.7, 'static' =>1);
+    public static function colorbox($options = array()) {
+        $options = array_merge($options, self::$colourbox_defaults);
+        ajax::inject('body', 'append', '<script>$.colorbox(' . json_encode($options) . ')</script>');
+    }
+}
