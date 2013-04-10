@@ -9,7 +9,6 @@ class add_flight extends core_module {
 
     }
 
-
     public function get() {
         $this->page = new page();
         $this->page->do_retrieve(array(),array('where_equals'=>array('module_name'=>'add_flight')));
@@ -65,7 +64,37 @@ class add_flight extends core_module {
     $("body").on("click", "#kml_calc a", function () {
         $("#igc_upload_form").submit();
         $("#kml_wrapper").removeClass("pass");
-    });';
+    });
+     $("body").on("change","input#coords",function () {
+                var arr = $(this).val().split(";");
+                var coord_array = new Planner();
+                var str = "";
+                for (i in arr) {
+                    var coord = new Coordinate();
+                    coord.set_from_OS(arr[i]);
+                if (coord.is_valid_gridref()) {
+                    coord_array.push(coord);
+                } else {
+                    str = "Coordinate " + (i * 1 + 1) + " is not valid";
+                    break;
+                }
+            }
+            if (!str.length) {
+                switch (coord_array.count) {
+                    case 0:
+                        str = "";
+                        break;
+                    case 1:
+                        str = "Please enter at least two coordinates";
+                        break;
+                    case 2:
+                        str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                        break;
+                }
+            }
+            $("#defined_info").html(str);
+        });
+    ';
         if(ajax) {
             ajax::add_script($script);
         } else {
