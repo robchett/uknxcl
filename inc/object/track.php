@@ -76,6 +76,14 @@ class track {
         }
     }
 
+    public function truncate($start, $end = 0) {
+        if(!$end) {
+            $end = $this->track_points->count();
+        }
+        $points = $this->track_points->subset($start,$end);
+        $this->track_points->exchangeArray($points);
+    }
+
     public function parse_IGC() {
         if ($this->id) {
             $loc = $this->get_file_loc() . '/track.igc';
