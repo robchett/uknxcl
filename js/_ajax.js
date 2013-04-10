@@ -99,6 +99,10 @@ $('body').on('submit', 'form.noajax', function (e) {
 
 function handle_json_response(json) {
     $('.loading_shroud').remove();
+    for (i in json.update) {
+        var upd = json.update[i];
+        $(upd.id).html(upd.html);
+    }
     for (i in json.inject) {
         var inj = json.inject[i];
         if (inj.over != '')
@@ -117,10 +121,6 @@ function handle_json_response(json) {
                 $(inj.id).after(inj.html);
                 break;
         }
-    }
-    for (i in json.update) {
-        var upd = json.update[i];
-        $(upd.id).html(upd.html);
     }
     if (typeof json.push_state != "undefined")
         window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);

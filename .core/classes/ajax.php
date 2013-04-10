@@ -35,8 +35,8 @@ class ajax {
             self::inject('body', 'append', '<script>window.location.href = "' . self::$redirect . '";</script>');
         }
         $o = new stdClass();
-        $o->inject = array_merge(self::$inject, self::$inject_script);
         $o->update = self::$update;
+        $o->inject = array_merge(self::$inject, self::$inject_script);
         if (isset(self::$push_state))
             $o->push_state = self::$push_state;
         if (isset($_REQUEST['no_ajax'])) {
