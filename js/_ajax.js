@@ -80,7 +80,22 @@ $('body').on('submit', 'form.ajax', function (e) {
 
     $.fn.ajax_factory(module, act, data, options);
     return false;
-})
+});
+$('body').on('submit', 'form.noajax', function (e) {
+    var ajax_shroud = $(this).attr('data-ajax-shroud');
+    if(typeof ajax_shroud != 'undefined') {
+        var div = document.createElement('div');
+        div.className = 'loading_shroud';
+        div.style.width = $(this).outerWidth() + 'px';
+        div.style.height = $(this).outerHeight() + 'px';
+        div.style.left = 0;
+        div.style.top = 0;
+        if($(this).css('position') != 'absolute' || $(this).css('position') != 'relative' ) {
+            $(this).css({'position':'relative'});
+        }
+        $(ajax_shroud).prepend(div);
+    }
+});
 
 function handle_json_response(json) {
     $('.loading_shroud').remove();
