@@ -98,21 +98,6 @@ $('body').on('change', 'input[name=flights]', function () {
 });
 
 
-$(document).ready(function () {
-    $('body').on('click','div.flight_type_box',function () {
-        $('#add_flight_inner').animate({'left': -710});
-        $('#igc_form_holder').show();
-    });
-
-    $('body').on('click', '#kml_calc a', function () {
-        $(this).hide();
-        $('#igc_upload_form').submit();
-        $('#kml_wrapper').removeClass('pass');
-
-    });
-})
-
-
 Number.prototype.toRad = function () {  // convert degrees to radians
     return this * Math.PI / 180;
 };
