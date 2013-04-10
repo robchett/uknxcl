@@ -1,0 +1,81 @@
+/* NEWS BOX */
+div#news {
+  article {
+    margin-bottom: 10px;
+    overflow: hidden;
+
+    div.title {
+      text-align: center;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      color: #ffffff;
+      .gradient(#75b7fd,#0c3f6b,#0a4dad);
+      .border-radius(10px,0, 0,10px);
+
+      span.date {
+        font-size: 13px;
+        color: #ffffff;
+        margin-left: 10px;
+        position: absolute;
+        left: 10px;
+        color: #ffffff;
+      }
+      span.name {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: bold;
+      }
+      span.author {
+        position: absolute;
+        right: 10px;
+        font-size: 13px;
+        color: #ffffff;
+        margin-right: 10px;
+      }
+    }
+    div.content {
+      padding: 10px;
+      border: 1px solid #0e406d;
+      .border-radius(0,10px, 10px,0);
+    }
+  }
+}
+
+div#news_box article a.edit {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background-color: #565656;
+  color: #ffffff;
+  line-height: 30px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+div#news_box form, div#news_box #new_article {
+  background-color: #575757;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+}
+
+div#news_box form fieldset {
+  border: 0;
+}
+
+div#news_box form label span {
+  text-align: left;
+  line-height: 26px;
+  width: 80px;
+  display: block;
+  float: left
+}
+
+div#news_box form label input, div#news_box form label select {
+  width: 550px;
+}
+
+div#news_box form label textarea {
+  width: 550px;
+  height: 300px;
+}

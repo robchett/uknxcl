@@ -1,0 +1,56 @@
+div#add_flight_box {
+  div#add_flight_wrapper {
+    overflow: hidden;
+    width: 100%;
+
+    div#add_flight_inner {
+      width: 210%;
+      position: absolute;
+
+      > div {
+        width: 680px;
+        float: left;
+
+        &:first-child {
+          margin-right: 30px;
+        }
+      }
+
+      div.flight_type_box {
+        margin: 10px 0;
+        cursor: pointer;
+
+        &:hover div {
+          background-color: #ddd;
+        }
+        h2 {
+          color: #ffffff;
+          text-align: center;
+          .gradient(#75b7fd,#0c3f6b,#0a4dad);
+          .border-radius(10px, 0, 0, 10px);
+        }
+
+        div {
+          padding: 10px;
+          border: 1px solid #0e406d;
+          .border-radius(0, 10px, 10px, 0);
+        }
+      }
+
+      div.add_flight_section {
+        height: 100%;
+      }
+    }
+  }
+  div#kml_calc {
+    display: block;
+    .button();
+
+    a.calc {
+      display: block;
+      text-align: center;
+      width: 100%;
+      cursor: pointer;
+    }
+  }
+}
