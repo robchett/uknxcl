@@ -24,14 +24,20 @@ class add_field_form extends form {
             if($inner = $field_type->get_database_create_query()) {
                 db::query('ALTER TABLE ' . $module->table_name . ' ADD ' . $this->field_name . ' ' . $field_type->get_database_create_query(), array(), 1);
             }
-            db::query('INSERT INTO _cms_fields SET title=:title, type=:type, field_name=:field_name, mid=:mid', array(
+            $res = db::result('SELECT MAX(position) AS pos FROM _cms_fields WHERE mid=:mid', array('mid'=>$this->mid));
+            db::query('INSERT INTO _cms_fields SET title=:title, type=:type, field_name=:field_name, mid=:mid, `position`=:pos', array(
                     'title' => $this->title,
                     'field_name' => $this->field_name,
                     'type' => $field->title,
                     'mid' => $this->mid,
+                    'pos' => $res->pos + 1
                 )
             );
         }
-        ajax::add_script('window.location = window.location');
+        $class = $module->table_name;
+        $obj = new $class();
+        $obj->mid = $this->mid;
+        ajax::update($obj->get_cms_edit_module()->get());
+        ajax::update($this->get_html()->get());
     }
 }
