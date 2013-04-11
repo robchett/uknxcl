@@ -8,10 +8,9 @@ class field_boolean extends field {
     }
 
     public function do_validate(&$error_array) {
-        if (!is_bool($this->parent_form->{$this->field_name}))
+        if (!is_bool($this->parent_form->{$this->field_name})) {
             $error_array[$this->field_name] = $this->field_name . ' is not a valid boolean';
-        else
-            parent::do_validate($error_array);
+        }
     }
 
     public function set_from_request() {
