@@ -23,22 +23,25 @@ class field_link extends field {
 
     public function get_options() {
         $html = '';
-        $class = core::get_class_from_mid($this->link_mid);
-        $obj = new $class();
-        if (is_numeric($this->link_fid)) {
-            $this->link_fid = core::get_field_from_fid($this->link_fid);
+        if (is_numeric($this->link_module)) {
+            $this->link_module = core::get_class_from_mid($this->link_module);
         }
-        if (is_array($this->link_fid)) {
-            $fields = $this->link_fid;
+        $class = $this->link_module;
+        $obj = new $class();
+        if (is_numeric($this->link_field)) {
+            $this->link_field = core::get_field_from_fid($this->link_field);
+        }
+        if (is_array($this->link_field)) {
+            $fields = $this->link_field;
             $fields[] = $obj->table_key;
         } else {
-            $fields = array($obj->table_key, $this->link_fid);
+            $fields = array($obj->table_key, $this->link_field);
         }
         $options = $class::get_all($fields, $this->options);
         if (!$this->required) {
             $html .= '<option value="0">- Please Select -</option>';
         }
-        $title_fields = $this->link_fid;
+        $title_fields = $this->link_field;
         $selected = isset($this->parent_form->{$this->field_name}) ? $this->parent_form->{$this->field_name} : 0;
         $options->iterate(function (table $object) use (&$html, $title_fields, $selected) {
                 if (is_array($title_fields)) {
@@ -57,8 +60,8 @@ class field_link extends field {
     }
 
     public function  get_cms_list_wrapper($value, $object_class, $id) {
-        $class = core::get_class_from_mid($this->link_mid);
-        $field_name = core::get_field_from_fid($this->link_fid);
+        $class = core::get_class_from_mid($this->link_module);
+        $field_name = core::get_field_from_fid($this->link_field);
         $object = new $class();
         $object->do_retrieve_from_id(array($field_name, $object->table_key), $value);
         return (isset($object->{$object->table_key}) && $object->{$object->table_key} ? $object->$field_name : '-');
