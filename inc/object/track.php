@@ -67,8 +67,8 @@ class track {
     }
 
     public function check_date() {
-        $current_time = date("Y-m-d");
-        $closure_time = date("Y-m-d", time() - (31 * 24 * 60 * 60));
+        $current_time = time();
+        $closure_time = $current_time - (31 * 24 * 60 * 60);
         if ($this->date >= $closure_time && $this->date <= $current_time) {
             $this->console("Date is within 1 month");
             return true;
@@ -198,9 +198,13 @@ class track {
             $this->day = substr($p, 5, 2);
             $this->mon = substr($p, 7, 2);
             $this->year = "20" . substr($p, 9, 2);
-            $this->date = "$this->year-$this->mon-$this->day";
-            $this->console("Date recorded as : $this->date", $this, 1, 1);
+            $this->date = strtotime($this->year . '/' . $this->mon . '/' . $this->day);
+            $this->console("Date recorded as : " . $this->get_date('d/m/Y'), $this, 1, 1);
         }
+    }
+
+    public function get_date($format = 'Y/m/d') {
+        return date($format, $this->date);
     }
 
     public function calculate() {
@@ -630,7 +634,7 @@ Flight #             ' . $this->id . '
 Pilot                ' . $this->pilot . '
 Club                 ' . $this->club . '
 Glider               ' . $this->glider . '
-Date                 ' . $this->date . '
+Date                 ' . $this->get_date('d/m/Y') . '
 Start/finish         ' . $this->start_time(true) . '/' . $this->end_time(true) . '
 Duration             ' . $this->duration(true) . '
 Max./min. height     ' . $this->maximum_ele / $this->min_ele . 'm
@@ -777,7 +781,7 @@ TR Score / Time      ' . $this->tr->get_formatted_time() . '
         <pre>
 Flight statistics
 Pilot                ' . $this->name . '
-Date                 ' . $this->date . '
+Date                 ' . $this->get_date('d/m/Y') . '
 Start/finish         ' . $this->start_time(true) . '-' . $this->end_time(true) . '
 Duration             ' . $this->duration(true) . '
 Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
@@ -904,19 +908,22 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
 
     public function move_temp_files($temp_id) {
         $old_dir = $this->get_file_loc($temp_id, true);
-        $new_dir = $this->get_file_loc($temp_id, true);
+        $new_dir = $this->get_file_loc();
+        if (!file_exists($new_dir)) {
+            mkdir($new_dir);
+        }
         copy($old_dir . '/track.igc', $new_dir . '/track.igc');
         copy($old_dir . '/track_backup.igc', $new_dir . '/track_backup.igc');
     }
 
     public function get_file_loc($id = null, $temp = null) {
-        if (isset($id)) {
+        if (!isset($id)) {
             $id = $this->id;
         }
         if (!isset($temp)) {
             $temp = $this->temp;
         }
-        return root . '/uploads/track/' . ($temp ? 'temp/' : '') . $id;
+        return root . 'uploads/track/' . ($temp ? 'temp/' : '') . $id;
     }
 
     public function set_id($id) {
