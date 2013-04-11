@@ -9,6 +9,14 @@ class field_link extends field {
         $this->attributes['type'] = 'number';
     }
 
+    public function  get_cms_list_wrapper($value, $object_class, $id) {
+        $class = (is_numeric($this->link_module) ? core::get_class_from_mid($this->link_module) : $this->link_module);
+        $field_name = (is_numeric($this->link_field) ? core::get_field_from_fid($this->link_field) : $this->link_field);
+        $object = new $class();
+        $object->do_retrieve_from_id(array($field_name, $object->table_key), $value);
+        return (isset($object->{$object->table_key}) && $object->{$object->table_key} ? $object->$field_name : '-');
+    }
+
     public function get_database_create_query() {
         return 'int(6)';
     }
@@ -47,7 +55,7 @@ class field_link extends field {
                 if (is_array($title_fields)) {
                     $parts = array();
                     foreach ($title_fields as $part) {
-                        $parts[] = $object->{str_replace('.','_',$part)};
+                        $parts[] = $object->{str_replace('.', '_', $part)};
                     }
                     $title = implode(' - ', $parts);
                 } else {
@@ -57,14 +65,6 @@ class field_link extends field {
             }
         );
         return $html;
-    }
-
-    public function  get_cms_list_wrapper($value, $object_class, $id) {
-        $class = core::get_class_from_mid($this->link_module);
-        $field_name = core::get_field_from_fid($this->link_field);
-        $object = new $class();
-        $object->do_retrieve_from_id(array($field_name, $object->table_key), $value);
-        return (isset($object->{$object->table_key}) && $object->{$object->table_key} ? $object->$field_name : '-');
     }
 
 }
