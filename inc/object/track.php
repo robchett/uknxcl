@@ -898,7 +898,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         return $season;
     }
 
-    public function get_winter() {
+    public function is_winter() {
         return ($this->mon == 1 || $this->mon == 2 || $this->mon == 12);
     }
 
