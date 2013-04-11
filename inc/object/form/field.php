@@ -57,8 +57,9 @@ abstract class field extends html_element {
     }
 
     public function do_validate(&$error_array) {
-        if ($this->required && empty($this->parent_form->{$this->field_name}))
+        if ($this->required && empty($this->parent_form->{$this->field_name})) {
             $error_array[$this->field_name] = $this->field_name . ' is required field';
+        }
     }
 
     /**@return field */
@@ -88,8 +89,9 @@ abstract class field extends html_element {
     }
 
     public function get_wrapper_class() {
+        $this->wrapper_class[] =get_class($this) . '_wrapper';
         if (!empty($this->wrapper_class)) {
-            return 'class="' . implode(' ', $this->wrapper_class) . '"';
+            return '.' . implode('.', $this->wrapper_class);
         }
     }
 
