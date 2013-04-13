@@ -830,7 +830,7 @@ function Coordinate(lat, lon) {
         return this._gridref;
     };
     this.is_valid_gridref = function () {
-        return this._gridref.match(/(h[l-z]|n[a-hj-z]|s[a-hj-z]|t[abfglmqrvw])[0-9]{6}/i);
+        return this._gridref.match(/^(h[l-z]|n[a-hj-z]|s[a-hj-z]|t[abfglmqrvw])[0-9]{6}$/i);
 
     };
 
