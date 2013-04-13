@@ -7,9 +7,13 @@ $(document).ready(function () {
                 var arr = $target.data('ajax-click').split(':');
                 var module = arr[0];
                 var act = arr[1];
+                var options = {};
+                if ($target.data('ajax-shroud')) {
+                    options.loading_target = $target.data('ajax-shroud');
+                }
                 var data = $target.data('ajax-post') || {};
                 data['origin'] = $target.attr('id');
-                $.fn.ajax_factory(module, act, data);
+                $.fn.ajax_factory(module, act, data, options);
             }
         }
     });
