@@ -174,7 +174,7 @@ function create_js($id, $track, $prepend) {
     $graph1 = "";
     $array = array();
     foreach ($track->track_points as $tp) {
-        $n = sizeof($array);
+        $n = count($array);
         $array [$n]->time = $tp->time;
         $array [$n]->lat = $tp->lat;
         $array [$n]->lon = $tp->lon;
