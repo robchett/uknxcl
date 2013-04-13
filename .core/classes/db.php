@@ -10,7 +10,7 @@ class db {
             $username = "eacommsc_root";
             $password = "uknxcl!23";
         } else {
-            $localhost = '';
+            $localhost = '127.0.0.1';
             $username = "root";
             $password = "";
         }
