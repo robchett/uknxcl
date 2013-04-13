@@ -19,7 +19,7 @@ class cms_filter_form extends form {
         foreach ($super_fields as $field) {
             if ($field->filter) {
                 $field->required = false;
-                if (isset($_SESSION['cms'][$class_name][$field->field_name])) {
+                if (!ajax && isset($_SESSION['cms'][$class_name][$field->field_name])) {
                     $field->value = $_SESSION['cms'][$class_name][$field->field_name];
                 }
                 $fields[] = $field;
@@ -29,15 +29,19 @@ class cms_filter_form extends form {
         $this->id = 'filter_form';
         $this->submit = 'Filter';
         $this->_class_name = $class_name;
-        if(isset($_SESSION['cms'][$class_name])) {
-            $this->post_fields_text = '<a class="button" href="#" data-ajax-click="cms:do_clear_filter" data-ajax-post=\'{"class":"' . $class_name. '"}\' data-ajax-shroud="#filter_form">Clear Filters</a>';
+        if (isset($_SESSION['cms'][$class_name])) {
+            $this->post_fields_text = '<a class="button" href="#" data-ajax-click="cms:do_clear_filter" data-ajax-post=\'{"class":"' . $class_name . '"}\' data-ajax-shroud="#filter_form">Clear Filters</a>';
         }
     }
 
     public function do_submit() {
         if (parent::do_submit()) {
             foreach ($this->fields as $field) {
-                $_SESSION['cms'][$this->_class_name][$field->field_name] = $this->{$field->field_name};
+                if (get_class($field) == 'field_boolean' && !$this->{$field->field_name}) {
+                    unset($_SESSION['cms'][$this->_class_name][$field->field_name]);
+                } else {
+                    $_SESSION['cms'][$this->_class_name][$field->field_name] = $this->{$field->field_name};
+                }
             }
         }
         ajax::add_script('window.location = window.location');
