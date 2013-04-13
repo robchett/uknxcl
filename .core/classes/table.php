@@ -126,11 +126,11 @@ class table {
     public function get_cms_edit() {
         $form = $this->get_form();
         $form->set_from_object($this);
-        foreach ($this->get_fields() as $field) {
+        foreach ($form->fields as $field) {
             if (get_class($field) == 'field_file') {
                 $form->action = '/index.php?module=' . get_class($this) . '&act=do_submit&no_ajax=on&ajax_origin=' . $form->id;
-                break;
             }
+            $field->label .= '<span class="field_name">' . $field->field_name. '</span>';
         }
         if (!isset($this->{$this->table_key}) || !$this->{$this->table_key}) {
             $form->get_field_from_name($this->table_key)->set_attr('hidden', true);
