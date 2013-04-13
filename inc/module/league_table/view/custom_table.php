@@ -14,7 +14,7 @@ function makeTable(league_table $data) {
             $array[$t->ClassID] = $class;
         }
     }
-    if (sizeof($array) > 0) {
+    if (count($array) > 0) {
         usort($array, "cmp");
         $html .=  '<div class="table_wrapper"><h3>' . $data->Title . '</h3>';
         // Print the top 4 flights of each type if wanted

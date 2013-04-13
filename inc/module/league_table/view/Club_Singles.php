@@ -37,7 +37,7 @@ function makeTable(league_table $data) {
         usort($Pilotarray, "cmp");
 
     $Clubarray = array();
-    for ($i = 0; $i < sizeof($Pilotarray); $i++) {
+    for ($i = 0; $i < count($Pilotarray); $i++) {
         if (isset ($Clubarray [$Pilotarray [$i]->Club]))
             $Clubarray [$Pilotarray [$i]->Club]->AddSub($Pilotarray [$i], $flights);
         else
@@ -47,7 +47,7 @@ function makeTable(league_table $data) {
         usort($Clubarray, "cmp");
 
     echo "  <table class=\"c\"><th class=\"c\"style=\"width:684px\">$club_name - $Year</th></table>";
-    for ($j = 0; $j < sizeof($Clubarray); $j++) {
+    for ($j = 0; $j < count($Clubarray); $j++) {
         if ($Clubarray [$j]->Name == $club_name) {
             echo $Clubarray [$j]->writeClubSemiHead($j + 1);
             $html .= WriteTableHead($flights);

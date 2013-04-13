@@ -16,13 +16,13 @@ function makeTable(league_table $data) {
         }
     }
     // Sort pilots by score.
-    if (sizeof($pilots_array) > 0) {
+    if (count($pilots_array) > 0) {
         usort($pilots_array, "cmp");
     } else {
         $html .= " <table class='Main' ><th class=\"c\"style=\"width:663px\">No Flights to display</th></table>";
     }
     $Clubarray = array();
-    for ($i = 0; $i < sizeof($pilots_array); $i++) {
+    for ($i = 0; $i < count($pilots_array); $i++) {
         if (isset ($Clubarray [$pilots_array[$i]->name])) {
             $Clubarray [$pilots_array [$i]->name]->AddSub($pilots_array [$i], $data->max_flights);
         } else {
@@ -36,7 +36,7 @@ function makeTable(league_table $data) {
     }
     $html .= '<div class="table_wrapper"><h3>' . $data->Title . '</h3>';
 
-    for ($j = 0; $j < sizeof($Clubarray); $j++) {
+    for ($j = 0; $j < count($Clubarray); $j++) {
         $html .= $Clubarray [$j]->writeClubSemiHead($j + 1);
         $html .= $data->write_table_header($data->max_flights, $data->class_primary_key);
         $html .= $Clubarray[$j]->content;

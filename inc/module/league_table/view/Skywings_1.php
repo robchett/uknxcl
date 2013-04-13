@@ -43,7 +43,7 @@ if (isset ($array)) {
     //if(1)ShowTop4W($WHERE);
     $class1 = 1;
     $class5 = 1;
-    for ($j = 0; $j < sizeof($array); $j++) {
+    for ($j = 0; $j < count($array); $j++) {
         if ($array [$j]->Class == 1) {
             echo $array [$j]->Output($class1, 0);
             $class1++;
