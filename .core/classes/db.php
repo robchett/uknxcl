@@ -119,7 +119,11 @@ class db {
             $where_cnt = 0;
             foreach ($options['where_equals'] as $key => $val) {
                 $where_cnt++;
-                $where .= ' AND `' . $key . '`=:where_' . $where_cnt;
+                if(strpos($key , '.') !== false) {
+                    $where .= ' AND `' . str_replace('.','`.',$key) . '=:where_' . $where_cnt;
+                } else {
+                    $where .= ' AND `' . $key . '`=:where_' . $where_cnt;
+                }
                 $parameters['where_' . $where_cnt] = $val;
             }
         }

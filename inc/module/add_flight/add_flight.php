@@ -28,7 +28,7 @@ class add_flight extends core_module {
     </div>
 </div>';
         $script = '
-        
+
     $("body").on("change", "input#defined", function () {
         if ($(this).attr("checked"))
             $(".fieldset_1").show(); else
@@ -39,6 +39,7 @@ class add_flight extends core_module {
             $("#kml_calc").fadeIn(1000);
             $("#kml_calc a").show();
             $("#kml_wrapper").addClass("pass").removeClass("hoverFail");
+            $("#kml_wrapper p.text").html("Click calculate to contiune or choose another file")
         } else {
             $("#kml_wrapper p.text").html("Please us an IGC file");
             $("#kml_wrapper").addClass("hoverFail");
@@ -61,40 +62,48 @@ class add_flight extends core_module {
         $("#igc_form_holder").show();
     });
 
-    $("body").on("click", "#kml_calc a", function () {
+    $("body").on("click", "#kml_calc a.calc", function () {
         $("#igc_upload_form").submit();
         $("#kml_wrapper").removeClass("pass");
     });
-     $("body").on("change","input#coords",function () {
-                var arr = $(this).val().split(";");
-                var coord_array = new Planner();
-                var str = "";
-                for (i in arr) {
-                    var coord = new Coordinate();
-                    coord.set_from_OS(arr[i]);
-                if (coord.is_valid_gridref()) {
-                    coord_array.push(coord);
-                } else {
-                    str = "Coordinate " + (i * 1 + 1) + " is not valid";
-                    break;
-                }
-            }
-            if (!str.length) {
-                switch (coord_array.count) {
-                    case 0:
-                        str = "";
-                        break;
-                    case 1:
-                        str = "Please enter at least two coordinates";
-                        break;
-                    case 2:
-                        str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
-                        break;
-                }
-            }
-            $("#defined_info").html(str);
-        });
-    ';
+    $("body").on("change","input#coords",function () {
+        var arr = $(this).val().split(";");
+        var coord_array = new Planner();
+        var str = "";
+        for (i in arr) {
+            var coord = new Coordinate();
+            coord.set_from_OS(arr[i]);
+        if (coord.is_valid_gridref()) {
+            coord_array.push(coord);
+        } else {
+            str = "Coordinate " + (i * 1 + 1) + " is not valid";
+            break;
+        }
+        }
+        if (!str.length) {
+        switch (coord_array.count) {
+            case 0:
+                str = "";
+                break;
+            case 1:
+                str = "Please enter at least two coordinates";
+                break;
+            case 2:
+                str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                break;
+        }
+        }
+        $("#defined_info").html(str);
+    });
+    $("body").on("click","a.score_select",function () {
+        var data = $(this).data("post");
+        $("#igc_form #temp_id").val(data.track);
+        $("#igc_form #type").val(data.type);
+        $("#igc_form #start").val(data.start);
+        $("#igc_form #end").val(data.end);
+        $("#igc_upload_form").html("<p class=\"restart\">Your flight details have been saved, please complete the form below, \"Additional Details\", to finalise your sumbission.<br/><a data-ajax-click=\"igc_upload_form:reset\" href=\"#\" >Restart</a></p>");
+        $("#igc_form input.submit").removeAttr("disabled");
+    });';
         if(ajax) {
             ajax::add_script($script);
         } else {

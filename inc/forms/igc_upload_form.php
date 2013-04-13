@@ -30,54 +30,53 @@ class igc_upload_form extends form {
         $script = '
         var dropZoneId = "kml_wrapper";
         var buttonId = "kml_wrapper";
-        var mouseOverClass = "";
+        var mouseOverClass = "hover";
         var dropZone = $("#" + dropZoneId);
         var inputFile = dropZone.find("input");
 
         $(function () {
-                if (document.getElementById(dropZoneId)) {
-                    document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            var ooleft = dropZone.offset().left;
-                            var ooright = dropZone.outerWidth() + ooleft;
-                            var ootop = dropZone.offset().top;
-                            var oobottom = dropZone.outerHeight() + ootop;
-                            dropZone.addClass(mouseOverClass);
-                            var x = e.pageX;
-                            var y = e.pageY;
+            if (document.getElementById(dropZoneId)) {
+                document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var ooleft = dropZone.offset().left;
+                    var ooright = dropZone.outerWidth() + ooleft;
+                    var ootop = dropZone.offset().top;
+                    var oobottom = dropZone.outerHeight() + ootop;
+                    dropZone.addClass(mouseOverClass);
+                    var x = e.pageX;
+                    var y = e.pageY;
 
-                            if (!(x < ooleft || x > ooright || y < ootop || y > oobottom)) {
-                                inputFile.offset({ top: y - 15, left: x - 100 });
+                    if (!(x < ooleft || x > ooright || y < ootop || y > oobottom)) {
+                        inputFile.offset({ top: y - 15, left: x - 100 });
                     } else {
-                                inputFile.offset({ top: -400, left: -400 });
+                        inputFile.offset({ top: -400, left: -400 });
                     }
-
-                        }, true);
-                    if (buttonId != "") {
-                        $("#" + buttonId).mousemove(function (e) {
-                                var clickZone = $("#" + buttonId);
-                                var oleft = clickZone.offset().left;
-                                var oright = clickZone.outerWidth() + oleft;
-                                var otop = clickZone.offset().top;
-                                var obottom = clickZone.outerHeight() + otop;
-                                var x = e.pageX;
-                                var y = e.pageY;
-                                if (!(x < oleft || x > oright || y < otop || y > obottom)) {
-                                    inputFile.offset({ top: y - 15, left: x - 160 });
+                }, true);
+                if (buttonId != "") {
+                    $("#" + buttonId).mousemove(function (e) {
+                        var clickZone = $("#" + buttonId);
+                        var oleft = clickZone.offset().left;
+                        var oright = clickZone.outerWidth() + oleft;
+                        var otop = clickZone.offset().top;
+                        var obottom = clickZone.outerHeight() + otop;
+                        var x = e.pageX;
+                        var y = e.pageY;
+                        if (!(x < oleft || x > oright || y < otop || y > obottom)) {
+                            inputFile.offset({ top: y - 15, left: x - 160 });
                         } else {
-                                    inputFile.offset({ top: -400, left: -400 });
+                            inputFile.offset({ top: -400, left: -400 });
                         }
-                            });
-                    }
-
-                    document.getElementById(dropZoneId).addEventListener("drop", function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            $("#" + dropZoneId).removeClass(mouseOverClass);
-                        }, true);
+                    });
                 }
-            });';
+                document.getElementById(dropZoneId).addEventListener("dragleave", function (e) {
+                    dropZone.removeClass(mouseOverClass);
+                });
+                document.getElementById(dropZoneId).addEventListener("drop", function (e) {
+                    $("#" + dropZoneId).removeClass(mouseOverClass);
+                }, true);
+            }
+        });';
         if (!isset($this->kml) || empty($this->kml)) {
             $script .= '$("#kml_calc").hide();';
         }
@@ -116,7 +115,7 @@ class igc_upload_form extends form {
         $track->console("File moved and backed-up");
 
         $track->parse_IGC();
-        if($end) {
+        if($end || $start) {
             $track->truncate($start, $end);
         }
         $track->pre_calc();
@@ -156,21 +155,25 @@ class igc_upload_form extends form {
         return $html;
     }
 
+    public function reset () {
+        ajax::update($this->get_html()->get());
+    }
+
     private function get_choose_score_html(track $track, $start, $end) {
-        $html = '<ul>';
+        $html = '<table><thead><tr><th>Type</th><th>Score</th><th></tr></thead><tbody>';
         $html .= $this->get_task_select_html($track, 'od', $start, $end);
         $html .= $this->get_task_select_html($track, 'or', $start, $end);
         $html .= $this->get_task_select_html($track, 'tr', $start, $end);
-        $html .= '</ul>';
+        $html .= '</tbody></table>';
         return $html;
     }
 
      private function get_task_select_html(track $track, $type, $start, $end) {
         $task = $track->$type;
         return '
-        <li>
-            <span>' . $task->title . ' : ' . $task->get_distance(3) . '</span><a class="score_select" data-post=\'{track:' . $track->id . ',"type":"' . $type . '", "start":'.$start.', "end":'.$end.'}\' class="choose">Choose</a>
-        </li>';
+        <tr>
+            <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '", "start":'.$start.', "end":'.$end.'}\' class="choose">Choose</a></td>
+        </tr>';
     }
 
 

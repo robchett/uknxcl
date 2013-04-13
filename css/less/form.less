@@ -24,6 +24,9 @@ form {
 
       li {
         clear: both;
+        &.err {
+          color: #b60000;
+        }
         label {
           min-height: 16px;
           line-height: 16px;
@@ -56,11 +59,14 @@ form {
           color: #cccccc;
           cursor: pointer;
           text-align: center;
-          .hoverPass, .pass {
+          &.hover {
+            border-style: double;
+          }
+          &.hoverPass, &.pass {
             border-color: green;
             color: green;
           }
-          .hoverFail {
+          &.hoverFail {
             border-color: red;
             color: red;
           }
@@ -86,7 +92,6 @@ form {
   #defined_info {
     margin: 20px 0 -20px 0;
     font-weight: bold;
-
   }
   &#advanced_tables, &#basic_tables_form {
 
@@ -133,11 +138,65 @@ form {
       width: 200px;
     }
   }
-  &#igc_form {
-    label span { width: 100% }
-  }
   &#igc_upload_form {
     #coords_wrapper span { width: 200px }
+    #console {
+      color: #b60000;
+      font-size: medium;
+      .error { margin-top: 0 }
+      table {
+        width: 300px;
+        margin: auto;
+        thead {
+          th {
+            color: #00608d;
+            text-align: left;
+          }
+        }
+        td {
+          text-align: left;
+        }
+      }
+    }
+    p.restart {
+      text-align: center;
+      font-weight: bold;
+    }
+    a.restart {
+      text-align: center;
+    }
+  }
+  &#igc_form {
+    label {
+      span { width: 100% }
+    }
+    .field_select_wrapper, .field_link_wrapper {
+      span {
+        width: 100px !important;
+      }
+      select {
+        width: 200px;
+        margin-right: 20px;
+      }
+      a {
+        text-decoration: underline;
+        color: #9d9d9d;
+      }
+    }
+    .field_boolean_wrapper {
+      span {
+        float: right;
+        width: 595px;
+        padding: 0 0 0 20px;
+      }
+      input {
+        float: left;
+        height: 26px;
+      }
+    }
+    textarea {
+      width: 629px;
+    }
   }
 }
 
