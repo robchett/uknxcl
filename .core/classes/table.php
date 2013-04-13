@@ -143,6 +143,10 @@ class table {
         return new form($this->get_fields());
     }
 
+    public function lazy_load($fields) {
+        $this->do_retrieve_from_id($fields, $this->{$this->table_key});
+    }
+
     /** @return html_node */
     public function get_cms_edit_module() {
         $list = html_node::create('table#module_def');
