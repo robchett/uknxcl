@@ -74,7 +74,12 @@ class html_node {
     }
 
     /* @return html_node */
-    public function nest($children) {
+    public function nest() {
+        if(func_num_args() == 1) {
+            $children = func_get_arg(0);
+        } else {
+            $children = func_get_args();
+        }
         if ($this->pointer) {
             $this->pointer->nest($children);
         } else {
