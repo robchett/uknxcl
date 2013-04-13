@@ -192,7 +192,8 @@ class table {
             $res = db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
             while ($row = db::fetch($res)) {
                 $class = 'field_' . $row->type;
-                $field = new $class($row->title, array());
+                $field = new $class($row->field_name, array());
+                $field->label = $row->title;
                 $field->set_from_row($row);
                 $fields[] = $field;
             }

@@ -137,7 +137,6 @@ class cms extends core_module {
 
     public function get_list($obj, $elements) {
         $this->object = new $obj();
-        $nodes = array();
         $html = html_node::create('table')->nest(
             [
                 $this->get_table_head($this->object),
