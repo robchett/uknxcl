@@ -38,7 +38,7 @@ class igc_form extends form {
                     ->set_attr('label', 'Please write any extra information you wish to be made public here')
                     ->set_attr('required', false)
                     ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'invis_info')
+                form::create('field_textarea', 'admin_info')
                     ->set_attr('label', 'Please write any extra information you wish to be seen by the admin team here')
                     ->set_attr('required', false)
                     ->add_wrapper_class('long_text'),
@@ -63,7 +63,7 @@ class igc_form extends form {
                     ->set_attr('required', true)
                     ->set_attr('hidden', true),
                 form::create('field_boolean', 'defined')
-                     ->set_attr('hidden', true)
+                    ->set_attr('hidden', true)
             )
         );
 
@@ -82,8 +82,8 @@ class igc_form extends form {
             $flight->set_from_request();
             $flight->do_save();
 
-            if($flight->fid) {
-                track::move_temp_files ($this->temp_id, $flight->fid);
+            if ($flight->fid) {
+                track::move_temp_files($this->temp_id, $flight->fid);
                 $track = new track();
                 $track->id = $flight->fid;
                 $track->parse_IGC();
@@ -94,6 +94,11 @@ class igc_form extends form {
                 $flight->did = $track->get_dim();
                 $flight->winter = $track->is_winter();
 
+                if (!$track->check_date()) {
+                    $this->force_delay = true;
+                    $flight->invis_info .= 'delayed as flight is old.';
+                }
+
                 $flight_type = new flight_type();
                 $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $this->type)));
                 $flight->ftid = $flight_type->ftid;
@@ -102,8 +107,10 @@ class igc_form extends form {
                 $flight->base_score = $track->{$this->type}->get_distance();
                 $flight->coords = $track->{$this->type}->get_coordinates();
                 $flight->score = $flight->base_score * $flight->multi;
+                $flight->delayed = $this->force_delay ? true : $this->delay;
 
-                $flight->file = '/uploads/track/' . $flight->fid . '/track.igc';
+
+                $flight->file = '/uploads/track/' . $flight->id . '/track.igc';
                 $flight->do_save();
 
                 jquery::colorbox(array('html' => 'Your flight has been added successfully'));
