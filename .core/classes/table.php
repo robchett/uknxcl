@@ -153,11 +153,12 @@ class table {
         $list->nest(html_node::create('thead')->nest(array(
                     html_node::create('th', 'Field id'),
                     html_node::create('th', 'Pos'),
-                    html_node::create('th', 'Field Title'),
-                    html_node::create('th', 'Field Database Title'),
-                    html_node::create('th', 'Field Type'),
-                    html_node::create('th', 'Field List'),
-                    html_node::create('th', 'Field Required'),
+                    html_node::create('th', 'Title'),
+                    html_node::create('th', 'Database Title'),
+                    html_node::create('th', 'Type'),
+                    html_node::create('th', 'List'),
+                    html_node::create('th', 'Required'),
+                    html_node::create('th', 'Filter'),
                 )
             )
         );

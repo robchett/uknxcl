@@ -2,20 +2,15 @@
 class cms extends core_module {
 
     public static $url_base = '/cms/';
-    public $module_id = 0;
-    public $module = 0;
     /** @var table */
     public $current;
+    public $module = 0;
+    public $module_id = 0;
 
-    public function get_new_field_form() {
-        $form = new add_field_form();
-        $form->mid = $this->mid;
-        return $form->get_html();
-    }
-
-    public function get_admin_new_module_form() {
-        $form = new new_module_form();
-        return $form->get_html();
+    public static function do_clear_filter() {
+        unset($_SESSION['cms'][$_REQUEST['class']]);
+        ajax::add_script('window.location = window.location');
+        // TODO make this a true ajax act.
     }
 
     public function __controller(array $path) {
@@ -30,7 +25,16 @@ class cms extends core_module {
                 $this->set_from_mid($path[2]);
                 $this->npp = isset($_SESSION['cms'][$this->mid]) ? $_SESSION['cms'][$this->mid] : 25;
                 $this->page = isset($path[4]) ? $path[4] : 1;
-                $this->tot = db::result('SELECT count(*) AS count FROM ' . $this->module->table_name . '')->count;
+
+                $this->current_class = new $this->module->table_name;
+
+                $this->where = array();
+                foreach ($this->current_class->get_fields() as $field) {
+                    if (isset($_SESSION['cms'][$this->module->table_name][$field->field_name]) && $_SESSION['cms'][$this->module->table_name][$field->field_name]) {
+                        $this->where[$field->field_name] = $_SESSION['cms'][$this->module->table_name][$field->field_name];
+                    }
+                }
+                $this->tot = db::result(db::get_query($this->module->table_name,array('count(*) AS count'), array('where_equals'=>$this->where),$parameters), $parameters)->count;
             }
         }
         if (isset($path[3]) && !empty($path[3]) && admin) {
@@ -65,75 +69,12 @@ class cms extends core_module {
         return $html->get();
     }
 
-    public function get_admin_edit() {
-        return html_node::create('a#admin_edit.button', 'Edit Module', ['href' => self::$url_base . 'admin_edit/' . $this->mid]);
-    }
-
-    public function get_admin_add() {
-        return html_node::create('a#admin_edit.button', 'Add New ' . $this->module->title, ['href' => self::$url_base . 'edit/' . $this->mid]);
-    }
-
-    public function get_inner() {
-        $html = html_node::create('div#inner');
+    public function set_from_mid($mid) {
+        $this->mid = $mid;
+        $this->module = db::result('SELECT * FROM _cms_modules WHERE mid =:mid', array('mid' => $this->mid));
         $class = $this->module->table_name;
-        $sres = $class::get_all(array($class . '.*'), array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp));
-        $html->nest($this->get_list($class, $sres));
-        return $html;
-    }
-
-    public function get_list($obj, $elements) {
-        $this->object = new $obj();
-        $nodes = array();
-        $html = html_node::create('table')->nest(
-            [
-                $this->get_table_head($this->object),
-                $this->get_table_rows($elements, $obj),
-            ]
-        );
-        $nodes = array(
-            $this->get_pagi($elements->count()),
-            $html,
-            $this->get_pagi($elements->count())
-        );
-        return $nodes;
-    }
-
-
-    public function get_table_head(table $obj) {
-        $node = html_node::create('thead');
-        $node->add_child(html_node::create('th.edit', ''));
-        foreach ($obj->get_fields() as $field) {
-            if ($field->list) {
-                $node->add_child(html_node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), $field->title));
-            }
-        }
-        $node->add_child(html_node::create('th.delete', ''));
-        return $node;
-    }
-
-    public function get_table_rows($objects, $class) {
-        $nodes = html_node::create('tbody');
-        $objects->iterate(function ($obj) use ($nodes, $class) {
-                $node = html_node::create('tr');
-                $node->add_child(html_node::create('td.edit', html_node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
-                $node->nest($obj->get_cms_list());
-                $node->add_child(html_node::create('td.delete', html_node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
-                $nodes->add_child($node);
-            }
-        );
-        return $nodes;
-    }
-
-    public function get_pagi() {
-        $node = html_node::create('ul#pagi');
-        if ($this->tot > $this->npp) {
-            $pages = ceil($this->tot / $this->npp);
-            for ($i = 1; $i <= $pages; $i++) {
-                $node->add_child(html_node::create('li')->add_child(html_node::create('a', $i, array('href' => '/cms/module/' . $this->mid . '/page/' . $i))));
-            }
-            $node->add_child(html_node::create('li')->add_child(html_node::create('a', 'Show All', array('href' => '/cms/module/' . $this->mid . '/page/all'))));
-        }
-        return $node;
+        $this->current = new $class();
+        $this->current->mid = $this->mid;
     }
 
     public function do_reorder_fields() {
@@ -170,15 +111,107 @@ class cms extends core_module {
         }
     }
 
-    public function set_from_mid($mid) {
-        $this->mid = $mid;
-        $this->module = db::result('SELECT * FROM _cms_modules WHERE mid =:mid', array('mid' => $this->mid));
-        $class = $this->module->table_name;
-        $this->current = new $class();
-        $this->current->mid = $this->mid;
+    public function get() {
     }
 
-    public function get() {
+    public function get_admin_add() {
+        return html_node::create('a#admin_edit.button', 'Add New ' . $this->module->title, ['href' => self::$url_base . 'edit/' . $this->mid]);
+    }
+
+    public function get_admin_edit() {
+        return html_node::create('a#admin_edit.button', 'Edit Module', ['href' => self::$url_base . 'admin_edit/' . $this->mid]);
+    }
+
+    public function get_admin_new_module_form() {
+        $form = new new_module_form();
+        return $form->get_html();
+    }
+
+    public function get_inner() {
+        $html = html_node::create('div#inner');
+        $class = $this->module->table_name;
+        $sres = $class::get_all(array($class . '.*'), array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp, 'where_equals' => $this->where));
+        $html->nest($this->get_list($class, $sres));
+        return $html;
+    }
+
+    public function get_list($obj, $elements) {
+        $this->object = new $obj();
+        $nodes = array();
+        $html = html_node::create('table')->nest(
+            [
+                $this->get_table_head($this->object),
+                $this->get_table_rows($elements, $obj),
+            ]
+        );
+        $nodes = array(
+            $this->get_filters($this->object),
+            $html,
+            $this->get_pagi($elements->count())
+        );
+        return $nodes;
+    }
+
+    public function get_table_head(table $obj) {
+        $node = html_node::create('thead');
+        $node->add_child(html_node::create('th.edit', ''));
+        foreach ($obj->get_fields() as $field) {
+            if ($field->list) {
+                $node->add_child(html_node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), $field->title));
+            }
+        }
+        $node->add_child(html_node::create('th.delete', ''));
+        return $node;
+    }
+
+    public function get_table_rows($objects, $class) {
+        $nodes = html_node::create('tbody');
+        $objects->iterate(function ($obj) use ($nodes, $class) {
+                $node = html_node::create('tr');
+                $node->add_child(html_node::create('td.edit', html_node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+                $node->nest($obj->get_cms_list());
+                $node->add_child(html_node::create('td.delete', html_node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+                $nodes->add_child($node);
+            }
+        );
+        return $nodes;
+    }
+
+    public function get_filters() {
+        $wrapper = html_node::create('div#filter_wrapper ul');
+        $filter_form = new cms_filter_form(get_class($this->current));
+        $filter_form->npp = $this->npp;
+        $wrapper->nest($this->get_pagi('top'), $filter_form->get_html());
+        return $wrapper;
+    }
+
+    public function get_pagi() {
+        $node = html_node::create('span');
+        if ($this->tot > $this->npp) {
+            $pages = ceil($this->tot / $this->npp);
+            if ($pages > 40) {
+                $node = html_node::create('select#pagi.cf', '', array('data-ajax-change' => 'cms:do_paginate'));
+                for ($i = 1; $i <= $pages; $i++) {
+                    $attributes = array('value' => $i);
+                    if ($this->page = $i) {
+                        $attributes['selected'] = 'selected';
+                    }
+                    $node->add_child(html_node::create('option', $i, array('value' => $i)));
+                }
+            } else {
+                $node = html_node::create('ul#pagi.cf');
+                for ($i = 1; $i <= $pages; $i++) {
+                    $node->add_child(html_node::create('li')->add_child(html_node::create('a', $i, array('href' => '/cms/module/' . $this->mid . '/page/' . $i))));
+                }
+            }
+        }
+        return $node;
+    }
+
+    public function get_new_field_form() {
+        $form = new add_field_form();
+        $form->mid = $this->mid;
+        return $form->get_html();
     }
 
 }
