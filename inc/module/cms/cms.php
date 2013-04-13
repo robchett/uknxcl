@@ -77,20 +77,25 @@ class cms extends core_module {
         $html = html_node::create('div#inner');
         $class = $this->module->table_name;
         $sres = $class::get_all(array($class . '.*'), array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp));
-        $html->add_child($this->get_list($class, $sres));
+        $html->nest($this->get_list($class, $sres));
         return $html;
     }
 
     public function get_list($obj, $elements) {
         $this->object = new $obj();
+        $nodes = array();
         $html = html_node::create('table')->nest(
             [
                 $this->get_table_head($this->object),
                 $this->get_table_rows($elements, $obj),
-                $this->get_pagi($elements->count())
             ]
         );
-        return $html;
+        $nodes = array(
+            $this->get_pagi($elements->count()),
+            $html,
+            $this->get_pagi($elements->count())
+        );
+        return $nodes;
     }
 
 
