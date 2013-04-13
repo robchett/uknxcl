@@ -88,7 +88,7 @@ class db {
         return $res->rowCount();
     }
 
-    static function get_query($object, array $fields_to_retrieve, $options, &$parameters) {
+    static function get_query($object, array $fields_to_retrieve, $options, &$parameters = array()) {
         $fields = array();
         $where = 'WHERE 1 ';
         $order = '';
@@ -119,7 +119,7 @@ class db {
             $where_cnt = 0;
             foreach ($options['where_equals'] as $key => $val) {
                 $where_cnt++;
-                $where .= ' AND ' . $key . '=:where_' . $where_cnt;
+                $where .= ' AND `' . $key . '`=:where_' . $where_cnt;
                 $parameters['where_' . $where_cnt] = $val;
             }
         }
