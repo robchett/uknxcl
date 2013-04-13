@@ -143,6 +143,15 @@ abstract class field extends html_element {
             $required_options['checked'] = 'checked';
         }
         $cols[] = html_node::create('td')->nest(html_node::create('input#' . $this->fid . '_required', null, $required_options));
+        $filter_options = array(
+            'data-ajax-change' => 'field_boolean:update_cms_setting',
+            'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"filter"}',
+            'value' => 1,
+            'type' => 'checkbox');
+        if ($this->filter) {
+            $filter_options['checked'] = 'checked';
+        }
+        $cols[] = html_node::create('td')->nest(html_node::create('input#' . $this->fid . '_filter', null, $filter_options));
         return $cols;
     }
 
@@ -158,7 +167,7 @@ abstract class field extends html_element {
     }
 
     public function get_save_sql(&$sql_array, &$parameters) {
-        $sql_array[] = $this->field_name . '=:' . $this->field_name;
+        $sql_array[] = '`' . $this->field_name . '`=:' . $this->field_name;
         $parameters[$this->field_name] = $this->mysql_value($this->parent_form->{$this->field_name});
     }
 

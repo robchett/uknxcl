@@ -1,5 +1,11 @@
 @import 'less/elements';
 
+.cf:before, .cf:after { content: "\0020"; display: block; height: 0; overflow: hidden }
+
+.cf:after { clear: both }
+
+.cf { zoom: 1 }
+
 body {
   padding: 10px 20px;
   margin: 0;
@@ -37,7 +43,21 @@ ul#pagi {
   }
 }
 
-form { }
+form {
+  &#filter_form {
+    border: 1px solid #ffffff;
+    .border-radius(10px, 0, 0, 10px);
+    background-color: #5d5d5d;
+    li {
+      float: left;
+      margin-right: 10px;
+      height: 25px;
+      select {
+        width: 200px;
+      }
+    }
+  }
+}
 
 form fieldset { border: none; }
 
