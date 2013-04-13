@@ -91,7 +91,26 @@ class add_flight extends core_module {
             case 2:
                 str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
                 break;
-        }
+            case 3:
+                if(coord_array[0] == coord_array[2]) {
+                    str = "Flight Type: Out & Return, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                } else {
+                    str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                }
+                break;
+            case 4:
+                if(coord_array[0] == coord_array[4]) {
+                    str = "Flight Type: Trianglge, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                } else {
+                    str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                }
+                break;
+            case 5:
+                str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                break;
+            default :
+                str = "you can only enter 5 coordinates";
+            }
         }
         $("#defined_info").html(str);
     });

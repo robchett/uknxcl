@@ -25,6 +25,97 @@ class igc_upload_form extends form {
         $this->submittable = false;
     }
 
+    public function do_choose_track() {
+        $track = new track();
+        $track->id = $_REQUEST['track'];
+        $this->create_track($track, $_REQUEST['start'], $_REQUEST['end']);
+    }
+
+    public function do_submit() {
+        if (parent::do_submit()) {
+            if (isset($_FILES['file'])) {
+                $track = new track();
+                $track->id = time();
+                $this->create_track($track);
+            } else {
+                ajax::add_script('stopUpload("Your browser has not sent the correct data to the server. Please upgrade your browser!" + ' . json_encode('<pre><p>' . print_r($_FILES, true) . '</p></pre>') . ');');
+            }
+        }
+    }
+
+    private function create_track(track $track, $start = 0, $end = 0) {
+        $track->console("File upload accepted");
+        $track->temp = true;
+        $track->create_from_upload();
+        $track->console("File moved and backed-up");
+
+        $track->parse_IGC();
+        if ($end || $start) {
+            $track->truncate($start, $end);
+        }
+        $track->pre_calc();
+        if (!$track->check_date()) {
+            $track->error = "<p class='error'>Your flight is outside of the date range for submitting flights (31 days).<br/>
+                    Please continue to enter the flight. It will not be visible until we clear it.<br/>
+                    Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.</p>";
+        }
+
+        $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
+        file_convert::time_split_kml_plus_js($track, !empty($this->coords) ? $this->coords : '');
+        $html = $track->error;
+        if ($track->get_number_of_parts() > 1) {
+            $html .= $this->get_choose_track_html($track);
+        } else {
+            $track->calculate();
+            $html .= $this->get_choose_score_html($track, 1, $start, $end);
+        }
+        ajax::update('<div id="console">' . $html . '</div>');
+        ajax::add_script('map.addFlight(' . $track->id . ',1,1,1);');
+    }
+
+    private function get_choose_track_html(track $track) {
+        $html = '<ul>';
+        $i = 0;
+        foreach ($track->track_parts as $part) {
+            $i++;
+            $html .= '
+                <li>
+                    <span style="color:#' . get::colour($i - 1) . '">Track ' . $i . ' : ' . $part->get_time() . '</span>
+                    <a data-ajax-click="igc_upload_form:do_choose_track" data-ajax-post=\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\' class="choose">Choose</a>
+                </li>';
+        }
+        $html .= '</ul>';
+        return $html;
+    }
+
+    private function get_choose_score_html(track $track, $start, $end) {
+        $html = '<table><thead><tr><th>Type</th><th>Score</th><th></tr></thead><tbody>';
+        $html .= $this->get_task_select_html($track, 'od', $start, $end);
+        $html .= $this->get_task_select_html($track, 'or', $start, $end);
+        $html .= $this->get_task_select_html($track, 'tr', $start, $end);
+        $html .= '</tbody></table>';
+        return $html;
+    }
+
+    private function get_task_select_html(track $track, $type, $start, $end) {
+        $task = $track->$type;
+        return '
+        <tr>
+            <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '", "start":' . $start . ', "end":' . $end . '}\' class="choose">Choose</a></td>
+        </tr>';
+    }
+
+    public function do_validate() {
+        parent::do_validate();
+        if (!empty($this->coords) && !preg_match('/^((h[l-z]|n[a-hj-z]|s[a-hj-z]|t[abfglmqrvw])[0-9]{6};?){2,5}$/i', $this->coords)) {
+            $this->validation_errors['coords'] = 'Coordinated are not valid';
+        }
+    }
+
+    public function reset() {
+        ajax::update($this->get_html()->get());
+    }
+
     public function get_html() {
         $html = parent::get_html();
         $script = '
@@ -89,91 +180,6 @@ class igc_upload_form extends form {
             core::$inline_script[] = $script;
         }
         return $html;
-    }
-
-    public function do_submit() {
-        parent::do_submit();
-        if (isset($_FILES['file'])) {
-            $track = new track();
-            $track->id = time();
-            $this->create_track($track);
-        } else {
-            ajax::add_script('stopUpload("Your browser has not sent the correct data to the server. Please upgrade your browser!" + ' . json_encode('<pre><p>' . print_r($_FILES, true) . '</p></pre>') . ');');
-        }
-    }
-
-    public function do_choose_track() {
-        $track = new track();
-        $track->id = $_REQUEST['track'];
-        $this->create_track($track, $_REQUEST['start'], $_REQUEST['end']);
-    }
-
-    private function create_track(track $track, $start = 0, $end = 0) {
-        $track->console("File upload accepted");
-        $track->temp = true;
-        $track->create_from_upload();
-        $track->console("File moved and backed-up");
-
-        $track->parse_IGC();
-        if($end || $start) {
-            $track->truncate($start, $end);
-        }
-        $track->pre_calc();
-        $track->invis_info = "";
-
-        if (!$track->check_date()) {
-            $track->error = "<p class='error'>Your flight is outside of the date range for submitting flights (31 days).<br/>
-                    Please continue to enter the flight. It will not be visible until we clear it.<br/>
-                    Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.</p>";
-            $track->invis_info .= 'delayed as flight is old.';
-        }
-        $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
-        file_convert::time_split_kml_plus_js($track, (isset($_REQUEST['defined']) && !empty($_REQUEST['defined']) ? $_REQUEST['defined'] : ''));
-        $html = $track->error;
-        if ($track->get_number_of_parts() > 1) {
-            $html .= $this->get_choose_track_html($track);
-        } else {
-            $track->calculate();
-            $html .= $this->get_choose_score_html($track, 1, $start, $end);
-        }
-        ajax::update('<div id="console">' . $html . '</div>');
-        ajax::add_script('map.addFlight(' . $track->id . ',1,1,1);');
-    }
-
-    private function get_choose_track_html(track $track) {
-        $html = '<ul>';
-        $i = 0;
-        foreach ($track->track_parts as $part) {
-            $i++;
-            $html .= '
-                <li>
-                    <span style="color:#' . get::colour($i - 1) . '">Track ' . $i . ' : ' . $part->get_time() . '</span>
-                    <a data-ajax-click="igc_upload_form:do_choose_track" data-ajax-post=\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\' class="choose">Choose</a>
-                </li>';
-        }
-        $html .= '</ul>';
-        return $html;
-    }
-
-    public function reset () {
-        ajax::update($this->get_html()->get());
-    }
-
-    private function get_choose_score_html(track $track, $start, $end) {
-        $html = '<table><thead><tr><th>Type</th><th>Score</th><th></tr></thead><tbody>';
-        $html .= $this->get_task_select_html($track, 'od', $start, $end);
-        $html .= $this->get_task_select_html($track, 'or', $start, $end);
-        $html .= $this->get_task_select_html($track, 'tr', $start, $end);
-        $html .= '</tbody></table>';
-        return $html;
-    }
-
-     private function get_task_select_html(track $track, $type, $start, $end) {
-        $task = $track->$type;
-        return '
-        <tr>
-            <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '", "start":'.$start.', "end":'.$end.'}\' class="choose">Choose</a></td>
-        </tr>';
     }
 
 
