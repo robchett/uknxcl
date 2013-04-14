@@ -74,9 +74,7 @@ class table {
 
     public function set_from_request() {
         foreach ($this->get_fields() as $field) {
-            if (isset($_REQUEST[$field->field_name])) {
-                $this->{$field->field_name} = $_REQUEST[$field->field_name];
-            }
+           $field->set_from_request();
         }
     }
 

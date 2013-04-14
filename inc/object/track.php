@@ -10,15 +10,10 @@
 class track {
 
     public static $number_of_points_to_use = 700;
-    private $calculation_subset_size = 0;
-    private $pilot;
-    private $club;
-    private $glider;
-    private $parent_flight;
-    public $calculation_subset;
     public $calc_od = 1;
     public $calc_or = 1;
     public $calc_tr = 1;
+    public $calculation_subset;
     public $colour = 0;
     public $date;
     public $day = false;
@@ -46,11 +41,16 @@ class track {
     public $track_parts;
     public $track_points;
     public $year = false;
+    private $calculation_subset_size = 0;
+    private $club;
     private $generated_graph = false;
+    private $glider;
+    private $parent_flight;
+    private $pilot;
 
     public function __construct() {
         $this->od = new task('Open Distance');
-        $this->or = new task('Out and Rerurn');
+        $this->or = new task('Out and Return');
         $this->tr = new task('Triangle');
         $this->parent_flight = new flight();
         $this->track_parts = new track_part_array();
@@ -59,6 +59,17 @@ class track {
         $this->pilot = new pilot();
         $this->club = new club();
         $this->glider = new glider();
+    }
+
+    public static function move_temp_files($temp_id, $new_id) {
+        $track = new track();
+        $old_dir = $track->get_file_loc($temp_id, true);
+        $new_dir = $track->get_file_loc($new_id, false);
+        if (!file_exists($new_dir)) {
+            mkdir($new_dir);
+        }
+        copy($old_dir . '/track.igc', $new_dir . '/track.igc');
+        copy($old_dir . '/track_backup.igc', $new_dir . '/track_backup.igc');
     }
 
     static function split_igc($id, $start, $end) {
@@ -79,6 +90,32 @@ class track {
         }
     }
 
+    public function calculate() {
+        set_time_limit(0);
+        $this->pre_calc();
+        $this->get_dist_map();
+        $use_rough_calcualations = $this->calculation_subset_size < self::$number_of_points_to_use;
+        if ($this->calc_od) {
+            $this->track_open_distance_3tp($use_rough_calcualations);
+            if (isset($this->od->waypoints)) {
+                $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
+            }
+        }
+        if ($this->calc_or) {
+            $this->track_out_and_return($use_rough_calcualations);
+            if (isset($this->or->waypoints)) {
+                $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
+            }
+        }
+        if ($this->calc_tr) {
+            $this->track_triangles($use_rough_calcualations);
+            if (isset($this->tr->waypoints)) {
+                $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
+            }
+        }
+        $this->set_info();
+    }
+
     public function check_date() {
         $current_time = time();
         $closure_time = $current_time - (31 * 24 * 60 * 60);
@@ -89,6 +126,15 @@ class track {
             $this->console("Date is outside of 1 month");
             return false;
         }
+    }
+
+    public function console($str) {
+        if (!$this->raw) {
+            echo "<script language='javascript' type='text/javascript'>window.top.window.console_log(\"$str\")</script>";
+            echo str_repeat(' ', 1024 * 64) . "\n";
+            flush();
+        }
+        $this->log_file .= "$str\r\n";
     }
 
     public function create_from_upload() {
@@ -107,16 +153,6 @@ class track {
         }
     }
 
-    public function get_file_loc($id = null, $temp = null) {
-        if (!isset($id)) {
-            $id = $this->id;
-        }
-        if (!isset($temp)) {
-            $temp = $this->temp;
-        }
-        return root . 'uploads/track/' . ($temp ? 'temp/' : '') . $id;
-    }
-
     public function dist_test() {
         $trackpoint1 = new track_point();
         $trackpoint1->sin_lat = sin(M_PI * 52 / 180);
@@ -130,12 +166,78 @@ class track {
         echo $trackpoint1->get_dist_to($trackpoint2);
     }
 
+    public function get_duration($formatted = false) {
+        if ($formatted) {
+            return date('H:i:s', $this->track_points->last()->time - $this->track_points->first()->time);
+        } else {
+            return $this->track_points->last()->time - $this->track_points->first()->time;
+        }
+    }
+
     public function enable_logging($bool) {
         $this->log = $bool;
     }
 
     public function enable_raw($bool) {
         $this->raw = $bool;
+    }
+
+    public function end_time($formatted = false) {
+        if ($formatted) {
+            return date('H:i:s', $this->track_points->last()->time);
+        } else {
+            return $this->track_points->last()->time;
+        }
+    }
+
+    public function furthest_between($start, $end) {
+        $max = $start;
+        for ($x = $start; $x < $end; $x++) {
+            if ($this->distance_map[$start][$x] > $this->distance_map[$max][$start])
+                $max = $x;
+            else $x += (int) (($this->distance_map[$max][$start] - $this->distance_map[$start][$x]) / $this->maximum_distance_between_two_points);
+        }
+        return $max;
+    }
+
+    public function set_from_session (flight $flight, $id) {
+        if(isset($_SESSION['add_flight'][$id])) {
+            $this->truncate( $_SESSION['add_flight'][$id]['start'],  $_SESSION['add_flight'][$id]['end']);
+            $this->od->distance = $_SESSION['add_flight'][$id]['od']['distance'];
+            $this->od->coordinates = $_SESSION['add_flight'][$id]['od']['coords'];
+            $this->od->timestamp = $_SESSION['add_flight'][$id]['od']['duration'];
+
+            $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
+            $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
+            $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
+
+            $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
+            $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
+            $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
+
+            if(isset($_SESSION['add_flight'][$id]['task'])) {
+                $this->task = new task();
+                $this->task->distance = $_SESSION['add_flight'][$id]['task']['distance'];
+                $this->task->coordinates = $_SESSION['add_flight'][$id]['task']['coords'];
+                $this->task->timestamp = $_SESSION['add_flight'][$id]['task']['duration'];
+                $this->task->type = $_SESSION['add_flight'][$id]['task']['type'];
+            }
+            $this->parent_flight = $flight;
+            $this->parent_flight->duration = $this->get_time();
+            $this->parent_flight->od_score = $this->od->get_distance();
+            $this->parent_flight->od_time = $this->od->get_time();
+            $this->parent_flight->od_coordinates = $this->od->get_coordinates();
+            $this->parent_flight->or_score = $this->or->get_distance();
+            $this->parent_flight->or_time = $this->or->get_time();
+            $this->parent_flight->or_coordinates = $this->or->get_coordinates();
+            $this->parent_flight->tr_score = $this->tr->get_distance();
+            $this->parent_flight->tr_time = $this->tr->get_time();
+            $this->parent_flight->tr_coordinates = $this->tr->get_coordinates();
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public function generate(flight $flight) {
@@ -160,48 +262,468 @@ class track {
         }
     }
 
-    public function parse_IGC() {
-        if ($this->id) {
-            $loc = $this->get_file_loc() . '/track.igc';
-            if (!file_exists($loc)) {
-                $loc_old = $this->get_file_loc() . '/Track_log.igc';
-                if (!(file_exists($loc_old) && copy($loc_old, $loc) && unlink($loc_old))) {
-                    return false;
+    public function generate_js() {
+        $out = array();
+        foreach ($this->track_points as $a) {
+            $time = $a->time - $this->track_points->first()->time;
+            $out[] = sprintf("[%f,%f,%d,%d,%.3f,%.3f]", $a->lat, $a->lon, $a->ele, $time, $a->climbRate, $a->speed, $a->bearing);
+        }
+        $coordinates = implode(',', $out);
+        $track = new stdClass();
+        $track->id = $this->id;
+        $track->StartT = 0;
+        $track->EndT = (isset($this->total_time) ? $this->total_time : 0);
+        $track->od_score = $this->od->get_distance();
+        $track->od_time = $this->od->get_time();
+        $track->or_score = $this->or->get_distance();
+        $track->or_time = $this->or->get_time();
+        $track->tr_score = $this->tr->get_distance();
+        $track->tr_time = $this->tr->get_time();
+
+        $track_inner = new stdClass();
+        $track_inner->drawGraph = 1;
+        $track_inner->pilot = isset($this->pilot->name) ? $this->pilot->name : 'Unknown';
+        $track_inner->colour = "FF0000";
+        $track_inner->maxEle = $this->maximum_ele;
+        $track_inner->minEle = $this->min_ele;
+        $track_inner->maximum_cr = $this->maximum_cr;
+        $track_inner->min_cr = $this->min_cr;
+        $track_inner->maximum_speed = $this->maximum_speed;
+        $track_inner->total_dist = $this->total_dist;
+        $track_inner->av_speed = (isset($this->average_speed_over_track) ? $this->average_speed_over_track : 0);
+        $track_inner->coords = $coordinates;
+        $track->track = array($track_inner);
+
+        fwrite(fopen($this->get_file_loc() . '/Track.js', 'w'), json_encode($track));
+        fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
+    }
+
+    public function  generate_kml($external = false) {
+        $kml = new kml();
+        if (!$external) {
+            $kml->set_gradient_styles();
+        }
+        $kml->add($this->get_kml_description());
+        if (!$external) {
+            $kml->add($this->get_meta_linestring());
+            $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
+            $kml->add($this->or->get_kml_track('FF0000', 'Out And Return'));
+            $kml->add($this->tr->get_kml_track('FF0000', 'FAI Triangle'));
+
+        }
+        if (0) {
+            $kml->add($this->get_colour_by_height());
+        }
+        if ($external) {
+            $kml->add($this->get_kml_time_aware_points());
+        }
+        if (!$external) {
+            $outFile = fopen($this->get_file_loc() . '/Track.kml', 'w');
+            fwrite($outFile, $kml->compile());
+        }
+        return $kml->compile(1);
+    }
+
+    public function generate_kml_comp() {
+        $output = '';
+        $output .= "\n\t" . '<Placemark>
+        <name>' . $this->name . '</name>
+        <description><![CDATA[
+        <pre>
+Flight statistics
+Pilot                ' . $this->name . '
+Date                 ' . $this->get_date('d/m/Y') . '
+Start/finish         ' . $this->start_time(true) . '-' . $this->end_time(true) . '
+Duration             ' . $this->get_duration(true) . '
+Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
+            </pre>]]>
+        </description>
+        <Style>
+          <LineStyle>
+            <color>FF' . get::kml_colour($this->colour) . '</color>
+            <width>2</width>
+          </LineStyle>
+        </Style>';
+        $output .= $this->get_kml_linestring();
+        $output .= "\n\t" . '</Placemark>';
+        return $output;
+
+    }
+
+    public function generate_kml_comp_earth() {
+        $kml = new kml();
+        $kml->get_kml_folder_open($this->name, 1, 'hideChildren');
+        $kml->add($this->get_kml_time_aware_points(get::kml_colour($this->colour)));
+        $kml->get_kml_folder_close();
+        return $kml->compile(true);
+    }
+
+    public function generate_kml_earth() {
+        $kml = new kml();
+
+        $kml->set_folder_styles();
+        $kml->set_gradient_styles(1);
+        $kml->set_animation_styles(1);
+
+        $kml->get_kml_folder_open('Track', 1, 'radio', 1);
+
+        $kml->get_kml_folder_open('Colour By Height', 1, 'hideChildren', 0);
+        $kml->add($this->get_colour_by($this->min_ele, $this->maximum_ele, 'ele'));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_open('Colour By Ground Speed', 0, 'hideChildren', 0);
+        $kml->add($this->get_colour_by(0, $this->maximum_speed, 'speed'));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_open('Colour By Climb', 0, 'hideChildren', 0);
+        $kml->add($this->get_colour_by($this->min_cr, $this->maximum_cr, 'climbRate'));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_open('Colour By Time', 0, 'hideChildren', 0);
+        $kml->add($this->get_colour_by($this->track_points->first()->time, $this->track_points->last()->time, 'time', 0));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_close();
+        $kml->get_kml_folder_open('Shadow', 1, 'radio');
+
+        $kml->get_kml_folder_open('None', 0, 'hideChildren', 0);
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_open('Standard', 1, 'hideChildren', 0);
+        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'clampToGround'));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_open('Extrude', 0, 'hideChildren', 0);
+        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'absolute', 1));
+        $kml->get_kml_folder_close();
+
+        $kml->get_kml_folder_close();
+
+        /*      $kml->get_kml_folder_open('Colour By Time', 0);
+                $kml->add($this->get_kml_time_aware_points();
+                $kml->get_kml_folder_close();*/
+
+        $kml->get_kml_folder_open('Task', 0, '', 0);
+        $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
+        $kml->add($this->or->get_kml_track('00FF00', 'Out And Return'));
+        $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
+        $kml->get_kml_folder_close();
+
+
+        $kml->get_kml_folder_open('Animation', 0, 'hideChildren', 0);
+        $kml->add($this->get_animation());
+        $kml->get_kml_folder_close();
+        fwrite(fopen($this->get_file_loc() . '/Track_Earth.kml', 'w'), $kml->compile());
+    }
+
+    public function generate_output_files() {
+        $this->generate_js();
+        $this->generate_kml();
+        $this->generate_kml_earth();
+    }
+
+    public function getTime($time) {
+        $time -= mktime(0, 0, 0);
+        return date('H:i:s', $time);
+    }
+
+    public function get_animation() {
+        $xml = '';
+        $tot = $this->track_points->count();
+        for ($i = 0; $i < $tot - 1; $i++) {
+            $bearing = floor($this->track_points[$i]->bearing / 5) * 5;
+            $xml .= '<Placemark>';
+            $xml .= '<styleUrl>#A' . $this->colour . $bearing . '</styleUrl>';
+            $xml .= kml::get_timespan($this->track_points[$i]->time, $this->track_points[$i + 1]->time);
+            $xml .= $this->track_points[$i]->get_kml_point();
+            $xml .= '</Placemark>';
+        }
+        return $xml;
+    }
+
+    public function get_colour_by($min, $max, $value, $scale = 1) {
+        $this->get_graph_values();
+        $output = '';
+        $var = ($max - $min ? $max - $min : 1);
+        $last_level = floor(($this->track_points[0]->$value - $min) * 16 / $var);
+
+        $coords = array();
+        foreach ($this->track_points as $out1) {
+            $coords[] = $out1;
+            $current_level = floor(($out1->$value - $min) * 16 / $var);
+            if ($current_level != $last_level) {
+                $output .= kml::create_linestring('#S' . $last_level, $coords);
+                $coords = array();
+                $coords[] = $out1;
+                $last_level = $current_level;
+            }
+        }
+        if (!empty($coords))
+            $output .= kml::create_linestring('#S' . $current_level, $coords);
+        if ($scale)
+            $output .= kml::get_scale($min, $max);
+        return $output;
+    }
+
+    public function get_date($format = 'Y/m/d') {
+        return date($format, $this->date);
+    }
+
+    public function get_dim() {
+        return (($this->maximum_alt != $this->min_alt) || ($this->maximum_ele != $this->min_ele)) ? 3 : 2;
+    }
+
+    public function get_dist_map() {
+        $this->distance_map = array();
+        foreach ($this->calculation_subset as $key => $point) {
+            if (is_null($point)) {
+                continue;
+            }
+            for ($key2 = $key; $key2 < $this->calculation_subset_size; $key2++) {
+                $y = (int) ($point->get_dist_to($this->calculation_subset[$key2]) * 1000);
+                $this->distance_map[$key][$key2] = $y;
+                $this->distance_map[$key2][$key] = $y;
+                if ($y > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $y;
+            }
+        }
+        for ($i = 0; $i < $this->calculation_subset_size - 1; $i++) {
+            if ($this->distance_map[$i][$i + 1] > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $this->distance_map[$i][$i + 1];
+        }
+        $this->console("Distances between points calculated");
+    }
+
+    public function get_dist_remap($indexes) {
+        $this->calculation_subset = array();
+        foreach ($indexes as $index) {
+            $index = $this->c_backup[$index];
+            $start = isset($index->before) ? $index->before : $index->id;
+            $end = isset($index->after) ? $index->after : $index->id;
+            if ($end - $start < 50) {
+                for ($i = $start; $i <= $end; $i++) {
+                    $this->calculation_subset[] = $this->track_points[$i];
+                }
+            } else {
+                $gap = ceil(($end - $start) / 50);
+                for ($i = $start; $i <= $end; $i += $gap) {
+                    if (isset($this->track_points[$i])) {
+                        $this->calculation_subset[] = $this->track_points[$i];
+                    }
                 }
             }
-            $file = file($loc);
-            $this->console("Flight Read", $this, 1, 1);
-        } elseif ($this->source) {
-            $file = file($this->source);
-        } else {
-            return false;
         }
-        foreach ($file as $line) {
-            switch (substr($line, 0, 1)) {
-                case 'B' :
-                    $this->match_b_record($line);
-                    break;
-                case 'H' :
-                    $this->match_h_record($line);
-                    break;
+        $this->calculation_subset_size = count($this->calculation_subset);
+        $this->get_dist_map();
+        return count($this->calculation_subset);
+    }
+
+    public function get_file_loc($id = null, $temp = null) {
+        if (!isset($id)) {
+            $id = $this->id;
+        }
+        if (!isset($temp)) {
+            $temp = $this->temp;
+        }
+        return root . 'uploads/track/' . ($temp ? 'temp/' : '') . $id;
+    }
+
+    public function get_graph_values() {
+        if (!$this->generated_graph) {
+            $previous = $this->track_points->first();
+            foreach ($this->track_points as $track_point) {
+                // Calculate climb rate
+                if ($this->has_height()) {
+                    if ($track_point->time - $previous->time) {
+                        $track_point->climbRate = ($track_point->ele - $previous->ele) / ($track_point->time - $previous->time);
+                    } else $track_point->climbRate = 0;
+                } else
+                    $track_point->climbRate = 0;
+                // calculate speed
+                if ($previous->time !== $track_point->time) {
+                    $x = $track_point->get_dist_to($previous);
+                    $track_point->speed = round(($x * 1000) / ($track_point->time - $previous->time), 2);
+                    $this->total_dist += $x;
+                } else
+                    $track_point->speed = 0;
+                // calculate bearing
+                if ($previous->time !== $track_point->time) {
+                    $y = sin($track_point->lonRad - $previous->lonRad) * $track_point->cos_lat;
+                    $x = $previous->cos_lat * $track_point->sin_lat - $previous->sin_lat * $track_point->cos_lat * cos($track_point->lonRad - $previous->lonRad);
+                    $track_point->bearing = atan2($y, $x) * 180 / M_PI;
+                } else {
+                    $track_point->bearing = 0;
+                }
+                if ($track_point->bearing < 0)
+                    $track_point->bearing += 360;
+                $previous = $track_point;
+
             }
         }
-        $this->track_parts->last()->finish($this->track_points->last(), $this->track_points->count() - 1);
-        if ($this->track_points->count()) {
-            $this->parsed = true;
-            return true;
-        } else {
-            return false;
+        $this->generated_graph = true;
+    }
+
+    public function get_kml_description() {
+        return '
+      <name>Flight ' . $this->id . '</name>
+      <description>
+          <![CDATA[
+            <pre>
+Flight statistics
+Flight #             ' . $this->id . '
+Pilot                ' . (isset($this->pilot->name) ? $this->pilot->name : '') . '
+Club                 ' . (isset($this->club->name) ? $this->club->name : '') . '
+Glider               ' . (isset($this->glider->name) ? $this->glider->name : '') . '
+Date                 ' . $this->get_date('d/m/Y') . '
+Start/finish         ' . $this->start_time(true) . ' / ' . $this->end_time(true) . '
+Duration             ' . $this->get_duration(true) . '
+Max./min. height     ' . $this->maximum_ele . ' / ' . $this->min_ele . 'm
+OD Score / Time      ' . $this->od->get_distance() . ' / ' . $this->od->get_formatted_time() . '
+OR Score / Time      ' . $this->or->get_distance() . ' / ' . $this->or->get_formatted_time() . '
+TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_formatted_time() . '
+            </pre>
+          ]]>
+      </description>';
+    }
+
+    public function get_kml_linestring($start = 0, $end = 0, $altitude = 'absolute', $extrude = 0) {
+        $num = count($this->track_points);
+        if ($end == 0) $end = $num - 1;
+        $cnt = 0;
+        if (!$start)
+            $start = $this->track_points->first_index();
+        $output = '';
+        $output .= '
+    <LineString>
+        <altitudeMode>' . $altitude . '</altitudeMode>
+        <extrude>' . $extrude . '</extrude>
+        <coordinates>';
+        for ($i = $start; $i < $num; $i++, $cnt++) {
+            if ($cnt == 5) {
+                $output .= "\n";
+                $cnt = 0;
+            }
+            $output .= $this->track_points[$i]->get_kml_coordinate();
+        }
+        $output .= '
+        </coordinates>
+  </LineString>';
+        return $output;
+    }
+
+    public function get_kml_time_aware_points($col = false) {
+        $output = '';
+        $tot = $this->track_points->count();
+        for ($i = 0; $i < $tot - 1; $i++) {
+            $current_level = floor(($this->track_points[$i]->time - $this->track_points->first()->time) * 16 / $this->get_duration());
+            $output .= '<Placemark>';
+            if (!$col)
+                $output .= '<styleUrl>#S' . $current_level . '</styleUrl>';
+            else
+                $output .= '<Style><LineStyle><color>FF' . $col . '</color><width>2</width></LineStyle></Style>';
+            $output .= kml::get_timespan($this->track_points[$i]->time, $this->track_points[$i + 1]->time) . '
+			<LineString>
+				<altitudeMode>absolute</altitudeMode>
+				<coordinates>
+					' . $this->track_points[$i]->get_kml_coordinate() . ' ' . $this->track_points[$i + 1]->get_kml_coordinate() . '
+				</coordinates>
+			</LineString>
+		</Placemark>';
+        }
+        return $output;
+    }
+
+    public function get_limits() {
+        $start_time = $this->track_points->first()->time;
+        foreach ($this->track_points as $track_point) {
+            // Compare heights with max/min
+            if ($track_point->ele > $this->maximum_ele) {
+                $this->maximum_ele = $track_point->ele;
+                $this->maximum_ele_t = $track_point->time - $start_time;
+            }
+            if ($track_point->ele < $this->min_ele) {
+                $this->min_ele = $track_point->ele;
+                $this->min_ele_t = $track_point->time - $start_time;
+            }
+            if ($track_point->alt > $this->maximum_alt) {
+                $this->maximum_alt = $track_point->alt;
+                $this->maximum_alt_t = $track_point->time - $start_time;
+            }
+            if ($track_point->alt < $this->min_alt) {
+                $this->min_alt = $track_point->alt;
+                $this->min_alt_t = $track_point->time - $start_time;
+            }
+            if ($track_point->climbRate < $this->min_cr) {
+                $this->min_cr = $track_point->climbRate;
+            }
+            if ($track_point->climbRate > $this->maximum_cr) {
+                $this->maximum_cr = $track_point->climbRate;
+            }
+            if ($track_point->speed > $this->maximum_speed) {
+                $this->maximum_speed = $track_point->speed;
+            }
         }
     }
 
-    public function console($str) {
-        if (!$this->raw) {
-            echo "<script language='javascript' type='text/javascript'>window.top.window.console_log(\"$str\")</script>";
-            echo str_repeat(' ', 1024 * 64) . "\n";
-            flush();
+    public function get_list($indexes) {
+        $list = array();
+        foreach ($indexes as $index) {
+            $list[] = $this->calculation_subset[$index];
         }
-        $this->log_file .= "$str\r\n";
+        return $list;
+    }
+
+    public function get_number_of_parts() {
+        return count($this->track_parts);
+    }
+
+    public function get_season() {
+        $season = $this->year;
+        if ($this->mon >= 11)
+            $season++;
+        return $season;
+    }
+
+    public function get_time() {
+        return $this->track_points->last()->time - $this->track_points->first()->time;
+    }
+
+    public function get_time_meta_data($start = 0, $end = 0) {
+        $cnt = 0;
+        $num = count($this->track_points);
+        if ($end == 0) {
+            $end = $num - 1;
+        }
+        $output = "
+      <Metadata src='UKNXCL' v='0.9' type='track'>
+        <SecondsFromTimeOfFirstPoint>\n";
+        for ($i = $start; $i < $num; $i++, $cnt++) {
+            if ($cnt == 5) {
+                $output .= "\n";
+                $cnt = 0;
+            }
+            $output .= $this->track_points[$i]->time - $this->track_points->first()->time . " ";
+        }
+        $output .= '
+        </SecondsFromTimeOfFirstPoint>
+      </Metadata>';
+        return $output;
+
+    }
+
+    public function has_height() {
+        if (!isset($this->has_height)) {
+            foreach ($this->track_points as $track_point) {
+                if ($track_point->ele != 0) {
+                    $this->has_height = true;
+                    return true;
+                }
+            }
+            $this->has_height = false;
+        }
+        return $this->has_height;
+    }
+
+    public function is_winter() {
+        return ($this->mon == 1 || $this->mon == 2 || $this->mon == 12);
     }
 
     public function match_b_record($p) {
@@ -252,34 +774,56 @@ class track {
         }
     }
 
-    public function get_date($format = 'Y/m/d') {
-        return date($format, $this->date);
+    public function maximum_bound_index($array, $from, $to) {
+        $index = $from;
+        for ($i = $from; $i < $to; ++$i) {
+            if ($array[$index] < $array[$i]) {
+                $index = $i;
+            } else {
+                $i += (int) (($array[$index] - $array[$i]) / $this->maximum_distance_between_two_points);
+            }
+
+        }
+        return array($array[$index], $index);
     }
 
-    public function calculate() {
-        set_time_limit(0);
-        $this->pre_calc();
-        $this->get_dist_map();
-        $use_rough_calcualations = $this->calculation_subset_size < self::$number_of_points_to_use;
-        if ($this->calc_od) {
-            $this->track_open_distance_3tp($use_rough_calcualations);
-            if (isset($this->od->waypoints)) {
-                $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
+    public function mod60000($a) {
+        return round($a / 60000, 6);
+    }
+
+    public function parse_IGC() {
+        if ($this->id) {
+            $loc = $this->get_file_loc() . '/track.igc';
+            if (!file_exists($loc)) {
+                $loc_old = $this->get_file_loc() . '/Track_log.igc';
+                if (!(file_exists($loc_old) && copy($loc_old, $loc) && unlink($loc_old))) {
+                    return false;
+                }
+            }
+            $file = file($loc);
+            $this->console("Flight Read", $this, 1, 1);
+        } elseif ($this->source) {
+            $file = file($this->source);
+        } else {
+            return false;
+        }
+        foreach ($file as $line) {
+            switch (substr($line, 0, 1)) {
+                case 'B' :
+                    $this->match_b_record($line);
+                    break;
+                case 'H' :
+                    $this->match_h_record($line);
+                    break;
             }
         }
-        if ($this->calc_or) {
-            $this->track_out_and_return($use_rough_calcualations);
-            if (isset($this->or->waypoints)) {
-                $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
-            }
+        $this->track_parts->last()->finish($this->track_points->last(), $this->track_points->count() - 1);
+        if ($this->track_points->count()) {
+            $this->parsed = true;
+            return true;
+        } else {
+            return false;
         }
-        if ($this->calc_tr) {
-            $this->track_triangles($use_rough_calcualations);
-            if (isset($this->tr->waypoints)) {
-                $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
-            }
-        }
-        $this->set_info();
     }
 
     public function pre_calc() {
@@ -288,7 +832,7 @@ class track {
         $this->repair_track();
         $this->get_graph_values();
         $this->get_limits();
-        if($this->track_points->count() < self::$number_of_points_to_use) {
+        if ($this->track_points->count() < self::$number_of_points_to_use) {
             $this->calculation_subset = $this->track_points;
         } else {
             $no = ($this->track_points->count() > self::$number_of_points_to_use) ? self::$number_of_points_to_use : $this->track_points->count();
@@ -313,53 +857,10 @@ class track {
                     $this->calculation_subset[$cnt]->before = $this->calculation_subset[$cnt - 1]->id;
                     $this->calculation_subset[$cnt - 1]->after = $point->id;
                 }
-        }
+            }
         }
         $this->calculation_subset_size = count($this->calculation_subset);
         $this->console('-> Using ' . $this->calculation_subset_size . ' Track Points');
-    }
-
-    public function trim() {
-        if ($this->track_parts->count() > 1) {
-            while (1) {
-                if ($this->track_parts->first()->size() < 20) {
-                    $this->console("Beginning section ignored, less than 20 points", $this, 1, 1);
-                    $this->track_points->remove_first($this->track_parts->first()->size());
-                    $this->track_parts->reduce_index($this->track_parts->first()->size());
-                    $this->track_parts->remove_first();
-                    continue;
-                }
-                $midPoint = round(($this->track_parts->first()->size()) / 2);
-                $coord1 = $this->track_points[$this->track_parts->first()->start_point];
-                $coord2 = $this->track_points[$this->track_parts->first()->start_point + $midPoint];
-                $coord3 = $this->track_points[$this->track_parts->first()->end_point];
-                if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
-                    $this->console("Beginning section ignored, less than 100m", $this, 1, 1);
-                    $this->track_points->remove_first($this->track_parts->first()->size());
-                    $this->track_parts->reduce_index($this->track_parts->first()->size());
-                    $this->track_parts->remove_first();
-                } else break;
-            }
-            while (1) {
-                if ($this->track_parts->last()->size() < 20) {
-                    $this->console("End section ignored, less than 20 points", $this, 1, 1);
-                    $this->track_points->remove_last($this->track_parts->last()->size());
-                    $this->track_parts->remove_last();
-                    continue;
-                }
-                $midPoint = round(($this->track_parts->last()->size()) / 2);
-                $coord1 = $this->track_points[$this->track_parts->last()->start_point];
-                $coord2 = $this->track_points[$this->track_parts->last()->start_point + $midPoint];
-                $coord3 = $this->track_points[$this->track_parts->last()->end_point];
-                if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
-                    $this->console("End section ignored, less than 100m", $this, 1, 1);
-                    $this->track_points->remove_last($this->track_parts->last()->size());
-                    $this->track_parts->remove_last();
-                } else break;
-            }
-        } else {
-            $this->console('1 Part');
-        }
     }
 
     public function repair_track() {
@@ -377,103 +878,69 @@ class track {
         }
     }
 
-    public function has_height() {
-        if (!isset($this->has_height)) {
-            foreach ($this->track_points as $track_point) {
-                if ($track_point->ele != 0) {
-                    $this->has_height = true;
-                    return true;
+    public function set_id($id) {
+        $this->id = $id;
+    }
+
+    public function set_info() {
+        if ($this->parent_flight->fid) {
+            $this->parent_flight->lazy_load(array('pid', 'gid', 'cid'));
+            $this->pilot->do_retrieve_from_id(array('name'), $this->parent_flight->pid);
+            $this->club->do_retrieve_from_id(array('name'), $this->parent_flight->cid);
+            $this->glider->do_retrieve_from_id(array('name'), $this->parent_flight->gid);
+        }
+    }
+
+    public function set_source($id) {
+        $this->source = $id;
+    }
+
+    public function set_task($coordinates) {
+        $task = new task();
+        $task->waypoints = new track_point_array();
+        $points = explode(';', $coordinates);
+        foreach ($points as &$a) {
+            $point = new track_point();
+            $lat_lon = file_convert::OSGridToLatLong($a);
+            $point->lat = $lat_lon[0];
+            $point->lon = $lat_lon[1];
+            $point->sin_lat = sin($point->lat * M_PI / 180);
+            $point->cos_lat = cos($point->lat * M_PI / 180);
+            $point->lonRad = $point->lon * M_PI / 180;
+            $task->waypoints[] = $point;
+        }
+
+        if ($task->waypoints->count() == 3 && $task->waypoints[0]->get_dist_to($task->waypoints[2]) < 800) {
+            $task->type = 'or';
+            $task->title = 'Defined Out & Return';
+        } else if ($task->waypoints->count() == 4 && $task->waypoints[0]->get_dist_to($task->waypoints[3]) < 800) {
+            $task->type = 'tr';
+            $task->title = 'Defined Triangle';
+        } else {
+            $task->type = 'go';
+            $task->title = 'Goal';
+        }
+
+        $made_turnpoints = 0;
+        $last_turnpoint = 0;
+        foreach ($task->waypoints as $turnpoint) {
+            for ($i = $last_turnpoint; $i < $this->track_points->count(); $i++) {
+                if ($point->get_dist_to($turnpoint) < 800) {
+                    $made_turnpoints++;
+                    continue 2;
                 }
             }
-            $this->has_height = false;
         }
-        return $this->has_height;
+        $this->task = $task;
+        return ($this->task->waypoints->count() == $made_turnpoints);
     }
 
-    public function get_graph_values() {
-        if (!$this->generated_graph) {
-            $previous = $this->track_points->first();
-            foreach ($this->track_points as $track_point) {
-                // Calculate climb rate
-                if ($this->has_height()) {
-                    if ($track_point->time - $previous->time) {
-                        $track_point->climbRate = ($track_point->ele - $previous->ele) / ($track_point->time - $previous->time);
-                    } else $track_point->climbRate = 0;
-                } else
-                    $track_point->climbRate = 0;
-                // calculate speed
-                if ($previous->time !== $track_point->time) {
-                    $x = $track_point->get_dist_to($previous);
-                    $track_point->speed = round(($x * 1000) / ($track_point->time - $previous->time), 2);
-                    $this->total_dist += $x;
-                } else
-                    $track_point->speed = 0;
-                // calculate bearing
-                if ($previous->time !== $track_point->time) {
-                    $y = sin($track_point->lonRad - $previous->lonRad) * $track_point->cos_lat;
-                    $x = $previous->cos_lat * $track_point->sin_lat - $previous->sin_lat * $track_point->cos_lat * cos($track_point->lonRad - $previous->lonRad);
-                    $track_point->bearing = atan2($y, $x) * 180 / M_PI;
-                } else {
-                    $track_point->bearing = 0;
-                }
-                if ($track_point->bearing < 0)
-                    $track_point->bearing += 360;
-                $previous = $track_point;
-
-            }
+    public function start_time($formatted = false) {
+        if ($formatted) {
+            return date('H:i:s', $this->track_points->first()->time);
+        } else {
+            return $this->track_points->first()->time;
         }
-        $this->generated_graph = true;
-    }
-
-    public function get_limits() {
-        $start_time = $this->track_points->first()->time;
-        foreach ($this->track_points as $track_point) {
-            // Compare heights with max/min
-            if ($track_point->ele > $this->maximum_ele) {
-                $this->maximum_ele = $track_point->ele;
-                $this->maximum_ele_t = $track_point->time - $start_time;
-            }
-            if ($track_point->ele < $this->min_ele) {
-                $this->min_ele = $track_point->ele;
-                $this->min_ele_t = $track_point->time - $start_time;
-            }
-            if ($track_point->alt > $this->maximum_alt) {
-                $this->maximum_alt = $track_point->alt;
-                $this->maximum_alt_t = $track_point->time - $start_time;
-            }
-            if ($track_point->alt < $this->min_alt) {
-                $this->min_alt = $track_point->alt;
-                $this->min_alt_t = $track_point->time - $start_time;
-            }
-            if ($track_point->climbRate < $this->min_cr) {
-                $this->min_cr = $track_point->climbRate;
-            }
-            if ($track_point->climbRate > $this->maximum_cr) {
-                $this->maximum_cr = $track_point->climbRate;
-            }
-            if ($track_point->speed > $this->maximum_speed) {
-                $this->maximum_speed = $track_point->speed;
-            }
-        }
-    }
-
-    public function get_dist_map() {
-        $this->distance_map = array();
-        foreach ($this->calculation_subset as $key => $point) {
-            if (is_null($point)) {
-                continue;
-            }
-            for ($key2 = $key; $key2 < $this->calculation_subset_size; $key2++) {
-                $y = (int) ($point->get_dist_to($this->calculation_subset[$key2]) * 1000);
-                $this->distance_map[$key][$key2] = $y;
-                $this->distance_map[$key2][$key] = $y;
-                if ($y > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $y;
-            }
-        }
-        for ($i = 0; $i < $this->calculation_subset_size - 1; $i++) {
-            if ($this->distance_map[$i][$i + 1] > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $this->distance_map[$i][$i + 1];
-        }
-        $this->console("Distances between points calculated");
     }
 
     public function
@@ -543,51 +1010,6 @@ class track {
         }
     }
 
-    public function maximum_bound_index($array, $from, $to) {
-        $index = $from;
-        for ($i = $from; $i < $to; ++$i) {
-            if ($array[$index] < $array[$i]) {
-                $index = $i;
-            } else {
-                $i += (int) (($array[$index] - $array[$i]) / $this->maximum_distance_between_two_points);
-            }
-
-        }
-        return array($array[$index], $index);
-    }
-
-    public function get_dist_remap($indexes) {
-        $this->calculation_subset = array();
-        foreach ($indexes as $index) {
-            $index = $this->c_backup[$index];
-            $start = isset($index->before) ? $index->before : $index->id;
-            $end = isset($index->after) ? $index->after : $index->id;
-            if ($end - $start < 50) {
-                for ($i = $start; $i <= $end; $i++) {
-                    $this->calculation_subset[] = $this->track_points[$i];
-                }
-            } else {
-                $gap = ceil(($end - $start) / 50);
-                for ($i = $start; $i <= $end; $i += $gap) {
-                    if (isset($this->track_points[$i])) {
-                        $this->calculation_subset[] = $this->track_points[$i];
-                    }
-                }
-            }
-        }
-        $this->calculation_subset_size = count($this->calculation_subset);
-        $this->get_dist_map();
-        return count($this->calculation_subset);
-    }
-
-    public function get_list($indexes) {
-        $list = array();
-        foreach ($indexes as $index) {
-            $list[] = $this->calculation_subset[$index];
-        }
-        return $list;
-    }
-
     function track_out_and_return($sub = false) {
         $best_results = array();
         $maximum_distance_between_two_points = 0;
@@ -630,16 +1052,6 @@ class track {
                 $this->or->set($this->get_list(end($best_results)));
             }
         }
-    }
-
-    public function furthest_between($start, $end) {
-        $max = $start;
-        for ($x = $start; $x < $end; $x++) {
-            if ($this->distance_map[$start][$x] > $this->distance_map[$max][$start])
-                $max = $x;
-            else $x += (int) (($this->distance_map[$max][$start] - $this->distance_map[$start][$x]) / $this->maximum_distance_between_two_points);
-        }
-        return $max;
     }
 
     function track_triangles($sub = false) {
@@ -723,387 +1135,47 @@ class track {
         }
     }
 
-    public function generate_output_files() {
-        $this->generate_js();
-        $this->generate_kml();
-        $this->generate_kml_earth();
-    }
-
-    public function generate_js() {
-        $out = array();
-        foreach ($this->track_points as $a) {
-            $time = $a->time - $this->track_points->first()->time;
-            $out[] = sprintf("[%f,%f,%d,%d,%.3f,%.3f]", $a->lat, $a->lon, $a->ele, $time, $a->climbRate, $a->speed, $a->bearing);
-        }
-        $coordinates = implode(',', $out);
-        $track = new stdClass();
-        $track->id = $this->id;
-        $track->StartT = 0;
-        $track->EndT = (isset($this->total_time) ? $this->total_time : 0);
-        $track->od_score = $this->od->get_distance();
-        $track->od_time = $this->od->get_time();
-        $track->or_score = $this->or->get_distance();
-        $track->or_time = $this->or->get_time();
-        $track->tr_score = $this->tr->get_distance();
-        $track->tr_time = $this->tr->get_time();
-
-        $track_inner = new stdClass();
-        $track_inner->drawGraph = 1;
-        $track_inner->pilot = isset($this->pilot->name) ? $this->pilot->name : 'Unknown';
-        $track_inner->colour = "FF0000";
-        $track_inner->maxEle = $this->maximum_ele;
-        $track_inner->minEle = $this->min_ele;
-        $track_inner->maximum_cr = $this->maximum_cr;
-        $track_inner->min_cr = $this->min_cr;
-        $track_inner->maximum_speed = $this->maximum_speed;
-        $track_inner->total_dist = $this->total_dist;
-        $track_inner->av_speed = (isset($this->average_speed_over_track) ? $this->average_speed_over_track : 0);
-        $track_inner->coords = $coordinates;
-        $track->track = array($track_inner);
-
-        fwrite(fopen($this->get_file_loc() . '/Track.js', 'w'), json_encode($track));
-        fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
-    }
-
-    public function  generate_kml($external = false) {
-        $kml = new kml();
-        if (!$external) {
-            $kml->set_gradient_styles();
-        }
-        $kml->add($this->get_kml_description());
-        if (!$external) {
-            $kml->add($this->get_meta_linestring());
-            $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
-            $kml->add($this->or->get_kml_track('FF0000', 'Out And Return'));
-            $kml->add($this->tr->get_kml_track('FF0000', 'FAI Triangle'));
-
-        }
-        if (0) {
-            $kml->add($this->get_colour_by_height());
-        }
-        if ($external) {
-            $kml->add($this->get_kml_time_aware_points());
-        }
-        if (!$external) {
-            $outFile = fopen($this->get_file_loc() . '/Track.kml', 'w');
-            fwrite($outFile, $kml->compile());
-        }
-        return $kml->compile(1);
-    }
-
-    public function get_kml_description() {
-        return '
-      <name>Flight ' . $this->id . '</name>
-      <description>
-          <![CDATA[
-            <pre>
-Flight statistics
-Flight #             ' . $this->id . '
-Pilot                ' . (isset($this->pilot->name) ? $this->pilot->name : '' ) . '
-Club                 ' . (isset($this->club->name) ? $this->club->name : '' ) . '
-Glider               ' . (isset($this->glider->name) ? $this->glider->name : '' ) . '
-Date                 ' . $this->get_date('d/m/Y') . '
-Start/finish         ' . $this->start_time(true) . ' / ' . $this->end_time(true) . '
-Duration             ' . $this->duration(true) . '
-Max./min. height     ' . $this->maximum_ele . ' / ' . $this->min_ele . 'm
-OD Score / Time      ' . $this->od->get_distance() . ' / ' . $this->od->get_formatted_time() . '
-OR Score / Time      ' . $this->or->get_distance() . ' / ' . $this->or->get_formatted_time() . '
-TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_formatted_time() . '
-            </pre>
-          ]]>
-      </description>';
-    }
-
-    public function start_time($formatted = false) {
-        if ($formatted) {
-            return date('H:i:s', $this->track_points->first()->time);
-        } else {
-            return $this->track_points->first()->time;
-        }
-    }
-
-    public function end_time($formatted = false) {
-        if ($formatted) {
-            return date('H:i:s', $this->track_points->last()->time);
-        } else {
-            return $this->track_points->last()->time;
-        }
-    }
-
-    public function duration($formatted = false) {
-        if ($formatted) {
-            return date('H:i:s', $this->track_points->last()->time - $this->track_points->first()->time);
-        } else {
-            return $this->track_points->last()->time - $this->track_points->first()->time;
-        }
-    }
-
-    private function get_meta_linestring() {
-        $output = '<Placemark>';
-        $output .= $this->get_time_meta_data();
-        $output .= $this->get_kml_linestring();
-        $output .= '</Placemark>';
-        return $output;
-    }
-
-    public function get_time_meta_data($start = 0, $end = 0) {
-        $cnt = 0;
-        $num = count($this->track_points);
-        if ($end == 0) {
-            $end = $num - 1;
-        }
-        $output = "
-      <Metadata src='UKNXCL' v='0.9' type='track'>
-        <SecondsFromTimeOfFirstPoint>\n";
-        for ($i = $start; $i < $num; $i++, $cnt++) {
-            if ($cnt == 5) {
-                $output .= "\n";
-                $cnt = 0;
+    public function trim() {
+        if ($this->track_parts->count() > 1) {
+            while (1) {
+                if ($this->track_parts->first()->size() < 20) {
+                    $this->console("Beginning section ignored, less than 20 points", $this, 1, 1);
+                    $this->track_points->remove_first($this->track_parts->first()->size());
+                    $this->track_parts->reduce_index($this->track_parts->first()->size());
+                    $this->track_parts->remove_first();
+                    continue;
+                }
+                $midPoint = round(($this->track_parts->first()->size()) / 2);
+                $coord1 = $this->track_points[$this->track_parts->first()->start_point];
+                $coord2 = $this->track_points[$this->track_parts->first()->start_point + $midPoint];
+                $coord3 = $this->track_points[$this->track_parts->first()->end_point];
+                if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
+                    $this->console("Beginning section ignored, less than 100m", $this, 1, 1);
+                    $this->track_points->remove_first($this->track_parts->first()->size());
+                    $this->track_parts->reduce_index($this->track_parts->first()->size());
+                    $this->track_parts->remove_first();
+                } else break;
             }
-            $output .= $this->track_points[$i]->time - $this->track_points->first()->time . " ";
-        }
-        $output .= '
-        </SecondsFromTimeOfFirstPoint>
-      </Metadata>';
-        return $output;
-
-    }
-
-    public function get_kml_linestring($start = 0, $end = 0, $altitude = 'absolute', $extrude = 0) {
-        $num = count($this->track_points);
-        if ($end == 0) $end = $num - 1;
-        $cnt = 0;
-        if (!$start)
-            $start = $this->track_points->first_index();
-        $output = '';
-        $output .= '
-    <LineString>
-        <altitudeMode>' . $altitude . '</altitudeMode>
-        <extrude>' . $extrude . '</extrude>
-        <coordinates>';
-        for ($i = $start; $i < $num; $i++, $cnt++) {
-            if ($cnt == 5) {
-                $output .= "\n";
-                $cnt = 0;
+            while (1) {
+                if ($this->track_parts->last()->size() < 20) {
+                    $this->console("End section ignored, less than 20 points", $this, 1, 1);
+                    $this->track_points->remove_last($this->track_parts->last()->size());
+                    $this->track_parts->remove_last();
+                    continue;
+                }
+                $midPoint = round(($this->track_parts->last()->size()) / 2);
+                $coord1 = $this->track_points[$this->track_parts->last()->start_point];
+                $coord2 = $this->track_points[$this->track_parts->last()->start_point + $midPoint];
+                $coord3 = $this->track_points[$this->track_parts->last()->end_point];
+                if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
+                    $this->console("End section ignored, less than 100m", $this, 1, 1);
+                    $this->track_points->remove_last($this->track_parts->last()->size());
+                    $this->track_parts->remove_last();
+                } else break;
             }
-            $output .= $this->track_points[$i]->get_kml_coordinate();
+        } else {
+            $this->console('1 Part');
         }
-        $output .= '
-        </coordinates>
-  </LineString>';
-        return $output;
-    }
-
-    public function get_kml_time_aware_points($col = false) {
-        $output = '';
-        $tot = $this->track_points->count();
-        for ($i = 0; $i < $tot - 1; $i++) {
-            $current_level = floor(($this->track_points[$i]->time - $this->track_points->first()->time) * 16 / $this->duration());
-            $output .= '<Placemark>';
-            if (!$col)
-                $output .= '<styleUrl>#S' . $current_level . '</styleUrl>';
-            else
-                $output .= '<Style><LineStyle><color>FF' . $col . '</color><width>2</width></LineStyle></Style>';
-            $output .= kml::get_timespan($this->track_points[$i]->time, $this->track_points[$i + 1]->time) . '
-			<LineString>
-				<altitudeMode>absolute</altitudeMode>
-				<coordinates>
-					' . $this->track_points[$i]->get_kml_coordinate() . ' ' . $this->track_points[$i + 1]->get_kml_coordinate() . '
-				</coordinates>
-			</LineString>
-		</Placemark>';
-        }
-        return $output;
-    }
-
-    public function generate_kml_earth() {
-        $kml = new kml();
-
-        $kml->set_folder_styles();
-        $kml->set_gradient_styles(1);
-        $kml->set_animation_styles(1);
-
-        $kml->get_kml_folder_open('Track', 1, 'radio', 1);
-
-        $kml->get_kml_folder_open('Colour By Height', 1, 'hideChildren', 0);
-        $kml->add($this->get_colour_by($this->min_ele, $this->maximum_ele, 'ele'));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_open('Colour By Ground Speed', 0, 'hideChildren', 0);
-        $kml->add($this->get_colour_by(0, $this->maximum_speed, 'speed'));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_open('Colour By Climb', 0, 'hideChildren', 0);
-        $kml->add($this->get_colour_by($this->min_cr, $this->maximum_cr, 'climbRate'));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_open('Colour By Time', 0, 'hideChildren', 0);
-        $kml->add($this->get_colour_by($this->track_points->first()->time, $this->track_points->last()->time, 'time', 0));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_close();
-        $kml->get_kml_folder_open('Shadow', 1, 'radio');
-
-        $kml->get_kml_folder_open('None', 0, 'hideChildren', 0);
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_open('Standard', 1, 'hideChildren', 0);
-        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'clampToGround'));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_open('Extrude', 0, 'hideChildren', 0);
-        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'absolute', 1));
-        $kml->get_kml_folder_close();
-
-        $kml->get_kml_folder_close();
-
-        /*      $kml->get_kml_folder_open('Colour By Time', 0);
-                $kml->add($this->get_kml_time_aware_points();
-                $kml->get_kml_folder_close();*/
-
-        $kml->get_kml_folder_open('Task', 0, '', 0);
-        $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
-        $kml->add($this->or->get_kml_track('00FF00', 'Out And Return'));
-        $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
-        $kml->get_kml_folder_close();
-
-
-        $kml->get_kml_folder_open('Animation', 0, 'hideChildren', 0);
-        $kml->add($this->get_animation());
-        $kml->get_kml_folder_close();
-        fwrite(fopen($this->get_file_loc() . '/Track_Earth.kml', 'w'), $kml->compile());
-    }
-
-    public function get_colour_by($min, $max, $value, $scale = 1) {
-        $this->get_graph_values();
-        $output = '';
-        $var = ($max - $min ? $max - $min : 1);
-        $last_level = floor(($this->track_points[0]->$value - $min) * 16 / $var);
-
-        $coords = array();
-        foreach ($this->track_points as $out1) {
-            $coords[] = $out1;
-            $current_level = floor(($out1->$value - $min) * 16 / $var);
-            if ($current_level != $last_level) {
-                $output .= kml::create_linestring('#S' . $last_level, $coords);
-                $coords = array();
-                $coords[] = $out1;
-                $last_level = $current_level;
-            }
-        }
-        if (!empty($coords))
-            $output .= kml::create_linestring('#S' . $current_level, $coords);
-        if ($scale)
-            $output .= kml::get_scale($min, $max);
-        return $output;
-    }
-
-    public function get_animation() {
-        $xml = '';
-        $tot = $this->track_points->count();
-        for ($i = 0; $i < $tot - 1; $i++) {
-            $bearing = floor($this->track_points[$i]->bearing / 5) * 5;
-            $xml .= '<Placemark>';
-            $xml .= '<styleUrl>#A' . $this->colour . $bearing . '</styleUrl>';
-            $xml .= kml::get_timespan($this->track_points[$i]->time, $this->track_points[$i + 1]->time);
-            $xml .= $this->track_points[$i]->get_kml_point();
-            $xml .= '</Placemark>';
-        }
-        return $xml;
-    }
-
-    public function generate_kml_comp() {
-        $output = '';
-        $output .= "\n\t" . '<Placemark>
-        <name>' . $this->name . '</name>
-        <description><![CDATA[
-        <pre>
-Flight statistics
-Pilot                ' . $this->name . '
-Date                 ' . $this->get_date('d/m/Y') . '
-Start/finish         ' . $this->start_time(true) . '-' . $this->end_time(true) . '
-Duration             ' . $this->duration(true) . '
-Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
-            </pre>]]>
-        </description>
-        <Style>
-          <LineStyle>
-            <color>FF' . get::kml_colour($this->colour) . '</color>
-            <width>2</width>
-          </LineStyle>
-        </Style>';
-        $output .= $this->get_kml_linestring();
-        $output .= "\n\t" . '</Placemark>';
-        return $output;
-
-    }
-
-    public function generate_kml_comp_earth() {
-        $kml = new kml();
-        $kml->get_kml_folder_open($this->name, 1, 'hideChildren');
-        $kml->add($this->get_kml_time_aware_points(get::kml_colour($this->colour)));
-        $kml->get_kml_folder_close();
-        return $kml->compile(true);
-    }
-
-    public function getTime($time) {
-        $time -= mktime(0, 0, 0);
-        return date('H:i:s', $time);
-    }
-
-    public function get_dim() {
-        return (($this->maximum_alt != $this->min_alt) || ($this->maximum_ele != $this->min_ele)) ? 3 : 2;
-    }
-
-    public function get_number_of_parts() {
-        return count($this->track_parts);
-    }
-
-    public function get_season() {
-        $season = $this->year;
-        if ($this->mon >= 11)
-            $season++;
-        return $season;
-    }
-
-    public function get_time() {
-        return $this->track_points->last()->time - $this->track_points->first()->time;
-    }
-
-    public function is_winter() {
-        return ($this->mon == 1 || $this->mon == 2 || $this->mon == 12);
-    }
-
-    public function mod60000($a) {
-        return round($a / 60000, 6);
-    }
-
-    public static function move_temp_files($temp_id, $new_id) {
-        $track = new track();
-        $old_dir = $track->get_file_loc($temp_id, true);
-        $new_dir = $track->get_file_loc($new_id, false);
-        if (!file_exists($new_dir)) {
-            mkdir($new_dir);
-        }
-        copy($old_dir . '/track.igc', $new_dir . '/track.igc');
-        copy($old_dir . '/track_backup.igc', $new_dir . '/track_backup.igc');
-    }
-
-    public function set_id($id) {
-        $this->id = $id;
-    }
-
-    public function set_info() {
-        if($this->parent_flight->fid) {
-            $this->parent_flight->lazy_load(array('pid', 'gid', 'cid'));
-            $this->pilot->do_retrieve_from_id(array('name'), $this->parent_flight->pid);
-            $this->club->do_retrieve_from_id(array('name'), $this->parent_flight->cid);
-            $this->glider->do_retrieve_from_id(array('name'), $this->parent_flight->gid);
-        }
-    }
-
-    public function set_source($id) {
-        $this->source = $id;
     }
 
     public function truncate($start, $end = 0) {
@@ -1112,6 +1184,14 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         }
         $points = $this->track_points->subset($start, $end);
         $this->track_points->exchangeArray($points);
+    }
+
+    private function get_meta_linestring() {
+        $output = '<Placemark>';
+        $output .= $this->get_time_meta_data();
+        $output .= $this->get_kml_linestring();
+        $output .= '</Placemark>';
+        return $output;
     }
 }
 
@@ -1151,16 +1231,16 @@ class track_point {
         return $coord;
     }
 
-    public function get_kml_point() {
-        $xml = '<Point><altitudeMode>absolute</altitudeMode><coordinates>' . $this->get_kml_coordinate() . '</coordinates></Point>';
-        return $xml;
-    }
-
     public function get_kml_coordinate($time = null) {
         if ($time !== null)
             return sprintf("%8f,%8f,%-5d,%6d ", $this->lon, $this->lat, $this->ele, $time);
         else
             return sprintf("%8f,%8f,%-5d ", $this->lon, $this->lat, $this->ele);
+    }
+
+    public function get_kml_point() {
+        $xml = '<Point><altitudeMode>absolute</altitudeMode><coordinates>' . $this->get_kml_coordinate() . '</coordinates></Point>';
+        return $xml;
     }
 
     public function get_time_to(track_point $b) {
@@ -1216,11 +1296,14 @@ class task {
     }
 
     public function get_coordinates() {
-        if(isset($this->waypoints)) {
-            return $this->waypoints->get_coordinates(range(0, $this->waypoints->count() - 1));
-        } else {
-            return '';
+        if(!isset($this->coordinates)) {
+            if (isset($this->waypoints)) {
+                return $this->waypoints->get_coordinates(range(0, $this->waypoints->count() - 1));
+            } else {
+                return '';
+            }
         }
+        return $this->coordinates;
     }
 
     public function get_distance($dp = 10) {
@@ -1232,6 +1315,10 @@ class task {
             }
         }
         return number_format($this->distance, $dp);
+    }
+
+    public function get_formatted_time() {
+        return date('H:i:s', $this->timestamp);
     }
 
     public function get_kml_track($colour, $title = '') {
@@ -1268,11 +1355,14 @@ class task {
         return $output;
     }
 
-    public function get_formatted_time() {
-        return date('H:i:s', $this->timestamp);
+    public function get_time() {
+        return $this->timestamp;
     }
 
-    public function get_time() {
+    public function get_duration() {
+        if(!isset($this->timestamp)) {
+            $this->timestamp = $this->waypoints->last()->time - $this->waypoints->first()->time;
+        }
         return $this->timestamp;
     }
 
@@ -1376,6 +1466,15 @@ class object_array extends ArrayObject {
         parent::__construct($this->subset($int));
     }
 
+    public function remove_last($int = 0) {
+        if ($int) {
+            for ($i = 0; $i < $int; $i++)
+                $this->remove_last();
+        } else {
+            $this->offsetUnset($this->count() - 1);
+        }
+    }
+
     public function subset($start = 0, $end = null) {
         $sub = array();
         if ($end == null || $end < $start)
@@ -1384,14 +1483,5 @@ class object_array extends ArrayObject {
             $sub[] = $this[$i];
         }
         return $sub;
-    }
-
-    public function remove_last($int = 0) {
-        if ($int) {
-            for ($i = 0; $i < $int; $i++)
-                $this->remove_last();
-        } else {
-            $this->offsetUnset($this->count() - 1);
-        }
     }
 }
