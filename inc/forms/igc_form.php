@@ -112,6 +112,7 @@ class igc_form extends form {
 
 
                 $flight->file = '/uploads/track/' . $track->id . '/track.igc';
+                $track->generate_output_files();
                 $flight->do_save();
 
                 jquery::colorbox(array('html' => 'Your flight has been added successfully'));
