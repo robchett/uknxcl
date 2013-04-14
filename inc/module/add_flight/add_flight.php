@@ -14,26 +14,30 @@ class add_flight extends core_module {
         $this->page->do_retrieve(array(),array('where_equals'=>array('module_name'=>'add_flight')));
         $form = new igc_form();
         $form2 = new igc_upload_form();
+        $form3 = new coordinates_form();
         $html = '
 <div id="add_flight_box">
     <div id="add_flight_wrapper">
         <div id="add_flight_inner">
             ' . $this->page->body . '
-            <div id="add_flight_section">';
+            <div class="add_flight_section upload">';
         $html .= $form2->get_html()->get();
         $html .= $form->get_html()->get();
         $html .= '
+                <a href="#" class="back button">Back</a>
+            </div>
+            <div class="add_flight_section">';
+        $html .= $form3->get_html()->get();
+        $html .= '
+                <a href="#" class="back button">Back</a>
             </div>
         </div>
     </div>
 </div>';
         $script = '
-
-    $("body").on("change", "input#defined", function () {
-        if ($(this).attr("checked"))
-            $(".fieldset_1").show(); else
-            $(".fieldset_1").hide();
-    })
+    $(".add_flight_section a.back").click(function() {
+        $("#add_flight_inner").animate({"left": 0});
+    });
     $("body").on("change", "input#kml", function () {
         if ($(this).val().slice(-3) == "igc") {
             $("#kml_calc").fadeIn(1000);
@@ -59,7 +63,11 @@ class add_flight extends core_module {
         return true;
     });
     $("body").on("click","div.flight_type_box",function () {
-        $("#add_flight_inner").animate({"left": -710});
+        if($(this).hasClass("upload")) {
+            $("#add_flight_inner").animate({"left": -710});
+        } else {
+            $("#add_flight_inner").animate({"left": -1420});
+        }
         $("#igc_form_holder").show();
     });
 
@@ -113,7 +121,7 @@ class add_flight extends core_module {
                 str = "you can only enter 5 coordinates";
             }
         }
-        $("#defined_info").html(str);
+        $(this).parents("form").find(".defined_info").html(str);
     });
     $("body").on("click","a.score_select",function () {
         var data = $(this).data("post");

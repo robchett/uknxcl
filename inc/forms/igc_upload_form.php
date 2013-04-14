@@ -13,7 +13,7 @@ class igc_upload_form extends form {
                 ->set_attr('required_parent', 'defined')
                 ->set_attr('required', false)
                 ->set_attr('pre_text', '<p>To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\'</p>')
-                ->set_attr('post_text', '<p id="defined_info"></p>')
+                ->set_attr('post_text', '<p class="defined_info"></p>')
         );
         parent::__construct($fields);
         $this->submit = 'Calculate';
