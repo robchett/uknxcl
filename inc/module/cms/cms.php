@@ -13,6 +13,10 @@ class cms extends core_module {
         // TODO make this a true ajax act.
     }
 
+    public function do_paginate() {
+        ajax::add_script('window.location = window.location + "/page/" +' . $_REQUEST['value']);
+    }
+
     public function __controller(array $path) {
         core::$page_config['title_tag'] = 'Admin Login - UKNXCL';
         core::$css = array('/inc/module/cms/css/cms.css');
