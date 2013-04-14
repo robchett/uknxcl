@@ -1,6 +1,6 @@
 <?php
 
-class igc_form extends form {
+class coordinates_form extends form {
 
 
     public function __construct() {
@@ -26,6 +26,16 @@ class igc_form extends form {
                     ->set_attr('link_module', 'club')
                     ->set_attr('link_field', 'name')
                     ->set_attr('options', array('order' => 'name')),
+                form::create('field_string', 'coords')
+                    ->set_attr('label', 'Flight coordinates')
+                    ->set_attr('required_parent', 'defined')
+                    ->set_attr('required', true)
+                    ->set_attr('pre_text', '<p>Enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\'</p>')
+                    ->add_wrapper_class('cf')
+                    ->set_attr('post_text', '<p class="defined_info"></p>'),
+                form::create('field_date', 'date')
+                    ->set_attr('label', 'Date:')
+                    ->set_attr('required', true),
                 form::create('field_link', 'lid')
                     ->set_attr('label', 'Launch:')
                     ->set_attr('required', true)
@@ -49,83 +59,54 @@ class igc_form extends form {
                 form::create('field_boolean', 'agree')
                     ->set_attr('label', 'The NXCL is free to publish the flight to the public and to be passed on to skywings for publication. The flight has not broken any airspace laws')
                     ->set_attr('required', true),
-
-                form::create('field_int', 'temp_id')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
-                form::create('field_string', 'type')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
             )
         );
 
-        $this->h2 = 'Additional Details';
-        $this->id = 'igc_form';
-        $this->name = 'igc';
+        $this->h2 = 'Coordinate Flight';
+        $this->id = 'coordinate_form';
+        $this->name = 'coordinate';
         $this->title = 'Add Flight Form';
-        if (!ajax) {
-            $this->submittable = false;
-        }
     }
 
     public function do_submit() {
         if (parent::do_submit()) {
             $flight = new flight();
             $flight->set_from_request();
+            $flight->dim = 1;
+
+            $month = date('m', strtotime($this->date));
+            $flight->winter = ($month == 1 || $month == 2 || $month == 12);
+
+            if (strtotime($this->date) + (30 * 24 * 60 * 60) < time()) {
+                $this->force_delay = true;
+                $flight->invis_info .= 'delayed as flight is old.';
+            }
+
+            $track = new track();
+            $track->set_task($this->coords);
+            $flight_type = new flight_type();
+            $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $track->task->type)));
+            $flight->ftid = $flight_type->ftid;
+            $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
+            $flight->base_score = $track->task->get_distance();
+            $flight->coords = $track->task->get_coordinates();
+            $flight->score = $flight->base_score * $flight->multi;
+            $flight->delayed = $this->force_delay ? true : $this->delay;
             $flight->do_save();
 
-            if ($flight->fid) {
-                track::move_temp_files($this->temp_id, $flight->fid);
-                $track = new track();
-                $track->id = $flight->fid;
-                $track->parse_IGC();
-                $track->set_from_session($flight, $this->temp_id);
+            jquery::colorbox(array('html' => 'Your flight has been added successfully'));
+            $form = new coordinates_form();
+            ajax::update($form->get_html()->get());
 
-                $flight->date = $track->get_date();
-                $flight->did = $track->get_dim();
-                $flight->winter = $track->is_winter();
-
-                if (!$track->check_date()) {
-                    $this->force_delay = true;
-                    $flight->invis_info .= 'delayed as flight is old.';
-                }
-                $this->defined = false;
-                if($this->type == 'task') {
-                    $this->type = $track->task->type;
-                    $this->defined = true;
-                }
-                $flight_type = new flight_type();
-                $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $this->type)));
-                $flight->ftid = $flight_type->ftid;
-                $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1 );
-
-                if (!$this->defined) {
-                    $flight->base_score = $track->{$this->type}->get_distance();
-                    $flight->coords = $track->{$this->type}->get_coordinates();
-                    $flight->score = $flight->base_score * $flight->multi;
-                } else {
-                    $flight->coords = $track->task->get_coordinates();
-                    $flight->base_score = $track->task->get_distance();
-                    $flight->score = $flight->base_score * $flight->multi;
-                }
-                $flight->delayed = $this->force_delay ? true : $this->delay;
-
-
-                $flight->file = '/uploads/track/' . $track->id . '/track.igc';
-                $flight->do_save();
-
-                jquery::colorbox(array('html' => 'Your flight has been added successfully'));
-                $form = new igc_form();
-                ajax::update($form->get_html()->get());
-            } else {
-                jquery::colorbox(array('html' => 'Your flight has failed to save'));
-            }
         }
     }
 
     public function do_validate() {
         if (!$this->agree) {
             $this->validation_errors['agree'] = 'You must agree to the terms to continue';
+        }
+        if (!empty($this->coords) && !preg_match('/^((h[l-z]|n[a-hj-z]|s[a-hj-z]|t[abfglmqrvw])[0-9]{6};?){2,5}$/i', $this->coords)) {
+            $this->validation_errors['coords'] = 'Coordinated are not valid';
         }
         return parent::do_validate();
     }

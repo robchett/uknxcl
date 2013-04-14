@@ -89,8 +89,8 @@ form {
       }
     }
   }
-  #defined_info {
-    margin: 20px 0 -20px 0;
+  .defined_info {
+    margin-top: 10px;
     font-weight: bold;
   }
   &#advanced_tables, &#basic_tables_form {
@@ -165,11 +165,17 @@ form {
       text-align: center;
     }
   }
-  &#igc_form {
+  &#igc_form, &#coordinate_form {
+    #coords_wrapper {
+      margin: 10px 0 10px 0;
+      display: block;
+      span { width: 200px }
+      input {width: 400px}
+    }
     label {
       span { width: 100% }
     }
-    .field_select_wrapper, .field_link_wrapper {
+    .field_select_wrapper, .field_link_wrapper, .field_date_wrapper {
       span {
         width: 100px !important;
       }
