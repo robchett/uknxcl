@@ -5,49 +5,6 @@ class file_convert {
 
     }
 
-    static function getCords($file, $cnum, $lookup, $isOR = 0) {
-        $start = 0;
-        $match_no = 0;
-        for ($i = 0; $i < sizeof($file); $i++) {
-            if (preg_match("%<coordinates>%", $file[$i])) {
-                $match_no++;
-                if ($match_no == $lookup) {
-                    $start = $i + 1;
-                }
-            }
-        }
-        $out[0] = "";
-        $a = Array();
-        if (!$isOR) {
-            for ($i = $start; $i < $start + $cnum; $i++) {
-                $c = explode(",", substr($file[$i], 10), 4);
-                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
-                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
-                else $out[0] = $a[$i - $start];
-                $out[1][$i - $start] = $a[$i - $start];
-            }
-        } else {
-            for ($i = $start; $i < $start + $cnum; $i++) {
-                $c = explode(",", substr($file[$i], 10), 4);
-                print_r($c);
-                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
-                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
-                else $out[0] = $a[$i - $start];
-                $out[1][$i - $start] = $a[$i - $start];
-            }
-            if (self::getDist(Array($out[1][0], $out[1][1])) <= 0.8) {
-                $copy = $out[1][1];
-                $out[1][1] = $out[1][2];
-                $out[1][2] = $copy;
-                $c = explode(";", $out[0]);
-                $out[0] = "$c[0];$c[2];$c[1]";
-            }
-        }
-        //print_r($out[1]);
-        $out[1] = self::getDist($out[1]);
-        return $out;
-    }
-
     static function LatLongToOSGrid($p, $q) {
         $lat = self::toRad($p);
         $lon = self::toRad($q);
@@ -100,122 +57,6 @@ class file_convert {
         return self::gridrefNumToLet($E, $N, 6);
     }
 
-    static function gridrefNumToLet($e, $n, $digits) {
-        // get the 100km-grid indices
-        $e100k = floor($e / 100000);
-        $n100k = floor($n / 100000);
-
-        if ($e100k < 0 || $e100k > 8 || $n100k < 0 || $n100k > 12) { //echo "broke";
-        }
-
-        // translate those into numeric equivalents of the grid letters
-        $l1 = (19 - $n100k) - (19 - $n100k) % 5 + floor(($e100k + 10) / 5);
-        $l2 = (19 - $n100k) * 5 % 25 + $e100k % 5;
-
-        // compensate for skipped 'I' and build grid letter-pairs
-        if ($l1 > 7) $l1++;
-        if ($l2 > 7) $l2++;
-        $letPair = chr($l1 + ord('A')) . chr($l2 + ord('A'));
-
-        // strip 100km-grid indices from easting & northing, and reduce precision
-        $e = floor(($e % 100000) / pow(10, 5 - $digits / 2));
-        $n = floor(($n % 100000) / pow(10, 5 - $digits / 2));
-        $gridRef = $letPair . self::padLZ($e) . self::padLZ($n);
-        return $gridRef;
-    }
-
-    static function padLZ($n) {
-        $j = strlen($n);
-        for ($i = 0; $i < 3 - $j; $i++) $n = '0' . $n;
-        return $n;
-    }
-
-    static function getDist($cords) {
-        $score = 0;
-        for ($i = 0; $i < count($cords) - 1; $i++) {
-            $p1 = self::gridrefLetToNum($cords[$i]);
-            $p2 = self::gridrefLetToNum($cords[$i + 1]);
-
-            $deltaE = $p2[0] - $p1[0];
-            $deltaN = $p2[1] - $p1[1];
-
-            $dist = sqrt($deltaE * $deltaE + $deltaN * $deltaN);
-
-            $score += ($dist / 1000);
-        }
-        $score = round($score, 2);
-        return $score;
-    }
-
-    static function time_split_kml_plus_js(track $track, $coords = "") {
-        $count1 = 0;
-        $output = kml::get_kml_header();
-        /** @var track_part */
-        foreach ($track->track_parts as $a) {
-            $output .= '
-    <Placemark>
-      <name>Flight</name>
-      <Style>
-        <LineStyle>
-          <color>FF' . get::colour(++$count1) . '</color>
-          <width>2</width>
-        </LineStyle>
-      </Style>
-      ' . $track->get_time_meta_data($a->start_point, $a->end_point) . '
-      ' . $track->get_kml_linestring() . '
-    </Placemark>';
-            if ($coords != "") $output .= self::outputTask($coords);
-        }
-        $output .= kml::get_kml_footer();
-
-        $outFile = fopen($track->get_file_loc() . '/Track.kml', 'w');
-        fwrite($outFile, $output);
-        $outFile = fopen($track->get_file_loc() . '/Track_Earth.kml', 'w');
-        fwrite($outFile, $output);
-
-        $track->generate_js();
-    }
-
-    static function outputTask($task) {
-        $out = new stdClass();
-        $out->in = $task;
-        $out->o = "";
-        $out->task_array = explode(';', $task);
-        foreach ($out->task_array as &$a) {
-            $a = self::OSGridToLatLong($a);
-        }
-        foreach ($out->task_array as $matches) {
-            $out->o .= "<Placemark>
-        <Polygon>
-            <tessellate>1</tessellate>
-            <outerBoundaryIs>
-                <LinearRing>
-                    <coordinates>
-                    " . self::getCircleCords2($matches) . "
-                    </coordinates>
-                </LinearRing>
-            </outerBoundaryIs>
-        </Polygon>
-    </Placemark>";
-        }
-        $out->o .= "<Placemark>
-    <LineString>
-    <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>";
-
-        foreach ($out->task_array as $cords) {
-            $lon = $cords [0];
-            $lat = $cords[1];
-            $out->o .= $lat . ',' . $lon . ",-100 ";
-        }
-        $out->o .= "</coordinates>
-    </LineString>
-    </Placemark>
-    ";
-        $out->task = $task;
-        return $out->o;
-    }
-
     static function OSGridToLatLong($gridRef) {
         $gr = self::gridrefLetToNum($gridRef);
         $E = $gr[0];
@@ -224,8 +65,8 @@ class file_convert {
         $a = 6377563.396;
         $b = 6356256.910; // Airy 1830 major & minor semi-axes
         $F0 = 0.9996012717; // NatGrid scale factor on central meridian
-        $lat0 = 49 * pi() / 180;
-        $lon0 = -2 * pi() / 180; // NatGrid true origin
+        $lat0 = 49 * M_PI / 180;
+        $lon0 = -2 * M_PI / 180; // NatGrid true origin
         $N0 = -100000;
         $E0 = 400000; // northing & easting of true origin; metres
         $e2 = 1 - ($b * $b) / ($a * $a); // eccentricity squared
@@ -282,6 +123,79 @@ class file_convert {
         return Array(self::toDeg($lat), self::toDeg($lon));
     }
 
+    static function getCircleCords2(track_point $center_coordinate) {
+        $out = "";
+        $angularDistance = 400 / 6378137;
+        for ($i = 0; $i <= 360; $i++) {
+            $bearing = deg2rad($i);
+            $lat = asin($center_coordinate->sin_lat * cos($angularDistance) + $center_coordinate->cos_lat * sin($angularDistance) * cos($bearing));
+            $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat, cos($angularDistance) - $center_coordinate->sin_lat * sin($lat));
+            $lon = fmod(($center_coordinate->lonRad + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
+        }
+        return $out;
+    }
+
+    static function getCords($file, $cnum, $lookup, $isOR = 0) {
+        $start = 0;
+        $match_no = 0;
+        for ($i = 0; $i < sizeof($file); $i++) {
+            if (preg_match("%<coordinates>%", $file[$i])) {
+                $match_no++;
+                if ($match_no == $lookup) {
+                    $start = $i + 1;
+                }
+            }
+        }
+        $out[0] = "";
+        $a = Array();
+        if (!$isOR) {
+            for ($i = $start; $i < $start + $cnum; $i++) {
+                $c = explode(",", substr($file[$i], 10), 4);
+                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
+                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
+                else $out[0] = $a[$i - $start];
+                $out[1][$i - $start] = $a[$i - $start];
+            }
+        } else {
+            for ($i = $start; $i < $start + $cnum; $i++) {
+                $c = explode(",", substr($file[$i], 10), 4);
+                print_r($c);
+                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
+                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
+                else $out[0] = $a[$i - $start];
+                $out[1][$i - $start] = $a[$i - $start];
+            }
+            if (self::getDist(Array($out[1][0], $out[1][1])) <= 0.8) {
+                $copy = $out[1][1];
+                $out[1][1] = $out[1][2];
+                $out[1][2] = $copy;
+                $c = explode(";", $out[0]);
+                $out[0] = "$c[0];$c[2];$c[1]";
+            }
+        }
+        //print_r($out[1]);
+        $out[1] = self::getDist($out[1]);
+        return $out;
+    }
+
+    static function getDist($cords) {
+        $score = 0;
+        for ($i = 0; $i < count($cords) - 1; $i++) {
+            $p1 = self::gridrefLetToNum($cords[$i]);
+            $p2 = self::gridrefLetToNum($cords[$i + 1]);
+
+            $deltaE = $p2[0] - $p1[0];
+            $deltaN = $p2[1] - $p1[1];
+
+            $dist = sqrt($deltaE * $deltaE + $deltaN * $deltaN);
+
+            $score += ($dist / 1000);
+        }
+        $score = round($score, 2);
+        return $score;
+    }
+
     static function gridrefLetToNum($gridref) {
         // get numeric values of letter references, mapping A->0, B->1, C->2, etc:
         $l1 = ord($gridref[0]) - ord('A');
@@ -303,30 +217,114 @@ class file_convert {
         return Array($e, $n);
     }
 
-    static function toDeg($a) { // convert radians to degrees (signed)
-        return $a * 180 / pi();
+    static function gridrefNumToLet($e, $n, $digits) {
+        // get the 100km-grid indices
+        $e100k = floor($e / 100000);
+        $n100k = floor($n / 100000);
+
+        if ($e100k < 0 || $e100k > 8 || $n100k < 0 || $n100k > 12) { //echo "broke";
+        }
+
+        // translate those into numeric equivalents of the grid letters
+        $l1 = (19 - $n100k) - (19 - $n100k) % 5 + floor(($e100k + 10) / 5);
+        $l2 = (19 - $n100k) * 5 % 25 + $e100k % 5;
+
+        // compensate for skipped 'I' and build grid letter-pairs
+        if ($l1 > 7) $l1++;
+        if ($l2 > 7) $l2++;
+        $letPair = chr($l1 + ord('A')) . chr($l2 + ord('A'));
+
+        // strip 100km-grid indices from easting & northing, and reduce precision
+        $e = floor(($e % 100000) / pow(10, 5 - $digits / 2));
+        $n = floor(($n % 100000) / pow(10, 5 - $digits / 2));
+        $gridRef = $letPair . self::padLZ($e) . self::padLZ($n);
+        return $gridRef;
     }
 
-    static function getCircleCords2($cords) {
-        $cords[0] = self::toRad($cords[0]);
-        $cords[1] = self::toRad($cords[1]);
-        $out = "";
-        $angularDistance = 400 / 6378137;
-        for ($i = 0; $i <= 360; $i++) {
-            $bearing = deg2rad($i);
-            $lat = Asin(Sin($cords [0]) * Cos($angularDistance) + Cos($cords [0]) * Sin($angularDistance) * Cos($bearing));
-
-            $dlon = Atan2(Sin($bearing) * Sin($angularDistance) * Cos($cords [0]), Cos($angularDistance) - Sin($cords [0]) * Sin($lat));
-
-            $lon = fmod(($cords [1] + $dlon + M_PI), 2 * M_PI) - M_PI;
-            $latOut = rad2deg($lat);
-            $lonOut = rad2deg($lon);
-            $out .= "$lonOut,$latOut,0 ";
+    static function outputTask(task $task) {
+        $xml = '<Folder><name>Task</name>';
+        foreach ($task->waypoints as $point) {
+            $xml .= "<Placemark>
+        <Style>
+            <PolyStyle>
+              <color>99ffffaa</color>
+              <fill>1</fill>
+              <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Polygon>
+            <tessellate>1</tessellate>
+            <outerBoundaryIs>
+                <LinearRing>
+                    <coordinates>
+                    " . self::getCircleCords2($point) . "
+                    </coordinates>
+                </LinearRing>
+            </outerBoundaryIs>
+        </Polygon>
+    </Placemark>";
         }
-        return $out;
+        $xml .= "<Placemark>
+    <LineStyle>
+      <color>FFFFFF00</color>
+      <width>2</width>
+    </LineStyle>
+    <LineString>
+    <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>";
+
+        foreach ($task->waypoints as $point) {
+            $xml .= $point->lon . ',' . $point->lat . ",-100 ";
+        }
+        $xml .= "</coordinates>
+    </LineString>
+    </Placemark></Folder>
+    ";
+        return $xml;
+    }
+
+    static function padLZ($n) {
+        $j = strlen($n);
+        for ($i = 0; $i < 3 - $j; $i++) $n = '0' . $n;
+        return $n;
+    }
+
+    static function time_split_kml_plus_js(track $track) {
+        $count1 = 0;
+        $output = kml::get_kml_header();
+        /** @var track_part */
+        foreach ($track->track_parts as $a) {
+            $output .= '
+    <Placemark>
+      <name>Flight</name>
+      <Style>
+        <LineStyle>
+          <color>FF' . get::colour(++$count1) . '</color>
+          <width>2</width>
+        </LineStyle>
+      </Style>
+      ' . $track->get_time_meta_data($a->start_point, $a->end_point) . '
+      ' . $track->get_kml_linestring() . '
+    </Placemark>';
+        }
+        if (isset($track->task)) {
+            $output .= self::outputTask($track->task);
+        }
+        $output .= kml::get_kml_footer();
+
+        $outFile = fopen($track->get_file_loc() . '/Track.kml', 'w');
+        fwrite($outFile, $output);
+        $outFile = fopen($track->get_file_loc() . '/Track_Earth.kml', 'w');
+        fwrite($outFile, $output);
+
+        $track->generate_js();
+    }
+
+    static function toDeg($a) { // convert radians to degrees (signed)
+        return $a * 180 / M_PI;
     }
 
     static function toRad($a) { // convert degrees to radians
-        return $a * pi() / 180;
+        return $a * M_PI / 180;
     }
 }

@@ -118,8 +118,6 @@ class add_flight extends core_module {
         var data = $(this).data("post");
         $("#igc_form #temp_id").val(data.track);
         $("#igc_form #type").val(data.type);
-        $("#igc_form #start").val(data.start);
-        $("#igc_form #end").val(data.end);
         $("#igc_upload_form").html("<p class=\"restart\">Your flight details have been saved, please complete the form below, \"Additional Details\", to finalise your sumbission.<br/><a data-ajax-click=\"igc_upload_form:reset\" href=\"#\" >Restart</a></p>");
         $("#igc_form input.submit").removeAttr("disabled");
     });';

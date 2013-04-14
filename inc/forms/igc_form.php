@@ -56,14 +56,6 @@ class igc_form extends form {
                 form::create('field_string', 'type')
                     ->set_attr('required', true)
                     ->set_attr('hidden', true),
-                form::create('field_int', 'start')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
-                form::create('field_int', 'end')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
-                form::create('field_boolean', 'defined')
-                    ->set_attr('hidden', true)
             )
         );
 
@@ -87,8 +79,7 @@ class igc_form extends form {
                 $track = new track();
                 $track->id = $flight->fid;
                 $track->parse_IGC();
-                $track->truncate($this->start, $this->end);
-                $track->generate($flight);
+                $track->set_from_session($flight, $this->temp_id);
 
                 $flight->date = $track->get_date();
                 $flight->did = $track->get_dim();
@@ -98,19 +89,29 @@ class igc_form extends form {
                     $this->force_delay = true;
                     $flight->invis_info .= 'delayed as flight is old.';
                 }
-
+                $this->defined = false;
+                if($this->type == 'task') {
+                    $this->type = $track->task->type;
+                    $this->defined = true;
+                }
                 $flight_type = new flight_type();
                 $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $this->type)));
                 $flight->ftid = $flight_type->ftid;
-                $flight->multi = ($this->defined ? $flight_type->multi_defined : $flight_type->multi);
+                $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1 );
 
-                $flight->base_score = $track->{$this->type}->get_distance();
-                $flight->coords = $track->{$this->type}->get_coordinates();
-                $flight->score = $flight->base_score * $flight->multi;
+                if (!$this->defined) {
+                    $flight->base_score = $track->{$this->type}->get_distance();
+                    $flight->coords = $track->{$this->type}->get_coordinates();
+                    $flight->score = $flight->base_score * $flight->multi;
+                } else {
+                    $flight->coords = $track->task->get_coordinates();
+                    $flight->base_score = $track->task->get_distance();
+                    $flight->score = $flight->base_score * $flight->multi;
+                }
                 $flight->delayed = $this->force_delay ? true : $this->delay;
 
 
-                $flight->file = '/uploads/track/' . $flight->id . '/track.igc';
+                $flight->file = '/uploads/track/' . $track->id . '/track.igc';
                 $flight->do_save();
 
                 jquery::colorbox(array('html' => 'Your flight has been added successfully'));
