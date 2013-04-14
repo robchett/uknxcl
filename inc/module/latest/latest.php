@@ -4,28 +4,6 @@ class latest extends core_module {
 
     public $page = 'latest';
 
-    function get_edit() {
-        $form = new article_edit_form();
-        $aid = isset($_REQUEST['aid']) ? $_REQUEST['aid'] : 0;
-        if ($aid) {
-            $article = new article();
-            $article->do_retrieve_from_id(array('post', 'poster', 'date', 'title'), $aid);
-            $form->post = $article->post;
-            $form->date = $article->date;
-            $form->poster = $article->poster;
-            $form->title = $article->title;
-            $form->aid = $_REQUEST['aid'];
-            ajax::update('<article id="article' . $aid . '">' . $form->get_html() . '</article>');
-        } else {
-            $form->date = date('m-m-Y h:i:s');
-            $form->poster = 'Rob Chett';
-            $form->title = 'New Post';
-            $form->post = 'Content';
-            $form->id = 'article_update' . $aid;
-            ajax::update('<div id="new_article">' . $form->get_html() . '</div>');
-        }
-    }
-
     public function get() {
         $flights = flight_array::get_all(
             array('flight.*', 'pilot.name', 'pilot.pid'),
@@ -33,6 +11,7 @@ class latest extends core_module {
                 'join' => array(
                     'pilot' => 'flight.pid = pilot.pid'
                 ),
+                'where' => '`delayed` = 0 AND personal = 0',
                 'limit' => 39,
                 'order' => 'fid DESC'
             )
