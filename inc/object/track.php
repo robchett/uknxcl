@@ -448,13 +448,13 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         $last_level = floor(($this->track_points[0]->$value - $min) * 16 / $var);
 
         $coords = array();
-        foreach ($this->track_points as $out1) {
-            $coords[] = $out1;
-            $current_level = floor(($out1->$value - $min) * 16 / $var);
-            if ($current_level != $last_level) {
+        foreach ($this->track_points as $point) {
+            $coords[] = $point;
+            $current_level = floor(($point->$value - $min) * 16 / $var);
+            if ($current_level != $last_level && $current_level != 16) {
                 $output .= kml::create_linestring('#S' . $last_level, $coords);
                 $coords = array();
-                $coords[] = $out1;
+                $coords[] = $point;
                 $last_level = $current_level;
             }
         }
