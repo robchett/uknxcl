@@ -45,13 +45,12 @@ class comp extends table {
             }
             $track = new track();
             $track->source = $file;
-            $track->pilot = $pilot;
             $track->parse_IGC();
             $track->trim();
             $track->repair_track();
             $track->get_limits();
             $track->colour = $cnt;
-            $track->name = $pilot;
+            $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
         usort($track_array, array($this, 'cmp'));
@@ -87,7 +86,7 @@ class comp extends table {
         $count = 0;
 
         foreach ($track_array as $track) {
-            $html .= '<h5>' . $track->pilot . '</h5>';
+            $html .= '<h5>' . $track->name . '</h5>';
             $html .= '<div>';
             if (isset($_REQUEST['add'])) {
                 $form = new comp_convert();
@@ -100,8 +99,8 @@ class comp extends table {
                 $html .= $form->get_html();
 
             }
-            $kml_out->add($track->generate_kml_comp());
-            $kml_earth->add($track->generate_kml_comp_earth());
+            $kml_out->add($track->generate_kml_comp(false));
+            $kml_earth->add($track->generate_kml_comp_earth(false));
             // javascript output per pilot
             $tp = 0;
             $madeTp = 0;
@@ -301,10 +300,10 @@ class comp extends table {
     }
 
     protected function cmp($a, $b) {
-        if ($a->pilot == $b->pilot) {
+        if ($a->name == $b->name) {
             return 0;
         }
-        return ($a->pilot < $b->pilot) ? -1 : 1;
+        return ($a->name < $b->name) ? -1 : 1;
     }
 
     protected function do_upload_file(field $field) {
