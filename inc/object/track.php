@@ -529,25 +529,26 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
     public function get_graph_values() {
         if (!$this->generated_graph) {
             $previous = $this->track_points->first();
-            foreach ($this->track_points as $track_point) {
+            foreach ($this->track_points as $key=>$track_point) {
+                $next_piont = (isset($this->track_points[$key+1]) ? $this->track_points[$key+1] : $track_point);
                 // Calculate climb rate
                 if ($this->has_height()) {
-                    if ($track_point->time - $previous->time) {
-                        $track_point->climbRate = ($track_point->ele - $previous->ele) / ($track_point->time - $previous->time);
+                    if ($next_piont->time - $previous->time) {
+                        $track_point->climbRate = ($next_piont->ele - $previous->ele) / ($next_piont->time - $previous->time);
                     } else $track_point->climbRate = 0;
                 } else
                     $track_point->climbRate = 0;
                 // calculate speed
-                if ($previous->time !== $track_point->time) {
-                    $x = $track_point->get_dist_to($previous);
-                    $track_point->speed = round(($x * 1000) / ($track_point->time - $previous->time), 2);
+                if ($previous->time !== $next_piont->time) {
+                    $x = $next_piont->get_dist_to($previous);
+                    $track_point->speed = round(($x * 1000) / ($next_piont->time - $previous->time), 2);
                     $this->total_dist += $x;
                 } else
                     $track_point->speed = 0;
                 // calculate bearing
-                if ($previous->time !== $track_point->time) {
-                    $y = sin($track_point->lonRad - $previous->lonRad) * $track_point->cos_lat;
-                    $x = $previous->cos_lat * $track_point->sin_lat - $previous->sin_lat * $track_point->cos_lat * cos($track_point->lonRad - $previous->lonRad);
+                if ($previous->time !== $next_piont->time) {
+                    $y = sin($next_piont->lonRad - $previous->lonRad) * $next_piont->cos_lat;
+                    $x = $previous->cos_lat * $next_piont->sin_lat - $previous->sin_lat * $next_piont->cos_lat * cos($next_piont->lonRad - $previous->lonRad);
                     $track_point->bearing = atan2($y, $x) * 180 / M_PI;
                 } else {
                     $track_point->bearing = 0;
