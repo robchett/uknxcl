@@ -365,7 +365,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         $kml->set_gradient_styles(1);
         $kml->set_animation_styles(1);
 
-        $kml->get_kml_folder_open('Track', 1, 'radio', 1);
+        $kml->get_kml_folder_open('Track ' . $this->id, 1, 'radio', 1);
 
         $kml->get_kml_folder_open('Colour By Height', 1, 'hideChildren', 0);
         $kml->add($this->get_colour_by($this->min_ele, $this->maximum_ele, 'ele'));
@@ -1324,6 +1324,24 @@ class task {
     public function get_kml_track($colour, $title = '') {
         $output = '';
         if (isset($this->waypoints)) {
+            $tot = 0;
+            $last = null;
+            $table_inner = '';
+            foreach($this->waypoints as $key=>$point) {
+                $distance = number_format(($last ? $point->get_dist_to($last) : 0),2);
+                $tot += $distance;
+                $table_inner .= '
+                <tr>
+                    <td>' . $key . '</td>
+                    <td>' . $point->lat . '</td>
+                    <td>' . $point->lon . '</td>
+                    <td>' . $point->get_coordinate() . '</td>
+                    <td>' . $distance  . '</td>
+                    <td>' . $tot  . '</td>
+                </tr>';
+                $last = $point;
+            }
+
             $coordinates = $this->waypoints->get_kml_coordinates();
             $output = '
 <Placemark>
@@ -1332,9 +1350,20 @@ class task {
     <description>
         <![CDATA[
         <pre>
-            ' . $title . '
-            Duration             ' . $this->get_formatted_time() . '
-            Score                ' . $this->distance . 'km
+            <table>
+                <thead>
+                    <th style="padding:0 4px">TP</th>
+                    <th style="padding:0 4px">Latitude</th>
+                    <th style="padding:0 4px">Longitude</th>
+                    <th style="padding:0 4px">OS Gridref</th>
+                    <th style="padding:0 4px">Distance</th>
+                    <th style="padding:0 4px">Total</th>
+                </thead>
+                <tbody>
+                    ' . $table_inner . '
+                    <tr><td colspan = "4" style="text-align:right">Duration</td><td colspan="2"  style="text-align:right">' . $this->get_formatted_time() . '</td></tr>
+                </tbody>
+            </table>
         </pre>
         ]]>
     </description>
