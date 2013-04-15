@@ -22,7 +22,6 @@ class comp extends table {
         set_time_limit(0);
         $root = root . '/uploads/comp/' . $this->cid;
         $js_out = fopen($root . '/points.js', 'w');
-        $kml_out = fopen($root . '/track.kml', 'w');
 
         $zip = new ZipArchive;
         if ($zip->open($root . '/comp.zip') === true) {
@@ -74,6 +73,8 @@ class comp extends table {
         }
         $kml_out = new kml();
         $kml_earth = new kml();
+        $kml_out->set_folder_styles();
+        $kml_earth->set_folder_styles();
 
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
@@ -99,8 +100,8 @@ class comp extends table {
                 $html .= $form->get_html();
 
             }
-            $kml_out->add($track->generate_kml_comp(false));
-            $kml_earth->add($track->generate_kml_comp_earth(false));
+            $kml_out->add($track->generate_kml_comp());
+            $kml_earth->add($track->generate_kml_comp_earth());
             // javascript output per pilot
             $tp = 0;
             $madeTp = 0;
@@ -186,6 +187,7 @@ class comp extends table {
         fwrite($js_out, 'var out = ' . json_encode($js));
         $kml_out->add($task->o);
         $kml_out->compile(false, 'uploads/comp/' . $this->cid . '/track.kml');
+        $kml_earth->add($task->o);
         $kml_earth->compile(false, 'uploads/comp/' . $this->cid . '/track_earth.kml');
         $html .= '</div>';
 
@@ -195,9 +197,11 @@ class comp extends table {
     }
 
     public function output_task2() {
+
         $out = new stdClass();
         $out->in = $this->coords;
-        $out->o = "";
+        $out->o = new kml();;
+        $out->o->get_kml_folder_open('Task', 1, 'hideChildren');
         $out->task_array = explode(';', $this->coords);
         foreach ($out->task_array as &$a) {
             $a = explode(',', $a);
@@ -208,7 +212,7 @@ class comp extends table {
             $a[1] = deg2rad($a[1]);
         }
         foreach ($out->task_array as $matches) {
-            $out->o .= "<Placemark>
+            $out->o->add("<Placemark>
         <altitudeMode>clampToGround</altitudeMode>
         <Style>
 	        <PolyStyle>
@@ -227,23 +231,25 @@ class comp extends table {
                 </LinearRing>
             </outerBoundaryIs>
         </Polygon>
-    </Placemark>";
+    </Placemark>");
         }
-        $out->o .= "<Placemark>
+        $out->o->add("<Placemark>
     <LineString>
     <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>";
+        <coordinates>");
 
         foreach ($out->task_array as $cords) {
             $lon = rad2deg($cords [0]);
             $lat = rad2deg($cords[1]);
-            $out->o .= $lat . ',' . $lon . ",-100 ";
+            $out->o->add($lat . ',' . $lon . ",-100 ");
         }
-        $out->o .= "</coordinates>
+        $out->o->add("</coordinates>
     </LineString>
     </Placemark>
-    ";
+    ");
         $out->task = $this->coords;
+        $out->o->get_kml_folder_close();
+        $out->o = $out->o->compile(true);
         return $out;
     }
 

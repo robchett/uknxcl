@@ -324,9 +324,10 @@ class track {
         return $kml->compile(1);
     }
 
-    public function generate_kml_comp() {
-        $output = '';
-        $output .= "\n\t" . '<Placemark>
+    public function generate_kml_comp($visible = false) {
+        $output = '<Folder>';
+        $output .= '<visibility>' . (int)$visible . '</visibility>';
+        $output .= '<Placemark>
         <name>' . $this->name . '</name>
         <description><![CDATA[
         <pre>
@@ -345,14 +346,15 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
           </LineStyle>
         </Style>';
         $output .= $this->get_kml_linestring();
-        $output .= "\n\t" . '</Placemark>';
+        $output .= '</Placemark>';
+        $output .= '</Folder>';
         return $output;
 
     }
 
-    public function generate_kml_comp_earth() {
+    public function generate_kml_comp_earth($visible = true) {
         $kml = new kml();
-        $kml->get_kml_folder_open($this->name, 1, 'hideChildren');
+        $kml->get_kml_folder_open($this->name, $visible, 'hideChildren');
         $kml->add($this->get_kml_time_aware_points(get::kml_colour($this->colour)));
         $kml->get_kml_folder_close();
         return $kml->compile(true);

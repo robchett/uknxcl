@@ -55,7 +55,7 @@ class kml {
     }
 
     public function get_kml_folder_open($title, $visibility = 1, $class = '', $open = false) {
-        $this->content .= "\n<Folder>\n\t<name>" . $title . "</name>\n\t<visibility>" . $visibility . "</visibility>";
+        $this->content .= "\n<Folder>\n\t<name>" . $title . "</name>\n\t<visibility>" . (int)$visibility . "</visibility>";
         if (!empty($class)) $this->content .= "\n\t<styleUrl>#" . $class . "</styleUrl>";
         if ($open)
             $this->content .= "\n\t<open>1</open>";
