@@ -8,12 +8,21 @@ class comp extends table {
         return comp_array::get_all($fields, $options);
     }
 
-    public function generate_kml() {
-        if (isset($_POST['id'])) {
-            $this->do_retrieve_from_id(array(), $_POST['id']);
-            if ($this->cid) {
-                $this->do_zip_to_comp();
-            }
+    public function distCalc2($p, $tp) {
+        $x = (int) (acos(sin($p[0]) * sin($tp[0]) + cos($p[0]) * cos($tp[0]) * cos($p[1] - $tp[1])) * 6371000);
+        return $x;
+    }
+
+    public function distCalc3($point, $tp) {
+        $x = (int) (acos($point->sin_lat * sin($tp[0]) + $point->cos_lat * cos($tp[0]) * cos($point->lonRad - $tp[1])) * 6371000);
+        return $x;
+    }
+
+    public function get_js() {
+        if (isset($_REQUEST['id'])) {
+            $id = (int) $_REQUEST['id'];
+            header("Content-type: application/json");
+            die(preg_replace('/\s+/im', '', file_get_contents(root . 'uploads/comp/' . $id . '/points.js')));
         }
     }
 
@@ -75,6 +84,8 @@ class comp extends table {
         $kml_earth = new kml();
         $kml_out->set_folder_styles();
         $kml_earth->set_folder_styles();
+        $kml_out->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task);
+        $kml_earth->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task);
 
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
@@ -184,23 +195,57 @@ class comp extends table {
             $html .= '<pre>' . $track->log_file . '</pre>';
             $html .= '</div>';
         }
-        fwrite($js_out, 'var out = ' . json_encode($js));
+        fwrite($js_out, json_encode($js));
         $kml_out->add($task->o);
+        $kml_out->get_kml_folder_close();
         $kml_out->compile(false, 'uploads/comp/' . $this->cid . '/track.kml');
         $kml_earth->add($task->o);
+        $kml_earth->get_kml_folder_close();
         $kml_earth->compile(false, 'uploads/comp/' . $this->cid . '/track_earth.kml');
         $html .= '</div>';
 
-        if(ajax) {
+        if (ajax) {
             jquery::colorbox(array('html' => $html));
         }
+    }
+
+
+    /*
+     * @return track
+     * */
+
+    public function generate_kml() {
+        if (isset($_POST['id'])) {
+            $this->do_retrieve_from_id(array(), $_POST['id']);
+            if ($this->cid) {
+                $this->do_zip_to_comp();
+            }
+        }
+    }
+
+    public function get_circle_cords2($cords) {
+        $out = "";
+        $angularDistance = $cords [2] / 6378137;
+        for ($i = 0; $i <= 360; $i++) {
+            $bearing = deg2rad($i);
+            $lat = Asin(Sin($cords [0]) * Cos($angularDistance) + Cos($cords [0]) * Sin($angularDistance) * Cos($bearing));
+
+            $dlon = Atan2(Sin($bearing) * Sin($angularDistance) * Cos($cords [0]), Cos($angularDistance) - Sin($cords [0]) * Sin($lat));
+
+            $lon = fmod(($cords [1] + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $latOut = rad2deg($lat);
+            $lonOut = rad2deg($lon);
+            $out .= "$lonOut,$latOut,0 ";
+        }
+        return $out;
     }
 
     public function output_task2() {
 
         $out = new stdClass();
         $out->in = $this->coords;
-        $out->o = new kml();;
+        $out->o = new kml();
+        ;
         $out->o->get_kml_folder_open('Task', 1, 'hideChildren');
         $out->task_array = explode(';', $this->coords);
         foreach ($out->task_array as &$a) {
@@ -231,12 +276,14 @@ class comp extends table {
                 </LinearRing>
             </outerBoundaryIs>
         </Polygon>
-    </Placemark>");
+    </Placemark>"
+            );
         }
         $out->o->add("<Placemark>
     <LineString>
     <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>");
+        <coordinates>"
+        );
 
         foreach ($out->task_array as $cords) {
             $lon = rad2deg($cords [0]);
@@ -246,62 +293,11 @@ class comp extends table {
         $out->o->add("</coordinates>
     </LineString>
     </Placemark>
-    ");
+    "
+        );
         $out->task = $this->coords;
         $out->o->get_kml_folder_close();
         $out->o = $out->o->compile(true);
-        return $out;
-    }
-
-
-    /*
-     * @return track
-     * */
-
-    public function get_circle_cords2($cords) {
-        $out = "";
-        $angularDistance = $cords [2] / 6378137;
-        for ($i = 0; $i <= 360; $i++) {
-            $bearing = deg2rad($i);
-            $lat = Asin(Sin($cords [0]) * Cos($angularDistance) + Cos($cords [0]) * Sin($angularDistance) * Cos($bearing));
-
-            $dlon = Atan2(Sin($bearing) * Sin($angularDistance) * Cos($cords [0]), Cos($angularDistance) - Sin($cords [0]) * Sin($lat));
-
-            $lon = fmod(($cords [1] + $dlon + M_PI), 2 * M_PI) - M_PI;
-            $latOut = rad2deg($lat);
-            $lonOut = rad2deg($lon);
-            $out .= "$lonOut,$latOut,0 ";
-        }
-        return $out;
-    }
-
-    public function distCalc2($p, $tp) {
-        $x = (int) (acos(sin($p[0]) * sin($tp[0]) + cos($p[0]) * cos($tp[0]) * cos($p[1] - $tp[1])) * 6371000);
-        return $x;
-    }
-
-    public function distCalc3($point, $tp) {
-        $x = (int) (acos($point->sin_lat * sin($tp[0]) + $point->cos_lat * cos($tp[0]) * cos($point->lonRad - $tp[1])) * 6371000);
-        return $x;
-    }
-
-    protected function get_circle_cords($wpt) {
-        $out = "";
-        $cords = explode(',', $wpt);
-        $latRad = deg2rad($cords [0]);
-        $lonRad = deg2rad($cords [1]);
-        $angularDistance = $cords [2] / 6378137;
-        for ($i = 0; $i <= 360; $i++) {
-            $bearing = deg2rad($i);
-            $lat = Asin(Sin($latRad) * Cos($angularDistance) + Cos($latRad) * Sin($angularDistance) * Cos($bearing));
-
-            $dlon = Atan2(Sin($bearing) * Sin($angularDistance) * Cos($latRad), Cos($angularDistance) - Sin($latRad) * Sin($lat));
-
-            $lon = fmod(($lonRad + $dlon + M_PI), 2 * M_PI) - M_PI;
-            $latOut = rad2deg($lat);
-            $lonOut = rad2deg($lon);
-            $out .= "$lonOut,$latOut,0 ";
-        }
         return $out;
     }
 
@@ -323,12 +319,32 @@ class comp extends table {
                         mkdir(root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key});
                     }
                     move_uploaded_file($tmp_name, root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip');
-                    db::query('UPDATE comp SET file=:file WHERE cid=:cid', array('file' => '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip', 'cid' =>$this->cid));
+                    db::query('UPDATE comp SET file=:file WHERE cid=:cid', array('file' => '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip', 'cid' => $this->cid));
                 }
             }
         } else {
             parent::do_upload_file($field);
         }
+    }
+
+    protected function get_circle_cords($wpt) {
+        $out = "";
+        $cords = explode(',', $wpt);
+        $latRad = deg2rad($cords [0]);
+        $lonRad = deg2rad($cords [1]);
+        $angularDistance = $cords [2] / 6378137;
+        for ($i = 0; $i <= 360; $i++) {
+            $bearing = deg2rad($i);
+            $lat = Asin(Sin($latRad) * Cos($angularDistance) + Cos($latRad) * Sin($angularDistance) * Cos($bearing));
+
+            $dlon = Atan2(Sin($bearing) * Sin($angularDistance) * Cos($latRad), Cos($angularDistance) - Sin($latRad) * Sin($lat));
+
+            $lon = fmod(($lonRad + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $latOut = rad2deg($lat);
+            $lonOut = rad2deg($lon);
+            $out .= "$lonOut,$latOut,0 ";
+        }
+        return $out;
     }
 
 
