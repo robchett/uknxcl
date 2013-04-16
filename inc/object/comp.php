@@ -84,8 +84,8 @@ class comp extends table {
         $kml_earth = new kml();
         $kml_out->set_folder_styles();
         $kml_earth->set_folder_styles();
-        $kml_out->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task);
-        $kml_earth->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task);
+        $kml_out->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task, 1, '', true);
+        $kml_earth->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task, 1, '', true);
 
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
