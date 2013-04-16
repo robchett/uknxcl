@@ -324,10 +324,9 @@ class track {
         return $kml->compile(1);
     }
 
-    public function generate_kml_comp($visible = false) {
-        $output = '<Folder>';
-        $output .= '<visibility>' . (int)$visible . '</visibility>';
-        $output .= '<Placemark>
+    public function get_comp_kml_description() {
+        return '
+        <Placemark>
         <name>' . $this->name . '</name>
         <description><![CDATA[
         <pre>
@@ -338,24 +337,33 @@ Start/finish         ' . $this->start_time(true) . '-' . $this->end_time(true) .
 Duration             ' . $this->get_duration(true) . '
 Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
             </pre>]]>
-        </description>
+        </description>';
+    }
+
+    public function generate_kml_comp($visible = true) {
+        $kml = new kml();
+        $kml->get_kml_folder_open($this->name, $visible, 'hideChildren');
+        $kml->add($this->get_comp_kml_description());
+        $kml->add('
         <Style>
           <LineStyle>
             <color>FF' . get::kml_colour($this->colour) . '</color>
             <width>2</width>
           </LineStyle>
-        </Style>';
-        $output .= $this->get_kml_linestring();
-        $output .= '</Placemark>';
-        $output .= '</Folder>';
-        return $output;
+        </Style>');
+        $kml->add($this->get_kml_linestring());
+        $kml->add('</Placemark>');
+        $kml->get_kml_folder_close();
+        return $kml->compile(true);
 
     }
 
     public function generate_kml_comp_earth($visible = true) {
         $kml = new kml();
         $kml->get_kml_folder_open($this->name, $visible, 'hideChildren');
+        $kml->add($this->get_comp_kml_description());
         $kml->add($this->get_kml_time_aware_points(get::kml_colour($this->colour)));
+        $kml->add('</Placemark>');
         $kml->get_kml_folder_close();
         return $kml->compile(true);
     }
