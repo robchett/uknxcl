@@ -148,6 +148,83 @@ function UKNXCL_Map($container) {
         }
     };
 
+    this.parseKML = function (url) {
+        google.earth.fetchKml(this.ge, 'http://uk.local.com' + url, function(kmlObject){
+            if(!kmlObject){  alert('Error loading KML'); }
+            map.ge.getFeatures().appendChild(kmlObject);
+            kmlObject.setVisibility(true);
+            map.comp.google_data = map.extractKMLData(kmlObject);
+            map.comp.is_ready();
+        });
+    }
+
+    this.getListItemType = function(style){
+        var listItemType = 'check';
+        var lstyle = style.getListStyle();
+        if(lstyle){
+            var ltype = lstyle.getListItemType();
+            switch(ltype){
+                case 0:
+                    // 'check'
+                    break;
+                case 5:
+                    listItemType = 'radioFolder';
+                    break;
+                case 2:
+                    listItemType = 'checkOffOnly';
+                    break;
+                case 3:
+                    listItemType = 'checkHideChildren';
+                    break;
+            }
+        }
+        return listItemType;
+    };
+
+    this.extractKMLData = function(kmlObject) {
+        var data = {root: kmlObject, name: kmlObject.getName(), children: []};
+            google.earth.executeBatch(this.ge, function(){
+            map.gex.dom.walk({
+                visitCallback: function(context){
+                    var parent = context.current;
+                    var name = this.getName();
+                    var id = '';
+                    var type = this.getType();
+                    var geotype = false;
+                    if(type === 'KmlPlacemark'){
+                        var geo = this.getGeometry();
+                        if(geo){
+                            geotype = geo.getType();
+                        }
+                    }
+                    var style = this.getComputedStyle();
+                    var child = {
+                        name: name || '&nbsp;',
+                        visible: !!this.getVisibility(),
+                        type: type,
+                        open: this.getOpen(),
+                        id: id,
+                        description: this.getDescription(),
+                        style: style,
+                        listItemType: map.getListItemType(style),
+                        children: [],
+                        geoType: geotype,
+                        root: context
+                    }
+                    parent.children.push(child);
+                    if(child.listItemType !== 'checkHideChildren'){
+                        context.child = child;
+                    }else{
+                        context.walkChildren = false;
+                    }
+                },
+                rootObject: kmlObject,
+                rootContext: data
+            });
+        });
+        return data;
+    }
+
     function isNumber(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
@@ -245,6 +322,7 @@ function UKNXCL_Map($container) {
     };
 
     this.add_comp = function (id) {
+        $('#comp_list').prepend('<div class="loading_shroud">Loading...</div>');
         if (this.comp !== null) {
             this.comp.remove();
         }
@@ -257,6 +335,8 @@ function UKNXCL_Map($container) {
             }
         }
         if (id !== '0') {
+            $('#tree_content .comp_' + id).remove();
+            $('#tree_content').append('<div class="comp_' + id + '"></div>');
             this.comp = new Comp(id);
         }
     };
@@ -335,7 +415,7 @@ function UKNXCL_Map($container) {
     this.load_earth = function () {
         google.load("earth", "1", {'callback': 'map.init_earth'});
         $('#map_interface_3d').find('span.show').click(function () {
-            $('#map_interface_3d').stop().animate({left: -200});
+            $('#map_interface_3d').stop().animate({left: -250});
             $('#map_interface_3d').find('span.show').hide();
             $('#map_interface_3d').find('span.hide').show();
         });
@@ -451,7 +531,7 @@ function Track(id, temp) {
     };
 
     this.is_ready = function () {
-        if (this.nxcl_data && this.google_data) {
+        if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
             map.swap(this);
@@ -533,18 +613,11 @@ function Comp(id) {
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
             map.GeoXMLcomp.parse('/uploads/comp/' + this.id + '/track.kml?' + Math.floor(Math.random() * 1000), null, id);
-        } else {
-            this.tree = kmltree({
-                url: 'http://uk.local.com/uploads/comp/' + this.temp + this.id + '/track_earth.kml',
-                gex: map.gex,
-                mapElement: $('#map3d'),
-                element: $('#tree_content .comp_' + id),
-                restoreState: false
-            });
-            this.tree.load();
             this.google_data = true;
+            this.is_ready();
+        } else {
+            map.parseKML('/uploads/comp/' + this.id + '/track.kml');
         }
-
     };
 
     this.add_nxcl_data = function () {
@@ -579,28 +652,14 @@ function Comp(id) {
     };
 
     this.is_ready = function () {
-        if (this.nxcl_data && this.google_data) {
+        if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            var pilotsOut = "<table>" + "<tr><th> Name </th><th/><th> Track </th><th> Graph</th><th>Waypoints out of " + this.nxcl_data.turnpoints + "</th></tr>" + "<tr><td> <a>Add/Remove All</a> </td> <td/> <td> <input type='checkbox' checked='checked' onclick='map.comp.toggle_track(null,this.checked)' /> </td><td> <input type='checkbox' name='graph' onclick='map.comp.toggle_graph(null,this.checked)' checked='checked'/></td></tr>";
-            for (var i in this.nxcl_data.track) {
-                if (this.nxcl_data.track[i]) {
-                    var t = this.nxcl_data.track[i];
-                    pilotsOut += "<tr><td><a style='color:#" + t.colour + "'>" + t.pilot + "</a></td>" + "<td><img width='15' height='24' src='../img/Markers/" + t.colour + "-" + t.pilot[0] + ".png'/></td>" + "<td><input type='checkbox' checked='checked' onclick='map.comp.toggle_track(" + i + ",this.checked)' class='track'/>" + "<td><input type='checkbox' checked='checked' onclick='map.comp.toggle_graph(" + i + ",this.checked)' class='graph'/></td><td>";
-                    for (var j = 0; j < this.nxcl_data.turnpoints; j++) {
-                        if (j < t.turnpoint) {pilotsOut += '<img src="/img/tick.png" height="10" width="10"/>';}
-                        if (j === t.turnpoint) {pilotsOut += '<img src="/img/bomb.jpg" height="10" width="10"/>';}
-                    }
-                    if (this.nxcl_data.turnpoints === t.turnpoint) {pilotsOut += '<img src="/img/goal.jpg" height="10" width="10"/>';}
-                    pilotsOut += "</td><td>" + t.score + "</td></tr>";
-                }
-            }
-            pilotsOut += "<tr><td>Task Map</a></td>" + "<td></td>" + "<td><input type='checkbox' checked='checked' onclick='map.toggle_task(this," + i + ")' id='check" + i + "'/>" + "<td></td></tr></table>";
-            $('#WriteHereComp').html(pilotsOut);
+            $('#WriteHereComp').html(this.nxcl_data.html);
             $('#comp_inner').animate({'left': -730});
+            $('#comp_list .loading_shroud').remove();
             map.graph.swap(this);
             map.swap(this);
-
         }
     };
 
@@ -1120,10 +1179,12 @@ function trackDataArray() {
                 this[i] = json[i];
             }
         }
+        this.loaded = true;
     };
 }
 
 function trackData() {
+    this.loaded = false;
     this.drawGraph = 1;
     this.pilot = 0;
     this.colour = 0;
@@ -1141,8 +1202,41 @@ function trackData() {
                 this[i] = json[i];
             }
         }
+        this.loaded =  true;
     };
 }
 
 var map = new UKNXCL_Map($("#map_wrapper"));
 map.load_earth();
+
+$('body').on('click', '.kmltree.new .toggler' , function() {
+    var $li = $(this).parent();
+    var data = $li.data("path");
+    var kml = data.type == "comp" ? map.comp.google_data.root : map.kmls[data.path].root;
+
+    if(data.path !== null) {
+        for(i in data.path) {
+            kml = kml.getFeatures().getChildNodes().item(data.path[i]);
+        }
+    }
+    if($li.hasClass('visible')) {
+        kml.setVisibility(false);
+        $li.removeClass('visible');
+        $li.find('li').removeClass('visible');
+    } else {
+        kml.setVisibility(true);
+        $li.addClass('visible');
+        $li.find('li').addClass('visible');
+    }
+});
+
+$('body').on('click', '.kmltree.new .expander' , function() {
+    var $li = $(this).parent();
+    if($li.hasClass('open')) {
+        $li.removeClass('open');
+        $li.find('li').removeClass('open');
+    } else {
+        $li.addClass('open');
+        $li.find('li').addClass('open');
+    }
+});

@@ -50,7 +50,7 @@ class comps extends core_module {
 
         $html .= '<div id="comp_view">';
         $html .= '<div id="WriteHereComp"></div>';
-        $html .= '<a class="comp_back">Back To List</a>';
+        $html .= '<a class="comp_back button">Back To List</a>';
         $html .= "</div>";
 
         $html .= "</div>";
