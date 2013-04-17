@@ -18,19 +18,10 @@ class comp extends table {
         return $x;
     }
 
-    public function get_js() {
-        if (isset($_REQUEST['id'])) {
-            $id = (int) $_REQUEST['id'];
-            header("Content-type: application/json");
-            die(preg_replace('/\s+/im', '', file_get_contents(root . 'uploads/comp/' . $id . '/points.js')));
-        }
-    }
-
     public function do_zip_to_comp() {
-        $html = '';
         set_time_limit(0);
+        $html = '';
         $root = root . '/uploads/comp/' . $this->cid;
-        $js_out = fopen($root . '/points.js', 'w');
 
         $zip = new ZipArchive;
         if ($zip->open($root . '/comp.zip') === true) {
@@ -84,9 +75,10 @@ class comp extends table {
         $kml_earth = new kml();
         $kml_out->set_folder_styles();
         $kml_earth->set_folder_styles();
-        $kml_out->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task, 1, '', true);
-        $kml_earth->get_kml_folder_open($this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task, 1, '', true);
-
+        $this->combined_name = $this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task;
+        $kml_out->get_kml_folder_open($this->combined_name, 1, '', true);
+        $kml_earth->get_kml_folder_open($this->combined_name, 1, '', true);
+        $json_html = '<div class="kmltree new"><ul class="kmltree"><li data-path=\'{"type":"comp","path":[0]}\' class="kmltree-item check KmlFolder visible open"><div class="expander"></div><div class="toggler"></div>' . $this->combined_name . '<ul>';
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
         $js->EndT = $endT - mktime(0, 0, 0);
@@ -103,17 +95,14 @@ class comp extends table {
             if (isset($_REQUEST['add'])) {
                 $form = new comp_convert();
                 $form->get_field_from_name('file')->value = $track->source;
-                $form->get_field_from_name('pilot')->options = alphabeticalise::pilot_array(substr($track->pilot, 0, 5));
-                $form->get_field_from_name('glider')->options = alphabeticalise::glider_array();
-                $form->get_field_from_name('club')->options = alphabeticalise::club_array();
                 $form->get_field_from_name('comp')->value = $track->cid;
                 $form->get_field_from_name('vis_info')->value = $this->title . ' - ' . $this->type;
                 $html .= $form->get_html();
 
             }
+            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder checkHideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . get::kml_colour($track->colour) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             $kml_earth->add($track->generate_kml_comp_earth());
-            // javascript output per pilot
             $tp = 0;
             $madeTp = 0;
             $dist = 0;
@@ -172,19 +161,16 @@ class comp extends table {
             for ($i = 0; $i < 1000; $i++) {
                 $time = $startT + ($i * $timeSteps);
                 if ($time < $track->track_points->first()->time) {
-                    $js_track->coords[] = $track->track_points->first()
-                        ->get_js_coordinate($track->track_points->first()->time - $startT);
+                    $js_track->coords[] = $track->track_points->first()->get_js_coordinate($track->track_points->first()->time - $startT);
                     continue;
                 }
                 if ($time > $track->track_points->last()->time) {
-                    $js_track->coords[] = $track->track_points->last()
-                        ->get_js_coordinate($track->track_points->last()->time - $startT);
+                    $js_track->coords[] = $track->track_points->last()->get_js_coordinate($track->track_points->last()->time - $startT);
                     continue;
                 }
                 for ($p = $tp; $p < $track->track_points->count(); $p++) {
                     if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
-                        $js_track->coords[] = $track->track_points[$p]
-                            ->get_js_coordinate($track->track_points[$p]->time - $startT);
+                        $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
                         $tp = $p;
                         break;
                     }
@@ -195,7 +181,9 @@ class comp extends table {
             $html .= '<pre>' . $track->log_file . '</pre>';
             $html .= '</div>';
         }
-        fwrite($js_out, json_encode($js));
+        $json_html .= '</ul></li></ul></div>';
+        $js->html = $json_html;
+        file_put_contents($root . '/points.js', json_encode($js));
         $kml_out->add($task->o);
         $kml_out->get_kml_folder_close();
         $kml_out->compile(false, 'uploads/comp/' . $this->cid . '/track.kml');
@@ -209,11 +197,6 @@ class comp extends table {
         }
     }
 
-
-    /*
-     * @return track
-     * */
-
     public function generate_kml() {
         if (isset($_POST['id'])) {
             $this->do_retrieve_from_id(array(), $_POST['id']);
@@ -222,6 +205,11 @@ class comp extends table {
             }
         }
     }
+
+
+    /*
+     * @return track
+     * */
 
     public function get_circle_cords2($cords) {
         $out = "";
@@ -238,6 +226,14 @@ class comp extends table {
             $out .= "$lonOut,$latOut,0 ";
         }
         return $out;
+    }
+
+    public function get_js() {
+        if (isset($_REQUEST['id'])) {
+            $id = (int) $_REQUEST['id'];
+            header("Content-type: application/json");
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/comp/' . $id . '/points.js')));
+        }
     }
 
     public function output_task2() {
