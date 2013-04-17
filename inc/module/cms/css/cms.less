@@ -295,6 +295,27 @@ table#module_def {
 
 }
 
+a.reorder {
+  display: block;
+  width: 9px;
+  height: 8px;
+  text-indent: -9999px;
+  margin: auto;
+  cursor: pointer;
+  &.up {
+    background: url(/img/sprites.png) -72px -89px;
+    &:hover{
+      background-position: -83px -89px;
+    }
+  }
+  &.down {
+    background: url(/img/sprites.png) -72px -98px;
+    &:hover{
+      background-position: -83px -98px;
+    }
+  }
+}
+
 #cboxOverlay {
   background-color: #919191;
   position: fixed;
