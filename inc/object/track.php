@@ -361,9 +361,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
     public function generate_kml_comp_earth($visible = true) {
         $kml = new kml();
         $kml->get_kml_folder_open($this->name, $visible, 'hideChildren');
-        $kml->add($this->get_comp_kml_description());
         $kml->add($this->get_kml_time_aware_points(get::kml_colour($this->colour)));
-        $kml->add('</Placemark>');
         $kml->get_kml_folder_close();
         return $kml->compile(true);
     }
@@ -629,7 +627,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             if (!$col)
                 $output .= '<styleUrl>#S' . $current_level . '</styleUrl>';
             else
-                $output .= '<Style><LineStyle><color>FF' . $col . '</color><width>2</width></LineStyle></Style>';
+                $output .= '<Style><LineStyle><color>FF' . $col . '</color><colorMode>normal</colorMode><width>2</width></LineStyle></Style>';
             $output .= kml::get_timespan($this->track_points[$i]->time, $this->track_points[$i + 1]->time) . '
 			<LineString>
 				<altitudeMode>absolute</altitudeMode>
