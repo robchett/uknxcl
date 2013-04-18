@@ -284,8 +284,7 @@ class table_array extends ArrayObject {
 
     }
 
-    public function iterate($function) {
-        $cnt = 0;
+    public function iterate($function, $cnt = 0) {
         while ($obj = $this->next()) {
             $cnt++;
             call_user_func_array($function, array($obj, $cnt));
