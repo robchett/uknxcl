@@ -73,7 +73,7 @@ class igc_upload_form extends form {
             $html .= $this->get_choose_score_html($track, $start, $end, $defined);
         }
         ajax::update('<div id="console">' . $html . '</div>');
-        ajax::add_script('map.addFlight(' . $track->id . ',1,1,1);');
+        ajax::add_script('map.add_flight(' . $track->id . ',1,1,1);');
     }
 
     private function get_choose_track_html(track $track) {

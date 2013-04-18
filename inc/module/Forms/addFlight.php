@@ -28,14 +28,14 @@ if (isset($_POST['typeChoice'])) {
     $end = "
         <script language='javascript' type='text/javascript'>
         window.top.window.stopUpload(document.getElementById('Result').innerHTML,'WriteHereNewFlight');
-        window.top.window.map.addFlight($id,0,1);
-        window.top.window.addFlightReset();
+        window.top.window.map.add_flight($id,0,1);
+        window.top.window.add_flightReset();
     </script>";
 } else if (isset($_POST['cancel'])) {
     $end = "
         <script language='javascript' type='text/javascript'>
             window.top.window.stopUpload(document.getElementById('Result').innerHTML,'WriteHereNewFlight');
-            window.top.window.addFlightReset();
+            window.top.window.add_flightReset();
         </script>";
 }
 echo $end;

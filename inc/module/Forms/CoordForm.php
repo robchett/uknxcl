@@ -1,6 +1,6 @@
 <h3>New flight with coordinates</h3>
 <form name="coord" id="input" target="upload_target" onsubmit="startUpload('WriteHereNewFlight');"
-      action="/inc/module/AddFlight/coordOnly.php" method="post">
+      action="/inc/module/add_flight/coordOnly.php" method="post">
     <table>
         <thead>
         <tr>
