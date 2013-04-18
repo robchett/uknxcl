@@ -116,7 +116,7 @@ class flight extends table {
 
         if (file_exists(root . '/uploads/track/' . $id . '/track.kml')) {
             $html .= '
-            <tr><td colspan="2" class="center"><a href="#" class="button" onclick="map.addFlight(' . $id . ')">Add trace to Map</a></td></tr>
+            <tr><td colspan="2" class="center"><a href="#" class="button" onclick="map.add_flight(' . $id . ')">Add trace to Map</a></td></tr>
             <tr>
                 <td class="center" colspan="2">
                     <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $id . '" title="Download IGC" class="download igc">Download IGC</a>
@@ -124,7 +124,7 @@ class flight extends table {
                 </td>
             </tr>';
         } else {
-            $html .= '<tr><td colspan="2" class="center"><input type="submit" onclick="map.addFlightC(\'' . $this->coords . '\',' . $id . ')" value="Add coordinates to map"/></td></tr>';
+            $html .= '<tr><td colspan="2" class="center"><input type="submit" onclick="map.add_flightC(\'' . $this->coords . '\',' . $id . ')" value="Add coordinates to map"/></td></tr>';
         }
 
         $html .= '</table>';
@@ -137,7 +137,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', '', file_get_contents(root . 'uploads/track/' . $id . '/Track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/track/' . $id . '/Track.js')));
         }
     }
 

@@ -188,7 +188,7 @@ li.KmlPlacemark > .expander, li.KmlPhotoOverlay > .expander, li.KmlGroundOverlay
 li.KmlPlacemark > span.name, li.select > span.name {
 	cursor: pointer; }
 
-div.kmltree li.checkHideChildren ul, div.kmltree li.checkHideChildren .expander {
+div.kmltree li.hideChildren ul, div.kmltree li.hideChildren .expander {
 	display: none; }
 
 div.kmltree .icon {

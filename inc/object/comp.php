@@ -31,7 +31,7 @@ class comp extends table {
             die('zip extraction failed');
         }
 
-        $track_array = array();
+        $track_array = new table_array();
         $cnt = 0;
         foreach (glob($root . '/tracks/*.igc') as $file) {
             $cnt++;
@@ -51,12 +51,15 @@ class comp extends table {
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
-        usort($track_array, array($this, 'cmp'));
+        $this->bounds = new coordinate_bound();
+        $track_array->reset_iterator();
+        $track_array->uasort(function($a, $b) {
+            return ($a->name < $b->name) ? -1 : 1;
+        });
 
         $startT = 100000000000000000000;
         $endT = 0;
-        $cnt = -1;
-        foreach ($track_array as $track) {$cnt++;
+        $track_array->iterate(function(track $track, $cnt) use (&$startT, &$endT) {
             $track->colour = $cnt;
             if ($track->track_points->last()->time > $endT) {
                 $endT = $track->track_points->last()->time;
@@ -64,7 +67,8 @@ class comp extends table {
             if ($track->track_points->first()->time < $startT) {
                 $startT = $track->track_points->first()->time;
             }
-        }
+            $this->bounds->add_bounds_to_bound($track->bounds);
+        }, -1);
         $timeSteps = ($endT - $startT) / 1000;
         $task = $this->output_task2();
         $turnpoints = count($task->task_array);
@@ -101,7 +105,7 @@ class comp extends table {
                 $html .= $form->get_html();
 
             }
-            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder checkHideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour),4, 2) . substr(get::kml_colour($track->colour),2,2) . substr(get::kml_colour($track->colour),0, 2) . '">' . $track->name . '</span></li>';
+            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour),4, 2) . substr(get::kml_colour($track->colour),2,2) . substr(get::kml_colour($track->colour),0, 2) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             $kml_earth->add($track->generate_kml_comp_earth());
             $tp = 0;
@@ -157,6 +161,7 @@ class comp extends table {
             $js_track->turnpoint = $madeTp;
             $js_track->score = $dist / 1000;
             $js_track->coords = array();
+            $js_track->bounds = $track->bounds->get_js();
 
             $tp = 0;
             for ($i = 0; $i < 1000; $i++) {
@@ -184,6 +189,7 @@ class comp extends table {
         }
         $json_html .= '</ul></li></ul></div>';
         $js->html = $json_html;
+        $js->bounds = $this->bounds->get_js();
         file_put_contents($root . '/points.js', json_encode($js));
         $kml_out->add($task->o);
         $kml_out->get_kml_folder_close();
@@ -296,13 +302,6 @@ class comp extends table {
         $out->o->get_kml_folder_close();
         $out->o = $out->o->compile(true);
         return $out;
-    }
-
-    protected function cmp($a, $b) {
-        if ($a->name == $b->name) {
-            return 0;
-        }
-        return ($a->name < $b->name) ? -1 : 1;
     }
 
     protected function do_upload_file(field $field) {
