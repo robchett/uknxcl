@@ -48,7 +48,6 @@ class comp extends table {
             $track->trim();
             $track->repair_track();
             $track->get_limits();
-            $track->colour = $cnt;
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
@@ -56,7 +55,9 @@ class comp extends table {
 
         $startT = 100000000000000000000;
         $endT = 0;
-        foreach ($track_array as $track) {
+        $cnt = -1;
+        foreach ($track_array as $track) {$cnt++;
+            $track->colour = $cnt;
             if ($track->track_points->last()->time > $endT) {
                 $endT = $track->track_points->last()->time;
             }
@@ -100,7 +101,7 @@ class comp extends table {
                 $html .= $form->get_html();
 
             }
-            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder checkHideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . get::kml_colour($track->colour) . '">' . $track->name . '</span></li>';
+            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder checkHideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour),4, 2) . substr(get::kml_colour($track->colour),2,2) . substr(get::kml_colour($track->colour),0, 2) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             $kml_earth->add($track->generate_kml_comp_earth());
             $tp = 0;
