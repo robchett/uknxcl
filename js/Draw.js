@@ -21,13 +21,13 @@ function UKNXCL_Map($container) {
     this.mode = this.EARTH;
     /*@param {google.earth}*/
     this.ge = null;
-    this.trees = [];
     this.map = null;
     this.obj = null;
     this.kmls = [];
     this.drawRadius = false;
     this.timer = 0;
-    this.playCycles = 0;
+    this.playCycles = 10;
+    this.playCount = 0;
     this.comp = null;
     this.Waypointmode = false;
     this.visible_flight_types = [true, true, true, true];
@@ -56,12 +56,6 @@ function UKNXCL_Map($container) {
             mapTypeId: google.maps.MapTypeId.TERRAIN,
             streetViewControl: false
         });
-        var custom_ui = document.createElement('div');
-        custom_ui.id = 'custom_ui';
-        var script = document.createElement('script');
-        script.innerHTML = 'setTimeout(function(){map.load_custom_ui()},5000);';
-        custom_ui.appendChild(script);
-        this.internal_map.controls[google.maps.ControlPosition.TOP_RIGHT].push(custom_ui);
 
         this.radiusCircle = new google.maps.Circle({
             center: new google.maps.LatLng(0, 0),
@@ -78,7 +72,7 @@ function UKNXCL_Map($container) {
             processStyles: true,
             afterParse: function (doc) {
                 var path = doc[0].baseUrl.split('/');
-                if (isNumber(path[3])) {
+                if ((path[3].isNumber())) {
                     map.kmls[path[3]].google_data = doc[0];
                     map.kmls[path[3]].is_ready();
                 } else {
@@ -98,44 +92,16 @@ function UKNXCL_Map($container) {
         });
     };
 
-    this.load_custom_ui = function () {
-        if (!$('#custom_ui').children("div").length) {
-            $("#custom_ui").html('<div id="flight_types_selector" class="maps_ui_option">' + '<div class="title">Track Types</div>' + '<ul>' + '<li><a onclick="map.toggle_type(1)"><span id="type_1_toggle" class="' + (!map.showing(1) ? 'hidden' : '') + '"><div></div></span><label style="color:blue">Open Distance</label></a></li>' + '<li><a onclick="map.toggle_type(2)"><span id="type_2_toggle" class="' + (!map.showing(2) ? 'hidden' : '') + '"><div></div></span><label style="color:green">Out and Return</label></a></li>' + '<li><a onclick="map.toggle_type(3)"><span id="type_3_toggle" class="' + (!map.showing(3) ? 'hidden' : '') + '"><div></div></span><label style="color:red">Triangle</label></a></li>' + '</ul>' + '</div>' + '<div class="maps_ui_option" id="drawn_flights">' + '<div class="title">Flights</div>' + '<ul></ul>' + '</div>' + '<div id="airspace_selector" class="maps_ui_option">' + '<div class="title">Airspace</div>' + '<ul>' + '<li><p>THIS IS FOR USE AS A GUIDE ONLY</p></li>' + '<li><a onclick="map.toggle_airspace(\'PROHIBITED\');"><span id="airspace_PROHIBITED" class="' + (this.airspace.isVisible('PROHIBITED') ? 'hidden' : '') + '"><div></div></span><label>PROHIBITED</label></a></li>' + '<li><a onclick="map.toggle_airspace(\'RESTRICTED\');"><span id="airspace_RESTRICTED" class="' + (this.airspace.isVisible('RESTRICTED') ? 'hidden' : '') + '"><div></div></span><label>RESTRICTED</label></a></li>' + '<li><a onclick="map.toggle_airspace(\'DANGER\');"    ><span id="airspace_DANGER"     class="' + (this.airspace.isVisible('DANGER') ? 'hidden' : '') + '"><div></div></span><label>DANGER</label></a></li>' + '<li><a onclick="map.toggle_airspace(\'OTHER\');"     ><span id="airspace_OTHER"      class="' + (this.airspace.isVisible('OTHER') ? 'hidden' : '') + '"><div></div></span><label>OTHER</label></a></li>' + '<li><a onclick="map.toggle_airspace(\'CTACTR\');"    ><span id="airspace_CTACTR"     class="' + (this.airspace.isVisible('CTRCTA') ? 'hidden' : '') + '"><div></div></span><label>CTR/CTA</label></a></li>' + '<li><a onclick="map.toggle_airspace(\'ALL\');"       ><span id="airspace_ALL"        class="' + (this.airspace.isVisible('ALL') ? 'hidden' : '') + '"><div></div></span><label>All</label></a></li>' + '<li><a onchange="map.airspace.setHeight(this.value);map.airspace.reload();"><label>Change Height Base</label><select >' + '<option value="4000">4000</option>' + '<option value="4500">4500</option>' + '<option value="5000">5000</option>' + '<option value="5500">5500</option>' + '<option value="6000">6000</option>' + '<option value="6500">6500</option>' + '<option value="7000">7000</option>' + '<option value="7500" selected>7500</option></a></li>' + '<li><a onclick="map.airspace.varyWithTrack=true;" title="Show only airspace that you would cross at your current height level. Move through the track, if your marker is within a coloured zone you have likely entered airspace" class="help"><span><div></div></span><label>vary with flight height [?]</label></a></li>' + '</ul>' + '</div>');
-            $('.maps_ui_option').hover(function () {
-                $('.maps_ui_option ul').hide();
-                $(this).children('ul').stop().show();
-            }, function () {
-                $(this).children('ul').stop().delay(1000).hide(1);
-            });
-        }
-    };
-
-    //    this.$slider.slider({
-    //        max: 0,
-    //        value: 0,
-    //        slide: function (event, ui) {
-    //            map.move(ui.value);
-    //        }
-    //    });
-
-    this.toggle_task = function (bool) {
-        if (typeof this.obj === 'object') {
-            this.obj.toggle_task(bool);
-        }
-    };
-
     this.swap = function (obj) {
-        if (this.obj) {
-            this.obj.hide();
-        }
+        if (this.obj) { this.obj.hide(); }
         obj.show();
+        obj.center();
 
         if (obj.type === 0 && map.mode === map.MAP) {
             this.internal_map.fitBounds(obj.get_bounds());
         }
         //this.$slider.slider({max: obj.size()});
         this.graph.swap(obj);
-        this.writeList(obj.id);
         $('#airspace').hide();
         this.obj = obj;
     };
@@ -160,29 +126,12 @@ function UKNXCL_Map($container) {
         });
     }
 
-    function isNumber(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-
     this.showing = function (a) {
         return this.visible_flight_types[a];
     };
 
-    this.toggle_type = function (a) {
-        this.visible_flight_types[a] = !this.visible_flight_types[a];
-        $('#type_' + a + '_toggle').toggleClass('hidden');
-        if (this.obj && this.obj.nxcl_data) {
-            if (this.visible_flight_types[a]) {
-                this.obj.google_data.gpolylines[a].setMap(this.internal_map);
-            } else {
-                this.obj.google_data.gpolylines[a].setMap(null);
-            }
-        }
-    };
-
     this.toggle_airspace = function (type) {
         $('#airspace_' + type).toggleClass('hidden');
-
         this.airspace.setVisible(type, !this.airspace.isVisible(type));
         this.airspace.reload();
     };
@@ -202,7 +151,7 @@ function UKNXCL_Map($container) {
     };
 
     this.play = function () {
-        this.playCycles = Math.floor($('#slider').slider('option', 'max') / 600);
+        this.playCycles = this.obj.size() / 100;
         this.playing();
     };
 
@@ -211,12 +160,10 @@ function UKNXCL_Map($container) {
     };
 
     this.playing = function () {
-        if (this.$slider.slider('value') < this.$slider.slider('option', 'max') - this.playCycles) {
-            this.$slider.slider('value', this.$slider.slider('value') + this.playCycles);
-            this.move(this.$slider.slider('value'));
+        if (this.playCount < this.obj.size()  - this.playCycles) {
+            this.move(this.playCount += this.playCycles);
         } else {
-            this.move(this.$slider.slider('value'));
-            this.$slider.slider('option', 'value', this.$slider.slider('option', 'max'));
+            this.move(this.obj.size());
             clearTimeout(this.timer);
             return;
         }
@@ -226,21 +173,16 @@ function UKNXCL_Map($container) {
     this.add_flightC = function (cords, id) {
         var array2 = [];
         var parms = cords.split(';');
-        for (var i in parms) {
-            if (parms[i]) {
-                var cord = new Coordinate();
-                cord.set_from_OS(parms[i]);
-                array2[i] = new google.maps.LatLng(cord.lat(), cord.lng());
-            }
-        }
+        parms.each(function (os) {
+            var cord = new Coordinate();
+            cord.set_from_OS(os);
+            array2[i] = new google.maps.LatLng(cord.lat(), cord.lng());
+        });
         var Polyopt = {path: array2, strokeOpacity: 1.0, strokeWeight: 2, map: map.internal_map, strokeColor: 'FF0000'};
         this.coordinate_tracks.push([id, new google.maps.Polyline(Polyopt)]);
     };
 
     this.add_flight = function (id, airspace, reload_flight, temp) {
-        if (this.comp !== null) {
-            this.comp.hide();
-        }
         $('#tree_content .track_' + id).remove();
         $('#tree_content').append('<div class="track_' + id + '"></div>');
         if (this.kmls[id] === undefined || reload_flight) {
@@ -255,32 +197,9 @@ function UKNXCL_Map($container) {
         if (this.comp !== null) {
             this.comp.remove();
         }
-        if (this.mode === this.MAP) {
-            if (!this.airspace.enabled) {
-                $('#airspace').hide();
-                $('#Airspace').attr('disabled', 'disabled');
-                this.airspace.loadAll(false);
-                this.airspace.reload();
-            }
-        }
-        if (id !== '0') {
-            $('#tree_content .comp_' + id).remove();
-            $('#tree_content').append('<div class="comp_' + id + '"></div>');
-            this.comp = new Comp(id);
-        }
-    };
-
-
-    this.writeList = function (id) {
-        var out = '';
-        for (var a in this.kmls) {
-            if (this.kmls[a].visible) {
-                var t = this.kmls[a].nxcl_data;
-                out += '<li><a onclick="map.swap(map.kmls[' + a + '])"><span class="' + ((a !== id) ? 'hidden' : '' ) + '"><div></div></span><label>' + a + ' - ' + t.track[0].pilot + '</label></a><a class="remove" href="#" onclick="map.remove(' + a + '); return false;">[x]</a></li>';
-            }
-        }
-        $('#drawn_flights ul').html(out);
-        $('#map_interface_3d #content').html(out);
+        $('#tree_content .comp_' + id).remove();
+        $('#tree_content').append('<div class="comp_' + id + '"></div>');
+        this.comp = new Comp(id);
     };
 
     this.remove = function (id) {
@@ -289,7 +208,6 @@ function UKNXCL_Map($container) {
             Graph.setGraph(null);
             var selectedKML = null;
         }
-        this.writeList(this.obj.id);
     };
 
     this.addRectangle = function (lat1, lat2, lon1, lon2, used, score) {
@@ -335,12 +253,6 @@ function UKNXCL_Map($container) {
         }
     };
 
-    this.OSGridToLatLong = function (gridref) {
-        var cord = new Coordinate();
-        cord.set_from_OS(gridref);
-        return [cord.lat(), cord.lng()];
-    };
-
     this.load_earth = function () {
         google.load("earth", "1", {'callback': 'map.init_earth'});
         $('#map_interface_3d').find('span.show').click(function () {
@@ -356,11 +268,9 @@ function UKNXCL_Map($container) {
     };
 
     this.init_earth = function () {
-        google.earth.createInstance('map3d', function (instance) {
+        google.earth.createInstance('map3dd', function (instance) {
             $('#map').hide();
-            $('#map_interface').hide();
             $('#map3d').show();
-            $('#map_interface_3d').show();
             map.mode = map.EARTH;
             map.ge = instance;
             map.ge.getWindow().setVisibility(true);
@@ -421,14 +331,14 @@ function Track(id, temp) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            this.google_data = map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/Track.kml', null, id);
+            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/Track.kml', null, id);
         } else {
             map.parseKML('/uploads/track/' + this.temp + this.id + '/Track_Earth.kml', this);
         }
     };
 
     this.center = function () {
-        if (map.mode = map.EARTH) {
+        if (map.mode == map.EARTH) {
             var lookAt = map.ge.createLookAt('');
             lookAt.setLatitude(this.nxcl_data.bounds.center.lat);
             lookAt.setLongitude(this.nxcl_data.bounds.center.lon);
@@ -449,9 +359,6 @@ function Track(id, temp) {
             success: function (result) {
                 this.nxcl_data.loadFromAjax(result);
                 this.is_ready();
-            },
-            fail: function (result) {
-                console.log(result);
             }
         });
     };
@@ -478,37 +385,25 @@ function Track(id, temp) {
     };
 
     this.show = function () {
-        if (!this.visible) {
-            if (map.mode === map.MAP) {
-                this.marker.setMap(map.internal_map);
-                for (var a in this.google_data.gpolylines) {
-                    if (map.showing(a)) {
-                        this.google_data.gpolylines[a].setMap(map.internal_map);
-                    }
-                }
-            }
+        if (map.mode === map.MAP) {
+            this.marker.setMap(map.internal_map);
+            this.google_data.gpolylines.each(function(polyline) {
+                polyline.setMap(map.internal_map);
+            });
         }
         this.center();
         this.visible = true;
     };
 
-    this.hide = function (depth) {
+    this.hide = function () {
         this.marker.setMap(null);
-        for (var a in this.google_data.gpolylines) {
-            if (this.google_data.gpolylines[a]) {
-                this.google_data.gpolylines[a].setMap(null);
-            }
-        }
+        this.google_data.gpolylines.each(function(polyline) {
+            polyline.setMap(null);
+        });
     };
 
     this.remove = function (depth) {
-        this.marker.setMap(null);
-        for (var a in this.google_data.gpolylines) {
-            if (this.google_data.gpolylines[a]) {
-                this.google_data.gpolylines[a].setMap(null);
-            }
-        }
-        this.visible = false;
+        this.hide();
     };
 
     this.get_bounds = function () {
@@ -532,8 +427,13 @@ function Track(id, temp) {
         }
     };
 
-    this.toggle_task = function () {
-    };
+    this.toggle_track = function (id, bool) {
+        if(bool) {
+            this.google_data.gpolylines[id].setMap(map.internal_map);
+        } else {
+            this.google_data.gpolylines[id].setMap(null);
+        }
+    }
 
     this.add_google_data();
     this.add_nxcl_data();
@@ -547,7 +447,7 @@ function Comp(id) {
     this.nxcl_data = new trackDataArray();
     this.loaded = false;
     this.visible = true;
-    this.marker = [];
+    this.marker = new Array();
     this.temp = '';
 
     this.add_google_data = function () {
@@ -577,35 +477,31 @@ function Comp(id) {
 
     this.add_marker = function () {
         if (map.mode === map.MAP) {
-            for (var a in this.nxcl_data.track) {
-                if (this.nxcl_data.track[a]) {
-                    this.marker[a] = new google.maps.Marker({
-                        position: new google.maps.LatLng(this.nxcl_data.track[a].coords[0][0], this.nxcl_data.track[a].coords[0][1]),
-                        map: map.internal_map,
-                        cursor: this.nxcl_data.track[a].pilot,
-                        title: this.nxcl_data.track[a].pilot,
-                        icon: "../img/Markers/" + this.nxcl_data.track[a].colour + "-" + this.nxcl_data.track[a].pilot[0] + ".png"
-                    });
-                }
-            }
+            this.nxcl_data.track.each(function (track, a, root) {
+                root.marker[a] = new google.maps.Marker({
+                    position: new google.maps.LatLng(track.coords[0][0], track.coords[0][1]),
+                    map: map.internal_map,
+                    cursor: track.pilot,
+                    title: track.pilot,
+                    icon: "../img/Markers/" + track.colour + "-" + track.pilot[0] + ".png"
+                });
+            }, this);
         }
-    };
+    }
 
     this.is_ready = function () {
         if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            this.center();
             $('#WriteHereComp').html(map.mode == map.MAP ? this.nxcl_data.html : this.nxcl_data.html);
             $('#comp_inner').animate({'left': -730});
             $('#comp_list .loading_shroud').remove();
-            map.graph.swap(this);
             map.swap(this);
         }
     };
 
     this.center = function () {
-        if (map.mode = map.EARTH) {
+        if (map.mode == map.EARTH) {
             var lookAt = map.ge.createLookAt('');
             lookAt.setLatitude(this.nxcl_data.bounds.center.lat);
             lookAt.setLongitude(this.nxcl_data.bounds.center.lon);
@@ -617,52 +513,41 @@ function Comp(id) {
     }
 
     this.show = function () {
-        for (var a in this.marker) {
-            if (this.marker[a]) {
-                this.marker[a].setMap(map.internal_map);
-            }
-        }
-        for (a in this.google_data.gpolylines) {
-            if (this.marker[a]) {
-                this.google_data.gpolylines[a].setMap(map.internal_map);
-            }
-        }
-        this.center();
+        this.nxcl_data.track.each(function (track) {
+            track.drawGraph = true;
+        });
+        this.marker.each(function (marker) {
+            marker.setMap(map.internal_map);
+        });
+        this.google_data.gpolylines.each(function (polyline) {
+            polyline.setMap(map.internal_map);
+        });
+        this.google_data.gpolygons.each(function (gpolygon) {
+            gpolygon.setMap(map.internal_map);
+        });
         this.visible = true;
+        map.graph.setGraph();
     };
 
-    this.hide = function (depth) {
-        for (var a in this.marker) {
-            if (this.marker[a]) {
-                this.marker[a].setMap(null);
-            }
-        }
-        for (a in this.google_data.gpolylines) {
-            if (a !== depth) {this.google_data.gpolylines[a].setMap(null);}
-        }
-        for (a in this.google_data.gpolygons) {
-            if (a !== depth) {this.google_data.gpolygons[a].setMap(null);}
-        }
+    this.hide = function () {
+        this.nxcl_data.track.each(function (track) {
+            track.drawGraph = false;
+        });
+        this.marker.each(function (marker) {
+            marker.setMap(null);
+        });
+        this.google_data.gpolylines.each(function (polyline) {
+            polyline.setMap(null);
+        });
+        this.google_data.gpolygons.each(function (gpolygon) {
+            gpolygon.setMap(null);
+        });
         this.visible = false;
+        map.graph.setGraph();
     };
 
-    this.remove = function (depth) {
-        for (var a in this.marker) {
-            if (this.marker[a]) {
-                this.marker[a].setMap(null);
-            }
-        }
-        for (a in this.google_data.gpolylines) {
-            if (this.google_data.gpolylines[a]) {
-                if (a !== depth) {this.google_data.gpolylines[a].setMap(null);}
-            }
-        }
-        for (a in this.google_data.gpolygons) {
-            if (a !== depth) {
-                this.google_data.gpolygons[a].setMap(null);
-            }
-        }
-        this.visible = false;
+    this.remove = function () {
+        this.hide();
     };
 
     this.get_bounds = function () {
@@ -674,56 +559,20 @@ function Comp(id) {
     };
 
     this.toggle_track = function (id, bool) {
-        if (id === null) {
-            for (var i in this.nxcl_data.track) {
-                if (this.nxcl_data.track[i]) {
-                    this.toggle_track(i, bool);
-                }
-            }
-            if (bool) {
-                $('.track').attr('checked', 'checked');
-            } else {
-                $('.track').removeAttr('checked');
-            }
-        } else if (!bool) {
+        if (!bool) {
             this.marker[id].setMap(null);
-            this.google_data.gpolylines[id].setMap(null);
+            this.nxcl_data.track[id].drawGraph = bool;
         } else {
             this.marker[id].setMap(map.internal_map);
-            this.google_data.gpolylines[id].setMap(map.internal_map);
+            this.nxcl_data.track[id].drawGraph = bool;
         }
-    };
-
-    this.toggle_graph = function (id, bool) {
-        if (id === null) {
-            for (var i in this.nxcl_data.track) {
-                if (this.nxcl_data.track[i]) {
-                    this.nxcl_data.track[i].drawGraph = bool;
-                }
-            }
-            if (bool) {
-                $('.graph').attr('checked', 'checked');
-            } else {
-                $('.graph').removeAttr('checked');
-            }
-        } else {this.nxcl_data.track[id].drawGraph = bool;}
-        Graph.setGraph();
-    };
-
-    this.toggle_task = function (bool) {
-        if (bool) {
-            this.google_data.gpolygons[this.google_data.gpolygons.length - 1].setMap(map.internal_map);
-        } else {
-            this.google_data.gpolygons[this.google_data.gpolygons.length - 1].setMap(null);
-        }
+        map.graph.setGraph();
     };
 
     this.move_marker = function (pos) {
-        for (var a in this.marker) {
-            if (this.marker[a]) {
-                this.marker[a].setPosition(new google.maps.LatLng(this.nxcl_data.track[a].coords[pos][0], this.nxcl_data.track[a].coords[pos][1]));
-            }
-        }
+        this.marker.each(function (marker, a, root) {
+            marker.setPosition(new google.maps.LatLng(root.nxcl_data.track[a].coords[pos][0], root.nxcl_data.track[a].coords[pos][1]));
+        }, this);
     };
 
     // construct
@@ -1167,47 +1016,78 @@ $('body').on('click', '.kmltree .toggler', function () {
     var root_data = $(this).parents('div.kmltree').eq(0).data('post');
     var $li = $(this).parent();
     var data = $li.data("path");
-    if (data.type == "comp") {
-        var kml = map.comp.google_data.root;
-    } else {
-        var kml = map.kmls[root_data.id].google_data.root;
-    }
-
-    var kmlPath = [kml];
-    kml = kml.getFeatures().getChildNodes().item(0);
-    if (data.path !== null) {
-        for (i in data.path) {
-            kml = kml.getFeatures().getChildNodes().item(data.path[i]);
-            kmlPath.push(kml);
-        }
-    }
     var $parent_li = $li.parents("li");
-    if ($li.hasClass('visible')) {
-        if ($parent_li.hasClass('radioFolder')) {
-            return;
-        }
-        kml.setVisibility(false);
-        $li.removeClass('visible');
-        $li.find('li').removeClass('visible');
-    } else {
-        if ($parent_li.hasClass('radioFolder')) {
-            kmlPath[kmlPath.length-2].setVisibility(true);
-            var siblings = kmlPath[kmlPath.length-2].getFeatures().getChildNodes();
-            for(var i = 0; i<siblings.getLength(); i++) {
-                siblings.item(i).setVisibility(false);
-            }
-            $li.siblings("li").removeClass('visible');
-            $parent_li.addClass('visible');
-        }
-        kml.setVisibility(true);
-        $li.addClass('visible');
-        if($li.hasClass('radioFolder')) {
-            kml.getFeatures().getFirstChild().setVisibility(true);
-            $li.find('li').eq(0).addClass('visible');
-
+    if (map.mode == map.EARTH) {
+        if (data.type == "comp") {
+            var kml = map.comp.google_data.root;
         } else {
-            $li.find('li').addClass('visible');
+            var kml = map.kmls[root_data.id].google_data.root;
         }
+        var kmlPath = [kml];
+        kml = kml.getFeatures().getChildNodes().item(0);
+        if (data.path !== null) {
+            for (i in data.path) {
+                kml = kml.getFeatures().getChildNodes().item(data.path[i]);
+                kmlPath.push(kml);
+            }
+        }
+        if ($li.hasClass('visible')) {
+            if ($parent_li.hasClass('radioFolder')) {
+                return;
+            }
+            kml.setVisibility(false);
+            $li.removeClass('visible');
+            $li.find('li').removeClass('visible');
+        } else {
+            if ($parent_li.hasClass('radioFolder')) {
+                kmlPath[kmlPath.length - 2].setVisibility(true);
+                var siblings = kmlPath[kmlPath.length - 2].getFeatures().getChildNodes();
+                for (var i = 0; i < siblings.getLength(); i++) {
+                    siblings.item(i).setVisibility(false);
+                }
+                $li.siblings("li").removeClass('visible');
+                $parent_li.addClass('visible');
+            }
+            kml.setVisibility(true);
+            $li.addClass('visible');
+            if ($li.hasClass('radioFolder')) {
+                kml.getFeatures().getFirstChild().setVisibility(true);
+                $li.find('li').eq(0).addClass('visible');
+
+            } else {
+                $li.find('li').addClass('visible');
+            }
+        }
+    } else {
+        if (data.type == "comp") {
+            var root = map.comp;
+            var kml = map.comp.google_data;
+        } else {
+            var root = map.kmls[root_data.id];
+            var kml = map.kmls[root_data.id].google_data;
+        }
+
+        if (typeof data.path[0] != 'undefined') {
+            if ($li.hasClass('visible')) {
+                root.toggle_track(data.path[0] + 1, false);
+                $li.removeClass('visible');
+            } else {
+                root.toggle_track(data.path[0] + 1, true);
+                $li.addClass('visible');
+            }
+        } else {
+            if ($li.hasClass('visible')) {
+                root.hide();
+                $li.removeClass('visible');
+                $li.find('li').removeClass('visible');
+            } else {
+                root.show();
+                $li.addClass('visible');
+                $li.find('li').addClass('visible');
+            }
+
+        }
+
     }
 });
 
@@ -1221,3 +1101,13 @@ $('body').on('click', '.kmltree .expander', function () {
         $li.find('li').addClass('open');
     }
 });
+
+
+Array.prototype.each = function (callback, context) {
+    for (var i = 0; i < this.length; i++) {
+        callback(this[i], i, context);
+    }
+}
+String.prototype.isNumber = function() {
+    return !isNaN(parseFloat(this)) && isFinite(this);
+}

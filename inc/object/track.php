@@ -259,17 +259,24 @@ class track {
 
     public function  generate_kml($external = false) {
         $kml = new kml();
+        $kml->get_kml_folder_open('Flight ' . $this->id );
         if (!$external) {
             $kml->set_gradient_styles();
         }
         $kml->add($this->get_kml_description());
         if (!$external) {
             $kml->add($this->get_meta_linestring());
-            $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
-            $kml->add($this->or->get_kml_track('FF0000', 'Out And Return'));
-            $kml->add($this->tr->get_kml_track('FF0000', 'FAI Triangle'));
-
+            $kml->get_kml_folder_open('Open Distance', true, 'hideChildren');
+            $kml->add($this->od->get_kml_track('000000', 'Open Distance'));
+            $kml->get_kml_folder_close();
+            $kml->get_kml_folder_open('Out and Return', true, 'hideChildren');
+            $kml->add($this->or->get_kml_track('00FF00', 'Out And Return'));
+            $kml->get_kml_folder_close();
+            $kml->get_kml_folder_open('Triangle', true, 'hideChildren');
+            $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
+            $kml->get_kml_folder_close();
         }
+        $kml->get_kml_folder_close();
         if (0) {
             $kml->add($this->get_colour_by_height());
         }
@@ -678,7 +685,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
       <Metadata src='UKNXCL' v='0.9' type='track'>
         <SecondsFromTimeOfFirstPoint>\n";
         for ($i = $start; $i < $num; $i++, $cnt++) {
-            if ($cnt == 5) {
+            if ($cnt == 10) {
                 $output .= "\n";
                 $cnt = 0;
             }
@@ -1210,6 +1217,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
 
     private function get_meta_linestring() {
         $output = '<Placemark>';
+        $output .= '<Style><LineStyle><color>ffff0000</color><width>2</width></LineStyle></Style>';
         $output .= $this->get_time_meta_data();
         $output .= $this->get_kml_linestring();
         $output .= '</Placemark>';

@@ -47,7 +47,7 @@ class core {
             header('Location: http://uk.local.com/');
             die();
         }
-        //core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
+        core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
         core::$js[] = 'https://www.google.com/jsapi';
         core::$js[] = '/js/jquery/jquery.js';
         core::$js[] = '/js/jquery/colorbox.js';

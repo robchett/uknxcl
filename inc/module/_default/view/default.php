@@ -21,9 +21,6 @@
             </div>
         </div>
     </div>
-    <div id="superOverlays" style="position: absolute; z-index: 10000; width:inherit;">
-        <input type="submit" onclick="map.load_earth();" value="Load Google Earth View?"/>
-    </div>
     <div id="map_interface_3d">
         <span class="show">Show</span>
         <span class="hide">Hide</span>
