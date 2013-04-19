@@ -53,22 +53,24 @@ class comp extends table {
         }
         $this->bounds = new coordinate_bound();
         $track_array->reset_iterator();
-        $track_array->uasort(function($a, $b) {
-            return ($a->name < $b->name) ? -1 : 1;
-        });
+        $track_array->uasort(function ($a, $b) {
+                return ($a->name < $b->name) ? -1 : 1;
+            }
+        );
 
         $startT = 100000000000000000000;
         $endT = 0;
-        $track_array->iterate(function(track $track, $cnt) use (&$startT, &$endT) {
-            $track->colour = $cnt;
-            if ($track->track_points->last()->time > $endT) {
-                $endT = $track->track_points->last()->time;
-            }
-            if ($track->track_points->first()->time < $startT) {
-                $startT = $track->track_points->first()->time;
-            }
-            $this->bounds->add_bounds_to_bound($track->bounds);
-        }, -1);
+        $track_array->iterate(function (track $track, $cnt) use (&$startT, &$endT) {
+                $track->colour = $cnt;
+                if ($track->track_points->last()->time > $endT) {
+                    $endT = $track->track_points->last()->time;
+                }
+                if ($track->track_points->first()->time < $startT) {
+                    $startT = $track->track_points->first()->time;
+                }
+                $this->bounds->add_bounds_to_bound($track->bounds);
+            }, -1
+        );
         $timeSteps = ($endT - $startT) / 1000;
         $task = $this->output_task2();
         $turnpoints = count($task->task_array);
@@ -83,7 +85,7 @@ class comp extends table {
         $this->combined_name = $this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task;
         $kml_out->get_kml_folder_open($this->combined_name, 1, '', true);
         $kml_earth->get_kml_folder_open($this->combined_name, 1, '', true);
-        $json_html = '<div class="kmltree new"><ul class="kmltree"><li data-path=\'{"type":"comp","path":[0]}\' class="kmltree-item check KmlFolder visible open"><div class="expander"></div><div class="toggler"></div>' . $this->combined_name . '<ul>';
+        $json_html = '<div class="kmltree new"><ul class="kmltree"><li data-path=\'{"type":"comp","path":[]}\' class="kmltree-item check KmlFolder visible open"><div class="expander"></div><div class="toggler"></div>' . $this->combined_name . '<ul>';
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
         $js->EndT = $endT - mktime(0, 0, 0);
@@ -105,7 +107,7 @@ class comp extends table {
                 $html .= $form->get_html();
 
             }
-            $json_html .= '<li data-path=\'{"type":"comp","path":[0,' .$count . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour),4, 2) . substr(get::kml_colour($track->colour),2,2) . substr(get::kml_colour($track->colour),0, 2) . '">' . $track->name . '</span></li>';
+            $json_html .= '<li data-path=\'{"type":"comp","path":[' . $count . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             $kml_earth->add($track->generate_kml_comp_earth());
             $tp = 0;
@@ -187,6 +189,7 @@ class comp extends table {
             $html .= '<pre>' . $track->log_file . '</pre>';
             $html .= '</div>';
         }
+        $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div>Task</li>';
         $json_html .= '</ul></li></ul></div>';
         $js->html = $json_html;
         $js->bounds = $this->bounds->get_js();

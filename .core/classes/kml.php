@@ -4,15 +4,11 @@ class kml {
 
     private $content = '';
     private $html = '';
-    private $styles = '';
     private $open_folders = 0;
     private $path = array();
+    private $styles = '';
 
     public function __construct() {
-    }
-
-    public function get_html(){
-        return $this->html . '</div>';
     }
 
     public static function create_linestring($colour, array $coordinates, $altitude_mode = 'absolute', $extrude = false) {
@@ -82,33 +78,35 @@ class kml {
         }
     }
 
+    public function get_html() {
+        return $this->html . '</div>';
+    }
+
     public function get_kml_folder_close() {
         $this->open_folders--;
         $this->content .= '</Folder>';
         $this->html .= '</ul></li>';
-        if($this->open_folders == 0) {
+        if ($this->open_folders == 0) {
             $this->html .= '</ul>';
         }
         array_pop($this->path);
-        $this->path[$this->open_folders]++;
+        if (isset($this->path[$this->open_folders])) {
+            $this->path[$this->open_folders]++;
+        }
     }
 
     public function get_kml_folder_open($title, $visibility = 1, $class = '', $open = false) {
         $this->content .= '<Folder id="' . get::fn($title) . '"><name>' . $title . '</name><visibility>' . (int) $visibility . '</visibility>';
-        if(!$this->open_folders) {
+        if (!$this->open_folders) {
             $this->html .= '<ul class="kmltree">';
         }
-        $this->html .= '<li data-path=\'{"type":"flight","path":[' . $this->get_path($this->open_folders) . ']}\' class="kmltree-item ' . ($class ? $class : 'check') . ' KmlFolder ' . ($visibility ? 'visible' : '' ) . ' ' . ($open ? 'open' : 'closed') . '"><div class="expander"></div><div class="toggler"></div>' . $title . '<ul>';
+        $this->html .= '<li data-path=\'{"type":"flight","path":[' . $this->get_path($this->open_folders) . ']}\' class="kmltree-item ' . ($class ? $class : 'check') . ' KmlFolder ' . ($visibility ? 'visible' : '') . ' ' . ($open ? 'open' : 'closed') . '"><div class="expander"></div><div class="toggler"></div>' . $title . '<ul>';
         $this->open_folders++;
         $this->path[$this->open_folders] = 0;
 
         if (!empty($class)) $this->content .= "\n\t<styleUrl>#" . $class . "</styleUrl>";
         if ($open)
             $this->content .= "\n\t<open>1</open>";
-    }
-
-    private function get_path() {
-        return implode(',',$this->path);
     }
 
     public function set_animation_styles($full = 1) {
@@ -121,7 +119,7 @@ class kml {
 
     public function set_folder_styles() {
         $this->styles .= '<Style id="hideChildren"><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style>';
-        $this->styles .= '<Style id="radio"><ListStyle><listItemType>radioFolder</listItemType></ListStyle></Style>';
+        $this->styles .= '<Style id="radioFolder"><ListStyle><listItemType>radioFolder</listItemType></ListStyle></Style>';
     }
 
     public function set_gradient_styles($full = 0) {
@@ -134,5 +132,9 @@ class kml {
                 $this->styles .= '<Style id="S' . $i . '"><LineStyle><width>2</width><color>FF' . $grad->getColorAtValue($i / 16) . '</color></LineStyle></Style>';
             }
         }
+    }
+
+    private function get_path() {
+        return implode(',', $this->path);
     }
 }

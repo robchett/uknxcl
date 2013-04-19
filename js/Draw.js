@@ -472,7 +472,7 @@ function Track(id, temp) {
         if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            $('#tree_content .track_' + this.id).html( map.mode == map.MAP ? this.nxcl_data.html : this.nxcl_data.html_earth);
+            $('#tree_content .track_' + this.id).html(map.mode == map.MAP ? this.nxcl_data.html : this.nxcl_data.html_earth);
             map.swap(this);
         }
     };
@@ -1167,25 +1167,47 @@ $('body').on('click', '.kmltree .toggler', function () {
     var root_data = $(this).parents('div.kmltree').eq(0).data('post');
     var $li = $(this).parent();
     var data = $li.data("path");
-    if( data.type == "comp" ) {
+    if (data.type == "comp") {
         var kml = map.comp.google_data.root;
     } else {
         var kml = map.kmls[root_data.id].google_data.root;
     }
 
+    var kmlPath = [kml];
+    kml = kml.getFeatures().getChildNodes().item(0);
     if (data.path !== null) {
         for (i in data.path) {
             kml = kml.getFeatures().getChildNodes().item(data.path[i]);
+            kmlPath.push(kml);
         }
     }
+    var $parent_li = $li.parents("li");
     if ($li.hasClass('visible')) {
+        if ($parent_li.hasClass('radioFolder')) {
+            return;
+        }
         kml.setVisibility(false);
         $li.removeClass('visible');
         $li.find('li').removeClass('visible');
     } else {
+        if ($parent_li.hasClass('radioFolder')) {
+            kmlPath[kmlPath.length-2].setVisibility(true);
+            var siblings = kmlPath[kmlPath.length-2].getFeatures().getChildNodes();
+            for(var i = 0; i<siblings.getLength(); i++) {
+                siblings.item(i).setVisibility(false);
+            }
+            $li.siblings("li").removeClass('visible');
+            $parent_li.addClass('visible');
+        }
         kml.setVisibility(true);
         $li.addClass('visible');
-        $li.find('li').addClass('visible');
+        if($li.hasClass('radioFolder')) {
+            kml.getFeatures().getFirstChild().setVisibility(true);
+            $li.find('li').eq(0).addClass('visible');
+
+        } else {
+            $li.find('li').addClass('visible');
+        }
     }
 });
 
