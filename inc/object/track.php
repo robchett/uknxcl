@@ -318,7 +318,7 @@ class track {
         $kml->set_animation_styles(1);
 
         $kml->get_kml_folder_open('Track ' . $this->id, 1, '', 1);
-        $kml->get_kml_folder_open('Main Track', 1, 'radio', 1);
+        $kml->get_kml_folder_open('Main Track', 1, 'radioFolder', 1);
 
         $kml->get_kml_folder_open('Colour By Height', 1, 'hideChildren', 0);
         $kml->add($this->get_colour_by($this->min_ele, $this->maximum_ele, 'ele'));
@@ -337,7 +337,7 @@ class track {
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_close();
-        $kml->get_kml_folder_open('Shadow', 1, 'radio');
+        $kml->get_kml_folder_open('Shadow', 1, 'radioFolder');
 
         $kml->get_kml_folder_open('None', 0, 'hideChildren', 0);
         $kml->get_kml_folder_close();
