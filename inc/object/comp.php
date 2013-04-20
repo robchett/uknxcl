@@ -22,6 +22,18 @@ class comp extends table {
         set_time_limit(0);
         $html = '';
         $root = root . '/uploads/comp/' . $this->cid;
+        $this->combined_name = $this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task;
+
+        $kml_out = new kml();
+        $kml_out->set_folder_styles();
+        $kml_out->get_kml_folder_open($this->combined_name, 1, '', true);
+
+        //$kml_earth = new kml();
+        //$kml_earth->set_folder_styles();
+        //$kml_earth->get_kml_folder_open($this->combined_name, 1, '', true);
+
+        $js_file = fopen($root . '/points.js', 'w');
+
 
         $zip = new ZipArchive;
         if ($zip->open($root . '/comp.zip') === true) {
@@ -46,9 +58,6 @@ class comp extends table {
             $track->source = $file;
             $track->parse_IGC();
             $track->trim();
-            $track->repair_track();
-            $track->get_graph_values();
-            $track->get_limits();
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
@@ -79,13 +88,6 @@ class comp extends table {
             $task->distances[0] = 0;
             $task->distances[$i + 1] = $this->distCalc2($task->task_array[$i], $task->task_array[$i + 1]);
         }
-        $kml_out = new kml();
-        $kml_earth = new kml();
-        $kml_out->set_folder_styles();
-        $kml_earth->set_folder_styles();
-        $this->combined_name = $this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task;
-        $kml_out->get_kml_folder_open($this->combined_name, 1, '', true);
-        $kml_earth->get_kml_folder_open($this->combined_name, 1, '', true);
         $json_html = '<div class="kmltree new"><ul class="kmltree"><li data-path=\'{"type":"comp","path":[]}\' class="kmltree-item check KmlFolder visible open"><div class="expander"></div><div class="toggler"></div>' . $this->combined_name . '<ul>';
         $js = new stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
@@ -93,116 +95,119 @@ class comp extends table {
         $js->Name = $this->title;
         $js->CName = $this->type;
         $js->turnpoints = $turnpoints;
-        $js->track = array();
-
-        $count = 0;
-
-        foreach ($track_array as $track) {
-            $html .= '<h5>' . $track->name . '</h5>';
-            $html .= '<div>';
-            if (isset($_REQUEST['add'])) {
-                $form = new comp_convert();
-                $form->get_field_from_name('file')->value = $track->source;
-                $form->get_field_from_name('comp')->value = $track->cid;
-                $form->get_field_from_name('vis_info')->value = $this->title . ' - ' . $this->type;
-                $html .= $form->get_html();
-
-            }
-            $json_html .= '<li data-path=\'{"type":"comp","path":[' . $count . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
-            $kml_out->add($track->generate_kml_comp());
-            $kml_earth->add($track->generate_kml_comp_earth());
-            $tp = 0;
-            $madeTp = 0;
-            $dist = 0;
-            $distToTP = 120000000000000;
-            foreach ($task->task_array as $turnpoint) {
-                $tot = count($track->track_points);
-                for ($tp; $tp < $tot; $tp++) {
-                    if ($turnpoint[3]) {
-                        $x = ($turnpoint[2] - $this->distCalc3($track->track_points[$tp], $turnpoint));
-                        if ($x > 0) {
-                            $html .= 'made turnpoint ' . $madeTp . '<br/>';
-                            $dist += $task->distances[$madeTp];
-                            $madeTp++;
-                            $distToTP = 120000000000000000;
-                            continue 2;
-                        } else if (-$x < $distToTP) {
-                            $distToTP = -$x;
-                        }
-                    } else {
-                        $y = ($this->distCalc3($track->track_points[$tp], $turnpoint) - $turnpoint[2]);
-                        if ($y > 0) {
-                            $html .= 'made turnpoint ' . $madeTp . '<br/>';
-                            $madeTp++;
-                            continue 2;
-                        } else if (isset($task->task_array[$madeTp + 1])) {
-                            $x = ($this->distCalc3($track->track_points[$tp], $task->task_array[$madeTp + 1]) - $task->task_array[$madeTp + 1][2]);
-                            if ($x < $distToTP) {
-                                $distToTP = $x;
-                            }
-                        } else if (-$y < $distToTP) {
-                            $distToTP = -$y;
-                        }
-                    }
-                }
-                if ($turnpoint[3]) {
-                    $dist += $task->distances[$madeTp] - $distToTP;
-                } else if (!isset($task->task_array[$madeTp + 1])) {
-                    $dist += $turnpoint[2] - $distToTP;
-                } else {
-                    $dist += $task->distances[$madeTp + 1] - $distToTP;
-                }
-                break;
-            }
-
-            $js_track = new stdClass();
-            $js_track->pilot = $track->name;
-            $js_track->colour = get::js_colour($track->colour);
-            $js_track->minEle = $track->min_ele;
-            $js_track->maxEle = $track->maximum_ele;
-            $js_track->min_cr = $track->min_cr;
-            $js_track->maximum_cr = $track->maximum_cr;
-            $js_track->min_speed = 0;
-            $js_track->maximum_speed = $track->maximum_speed;
-            $js_track->drawGraph = 1;
-            $js_track->turnpoint = $madeTp;
-            $js_track->score = $dist / 1000;
-            $js_track->coords = array();
-            $js_track->bounds = $track->bounds->get_js();
-
-            $tp = 0;
-            for ($i = 0; $i < 1000; $i++) {
-                $time = $startT + ($i * $timeSteps);
-                if ($time < $track->track_points->first()->time) {
-                    $js_track->coords[] = $track->track_points->first()->get_js_coordinate($track->track_points->first()->time - $startT);
-                } else if ($time > $track->track_points->last()->time) {
-                    $js_track->coords[] = $track->track_points->last()->get_js_coordinate($track->track_points->last()->time - $startT);
-                } else {
-                    for ($p = $tp; $p < $track->track_points->count(); $p++) {
-                        if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
-                            $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
-                            $tp = $p;
-                            break;
-                        }
-                    }
-                }
-            }
-            $js->track[] = $js_track;
-            $count++;
-            $html .= '<pre>' . $track->log_file . '</pre>';
-            $html .= '</div>';
-        }
-        $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div>Task</li>';
-        $json_html .= '</ul></li></ul></div>';
-        $js->html = $json_html;
         $js->bounds = $this->bounds->get_js();
-        file_put_contents($root . '/points.js', json_encode($js));
+        $js->track = array();
+        fwrite($js_file, substr(json_encode($js), 0, -2));
+        $track_array->iterate(function ($track, $count) use (&$json_html, $kml_out, &$html, $task, $startT, $js_file,$timeSteps) {
+                $track->repair_track();
+                $track->get_graph_values();
+                $track->get_limits();
+                $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count-1) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
+                $kml_out->add($track->generate_kml_comp());
+                //$kml_earth->add($track->generate_kml_comp_earth());
+                $html .= '<h5>' . $track->name . '</h5>';
+                $html .= '<div>';
+                if (isset($_REQUEST['add'])) {
+                    $form = new comp_convert();
+                    $form->get_field_from_name('file')->value = $track->source;
+                    $form->get_field_from_name('comp')->value = $track->cid;
+                    $form->get_field_from_name('vis_info')->value = $this->title . ' - ' . $this->type;
+                    $html .= $form->get_html();
+
+                }
+                $tp = 0;
+                $madeTp = 0;
+                $dist = 0;
+                $distToTP = 120000000000000;
+                $cnt = 0;
+                foreach ($task->task_array as $turnpoint) {
+                    $cnt++;
+                    $tot = count($track->track_points);
+                    for ($tp; $tp < $tot; $tp++) {
+                        if ($turnpoint[3]) {
+                            $x = ($turnpoint[2] - $this->distCalc3($track->track_points[$tp], $turnpoint));
+                            if ($x > 0) {
+                                $html .= 'made turnpoint ' . $madeTp . '<br/>';
+                                $dist += $task->distances[$madeTp];
+                                $madeTp++;
+                                $distToTP = 120000000000000000;
+                                continue 2;
+                            } else if (-$x < $distToTP) {
+                                $distToTP = -$x;
+                            }
+                        } else {
+                            $y = ($this->distCalc3($track->track_points[$tp], $turnpoint) - $turnpoint[2]);
+                            if ($y > 0) {
+                                $html .= 'made turnpoint ' . $madeTp . '<br/>';
+                                $madeTp++;
+                                continue 2;
+                            } else if (isset($task->task_array[$madeTp + 1])) {
+                                $x = ($this->distCalc3($track->track_points[$tp], $task->task_array[$madeTp + 1]) - $task->task_array[$madeTp + 1][2]);
+                                if ($x < $distToTP) {
+                                    $distToTP = $x;
+                                }
+                            } else if (-$y < $distToTP) {
+                                $distToTP = -$y;
+                            }
+                        }
+                    }
+                    if ($turnpoint[3]) {
+                        $dist += $task->distances[$madeTp] - $distToTP;
+                    } else if (!isset($task->task_array[$madeTp + 1])) {
+                        $dist += $turnpoint[2] - $distToTP;
+                    } else {
+                        $dist += $task->distances[$madeTp + 1] - $distToTP;
+                    }
+                    break;
+                }
+
+                $js_track = new stdClass();
+                $js_track->pilot = $track->name;
+                $js_track->colour = get::js_colour($track->colour);
+                $js_track->minEle = $track->min_ele;
+                $js_track->maxEle = $track->maximum_ele;
+                $js_track->min_cr = $track->min_cr;
+                $js_track->maximum_cr = $track->maximum_cr;
+                $js_track->min_speed = 0;
+                $js_track->maximum_speed = $track->maximum_speed;
+                $js_track->drawGraph = 1;
+                $js_track->turnpoint = $madeTp;
+                $js_track->score = $dist / 1000;
+                $js_track->coords = array();
+                $js_track->bounds = $track->bounds->get_js();
+
+                $tp = 0;
+                for ($i = 0; $i < 1000; $i++) {
+                    $time = $startT + ($i * $timeSteps);
+                    if ($time < $track->track_points->first()->time) {
+                        $js_track->coords[] = $track->track_points->first()->get_js_coordinate($track->track_points->first()->time - $startT);
+                    } else if ($time > $track->track_points->last()->time) {
+                        $js_track->coords[] = $track->track_points->last()->get_js_coordinate($track->track_points->last()->time - $startT);
+                    } else {
+                        for ($p = $tp; $p < $track->track_points->count(); $p++) {
+                            if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
+                                $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
+                                $tp = $p;
+                                break;
+                            }
+                        }
+                    }
+                }
+                $html .= '<pre>' . $track->log_file . '</pre>';
+                $html .= '</div>';
+                fwrite($js_file, ($count != 1 ? ',' : '') . json_encode($js_track));
+                $track->cleanup();
+            }
+        );
+        $json_html .= '<li data-path=\'{"type":"comp","path":[' . $track_array->count() . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div>Task</li>';
+        $json_html .= '</ul></li></ul></div>';
+        fwrite($js_file, '], "html":' . json_encode($json_html) . '}');
         $kml_out->add($task->o);
         $kml_out->get_kml_folder_close();
         $kml_out->compile(false, 'uploads/comp/' . $this->cid . '/track.kml');
-        $kml_earth->add($task->o);
-        $kml_earth->get_kml_folder_close();
-        $kml_earth->compile(false, 'uploads/comp/' . $this->cid . '/track_earth.kml');
+        //$kml_earth->add($task->o);
+        //$kml_earth->get_kml_folder_close();
+        //$kml_earth->compile(false, 'uploads/comp/' . $this->cid . '/track_earth.kml');
         $html .= '</div>';
 
         if (ajax) {

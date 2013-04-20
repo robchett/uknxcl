@@ -289,6 +289,7 @@ class table_array extends ArrayObject {
             $cnt++;
             call_user_func_array($function, array($obj, $cnt));
         }
+        $this->iterator->reset();
     }
 
     public function next() {
@@ -347,6 +348,7 @@ class table_iterator extends ArrayIterator {
     }
 
     public function reset() {
-
+        $this->index = -1;
+        parent::rewind();
     }
 }
