@@ -712,35 +712,34 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     public function match_b_record($p) {
-        $pos = 1;
         $track_point = new track_point ();
-        // Extract time data
+        $pos = 1;
         $track_point->time = mktime(substr($p, $pos, 2), substr($p, $pos + 2, 2), substr($p, $pos + 4, 2));
         $pos += 6;
-        // Extract latitude data
         $lat = round(substr($p, $pos, 2) + substr($p, $pos + 2, 5) / 60000, 6);
         $track_point->lat = (substr($p, $pos + 7, 1) == 'N') ? $lat : -1 * $lat;
-        $track_point->sin_lat = sin(M_PI * $track_point->lat / 180);
-        $track_point->cos_lat = cos(M_PI * $track_point->lat / 180);
         $pos += 8;
-        // Extract longitude data
         $lon = round(substr($p, $pos, 3) + (substr($p, $pos + 3, 5) / 60000), 6);
         $track_point->lon = (substr($p, $pos + 8, 1) == 'E') ? $lon : -1 * $lon;
-        $track_point->lonRad = M_PI * $track_point->lon / 180;
         $pos += 9;
-        // Get height data
         $track_point->val = (int) substr($p, $pos, 1);
         $pos += 1;
         $track_point->alt = (int) substr($p, $pos, 5);
         $pos += 5;
         $track_point->ele = (int) substr($p, $pos, 5);
 
+        $track_point->sin_lat = sin(M_PI * $track_point->lat / 180);
+        $track_point->cos_lat = cos(M_PI * $track_point->lat / 180);
+        $track_point->lonRad = M_PI * $track_point->lon / 180;
         if ($this->track_points->count() == 0) {
             $this->track_points[] = $track_point;
             $this->track_parts[] = new track_part($track_point, 0);
             return;
         }
         $last_point = $this->track_points->last();
+        if($track_point->lat == $last_point->lat && $track_point->lon == $last_point->lon) {
+            return;
+        }
         $track_point->id = $this->track_points->count() - 1;
         $this->track_points[] = $track_point;
         if ($track_point->time - $last_point->time > 60 || $track_point->time - $last_point->time < 0) {
