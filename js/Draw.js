@@ -18,6 +18,7 @@ function UKNXCL_Map($container) {
     this.$container = $container;
     this.$body = $('body');
     this.$slider = $('#slider');
+    this.$tree = $('#tree_content');
     this.mode = this.EARTH;
     /*@param {google.earth}*/
     this.ge = null;
@@ -183,8 +184,8 @@ function UKNXCL_Map($container) {
     };
 
     this.add_flight = function (id, airspace, reload_flight, temp) {
-        $('#tree_content .track_' + id).remove();
-        $('#tree_content').append('<div class="track_' + id + '"></div>');
+        this.$tree.find('.track_' + id).remove();
+        this.$tree.append('<div class="track_' + id + '"></div>');
         if (this.kmls[id] === undefined || reload_flight) {
             this.kmls[id] = new Track(id, temp);
         } else {
@@ -197,8 +198,8 @@ function UKNXCL_Map($container) {
         if (this.comp !== null) {
             this.comp.remove();
         }
-        $('#tree_content .comp_' + id).remove();
-        $('#tree_content').append('<div class="comp_' + id + '"></div>');
+        this.$tree.find('.comp_' + id).remove();
+        this.$tree.append('<div class="comp_' + id + '"></div>');
         this.comp = new Comp(id);
     };
 
@@ -393,6 +394,7 @@ function Track(id, temp) {
         }
         this.center();
         this.visible = true;
+        map.graph.setGraph();
     };
 
     this.hide = function () {
@@ -400,6 +402,7 @@ function Track(id, temp) {
         this.google_data.gpolylines.each(function(polyline) {
             polyline.setMap(null);
         });
+        map.graph.setGraph();
     };
 
     this.remove = function (depth) {
@@ -999,6 +1002,8 @@ function trackData() {
     this.total_dist = 0;
     this.av_speed = 0;
     this.coords = [];
+    this.StartT = 0;
+    this.EndT = 0;
     this.loadFromAjax = function (json) {
         for (var i in json) {
             if (json[i]) {
