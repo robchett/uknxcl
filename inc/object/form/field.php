@@ -5,6 +5,7 @@ abstract class field extends html_element {
     public $field_name;
     public $pre_text;
     public $post_text;
+    public $raw = false;
     public $required = true;
     public $attributes = array(
         'type' => 'text',
@@ -96,7 +97,8 @@ abstract class field extends html_element {
     }
 
     public function set_from_request() {
-        $this->parent_form->{$this->field_name} = (isset($_REQUEST[$this->field_name]) ? $_REQUEST[$this->field_name] : '');
+        $this->parent_form->{$this->field_name} = (isset($_REQUEST[$this->field_name]) ? ($this->raw ? $_REQUEST[$this->field_name] : strip_tags($_REQUEST[$this->field_name])) : '');
+
     }
 
     public function get_cms_list_wrapper($value, $class, $id) {

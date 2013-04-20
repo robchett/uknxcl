@@ -129,6 +129,7 @@ class table {
                 $form->action = '/index.php?module=' . get_class($this) . '&act=do_submit&no_ajax=on&ajax_origin=' . $form->id;
             }
             $field->label .= '<span class="field_name">' . $field->field_name. '</span>';
+            $field->raw = true;
         }
         if (!isset($this->{$this->table_key}) || !$this->{$this->table_key}) {
             $form->get_field_from_name($this->table_key)->set_attr('hidden', true);

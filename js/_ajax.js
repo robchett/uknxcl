@@ -56,6 +56,8 @@ $.fn.ajax_factory = function (module, act, post, options) {
             $(options.loading_target).css({'position': 'relative'});
         }
         $(options.loading_target).prepend(div);
+        $.fn.colorbox.resize();
+        colorbox_recenter();
     }
     $.extend(post, ({'module': module, 'act': act}));
     $(".error_message").remove();

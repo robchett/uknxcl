@@ -43,7 +43,7 @@ class add_pilot_form extends form {
             if ($this->pilot->pid) {
                 $this->pilot->do_update_selector();
             }
-            jquery::colorbox(['html' => "' . $this->pilot->name . ' has been added to the database and should now be selectable from the list."]);
+            jquery::colorbox(['html' => $this->pilot->name . ' has been added to the database and should now be selectable from the list']);
         }
     }
 }
