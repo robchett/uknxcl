@@ -47,6 +47,7 @@ class comp extends table {
             $track->parse_IGC();
             $track->trim();
             $track->repair_track();
+            $track->get_graph_values();
             $track->get_limits();
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
@@ -159,6 +160,10 @@ class comp extends table {
             $js_track->colour = get::js_colour($track->colour);
             $js_track->minEle = $track->min_ele;
             $js_track->maxEle = $track->maximum_ele;
+            $js_track->min_cr = $track->min_cr;
+            $js_track->maximum_cr = $track->maximum_cr;
+            $js_track->min_speed = 0;
+            $js_track->maximum_speed = $track->maximum_speed;
             $js_track->drawGraph = 1;
             $js_track->turnpoint = $madeTp;
             $js_track->score = $dist / 1000;
@@ -170,17 +175,15 @@ class comp extends table {
                 $time = $startT + ($i * $timeSteps);
                 if ($time < $track->track_points->first()->time) {
                     $js_track->coords[] = $track->track_points->first()->get_js_coordinate($track->track_points->first()->time - $startT);
-                    continue;
-                }
-                if ($time > $track->track_points->last()->time) {
+                } else if ($time > $track->track_points->last()->time) {
                     $js_track->coords[] = $track->track_points->last()->get_js_coordinate($track->track_points->last()->time - $startT);
-                    continue;
-                }
-                for ($p = $tp; $p < $track->track_points->count(); $p++) {
-                    if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
-                        $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
-                        $tp = $p;
-                        break;
+                } else {
+                    for ($p = $tp; $p < $track->track_points->count(); $p++) {
+                        if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
+                            $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
+                            $tp = $p;
+                            break;
+                        }
                     }
                 }
             }

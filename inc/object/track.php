@@ -220,7 +220,7 @@ class track {
         $track = new stdClass();
         $track->id = $this->id;
         $track->StartT = 0;
-        $track->EndT = (isset($this->total_time) ? $this->total_time : 0);
+        $track->EndT = ($this->get_duration() ? $this->get_duration() : 0);
         if ($this->od->waypoints) {
             $track->od_score = $this->od->get_distance();
             $track->od_time = $this->od->get_time();
@@ -239,6 +239,7 @@ class track {
         $track_inner->maximum_cr = $this->maximum_cr;
         $track_inner->min_cr = $this->min_cr;
         $track_inner->maximum_speed = $this->maximum_speed;
+        $track_inner->min_speed = 0;
         $track_inner->total_dist = $this->total_dist;
         $track_inner->av_speed = (isset($this->average_speed_over_track) ? $this->average_speed_over_track : 0);
         $track_inner->coords = array();
@@ -517,21 +518,16 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
             $previous = $this->track_points->first();
             foreach ($this->track_points as $key => $track_point) {
                 $next_piont = (isset($this->track_points[$key + 1]) ? $this->track_points[$key + 1] : $track_point);
-                // Calculate climb rate
-                if ($this->has_height()) {
-                    if ($next_piont->time - $previous->time) {
+                if ($this->has_height() && $next_piont->time - $previous->time) {
                         $track_point->climbRate = ($next_piont->ele - $previous->ele) / ($next_piont->time - $previous->time);
-                    } else $track_point->climbRate = 0;
                 } else
                     $track_point->climbRate = 0;
-                // calculate speed
                 if ($previous->time !== $next_piont->time) {
                     $x = $next_piont->get_dist_to($previous);
                     $track_point->speed = round(($x * 1000) / ($next_piont->time - $previous->time), 2);
                     $this->total_dist += $x;
                 } else
                     $track_point->speed = 0;
-                // calculate bearing
                 if ($previous->time !== $next_piont->time) {
                     $y = sin($next_piont->lonRad - $previous->lonRad) * $next_piont->cos_lat;
                     $x = $previous->cos_lat * $next_piont->sin_lat - $previous->sin_lat * $next_piont->cos_lat * cos($next_piont->lonRad - $previous->lonRad);
@@ -1254,10 +1250,8 @@ class track_point {
         }
     }
 
-    public function get_js_coordinate($time = null) {
-        $coord = array($this->lat, $this->lon, $this->ele);
-        if ($time !== null)
-            $coord[] = $time;
+    public function get_js_coordinate($time = 0) {
+        $coord = array($this->lat, $this->lon, $this->ele, $time, $this->climbRate, $this->speed, $this->bearing);
         return $coord;
     }
 
@@ -1277,6 +1271,7 @@ class track_point {
         return $b->time - $this->time;
     }
 }
+
 
 class track_part {
     public $end;

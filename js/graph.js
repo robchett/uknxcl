@@ -22,23 +22,39 @@ function Graph($container) {
     }
     this.setGraph = function () {
         if (this.obj === null) {
-            this.drawGraph(0, 0, '', 2, 'Height (m)');
-        } else if (this.type === 1) {
-            var maxEle = 0;
-            var minEle = 10000000000;
-            for (var i in this.obj.nxcl_data.track) {
-                var track = this.obj.nxcl_data.track[i];
-                if (track.drawGraph) {
-                    if (track.maxEle > maxEle)maxEle = track.maxEle;
-                    if (track.minEle < minEle)minEle = track.minEle;
+            this.$container.hide();
+            return;
+        }
+        this.$container.show();
+        if (this.type === 1) {
+            var title = 'Height (m)';
+            var min_value = 'minEle';
+            var max_value = 'maxEle';
+            var index = 2;
+        } else if (this.type == 2) {
+            var title = 'Clime Rate (m/s)';
+            var min_value = 'min_cr';
+            var max_value = 'maximum_cr';
+            var index = 4;
+        } else {
+            var title = 'Speed (m/s)';
+            var min_value = 'min_speed';
+            var max_value = 'maximum_speed';
+            var index = 5;
+        }
+        var max = -1000000;
+        var min = 10000000;
+        this.obj.nxcl_data.track.each(function(track) {
+            if (track.drawGraph) {
+                if (track[max_value] > max){
+                    max = track[max_value];
+                }
+                if (track[min_value] < min){
+                    min = track[min_value];
                 }
             }
-            this.drawGraph(maxEle, minEle, '#' + this.obj.nxcl_data.track[0].colour, 2, 'Height (m)');
-        } else if (this.type == 2) {
-            this.drawGraph(this.obj.nxcl_data.track[0].max_cr, this.obj.nxcl_data.track[0].min_cr, '#FF00FF', 4, 'Clime Rate (m/s)');
-        } else {
-            this.drawGraph(this.obj.nxcl_data.track[0].max_speed, 0, '#0000FF', 5, 'Speed (m/s)');
-        }
+        });
+        this.drawGraph(max, min, '#' + this.obj.nxcl_data.track[0].colour, index, title);
     }
 
     this.drawGraph = function (max, min, colour, index, text) {
@@ -59,7 +75,11 @@ function Graph($container) {
         context.stroke();
 
         // Get graph data;
-        if (this.obj)obj = this.obj.nxcl_data; else return;
+        if (this.obj) {
+            var obj = this.obj.nxcl_data
+        } else {
+            return;
+        }
         var size = this.obj.size();
         var Xscale = this.width / (obj.EndT - obj.StartT);
         var Yscale = this.height / (max - min);
