@@ -7,7 +7,7 @@ class field_int extends field {
     }
 
     public function set_from_request() {
-        $this->parent_form->{$this->field_name} = (isset($_REQUEST[$this->field_name]) ? $_REQUEST[$this->field_name] : null);
+        $this->parent_form->{$this->field_name} = (isset($_REQUEST[$this->field_name]) && !empty($_REQUEST[$this->field_name]) ? $_REQUEST[$this->field_name] : null);
     }
 
     public function do_validate(&$error_array) {
