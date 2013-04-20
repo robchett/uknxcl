@@ -57,6 +57,12 @@ function UKNXCL_Map($container) {
             mapTypeId: google.maps.MapTypeId.TERRAIN,
             streetViewControl: false
         });
+        google.maps.event.addListener(this.internal_map, 'click', function (event) {
+            if(map.planner.enabled) {
+                var latlon = event.latLng;
+                map.planner.addWaypoint(latlon.lat(), latlon.lng());
+            }
+        });
 
         this.radiusCircle = new google.maps.Circle({
             center: new google.maps.LatLng(0, 0),
@@ -82,7 +88,6 @@ function UKNXCL_Map($container) {
                 }
             }
         });
-
         this.GeoXMLcomp = new geoXML3.Parser({
             map: this.internal_map,
             singleInfoWindow: true,
@@ -301,14 +306,6 @@ function UKNXCL_Map($container) {
                     if (!map._earth_drag) {
                         map.planner.addWaypoint(event.getLatitude(), event.getLongitude(), 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue.png');
                     }
-                }
-            });
-            $(document).bind('cbox_complete', function () {
-                var width = $('#colorbox').width();
-                if (width < 725) {
-                    $('#colorbox').animate({left: (725 - width) / 2});
-                } else {
-                    $('#colorbox').animate({left: 0});
                 }
             });
         }, function () {
@@ -787,11 +784,9 @@ function Planner(parent) {
 
     this.writeplanner = function () {
         var out = "<table style='width:100%'>";
-        for (var a in this.coordinates) {
-            if (this.coordinates[a]) {
-                out += '<tr>' + '<td>Turnpoint ' + a + '</td>' + '<td>Lat:' + Math.round(this.coordinates[a].lat() * 10000) / 10000 + '</td>' + '<td>Lng:' + Math.round(this.coordinates[a].lng() * 10000) / 10000 + '</td>' + '<td>' + Math.round(this.distance_array[a] * 10000) / 10000 + 'km</td>' + '<td>' + Math.round((this.total_distance_array[a] / this.get_total_distance()) * 10000) / 100 + '%</td>' + '<td><a class="remove" href="#" onclick="map.planner.remove(' + a + '); return false;">[x]</a></td>' + '</tr>';
-            }
-        }
+        this.coordinates.each(function(coordinate, a) {
+            out += '<tr>' + '<td>Turnpoint ' + a + '</td>' + '<td>Lat:' + Math.round(coordinate.lat() * 10000) / 10000 + '</td>' + '<td>Lng:' + Math.round(coordinate.lng() * 10000) / 10000 + '</td>' + '<td>' + Math.round(map.planner.distance_array[a] * 10000) / 10000 + 'km</td>' + '<td>' + Math.round((map.planner.total_distance_array[a] / map.planner.get_total_distance()) * 10000) / 100 + '%</td>' + '<td><a class="remove" href="#" onclick="map.planner.remove(' + a + '); return false;">[x]</a></td>' + '</tr>';
+        });
         out += '<tr class="total"><td>Total</td><td/><td/><td>' + Math.floor(this.get_total_distance() * 10000) / 10000 + 'km</td><td/></tr>';
         $('#path').html(out + '</table>');
         if ((this.count >= 2 && this.count <= 5)) {$('#decOD').removeAttr('disabled');} else { $('#decOD').attr('disabled', 'disabled');}
@@ -808,22 +803,28 @@ function Planner(parent) {
 
     this.get_coordinates = function () {
         var str = [];
-        for (var a in this.coordinates) {
-            if (this.coordinates[a]) {
-                str.push(this.coordinates[a].gridref());
-            }
-        }
+        this.coordinates.each(function(coordinate){
+            str.push(coordinate.gridref());
+        });
         return str.join(';');
     };
 
+    this.toGoogleEarth = function() {
+        var arr = [];
+        this.coordinates.each(function(c){
+            arr.push(new google.maps.LatLng(c.lat(), c.lng()));
+        });
+        return arr;
+    }
+
     this.draw = function () {
-        if (this.parent.mode === this.MAP) {
+        if (this.parent.mode === map.MAP) {
             if (this.mapObject) {
                 this.mapObject.setMap(null);
             }
             this.mapObject = new google.maps.Polyline({
                 map: this.parent.internal_map,
-                path: this.coordinates,
+                path: map.planner.toGoogleEarth(),
                 strokeColor: "000000",
                 strokeOpacity: 1,
                 strokeWeight: 1.4
@@ -849,15 +850,13 @@ function Planner(parent) {
 
     this.clear = function () {
 
-        for (var a in this.waypoints) {
-            if (this.waypoints[a]) {
-                if (this.parent.mode === this.parent.MAP) {
-                    this.waypoints[a].setMap(null);
-                } else {
-                    this.parent.ge.getFeatures().removeChild(this.waypoints[a]);
-                }
+        this.waypoints.each(function() {
+            if (this.parent.mode === this.parent.MAP) {
+                this.waypoints[a].setMap(null);
+            } else {
+                this.parent.ge.getFeatures().removeChild(this.waypoints[a]);
             }
-        }
+        })
         this.waypoints = [];
         this.coordinates = [];
         this.count = 0;
@@ -961,8 +960,8 @@ function Planner(parent) {
             });
             marker.id = map.planner.waypoints.length;
             google.maps.event.addListener(marker, 'click', function (event) {
-                map.planner.push(event.latLng);
-                map.planner[map.planner.length - 1].markerId = marker.id;
+                map.planner.push(new Coordinate(event.latLng.lat(), event.latLng.lng()));
+                map.planner.coordinates[map.planner.coordinates.length - 1].markerId = marker.id;
                 map.planner.writeplanner();
                 map.planner.draw();
                 map.event = event;
@@ -1118,6 +1117,18 @@ Array.prototype.each = function (callback, context) {
         callback(this[i], i, context);
     }
 }
+Array.prototype.count = function() {
+    return this.length - 2;
+}
 String.prototype.isNumber = function() {
     return !isNaN(parseFloat(this)) && isFinite(this);
-}
+};
+
+$(document).bind('cbox_complete', function () {
+    var width = $('#colorbox').width();
+    if (width < 725) {
+        $('#colorbox').animate({left: (725 - width) / 2});
+    } else {
+        $('#colorbox').animate({left: 0});
+    }
+});
