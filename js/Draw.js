@@ -431,6 +431,7 @@ function Track(id, temp) {
     };
 
     this.toggle_track = function (id, bool) {
+        id++;
         if(bool) {
             this.google_data.gpolylines[id].setMap(map.internal_map);
         } else {
@@ -564,9 +565,11 @@ function Comp(id) {
     this.toggle_track = function (id, bool) {
         if (!bool) {
             this.marker[id].setMap(null);
+            this.google_data.gpolylines[id].setMap(null);
             this.nxcl_data.track[id].drawGraph = bool;
         } else {
             this.marker[id].setMap(map.internal_map);
+            this.google_data.gpolylines[id].setMap(map.internal_map);
             this.nxcl_data.track[id].drawGraph = bool;
         }
         map.graph.setGraph();
@@ -1074,10 +1077,10 @@ $('body').on('click', '.kmltree .toggler', function () {
 
         if (typeof data.path[0] != 'undefined') {
             if ($li.hasClass('visible')) {
-                root.toggle_track(data.path[0] + 1, false);
+                root.toggle_track(data.path[0], false);
                 $li.removeClass('visible');
             } else {
-                root.toggle_track(data.path[0] + 1, true);
+                root.toggle_track(data.path[0], true);
                 $li.addClass('visible');
             }
         } else {
