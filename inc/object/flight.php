@@ -32,7 +32,7 @@ class flight extends table {
     }
 
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1', 'limit' => 20, 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
         $total_time = 0;
         $flights->iterate(function (flight $flight) use (&$total_time) {
                 $track = new track();
@@ -159,7 +159,7 @@ class flight extends table {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return html_node::create('td.' . $type . $d . $i, html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, ['data-ajax-click' => 'flight:get_info', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid]));
+        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, ['data-ajax-click' => 'flight:get_info', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid]));
     }
 }
 
