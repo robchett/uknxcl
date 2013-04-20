@@ -10,6 +10,15 @@
  */
 class track {
 
+    public function cleanup() {
+        unset($this->track_points);
+        unset($this->track_parts);
+        unset($this->or);
+        unset($this->od);
+        unset($this->tr);
+        unset($this->c);
+    }
+
     public static $number_of_points_to_use = 700;
     public $calc_od = 1;
     public $calc_or = 1;

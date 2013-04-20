@@ -152,6 +152,8 @@ function UKNXCL_Map($container) {
     };
 
     this.play = function () {
+        clearTimeout(this.timer);
+        this.playCount = 0;
         this.playCycles = this.obj.size() / 100;
         this.playing();
     };
