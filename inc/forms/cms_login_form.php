@@ -15,7 +15,7 @@ class cms_login_form extends form {
     public function do_validate() {
         parent::do_validate();
         if (!($this->username == 'eacommsc' && $this->password == '***REMOVED***')) {
-            $this->validation_errors[''] = 'Username and password combination does not match.';
+            $this->validation_errors['username'] = 'Username and password combination does not match.';
         }
 
     }
