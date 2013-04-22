@@ -877,14 +877,17 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->od->distance = $_SESSION['add_flight'][$id]['od']['distance'];
             $this->od->coordinates = $_SESSION['add_flight'][$id]['od']['coords'];
             $this->od->timestamp = $_SESSION['add_flight'][$id]['od']['duration'];
+            $this->od->get_waypoints_from_os();
 
             $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
             $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
             $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
+            $this->or->get_waypoints_from_os();
 
             $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
             $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
             $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
+            $this->tr->get_waypoints_from_os();
 
             if (isset($_SESSION['add_flight'][$id]['task'])) {
                 $this->task = new task();
@@ -916,7 +919,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     public function set_info() {
-        if ($this->parent_flight->fid) {
+        if (isset($this->parent_flight->fid) && $this->parent_flight->fid) {
             $this->parent_flight->lazy_load(array('pid', 'gid', 'cid'));
             $this->pilot->do_retrieve_from_id(array('name'), $this->parent_flight->pid);
             $this->club->do_retrieve_from_id(array('name'), $this->parent_flight->cid);
@@ -1107,10 +1110,6 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                     continue;
                 }
                 for ($x = $row; $x <= $col - 2; ++$x) {
-                    if ($this->distance_map[$row][$x] < $minleg) {
-                        $x += (int) (($minleg - $this->distance_map[$row][$x]) / $this->maximum_distance_between_two_points);
-                        continue;
-                    }
                     for ($y = $row + 1; $y <= $col - 1; ++$y) {
                         if ($this->distance_map[$x][$y] < $minleg) {
                             $y += (int) (($minleg - $this->distance_map[$x][$y]) / $this->maximum_distance_between_two_points);
@@ -1328,10 +1327,35 @@ class task {
         $this->title = $title;
     }
 
+    public function get_waypoints_from_os() {
+        $this->waypoints = new track_point_array();
+        $coords = explode(';',$this->coordinates);
+        foreach($coords as $coord) {
+            list($coord, $ele) = explode(':', $coord);
+            $latlng = file_convert::OSGridToLatLong($coord);
+            $track_point = new track_point();
+            $track_point->lat = $latlng[0];
+            $track_point->lon = $latlng[1];
+            $track_point->ele = $ele;
+            $this->waypoints[] = $track_point;
+        }
+    }
+
     public function get_coordinates() {
         if (!isset($this->coordinates)) {
             if (isset($this->waypoints)) {
-                return $this->waypoints->get_coordinates(range(0, $this->waypoints->count() - 1));
+                $this->coordinates = $this->waypoints->get_coordinates(range(0, $this->waypoints->count() - 1));
+            } else {
+                return '';
+            }
+        }
+        return $this->coordinates;
+    }
+
+    public function get_session_coordinates() {
+        if (!isset($this->coordinates)) {
+            if (isset($this->waypoints)) {
+                $this->coordinates = $this->waypoints->get_session_coordinates(range(0, $this->waypoints->count() - 1));
             } else {
                 return '';
             }
@@ -1469,6 +1493,14 @@ class track_point_array extends object_array {
      */
     public function first() {
         return parent::first();
+    }
+
+    public function get_session_coordinates($indexes) {
+        $coordinates = array();
+        foreach ($indexes as $index) {
+            $coordinates[] = $this[$index]->get_coordinate() . ':' . $this->ele;
+        }
+        return implode(';', $coordinates);
     }
 
     /**  @return string */

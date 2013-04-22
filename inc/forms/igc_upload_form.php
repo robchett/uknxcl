@@ -64,12 +64,13 @@ class igc_upload_form extends form {
             $defined = $track->set_task($this->coords);
         }
         $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
-        file_convert::time_split_kml_plus_js($track);
         $html = $track->error;
         if ($track->get_number_of_parts() > 1) {
+            file_convert::time_split_kml_plus_js($track);
             $html .= $this->get_choose_track_html($track, $defined);
         } else {
             $track->calculate();
+            $track->generate_output_files();
             $html .= $this->get_choose_score_html($track, $start, $end, $defined);
         }
         ajax::update('<div id="console">' . $html . '</div>');
@@ -109,7 +110,7 @@ class igc_upload_form extends form {
 
     private function get_task_select_html(track $track, $type) {
         $task = $track->$type;
-        $_SESSION['add_flight'][$track->id][$type] = array('distance'=>$task->get_distance(), 'coords'=> $task->get_coordinates(), 'duration' => $task->get_duration());
+        $_SESSION['add_flight'][$track->id][$type] = array('distance'=>$task->get_distance(), 'coords'=> $task->get_session_coordinates(), 'duration' => $task->get_duration());
         $flight_type = new flight_type();
         $flight_type->do_retrieve(array('multi'), array('where'=>'fn=:fn', 'parameters'=>array('fn'=>$type)));
         return '
