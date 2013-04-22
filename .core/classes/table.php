@@ -3,6 +3,7 @@ class table {
     public static $fields;
     public static $define_table = array();
     public static $module_id = 0;
+    public $raw = false;
     public $table_key;
 
     public function  __construct($fields = array(), $id = 0) {
@@ -58,8 +59,12 @@ class table {
     }
 
     public function do_submit() {
+        $this->raw = true;
         $this->set_from_request();
         $form = $this->get_form();
+        foreach ($form->fields as $field) {
+            $field->raw = true;
+        }
         $form->action = get_class($this) . ':do_submit';
         $ok = $form->do_submit();
         if ($ok) {
@@ -74,6 +79,9 @@ class table {
 
     public function set_from_request() {
         foreach ($this->get_fields() as $field) {
+            if($this->raw) {
+                $field->raw = true;
+            }
            $field->set_from_request();
         }
     }
@@ -127,6 +135,8 @@ class table {
         foreach ($form->fields as $field) {
             if (get_class($field) == 'field_file') {
                 $form->action = '/index.php?module=' . get_class($this) . '&act=do_submit&no_ajax=on&ajax_origin=' . $form->id;
+            } else if (get_class($field) == 'field_textarea') {
+                core::$inline_script[] = 'CKEDITOR.replace("' . $field->field_name . '");';
             }
             $field->label .= '<span class="field_name">' . $field->field_name. '</span>';
             $field->raw = true;

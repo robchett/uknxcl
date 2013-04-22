@@ -72,6 +72,9 @@ $.fn.ajax_factory = function (module, act, post, options) {
         success: handle_json_response
     });
 }
+function colorbox_recenter(){
+    $('#colorbox').stop().animate({left:(725-$('#colorbox').width())/2});
+}
 
 $('body').on('submit', 'form.ajax', function (e) {
     e.preventDefault();

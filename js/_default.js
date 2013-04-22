@@ -15,10 +15,6 @@ window.onresize = function () {
     if (map)map.resize()
 };
 
-function colorbox_recenter(){
-    $('#colorbox').stop().animate({left:(725-$('#colorbox').width())/2});
-}
-
 function showhide(element, el_to_hide) {
     $(element).toggle();
     if (el_to_hide){
