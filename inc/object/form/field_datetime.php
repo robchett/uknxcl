@@ -10,6 +10,10 @@ class field_datetime extends field {
         $this->parent_form->{$this->field_name} = date('d/m/Y h:i:s', strtotime($val));
     }
 
+    public function get_html() {
+        return '<input ' . $this->get_attributes() . ' value="' . date('d/m/Y h:i:s', strtotime($this->parent_form->{$this->field_name})) . '"/>' . "\n";
+    }
+
     public function mysql_value($value) {
         return date('Y-m-d h:i:s', strtotime(str_replace('/', '-', $value)));
     }

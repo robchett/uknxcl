@@ -188,6 +188,27 @@ div#inner {
   }
 }
 
+.cke {
+  span {
+    display: block !important;
+    width: auto !important;
+    &.cke_button_icon, &.cke_combo_open {
+      display: inline-block !important;
+    }
+    &.cke_voice_label, &.cke_button_label {
+      display: none !important;
+    }
+    &.cke_button_icon {
+      width: 16px !important;
+    }
+  }
+  a {
+    &.cke_combo_button {
+      display: inline-block !important;
+    }
+  }
+}
+
 #form_wrapper {
   text-align: left;
   ul {
@@ -304,13 +325,13 @@ a.reorder {
   cursor: pointer;
   &.up {
     background: url(/img/sprites.png) -72px -89px;
-    &:hover{
+    &:hover {
       background-position: -83px -89px;
     }
   }
   &.down {
     background: url(/img/sprites.png) -72px -98px;
-    &:hover{
+    &:hover {
       background-position: -83px -98px;
     }
   }
