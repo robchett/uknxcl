@@ -79,12 +79,14 @@ class igc_form extends form {
                 $track = new track();
                 $track->id = $flight->fid;
                 $track->parse_IGC();
+                $track->pre_calc();
                 $track->set_from_session($flight, $this->temp_id);
 
                 $flight->date = $track->get_date();
                 $flight->did = $track->get_dim();
                 $flight->winter = $track->is_winter();
 
+                $this->force_delay = false;
                 if (!$track->check_date()) {
                     $this->force_delay = true;
                     $flight->invis_info .= 'delayed as flight is old.';

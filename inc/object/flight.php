@@ -137,7 +137,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/track/' . $id . '/Track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/Track.js')));
         }
     }
 

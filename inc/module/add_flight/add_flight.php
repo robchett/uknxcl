@@ -19,7 +19,9 @@ class add_flight extends core_module {
 <div id="add_flight_box">
     <div id="add_flight_wrapper">
         <div id="add_flight_inner">
+            <div id="type_wrapper">
             ' . $this->page->body . '
+            </div>
             <div class="add_flight_section upload">';
         $html .= $form2->get_html()->get();
         $html .= $form->get_html()->get();
@@ -62,13 +64,14 @@ class add_flight extends core_module {
         $("#" + $(this).attr("id") + "_hidden").val($(this).val());
         return true;
     });
-    $("body").on("click","div.flight_type_box",function () {
+    $("body").on("click","div#type_wrapper p, div#type_wrapper h2",function () {
         if($(this).hasClass("upload")) {
             $("#add_flight_inner").animate({"left": -710});
         } else {
             $("#add_flight_inner").animate({"left": -1420});
         }
         $("#igc_form_holder").show();
+        return false;
     });
 
     $("body").on("click", "#kml_calc a.calc", function () {
@@ -79,16 +82,15 @@ class add_flight extends core_module {
         var arr = $(this).val().split(";");
         var coord_array = new Planner();
         var str = "";
-        for (i in arr) {
+        arr.each(function(arg, i) {
             var coord = new Coordinate();
-            coord.set_from_OS(arr[i]);
-        if (coord.is_valid_gridref()) {
-            coord_array.push(coord);
-        } else {
-            str = "Coordinate " + (i * 1 + 1) + " is not valid";
-            break;
-        }
-        }
+            coord.set_from_OS(arg);
+            if (coord.is_valid_gridref()) {
+                coord_array.push(coord);
+            } else {
+                str = "Coordinate " + (i * 1 + 1) + " is not valid";
+            }
+        });
         if (!str.length) {
         switch (coord_array.count) {
             case 0:
@@ -109,7 +111,7 @@ class add_flight extends core_module {
                 break;
             case 4:
                 if(coord_array[0] == coord_array[4]) {
-                    str = "Flight Type: Trianglge, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                    str = "Flight Type: Triangle, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
                 } else {
                     str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
                 }
