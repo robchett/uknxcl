@@ -30,8 +30,6 @@ function UKNXCL_Map($container) {
     this.playCycles = 10;
     this.playCount = 0;
     this.comp = null;
-    this.Waypointmode = false;
-    this.visible_flight_types = [true, true, true, true];
 
     this.resize = function () {
         var pageWidth = this.$body.width();
@@ -58,7 +56,7 @@ function UKNXCL_Map($container) {
             streetViewControl: false
         });
         google.maps.event.addListener(this.internal_map, 'click', function (event) {
-            if(map.planner.enabled) {
+            if (map.planner.enabled) {
                 var latlon = event.latLng;
                 map.planner.addWaypoint(latlon.lat(), latlon.lng());
             }
@@ -132,9 +130,23 @@ function UKNXCL_Map($container) {
         });
     }
 
-    this.showing = function (a) {
-        return this.visible_flight_types[a];
-    };
+    this.load_airspace = function () {
+        if (this.mode == this.MAP) {
+            this.airspace.loadAll();
+        } else {
+            this.parseKML('/js/Airspace.kmz', this.airspace);
+        }
+        $(".load_airspace").remove();
+        $("#tree_content").prepend('<div class=\'kmltree new\'><ul class=\'kmltree\'>' +
+            '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' +
+            '<li data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' +
+            '<li data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' +
+            '<li data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' +
+            '<li data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' +
+            '<li data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' +
+            '</ul></li></ul></div>');
+        return false;
+    }
 
     this.toggle_airspace = function (type) {
         $('#airspace_' + type).toggleClass('hidden');
@@ -168,7 +180,7 @@ function UKNXCL_Map($container) {
     };
 
     this.playing = function () {
-        if (this.playCount < this.obj.size()  - this.playCycles) {
+        if (this.playCount < this.obj.size() - this.playCycles) {
             this.move(this.playCount += this.playCycles);
         } else {
             this.move(this.obj.size());
@@ -276,7 +288,7 @@ function UKNXCL_Map($container) {
     };
 
     this.init_earth = function () {
-        google.earth.createInstance('map3dd', function (instance) {
+        google.earth.createInstance('map3d', function (instance) {
             $('#map').hide();
             $('#map3d').show();
             map.mode = map.EARTH;
@@ -387,7 +399,7 @@ function Track(id, temp) {
     this.show = function () {
         if (map.mode === map.MAP) {
             this.marker.setMap(map.internal_map);
-            this.google_data.gpolylines.each(function(polyline) {
+            this.google_data.gpolylines.each(function (polyline) {
                 polyline.setMap(map.internal_map);
             });
         }
@@ -398,7 +410,7 @@ function Track(id, temp) {
 
     this.hide = function () {
         this.marker.setMap(null);
-        this.google_data.gpolylines.each(function(polyline) {
+        this.google_data.gpolylines.each(function (polyline) {
             polyline.setMap(null);
         });
         map.graph.setGraph();
@@ -431,7 +443,7 @@ function Track(id, temp) {
 
     this.toggle_track = function (id, bool) {
         id++;
-        if(bool) {
+        if (bool) {
             this.google_data.gpolylines[id].setMap(map.internal_map);
         } else {
             this.google_data.gpolylines[id].setMap(null);
@@ -522,14 +534,16 @@ function Comp(id) {
         this.marker.each(function (marker) {
             marker.setMap(map.internal_map);
         });
-        this.google_data.gpolylines.each(function (polyline) {
-            polyline.setMap(map.internal_map);
-        });
-        this.google_data.gpolygons.each(function (gpolygon) {
-            gpolygon.setMap(map.internal_map);
-        });
-        this.visible = true;
-        map.graph.setGraph();
+        if (map.mode == map.MAP) {
+            for (var i in this.google_data.gpolylines) {
+                this.google_data.gpolylines[i].setMap(map.internal_map);
+            }
+            for (i in this.google_data.gpolygons) {
+                this.google_data.gpolygons[i].setMap(map.internal_map);
+            }
+            this.visible = true;
+            map.graph.setGraph();
+        }
     };
 
     this.hide = function () {
@@ -539,12 +553,12 @@ function Comp(id) {
         this.marker.each(function (marker) {
             marker.setMap(null);
         });
-        this.google_data.gpolylines.each(function (polyline) {
-            polyline.setMap(null);
-        });
-        this.google_data.gpolygons.each(function (gpolygon) {
-            gpolygon.setMap(null);
-        });
+        for (var i in this.google_data.gpolylines) {
+            this.google_data.gpolylines[i].setMap(null);
+        }
+        for (i in this.google_data.gpolygons) {
+            this.google_data.gpolygons[i].setMap(null);
+        }
         this.visible = false;
         map.graph.setGraph();
     };
@@ -784,7 +798,7 @@ function Planner(parent) {
 
     this.writeplanner = function () {
         var out = "<table style='width:100%'>";
-        this.coordinates.each(function(coordinate, a) {
+        this.coordinates.each(function (coordinate, a) {
             out += '<tr>' + '<td>Turnpoint ' + a + '</td>' + '<td>Lat:' + Math.round(coordinate.lat() * 10000) / 10000 + '</td>' + '<td>Lng:' + Math.round(coordinate.lng() * 10000) / 10000 + '</td>' + '<td>' + Math.round(map.planner.distance_array[a] * 10000) / 10000 + 'km</td>' + '<td>' + Math.round((map.planner.total_distance_array[a] / map.planner.get_total_distance()) * 10000) / 100 + '%</td>' + '<td><a class="remove" href="#" onclick="map.planner.remove(' + a + '); return false;">[x]</a></td>' + '</tr>';
         });
         out += '<tr class="total"><td>Total</td><td/><td/><td>' + Math.floor(this.get_total_distance() * 10000) / 10000 + 'km</td><td/></tr>';
@@ -803,15 +817,15 @@ function Planner(parent) {
 
     this.get_coordinates = function () {
         var str = [];
-        this.coordinates.each(function(coordinate){
+        this.coordinates.each(function (coordinate) {
             str.push(coordinate.gridref());
         });
         return str.join(';');
     };
 
-    this.toGoogleEarth = function() {
+    this.toGoogleEarth = function () {
         var arr = [];
-        this.coordinates.each(function(c){
+        this.coordinates.each(function (c) {
             arr.push(new google.maps.LatLng(c.lat(), c.lng()));
         });
         return arr;
@@ -840,17 +854,15 @@ function Planner(parent) {
                 lineStringPlacemark.getStyleSelector().getLineStyle().setColor('FFFFFF');
             }
             this.mapObject.getCoordinates().clear();
-            for (var a in this.coordinates) {
-                if (this.coordinates[a]) {
-                    this.mapObject.getCoordinates().pushLatLngAlt(this.coordinates[a].lat(), this.coordinates[a].lng(), 0);
-                }
-            }
+            this.coordinates.each(function (coordinate, i, context) {
+                context.mapObject.getCoordinates().pushLatLngAlt(coordinate.lat(), coordinate.lng(), 0);
+            }, this);
         }
     };
 
     this.clear = function () {
 
-        this.waypoints.each(function() {
+        this.waypoints.each(function () {
             if (this.parent.mode === this.parent.MAP) {
                 this.waypoints[a].setMap(null);
             } else {
@@ -872,11 +884,11 @@ function Planner(parent) {
     };
     this.remove = function (index) {
         var cords = [];
-        for (var i in this.coordinates) {
+        this.coordinates.each(function (coordinate, i) {
             if (i != index) {
-                cords.push(this.coordinates[i]);
+                cords.push(coordinate);
             }
-        }
+        });
         this.coordinates = cords;
         this.calculate_distances();
         this.draw();
@@ -887,14 +899,14 @@ function Planner(parent) {
     this.calculate_distances = function () {
         this.distance_array = [0];
         this.total_distance_array = [0];
-        for (var a in this.coordinates) {
+        this.coordinates.each(function (coordinate, a, context) {
             if (a >= 1) {
-                var d = Math.acos(Math.sin(this.coordinates[a - 1].lat().toRad()) * Math.sin(this.coordinates[a].lat().toRad()) + Math.cos(this.coordinates[a - 1].lat().toRad()) * Math.cos(this.coordinates[a].lat().toRad()) * Math.cos(this.coordinates[a - 1].lng().toRad() - this.coordinates[a].lng().toRad())) * this.R;
+                var d = Math.acos(Math.sin(context.coordinates[a - 1].lat().toRad()) * Math.sin(coordinate.lat().toRad()) + Math.cos(context.coordinates[a - 1].lat().toRad()) * Math.cos(coordinate.lat().toRad()) * Math.cos(context.coordinates[a - 1].lng().toRad() - coordinate.lng().toRad())) * context.R;
 
-                this.distance_array.push(d);
-                this.total_distance_array.push(this.total_distance_array[a - 1] + d);
+                context.distance_array.push(d);
+                context.total_distance_array.push(context.total_distance_array[a - 1] + d);
             }
-        }
+        }, this);
     };
 
     this.is_equal = function (a, b) {
@@ -1010,7 +1022,7 @@ function trackData() {
     this.EndT = 0;
     this.loadFromAjax = function (json) {
         for (var i in json) {
-            if (json[i]) {
+            if (typeof json[i] != "function") {
                 this[i] = json[i];
             }
         }
@@ -1029,16 +1041,20 @@ $('body').on('click', '.kmltree .toggler', function () {
     if (map.mode == map.EARTH) {
         if (data.type == "comp") {
             var kml = map.comp.google_data.root;
-        } else {
+        } else if(data.type == "track") {
             var kml = map.kmls[root_data.id].google_data.root;
+        } else {
+            var kml = map.airspace.google_data.root;
         }
         var kmlPath = [kml];
-        kml = kml.getFeatures().getChildNodes().item(0);
+        if(data.type != 'airspace') {
+            kml = kml.getFeatures().getChildNodes().item(0);
+        }
         if (data.path !== null) {
-            for (i in data.path) {
-                kml = kml.getFeatures().getChildNodes().item(data.path[i]);
+            data.path.each(function (index) {
+                kml = kml.getFeatures().getChildNodes().item(index);
                 kmlPath.push(kml);
-            }
+            });
         }
         if ($li.hasClass('visible')) {
             if ($parent_li.hasClass('radioFolder')) {
@@ -1117,10 +1133,10 @@ Array.prototype.each = function (callback, context) {
         callback(this[i], i, context);
     }
 }
-Array.prototype.count = function() {
+Array.prototype.count = function () {
     return this.length - 2;
 }
-String.prototype.isNumber = function() {
+String.prototype.isNumber = function () {
     return !isNaN(parseFloat(this)) && isFinite(this);
 };
 
