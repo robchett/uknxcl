@@ -6,18 +6,18 @@ $bodgeFactor = 1852;
 $out = "";
 $classes = Array();
 $colours = array(
-    "A" => array("FF0000", '000000'),
-    "B" => array("003333", '003333'),
-    "C" => array("FF0000", '000000'),
-    "CTR" => array("FF000", 'FF0000'),
-    "D" => array("0000FF", '0000FF'),
-    "E" => array("00FF66", '00FF66'),
-    "G" => array("FFFF00", 'FFFF00'),
-    "P" => array("FF0000", 'FF0000'),
-    "Q" => array("FF0000", 'FF0000'),
-    "R" => array("FF0000", 'FF0000'),
-    "W" => array("FFFFFF", '000000'),
-    "OTHER" => array("FF000", 'FF0000'),
+    "A" => array("0000FF", "000000"),
+    "B" => array("333300", "333300"),
+    "C" => array("0000FF", "000000"),
+    "CTR" => array("0000FF", "0000FF"),
+    "D" => array("FF0000", "FF0000"),
+    "E" => array("66FF00", "66FF00"),
+    "G" => array("00FFFF", "00FFFF"),
+    "P" => array("0000FF", "0000FF"),
+    "Q" => array("0000FF", "0000FF"),
+    "R" => array("0000FF", "0000FF"),
+    "W" => array("FFFFFF", "000000"),
+    "OTHER" => array("FF000", "0000FF"),
 );
 
 class airspace {
@@ -27,6 +27,7 @@ class airspace {
     public $base;
     public $height;
     public $type;
+    public $cords2 = array();
     // 0=circle,
 
 }
@@ -39,7 +40,7 @@ foreach ($input as $a) {
         continue;
     }
     if (preg_match("/^TITLE=(.*)/", $a, $matches)) {
-        $current->name = str_replace("'", "\'", $matches[1]);
+        $current->name = str_replace("'", "\\'", $matches[1]);
         continue;
     }
     if (preg_match("/BASE=(.*)/", $a, $matches)) {
@@ -66,7 +67,7 @@ foreach ($input as $a) {
     if (preg_match("/^TYPE=(.*)/", $a, $matches)) {
         if (isset($current) && isset($current->class)) {
             $t = $current->class;
-            $classes["$t"] [] = $current;
+            $classes[$t] [] = $current;
         }
         $current = new airspace();
         if ($matches[1] == "") $matches[1] = "OTHER";
@@ -78,19 +79,19 @@ foreach ($input as $a) {
     }
 
     if (preg_match("/CIRCLE RADIUS=(.*) CENTRE=(N|S)([0-9]{6}) (E|W)([0-9]{7})/", $a, $matches)) {
-        $lat = ConvertCord($matches[3], $matches[2]) * 2 * M_PI / 360;
-        $lon = ConvertCord($matches[5], $matches[4]) * 2 * M_PI / 360;
+        $lat = ConvertCord($matches[3], $matches[2]) * M_PI / 180;
+        $lon = ConvertCord($matches[5], $matches[4]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1);
+        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1,0,0,$current->top);
         $current->cords = $t[0];
-        $current->cords2 = $t[0];
+        $current->cords2 = $t[1];
         continue;
     }
     if (preg_match("/POINT=([N|S])([0-9]{6}) ([W|E])([0-9]{7})/", $a, $matches)) {
         $lat = ConvertCord($matches[2], $matches[1]);
         $lon = ConvertCord($matches[4], $matches[3]);
         $current->cords .= encode($lat - $current->prev_lat) . encode($lon - $current->prev_lon);
-        $current->cords2 .= "$lon,$lat,0 ";
+        $current->cords2[] = array($lon,$lat);
         $current->prev_lat = $lat;
         $current->prev_lon = $lon;
         continue;
@@ -98,14 +99,14 @@ foreach ($input as $a) {
     if (preg_match("/ANTI-CLOCKWISE RADIUS=(.*) CENTRE=([N|S])([0-9]{6}) ([W|E])([0-9]{7}) TO=([N|S])([0-9]{6}) ([W|E])([0-9]{7})/", $a, $matches)) {
         $lat1 = $current->prev_lat * M_PI / 180;
         $lon1 = $current->prev_lon * M_PI / 180;
-        $latC = ConvertCord($matches[3], $matches[2]) * 2 * M_PI / 360;
-        $lonC = ConvertCord($matches[5], $matches[4]) * 2 * M_PI / 360;
-        $lat2 = ConvertCord($matches[7], $matches[6]) * 2 * M_PI / 360;
-        $lon2 = ConvertCord($matches[9], $matches[8]) * 2 * M_PI / 360;
+        $latC = ConvertCord($matches[3], $matches[2]) * M_PI / 180;
+        $lonC = ConvertCord($matches[5], $matches[4]) * M_PI / 180;
+        $lat2 = ConvertCord($matches[7], $matches[6]) * M_PI / 180;
+        $lon2 = ConvertCord($matches[9], $matches[8]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
         $current->cords .= $t[0];
-        $current->cords2 .= $t[1];
+        $current->cords2 = array_merge($current->cords2,$t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;
         $current->prev_lon = $lon2 * 180 / M_PI;
         continue;
@@ -113,14 +114,14 @@ foreach ($input as $a) {
     if (preg_match("/^CLOCKWISE RADIUS=(.*) CENTRE=([N|S])([0-9]{6}) ([W|E])([0-9]{7}) TO=([N|S])([0-9]{6}) ([W|E])([0-9]{7})/", $a, $matches)) {
         $lat1 = $current->prev_lat * M_PI / 180;
         $lon1 = $current->prev_lon * M_PI / 180;
-        $latC = ConvertCord($matches[3], $matches[2]) * 2 * M_PI / 360;
-        $lonC = ConvertCord($matches[5], $matches[4]) * 2 * M_PI / 360;
-        $lat2 = ConvertCord($matches[7], $matches[6]) * 2 * M_PI / 360;
-        $lon2 = ConvertCord($matches[9], $matches[8]) * 2 * M_PI / 360;
+        $latC = ConvertCord($matches[3], $matches[2]) * M_PI / 180;
+        $lonC = ConvertCord($matches[5], $matches[4]) * M_PI / 180;
+        $lat2 = ConvertCord($matches[7], $matches[6]) * M_PI / 180;
+        $lon2 = ConvertCord($matches[9], $matches[8]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
         $current->cords .= $t[0];
-        $current->cords2 .= $t[1];
+        $current->cords2 = array_merge($current->cords2,$t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;
         $current->prev_lon = $lon2 * 180 / M_PI;
         continue;
@@ -210,7 +211,7 @@ $out .= "
 } 
 ";
 
-fwrite(fopen("../javascript/Airspace.js", 'w'), $out);
+//file_put_contents('../../js/Airspace.js', $out);
 
 function encode($lat) {
     $lat = $lat * 1e5;
@@ -265,9 +266,9 @@ function binary_left_shift($lat) {
     return $a . "0";
 }
 
-function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0) {
+function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0, $top) {
     $out = "";
-    $out2 = "";
+    $out2 = array();
     $angularDistance = $cords [2] / 6371000;
     $count = 0;
     if ($dir < 0) $totat_angle = ($end - $start);
@@ -290,7 +291,7 @@ function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0) {
         $latOut = rad2deg($lat);
         $lonOut = rad2deg($lon);
         $out .= encode($latOut - $prev_lat) . encode($lonOut - $prev_lon);
-        $out2 .= "$lonOut,$latOut,0 ";
+        $out2[] = array($lonOut,$latOut);
 
         $prev_lat = $latOut;
         $prev_lon = $lonOut;
@@ -317,43 +318,97 @@ function get_bearing($coord1, $coord2) {
 
 
 $out = "<?xml version='1.0' encoding='UTF-8'?>
-<Document>";
-foreach ($classes as $c) {
-    $out .= "
-    <Style id=\"{$c[0]->type}\">
+<Document>
+    <name>UK Airspace for UKNXCL</name>
+    <open>1</open>
+    <Style id='hideChildren'><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style>
+";
+foreach ($colours as $key=>$c) {
+    $out .= '
+    <Style id="' .$key . '">
         <LineStyle>
             <width>0.8</width>
-            <color>FF{$colours[$c[0]->type][0]}</color>
+            <color>FF' . $c[0] . '</color>
         </LineStyle>
         <PolyStyle>
-            <color>66{$colours[$c[0]->type][1]}</color>
+            <color>66' . $c[1] . '</color>
         </PolyStyle>
-    </Style>
-    <Folder>
-        <name>{$c[0]->class}</name>
-    ";
+    </Style>';
+}
+foreach ($classes as $c) {
+    $out .= '<Folder>
+        <open>0</open>
+        <name>' . $c[0]->class . '</name>';
+
     foreach ($c as $d) {
-        $out .= "
-        <Placemark>
-            <name>$d->name</name>
-            <description>$d->name</description>   
-            <styleUrl>#{$d->class}</styleUrl>
-            <Polygon>
-                <outerBoundaryIs>
-                    <LinearRing>
-                        <coordinates>
-                            $d->cords2
-                        </coordinates>
-                    </LinearRing>
-                </outerBoundaryIs>
-            </Polygon>
-        </Placemark>
-";
+        $out .= '
+        <Folder>
+            <name>' . $d->name . '</name>
+            <open>1</open>
+            <styleUrl>#hideChildren</styleUrl>';
+        foreach($d->cords2 as $key=>$coord) {
+            $next = isset($d->cords2[$key+1]) ? $d->cords2[$key+1] : $d->cords2[0];
+            $out .= '
+            <Placemark>
+                <styleUrl>#' . $d->type . '</styleUrl>
+                <Polygon>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>
+                                ' . $coord[0].','.$coord[1]. ','.$d->base . ' ' . $coord[0].','.$coord[1]. ','.$d->top . '
+                                ' . $next[0].','.$next[1]. ','.$d->top . ' ' . $next[0].','.$next[1]. ','.$d->base . '
+                            </coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>';
+        }
+        $out .= '
+            <Placemark>
+                <styleUrl>#' . $d->type . '</styleUrl>
+                <Polygon>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>';
+        foreach($d->cords2 as $coord) {
+            $out .= $coord[0].','.$coord[1]. ','.$d->base . ' ';
+        }
+        $out .= '
+                            </coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+            <Placemark>
+                <styleUrl>#' . $d->type . '</styleUrl>
+                <Polygon>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>';
+        foreach($d->cords2 as $coord) {
+            $out .= $coord[0].','.$coord[1]. ','.$d->top . ' ';
+        }
+        $out .= '
+                            </coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>';
+        $out .= ' </Folder>';
     }
     $out .= "
     </Folder>
 ";
 }
+$out .= '</Document>';
+file_put_contents('../../js/Airspace.kml', $out);
 
-fwrite(fopen("../javascript/Airspace.kml", 'w'), $out . "</Document>");
+$zip = new ZipArchive();
+$zip->open('../../js/Airspace.kmz', ZipArchive::OVERWRITE);
+$zip->addFile('../../js/Airspace.kml');
+$zip->close();
+
 ?>

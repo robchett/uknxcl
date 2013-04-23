@@ -1,7 +1,7 @@
 allow from all
 
 RewriteEngine On
-RewriteRule !(ico|js|css|jpg|jpeg|gif|png|swf|flv|pdf|htc|mp3|html|kml|kmz|igc|xml|txt|zip)$ index.php
+RewriteRule !(ico|js|css|jpg|jpeg|gif|png|swf|flv|pdf|htc|mp3|html|kml|kmz|igc|xml|txt|zip|php)$ index.php
 
 AddOutputFilterByType DEFLATE text/plain
 AddOutputFilterByType DEFLATE text/xml
