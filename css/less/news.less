@@ -1,5 +1,25 @@
 /* NEWS BOX */
 div#news {
+  width: 1420px;
+  #list_wrapper, #article_wrapper {
+    width: 680px;
+    float: left;
+  }
+  #list_wrapper {
+    margin-right: 40px;
+  }
+  #article_wrapper {
+    ul {
+      list-style: disc;
+      padding-left: 30px;
+      li {
+        list-style: disc;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #c3c3c3;
+      }
+    }
+  }
   article {
     margin-bottom: 10px;
     overflow: hidden;

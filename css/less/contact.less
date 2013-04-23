@@ -1,35 +1,30 @@
-div#pages-5 {
-  h4 {
-    .gradient(#75b7fd,#0c3f6b,#0a4dad);
-    text-align: center;
-    color: #ffffff;
-    font-weight: bold;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 0;
-    .border-radius(10px,0,0,10px);
-  }
-  p {
-    border: 1px solid #0e406d;
-    padding: 10px;
-    margin: 0;
-    .border-radius(0,10px,10px,0);
-    &.enclosed {
-      .border-radius(10px,10px,10px,10px);
-      margin-top: 20px;
-      span.img {
-        float: right;
-        margin-left: 20px;
-        margin-right: 0;
-      }
-    }
+.title {
+  .heading();
+  padding: 10px 0;
+}
+
+p.boxed {
+  border: 1px solid #0e406d;
+  padding: 10px;
+  margin: 0 0 20px 0;
+  .border-radius(0,10px,10px,0);
+  &.enclosed {
+    .border-radius(10px,10px,10px,10px);
+    margin-top: 20px;
     span.img {
-      float: left;
-      margin-right: 20px;
+      float: right;
+      margin-left: 20px;
+      margin-right: 0;
+    }
+  }
+  span.img {
+    float: left;
+    margin-right: 20px;
+    border-radius: 10px;
+    padding: 4px;
+    border: 1px solid #c7c7c7;
+    img {
       border-radius: 10px;
-      img {
-        border-radius: 10px;
-      }
     }
   }
 }
