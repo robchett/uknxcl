@@ -25,7 +25,7 @@
         <span class="show">Show</span>
         <span class="hide">Hide</span>
 
-        <div id="tree_content"></div>
+        <div id="tree_content"><a href="#" title="Load Airspace" class="load_airspace button" onclick="map.load_airspace();">Load Airspace</a></div>
     </div>
     <div id="map"></div>
     <div id="map3d"></div>
