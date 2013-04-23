@@ -5,16 +5,17 @@ class db {
 
     public static function connect($name = 'new', $db = 'nxcl') {
 
-        if ($_SERVER['HTTP_HOST'] == 'uknxcl.co.uk') {
-            $localhost = "eacomms.co.uk:3306";
+        if (strstr($_SERVER['HTTP_HOST'], 'uknxcl.co.uk') !== flase) {
+            $db = 'eacommcs_' . $db;
+            $host = "localhost";
             $username = "eacommsc_root";
             $password = "uknxcl!23";
         } else {
-            $localhost = '127.0.0.1';
+            $host = '127.0.0.1';
             $username = "root";
             $password = "";
         }
-        self::$con_arr[$name] = new PDO('mysql:host=' . $localhost . ';dbname=' . $db, $username, $password);
+        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
         self::$con = self::$con_arr[$name];
         self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
