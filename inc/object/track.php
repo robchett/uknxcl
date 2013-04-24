@@ -263,7 +263,7 @@ class track {
         $kml = $this->generate_kml_earth();
         $track->html_earth = '<div class="kmltree" data-post=\'{"id":' . $this->id . '}\'>' . $kml->get_html() . '</div>';
 
-        fwrite(fopen($this->get_file_loc() . '/Track.js', 'w'), json_encode($track));
+        fwrite(fopen($this->get_file_loc() . '/track.js', 'w'), json_encode($track));
         fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
     }
 
@@ -294,7 +294,7 @@ class track {
             $kml->add($this->get_kml_time_aware_points());
         }
         if (!$external) {
-            $outFile = fopen($this->get_file_loc() . '/Track.kml', 'w');
+            $outFile = fopen($this->get_file_loc() . '/track.kml', 'w');
             fwrite($outFile, $kml->compile());
         }
         return $kml;
@@ -384,7 +384,7 @@ class track {
         $kml->add($this->get_animation());
         $kml->get_kml_folder_close();
         $kml->get_kml_folder_close();
-        fwrite(fopen($this->get_file_loc() . '/Track_Earth.kml', 'w'), $kml->compile());
+        fwrite(fopen($this->get_file_loc() . '/track_earth.kml', 'w'), $kml->compile());
         return $kml;
     }
 
@@ -788,7 +788,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         if ($this->id) {
             $loc = $this->get_file_loc() . '/track.igc';
             if (!file_exists($loc)) {
-                $loc_old = $this->get_file_loc() . '/Track_log.igc';
+                $loc_old = $this->get_file_loc() . '/track_log.igc';
                 if (!(file_exists($loc_old) && copy($loc_old, $loc) && unlink($loc_old))) {
                     return false;
                 }

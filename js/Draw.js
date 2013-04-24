@@ -120,7 +120,7 @@ function UKNXCL_Map($container) {
 
     this.parseKML = function (url, caller) {
         map.caller = caller;
-        google.earth.fetchKml(this.ge, 'http://uk.local.com' + url, function (kmlObject) {
+        google.earth.fetchKml(this.ge, 'http://' + window.location.hostname + '/' + url, function (kmlObject) {
             if (!kmlObject) { alert('Error loading KML'); }
             map.ge.getFeatures().appendChild(kmlObject);
             kmlObject.setVisibility(true);
@@ -343,9 +343,9 @@ function Track(id, temp) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/Track.kml', null, id);
+            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/track.kml', null, id);
         } else {
-            map.parseKML('/uploads/track/' + this.temp + this.id + '/Track_Earth.kml', this);
+            map.parseKML('/uploads/track/' + this.temp + this.id + '/track_earth.kml', this);
         }
     };
 
