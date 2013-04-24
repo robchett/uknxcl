@@ -144,10 +144,10 @@ class cms extends core_module {
                     )
                 );
             }
-            $html->add_child(html_node::create('li')->nest([
+            $html->add_child(html_node::create('li')->nest(array(
                         html_node::create('span', $row->title),
                         $sub
-                    ]
+                    )
                 )
             );
         }
@@ -198,14 +198,15 @@ class cms extends core_module {
 
     public function get_table_rows($objects, $class) {
         $nodes = html_node::create('tbody');
-        $objects->iterate(function ($obj) use ($nodes, $class) {
+        //$objects->iterate(function ($obj) use ($nodes, $class) {
+        foreach($objects as $obj) {
                 $node = html_node::create('tr');
                 $node->add_child(html_node::create('td.edit', html_node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
                 $node->nest($obj->get_cms_list());
                 $node->add_child(html_node::create('td.delete', html_node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
                 $nodes->add_child($node);
-            }
-        );
+        }
+        //});
         return $nodes;
     }
 

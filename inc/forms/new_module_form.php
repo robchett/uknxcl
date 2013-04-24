@@ -3,12 +3,12 @@
 class new_module_form extends form {
 
     public function __construct() {
-        parent::__construct([
+        parent::__construct(array(
                 new field_int('gid'),
                 new field_string('primary_key'),
                 new field_string('title'),
                 new field_string('table_name'),
-            ]
+            )
         );
     }
 

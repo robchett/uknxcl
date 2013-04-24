@@ -6,10 +6,11 @@ class comps extends core_module {
 
     public function do_generate_all() {
         $comps = comp::get_all(array());
-        $comps->iterate(function ($comp) {
+        //$comps->iterate(function ($comp) {
+        foreach ($comps as $comp) {
                 $comp->do_zip_to_comp();
-            }
-        );
+        }
+        //});
     }
 
     public function get() {
@@ -31,7 +32,8 @@ class comps extends core_module {
             <th>Date</th>
             <th></th>
         </thead>';
-        $comps->iterate(function ($comp) use (&$html) {
+        //$comps->iterate(function ($comp) use (&$html) {
+        foreach($comps as $comp) {
                 $html .= '
             <tr>
                 <td>' . $comp->type . '</td>
@@ -42,8 +44,8 @@ class comps extends core_module {
                 <td>' . $comp->date . '</td>
                 <td><a onclick="map.add_comp(' . $comp->cid . ')">View</a></td>
             </tr>';
-            }
-        );
+        }
+        //});
         $html .= "</table>";
         $html .= "</div>";
 
