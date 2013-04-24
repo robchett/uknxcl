@@ -1041,7 +1041,7 @@ $('body').on('click', '.kmltree .toggler', function () {
     if (map.mode == map.EARTH) {
         if (data.type == "comp") {
             var kml = map.comp.google_data.root;
-        } else if(data.type == "track") {
+        } else if(data.type == "flight") {
             var kml = map.kmls[root_data.id].google_data.root;
         } else {
             var kml = map.airspace.google_data.root;
