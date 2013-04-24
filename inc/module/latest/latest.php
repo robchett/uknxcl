@@ -18,7 +18,7 @@ class latest extends core_module {
         );
         $wrapper = html_node::create('div.table_wrapper');
         $wrapper->add_child(html_node::create('h3','Latest'));
-        $html = new html_node('table.results.main', '', ['style' => 'width:700px']);
+        $html = new html_node('table.results.main', '', array('style' => 'width:700px'));
         $html->add_child(
             html_node::create('thead')->add_child(
                 html_node::create('tr')->nest(array(

@@ -44,7 +44,7 @@ class planner extends core_module {
         if (isset($_REQUEST['ftid']) && isset($_REQUEST['coordinates'])) {
             $dec = new declaration();
             $form = $dec->get_form();
-            jquery::colorbox);
+            jquery::colorbox(array('html' => $form->get_html()->get()));
         }
     }
 

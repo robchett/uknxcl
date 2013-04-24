@@ -137,7 +137,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/Track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/Track.js')));
         }
     }
 
@@ -159,7 +159,7 @@ class flight extends table {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, ['data-ajax-click' => 'flight:get_info', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid]));
+        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('data-ajax-click' => 'flight:get_info', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
     }
 }
 

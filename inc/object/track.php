@@ -519,7 +519,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         if (!isset($temp)) {
             $temp = $this->temp;
         }
-        return root . 'uploads/track/' . ($temp ? 'temp/' : '') . $id;
+        return root . '/uploads/track/' . ($temp ? 'temp/' : '') . $id;
     }
 
     public function get_graph_values() {
