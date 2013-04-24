@@ -122,10 +122,10 @@ class table {
             $tmp_name = $_FILES[$field->field_name]['tmp_name'];
             $name = $_FILES[$field->field_name]['name'];
             $ext = pathinfo($name, PATHINFO_EXTENSION);
-            if (!is_dir(root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key})) {
-                mkdir(root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key});
+            if (!is_dir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key})) {
+                mkdir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key});
             }
-            move_uploaded_file($tmp_name, root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/' . $field->fid . '.' . $ext);
+            move_uploaded_file($tmp_name, root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/' . $field->fid . '.' . $ext);
         }
     }
 
@@ -197,7 +197,7 @@ class table {
 
     private static function _get_fields() {
         if (!isset(static::$fields)) {
-            $fields = [];
+            $fields = array();
             $res = db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
             while ($row = db::fetch($res)) {
                 $class = 'field_' . $row->type;

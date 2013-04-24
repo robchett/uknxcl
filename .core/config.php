@@ -1,20 +1,20 @@
 <?php
 session_start();
 define('admin', isset($_SESSION['admin']));
-define('root', $_SERVER['DOCUMENT_ROOT'] . '/');
-define('core_dir', root . '.core/');
+define('root', $_SERVER['DOCUMENT_ROOT']);
+define('core_dir', root . '/.core');
 define('ajax', isset($_REQUEST['module']));
 
 function __autoload($classname) {
 
     $classname = str_replace(array('_iterator', '_array'), '', $classname);
 
-    if (is_readable($filename = $_SERVER['DOCUMENT_ROOT'] . "/inc/object/" . $classname . ".php")) {
-    } else if (is_readable($filename = root . "inc/module/" . $classname . "/" . $classname . ".php")) {
-    } else if (is_readable($filename = root . "inc/forms/" . $classname . ".php")) {
-    } else if (is_readable($filename = root . "inc/object/form/" . $classname . ".php")) {
-    } else if (is_readable($filename = core_dir . $classname . ".php")) {
-    } else if (is_readable($filename = core_dir . 'classes/' . $classname . ".php")) {
+    if (is_readable($filename = root . "/inc/object/" . $classname . ".php")) {
+    } else if (is_readable($filename = root . "/inc/module/" . $classname . "/" . $classname . ".php")) {
+    } else if (is_readable($filename = root . "/inc/forms/" . $classname . ".php")) {
+    } else if (is_readable($filename = root . "/inc/object/form/" . $classname . ".php")) {
+    } else if (is_readable($filename = core_dir . '/' .  $classname . ".php")) {
+    } else if (is_readable($filename = core_dir . '/' . 'classes/' . $classname . ".php")) {
     } else {
         echo '<pre><p>Class not found ' . $classname . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
     }

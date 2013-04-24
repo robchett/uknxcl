@@ -256,7 +256,7 @@ class comp extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . 'uploads/comp/' . $id . '/points.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/comp/' . $id . '/points.js')));
         }
     }
 
@@ -328,10 +328,10 @@ class comp extends table {
                 $name = $_FILES[$field->field_name]['name'];
                 $ext = pathinfo($name, PATHINFO_EXTENSION);
                 if ($ext == 'zip') {
-                    if (!is_dir(root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key})) {
-                        mkdir(root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key});
+                    if (!is_dir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key})) {
+                        mkdir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key});
                     }
-                    move_uploaded_file($tmp_name, root . 'uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip');
+                    move_uploaded_file($tmp_name, root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip');
                     db::query('UPDATE comp SET file=:file WHERE cid=:cid', array('file' => '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip', 'cid' => $this->cid));
                 }
             }

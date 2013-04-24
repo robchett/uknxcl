@@ -73,7 +73,7 @@ class core {
         $push_state->url = $_SERVER['REQUEST_URI'];
         $push_state->data = (object) array('page' => array('url' => $this->module_name));
         $push_state->get();
-        require_once('/index_screen.php');
+        require_once(root . '/index_screen.php');
     }
 
     public function set_page_from_path() {

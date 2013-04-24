@@ -287,31 +287,31 @@ class league_table {
     public function get_table() {
         switch ($this->type) {
             case(0):
-                include '/inc/module/league_table/view/custom_table.php';
+                include root. '/inc/module/league_table/view/custom_table.php';
                 $this->Title .= ' League';
                 break;
             case(1):
-                include '/inc/module/league_table/view/custom_club.php';
+                include root . '/inc/module/league_table/view/custom_club.php';
                 $this->Title .= ' Club League';
                 break;
             case(2):
-                include '/inc/module/league_table/view/custom_pilot.php';
+                include root . '/inc/module/league_table/view/custom_pilot.php';
                 $pilot = new pilot();
                 $pilot->do_retrieve_from_id(array('name'), $this->pid);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
                 $this->MinScore = 0;
                 break;
             case(3):
-                include '/inc/module/league_table/view/TopTen.php';
+                include root . '/inc/module/league_table/view/TopTen.php';
                 $this->Title .= ' Top 10s';
                 break;
             case(4):
                 $this->OrderBy = 'date';
-                include '/inc/module/league_table/view/CustomList.php';
+                include root . '/inc/module/league_table/view/CustomList.php';
                 $this->Title .= ' List';
                 break;
             case(5):
-                include '/inc/module/league_table/view/Records.php';
+                include root . '/inc/module/league_table/view/Records.php';
                 return makeTable();
         }
 

@@ -87,11 +87,11 @@ class cms extends core_module {
     }
 
     public function get_admin_add() {
-        return html_node::create('a#admin_edit.button', 'Add New ' . $this->module->title, ['href' => self::$url_base . 'edit/' . $this->mid]);
+        return html_node::create('a#admin_edit.button', 'Add New ' . $this->module->title, array('href' => self::$url_base . 'edit/' . $this->mid));
     }
 
     public function get_admin_edit() {
-        return html_node::create('a#admin_edit.button', 'Edit Module', ['href' => self::$url_base . 'admin_edit/' . $this->mid]);
+        return html_node::create('a#admin_edit.button', 'Edit Module', array('href' => self::$url_base . 'admin_edit/' . $this->mid));
     }
 
     public function get_admin_new_module_form() {
