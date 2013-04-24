@@ -118,10 +118,10 @@ class cms extends core_module {
     public function get_list($obj, $elements) {
         $this->object = new $obj();
         $html = html_node::create('table')->nest(
-            [
+            array(
                 $this->get_table_head($this->object),
                 $this->get_table_rows($elements, $obj),
-            ]
+            )
         );
         $nodes = array(
             $this->get_filters($this->object),
