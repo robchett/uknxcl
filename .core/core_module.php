@@ -38,25 +38,29 @@ abstract class core_module {
     function get_main_nav() {
         $html = '';
         $pages = page::get_all(array(),array('where'=>'nav=1'));
-        $pages->iterate(function(page $page) use (&$html) {
+        //$pages->iterate(function(page $page) use (&$html) {
+        foreach($pages as $page) {
             $fn = (!empty($page->module_name) ? $page->module_name : 'pages-' .$page->pid );
             $html .= '<li id="nav-' . $fn . '" ' . ($page->pid == core::$singleton->pid ? 'class="s"' : ''). '>';
             $html .='<a href="' . $page->get_url() . '" data-page-post=\'{"module":"' . (!empty($page->module_name) ? $page->module_name : 'pages') . '","act":"ajax_load"' . (empty($page->module_name) ? ',"page":' . $page->pid : '' ) . '}\'>' . $page->nav_title  . '</a></li>';
-        });
+        }
+        //});
         return $html;
     }
 
     public function get_body() {
         $html = '';
         $pages = page::get_all(array(),array('where'=>'nav=1'));
-        $pages->iterate(function(page $page) use (&$html) {
+        //$pages->iterate(function(page $page) use (&$html) {
+        foreach($pages as $page) {
             if ($page->pid == core::$singleton->pid) {
                 $_REQUEST['page'] = $page->pid;
                 $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '">' . $this->get() . '</div>';
                 $html .= '<script>loaded_modules = {"' . $page->get_url() . '":true}</script>';
             } else
                 $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '" class="loading" style="display:none"></div>';
-        });
+        }
+        //});
         return $html;
     }
 

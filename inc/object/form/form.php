@@ -122,10 +122,10 @@ class form extends html_element {
                 'data-ajax-shroud' => '#' . $this->id,
             ), $this->attributes
         );
-        $html = html_node::create('div#' . $this->id . '_wrapper')->nest([
+        $html = html_node::create('div#' . $this->id . '_wrapper')->nest(array(
                 html_node::create('h2.form_title', $this->h2),
                 $this->get_html_body()
-            ]
+            )
         );
         if (!$this->use_ajax) {
             $html->add_child(html_node::create('iframe#form_target_' . $this->id . '.form_frame', '', array('width' => 1, 'height' => 1, 'frame-border' => 0, 'border' => 0, 'src' => '/inc/module/blank.html', 'name' => 'form_target_' . $this->id)));

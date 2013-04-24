@@ -70,7 +70,9 @@ class comp extends table {
 
         $startT = 100000000000000000000;
         $endT = 0;
-        $track_array->iterate(function (track $track, $cnt) use (&$startT, &$endT) {
+        $cnt = 0;
+        //$track_array->iterate(function (track $track, $cnt) use (&$startT, &$endT) {
+        foreach($track_array as $track) {
                 $track->colour = $cnt;
                 if ($track->track_points->last()->time > $endT) {
                     $endT = $track->track_points->last()->time;
@@ -79,8 +81,9 @@ class comp extends table {
                     $startT = $track->track_points->first()->time;
                 }
                 $this->bounds->add_bounds_to_bound($track->bounds);
-            }, -1
-        );
+            $cnt++;
+            } //-1
+        //);
         $timeSteps = ($endT - $startT) / 1000;
         $task = $this->output_task2();
         $turnpoints = count($task->task_array);
@@ -98,7 +101,9 @@ class comp extends table {
         $js->bounds = $this->bounds->get_js();
         $js->track = array();
         fwrite($js_file, substr(json_encode($js), 0, -2));
-        $track_array->iterate(function ($track, $count) use (&$json_html, $kml_out, &$html, $task, $startT, $js_file,$timeSteps) {
+        $count = 0;
+        //$track_array->iterate(function ($track, $count) use (&$json_html, $kml_out, &$html, $task, $startT, $js_file,$timeSteps) {
+        foreach($track_array as $track) {
                 $track->repair_track();
                 $track->get_graph_values();
                 $track->get_limits();
@@ -197,8 +202,9 @@ class comp extends table {
                 $html .= '</div>';
                 fwrite($js_file, ($count != 1 ? ',' : '') . json_encode($js_track));
                 $track->cleanup();
+            $count++;
             }
-        );
+        //);
         $json_html .= '<li data-path=\'{"type":"comp","path":[' . $track_array->count() . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div>Task</li>';
         $json_html .= '</ul></li></ul></div>';
         fwrite($js_file, '], "html":' . json_encode($json_html) . '}');

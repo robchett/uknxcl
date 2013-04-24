@@ -29,7 +29,7 @@ class add_pilot_form extends form {
     }
 
     public function get_form() {
-        jquery::colorbox(['html' => $this->get_html()->get()]);
+        jquery::colorbox);
     }
 
     public function do_submit() {
@@ -43,7 +43,7 @@ class add_pilot_form extends form {
             if ($this->pilot->pid) {
                 $this->pilot->do_update_selector();
             }
-            jquery::colorbox(['html' => $this->pilot->name . ' has been added to the database and should now be selectable from the list']);
+            jquery::colorbox);
         }
     }
 }

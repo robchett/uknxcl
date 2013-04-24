@@ -21,31 +21,33 @@ class latest extends core_module {
         $html = new html_node('table.results.main', '', ['style' => 'width:700px']);
         $html->add_child(
             html_node::create('thead')->add_child(
-                html_node::create('tr')->nest([
+                html_node::create('tr')->nest(array(
                         html_node::create('th', 'ID'),
                         html_node::create('th', 'Pilot'),
                         html_node::create('th', 'Date Flown'),
                         html_node::create('th', 'Date Added'),
                         html_node::create('th', 'Score'),
-                        html_node::create('th', 'Flight Waypoints')]
+                        html_node::create('th', 'Flight Waypoints'))
                 )
             )
         );
         $body = new html_node('tbody');
-        $flights->iterate(function ($flight) use (&$body) {
+        //$flights->iterate(function ($flight) use (&$body) {
+        foreach($flights as $flight) {
                 $added = substr($flight->added, 0, 10);
                 $body->add_child(html_node::create('tr')
-                        ->nest([
+                        ->nest(array(
                                 html_node::create('td', $flight->fid),
                                 html_node::create('td', $flight->pilot_name),
                                 html_node::create('td', $flight->date),
                                 html_node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
                                 $flight->to_print(),
-                                html_node::create('td', $flight->coords)]
+                                html_node::create('td', $flight->coords)
+                            )
                         )
                 );
-            }
-        );
+        }
+        //});
         $html->add_child($body);
         $wrapper->add_child($html);
         return $wrapper->get();
