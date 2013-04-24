@@ -15,7 +15,7 @@ class flight extends table {
             )
         );
         if (isset($this->fid) && $this->fid) {
-            $fullPath = root . '/uploads/track/' . $id . '/' . ($_REQUEST['type'] == 'kml' ? 'Track_Earth.kml' : 'track.igc');
+            $fullPath = root . '/uploads/track/' . $id . '/' . ($_REQUEST['type'] == 'kml' ? 'track_earth.kml' : 'track.igc');
             if ($fd = fopen($fullPath, "r")) {
                 $fsize = filesize($fullPath);
                 header("Content-type: application/octet-stream");
@@ -137,7 +137,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/Track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/track.js')));
         }
     }
 
