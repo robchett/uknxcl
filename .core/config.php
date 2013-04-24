@@ -32,6 +32,8 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         }
     }
 );
-include (core_dir . '/core.php');
+if(!defined('load_core') || load_core) {
+    include (core_dir . '/core.php');
+    $core = new core();
+}
 
-$core = new core();
