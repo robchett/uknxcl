@@ -1,10 +1,7 @@
 <?php
 
-function __autoload($classname) {
-    $filename = $_SERVER['DOCUMENT_ROOT'] . '/inc/objects/' . $classname . '.php';
-    include_once($filename);
-}
-
+define('load_core', false);
+include '../../index.php';
 db::connect();
 db::connect('old', 'nxcl2');
 
@@ -24,7 +21,7 @@ $tables = array(
         'DateAdded' => 'added',
         'Cords' => 'coords',
         'Launch' => 'lid',
-        'Type' => 'tid',
+        'Type' => 'ftid',
         'Defined' => 'defined',
         'Ridge' => 'ridge',
         'Winter' => 'winter',
