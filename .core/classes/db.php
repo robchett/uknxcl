@@ -6,10 +6,10 @@ class db {
     public static function connect($name = 'new', $db = 'nxcl') {
 
         if (strstr($_SERVER['HTTP_HOST'], 'uknxcl.co.uk') !== false) {
-            $db = 'eacommcs_' . $db;
+            $db = 'eacommsc_' . $db;
             $host = "localhost";
-            $username = "eacommsc_root";
-            $password = "uknxcl!23";
+            $username = "eacommsc_nxcl";
+            $password = '***REMOVED***';
         } else {
             $host = '127.0.0.1';
             $username = "root";
