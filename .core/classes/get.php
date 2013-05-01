@@ -7,7 +7,7 @@ class get {
     }
 
     public static function fn($str) {
-        return str_replace(array(' ','.',',','-'),'_',strtolower($str));
+        return str_replace(array(' ', '.', ',', '-'), '_', strtolower($str));
     }
 
     static function ordinal($num) {
@@ -25,56 +25,68 @@ class get {
         return $num . 'th';
     }
 
-    static function  type($int) {
-        switch ($int) {
-            case (1) :
-                return 'OD';
-            case (2) :
-                return 'OR';
-            case (3) :
-                return 'GO';
-            case (4) :
-                return 'TR';
-            case (5) :
-                return 'OD';
+    protected static $type_array;
+
+    static function type($int) {
+        if (!isset(self::$type_array)) {
+            $types = flight_type::get_all(array('ftid', 'fn'));
+            /** @var flight_type $type */
+            foreach ($types as $type) {
+                self::$type_array[$type->ftid] = $type->fn;
+            }
         }
+        if (isset(self::$type_array[$int])) {
+            return self::$type_array[$int];
+        }
+        return false;
     }
 
-    static function launch_letter($int) {
-        switch ($int) {
-            case (1) :
-                return "";
-            case (2) :
-                return "A ";
-            case (3) :
-                return "W";
+    protected static $flight_type;
+
+    static function flight_type($int) {
+        if (!isset(self::$flight_type)) {
+            $types = flight_type::get_all(array('ftid', 'title'));
+            /** @var flight_type $type */
+            foreach ($types as $type) {
+                self::$flight_type[$type->ftid] = $type->title;
+            }
         }
+        if (isset(self::$flight_type[$int])) {
+            return self::$flight_type[$int];
+        }
+        return false;
     }
 
-    static function launch($int) {
-        switch ($int) {
-            case (1) :
-                return "Foot";
-            case (2) :
-                return "Aerotow";
-            case (3) :
-                return "Winch";
+    protected static $launch_letter;
+
+    static function  launch_letter($int) {
+        if (!isset(self::$launch_letter)) {
+            $types = launch_type::get_all(array('lid', 'fn'));
+            /** @var launch_type $type */
+            foreach ($types as $type) {
+                self::$launch_letter[$type->lid] = $type->fn;
+            }
         }
+        if (isset(self::$launch_letter[$int])) {
+            return self::$launch_letter[$int];
+        }
+        return false;
     }
 
-    static function flight_type($a) {
-        switch ($a) {
-            case (1) :
-                return "Open Distance";
-            case (2) :
-                return "Out and Return";
-            case (3) :
-                return "Goal";
-            case (4) :
-                return "Triangle";
-            case 5 :
-                return "Failed Triangle";
+    protected static $launch_title;
+
+    static function  launch($int) {
+        if (!isset(self::$launch_title)) {
+            $types = launch_type::get_all(array('lid', 'title'));
+            /** @var launch_type $type */
+            foreach ($types as $type) {
+                self::$launch_title[$type->lid] = $type->title;
+            }
         }
+        if (isset(self::$launch_title[$int])) {
+            return self::$launch_title[$int];
+        }
+        return false;
     }
 
     static function bool($a) {

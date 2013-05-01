@@ -56,129 +56,129 @@ h4.kmltree-title {
 	cursor: pointer; }
 
 .expander {
-	background: url('/img/kml.png') no-repeat -168px 0px;
+	background: url('/img/kml.png') no-repeat -168px 0;
 	width: 16px;
 	height: 16px;
 	margin-left: -17px; }
 
 .expander:hover {
-	background: url('/img/kml.png') no-repeat -189px 0px;
+	background: url('/img/kml.png') no-repeat -189px 0;
 	width: 16px;
 	height: 16px; }
 
 .expander:active {
-	background: url('/img/kml.png') no-repeat -210px 0px;
+	background: url('/img/kml.png') no-repeat -210px 0;
 	width: 16px;
 	height: 16px; }
 
 li.open > .expander {
-	background: url('/img/kml.png') no-repeat -105px 0px;
+	background: url('/img/kml.png') no-repeat -105px 0;
 	width: 16px;
 	height: 16px; }
 
 li.open > .expander:hover {
-	background: url('/img/kml.png') no-repeat -126px 0px;
+	background: url('/img/kml.png') no-repeat -126px 0;
 	width: 16px;
 	height: 16px; }
 
 li.open > .expander:active {
-	background: url('/img/kml.png') no-repeat -147px 0px;
+	background: url('/img/kml.png') no-repeat -147px 0;
 	width: 16px;
 	height: 16px; }
 
 .toggler {
 	margin-right: 4px;
-	background: url('/img/kml.png') no-repeat -231px 0px;
+	background: url('/img/kml.png') no-repeat -231px 0;
 	width: 16px;
 	height: 16px; }
 
 .toggler:hover {
-	background: url('/img/kml.png') no-repeat -273px 0px;
+	background: url('/img/kml.png') no-repeat -273px 0;
 	width: 16px;
 	height: 16px; }
 
 .toggler:active {
-	background: url('/img/kml.png') no-repeat -294px 0px;
+	background: url('/img/kml.png') no-repeat -294px 0;
 	width: 16px;
 	height: 16px; }
 
 li.checkOffOnly > .toggler {
-	background: url('/img/kml.png') no-repeat -252px 0px;
+	background: url('/img/kml.png') no-repeat -252px 0;
 	width: 16px;
 	height: 16px; }
 
 li.visible > .toggler {
-	background: url('/img/kml.png') no-repeat -315px 0px;
+	background: url('/img/kml.png') no-repeat -315px 0;
 	width: 16px;
 	height: 16px; }
 
 li.visible > .toggler:hover {
-	background: url('/img/kml.png') no-repeat -336px 0px;
+	background: url('/img/kml.png') no-repeat -336px 0;
 	width: 16px;
 	height: 16px; }
 
 li.visible > .toggler:active {
-	background: url('/img/kml.png') no-repeat -357px 0px;
+	background: url('/img/kml.png') no-repeat -357px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li > .toggler {
-	background: url('/img/kml.png') no-repeat -378px 0px;
+	background: url('/img/kml.png') no-repeat -378px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li > .toggler:hover {
-	background: url('/img/kml.png') no-repeat -399px 0px;
+	background: url('/img/kml.png') no-repeat -399px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li > .toggler:active {
-	background: url('/img/kml.png') no-repeat -420px 0px;
+	background: url('/img/kml.png') no-repeat -420px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li.visible > .toggler {
-	background: url('/img/kml.png') no-repeat -441px 0px;
+	background: url('/img/kml.png') no-repeat -441px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li.visible > .toggler:hover {
-	background: url('/img/kml.png') no-repeat -462px 0px;
+	background: url('/img/kml.png') no-repeat -462px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > ul > li.visible > .toggler:active {
-	background: url('/img/kml.png') no-repeat -483px 0px;
+	background: url('/img/kml.png') no-repeat -483px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > .toggler {
-	background: url('/img/kml.png') no-repeat -378px 0px;
+	background: url('/img/kml.png') no-repeat -378px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > .toggler:hover {
-	background: url('/img/kml.png') no-repeat -399px 0px;
+	background: url('/img/kml.png') no-repeat -399px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder > .toggler:active {
-	background: url('/img/kml.png') no-repeat -420px 0px;
+	background: url('/img/kml.png') no-repeat -420px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder.visible > .toggler {
-	background: url('/img/kml.png') no-repeat -441px 0px;
+	background: url('/img/kml.png') no-repeat -441px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder.visible > .toggler:hover {
-	background: url('/img/kml.png') no-repeat -462px 0px;
+	background: url('/img/kml.png') no-repeat -462px 0;
 	width: 16px;
 	height: 16px; }
 
 li.radioFolder.visible > .toggler:active {
-	background: url('/img/kml.png') no-repeat -483px 0px;
+	background: url('/img/kml.png') no-repeat -483px 0;
 	width: 16px;
 	height: 16px; }
 
@@ -193,7 +193,7 @@ div.kmltree li.hideChildren ul, div.kmltree li.hideChildren .expander {
 
 div.kmltree .icon {
 	display: none;
-	padding: 0px; }
+	padding: 0; }
 
 li.KmlFolder > .icon, li.KmlNetworkLink > .icon, li.KmlTour > .icon, li.KmlPhotoOverlay > .icon, li.KmlGroundOverlay > .icon, li.KmlScreenOverlay > .icon, li.customIcon > .icon, li.KmlPolygon > .icon, li.KmlLineString > .icon, li.KmlMultiGeometry > .icon, li.KmlDocument > .icon {
 	margin-right: 4px;
@@ -203,23 +203,23 @@ li.KmlFolder > .icon, li.KmlNetworkLink > .icon, li.KmlTour > .icon, li.KmlPhoto
 	display: none; }
 
 li.KmlFolder > .icon, li.KmlDocument > .icon {
-	background: url('/img/kml.png') no-repeat 0px 0px;
+	background: url('/img/kml.png') no-repeat 0 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlFolder.open > .icon, li.KmlDocument.open > .icon {
-	background: url('/img/kml.png') no-repeat -21px 0px;
+	background: url('/img/kml.png') no-repeat -21px 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlNetworkLink > .icon {
-	background: url('/img/kml.png') no-repeat 0px 0px;
+	background: url('/img/kml.png') no-repeat 0 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlNetworkLink.loading > .icon {
 	position: relative;
-	background: url('/img/kml.png') no-repeat -504px 0px;
+	background: url('/img/kml.png') no-repeat -504px 0;
 	width: 16px;
 	height: 16px; }
 
@@ -235,10 +235,10 @@ li.KmlNetworkLink.loading > .icon > .nlSpinner {
 li.KmlNetworkLink.loading > .expander {
 	opacity: 0.3;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
-	filter: alpha(opacity = '30'); }
+	filter: alpha(opacity='30'); }
 
 li.KmlNetworkLink.error > .icon {
-	background: url('/img/kml.png') no-repeat -42px 0px;
+	background: url('/img/kml.png') no-repeat -42px 0;
 	width: 16px;
 	height: 16px; }
 
@@ -246,27 +246,27 @@ li.KmlNetworkLink.error > .expander {
 	display: none; }
 
 li.KmlTour > .icon {
-	background: url('/img/kml.png') no-repeat -63px 0px;
+	background: url('/img/kml.png') no-repeat -63px 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlPhotoOverlay > .icon, li.KmlGroundOverlay > .icon {
-	background: url('/img/kml.png') no-repeat -84px 0px;
+	background: url('/img/kml.png') no-repeat -84px 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlScreenOverlay > .icon {
-	background: url('/img/kml.png') no-repeat -567px 0px;
+	background: url('/img/kml.png') no-repeat -567px 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlPolygon > .icon {
-	background: url('/img/kml.png') no-repeat -525px 0px;
+	background: url('/img/kml.png') no-repeat -525px 0;
 	width: 16px;
 	height: 16px; }
 
 li.KmlLineString > .icon, li.KmlMultiGeometry > .icon {
-	background: url('/img/kml.png') no-repeat -546px 0px;
+	background: url('/img/kml.png') no-repeat -546px 0;
 	width: 16px;
 	height: 16px; }
 
@@ -279,9 +279,9 @@ li.customIcon > .icon {
 	background: transparent no-repeat; }
 
 li.kmltree-item p.snippet {
-	text-indent: 0px;
+	text-indent: 0;
 	width: 80%;
-	margin: 5px 0px 5px 20px;
+	margin: 5px 0 5px 20px;
 	color: #6C7C90;
 	white-space: normal; }
 
@@ -311,25 +311,25 @@ div.kmltree li.kmltree-breadcrumb {
 
 div.kmltree-loading {
 	position: absolute;
-	left: 0px;
-	top: 0px;
+	left: 0;
+	top: 0;
 	width: 100%;
 	height: 100%;
 	background-color: #FFF;
 	opacity: 0.7;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-	filter: alpha(opacity = '70');
+	filter: alpha(opacity='70');
 	text-align: center; }
 
 div.kmltree-loading span {
 	position: absolute;
 	padding-top: 20px;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 	width: 100%;
 	opacity: 1;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-	filter: alpha(opacity = '100');
+	filter: alpha(opacity='100');
 	font-weight: bold;
 	height: 40px;
 	padding-bottom: 15px;
@@ -383,7 +383,7 @@ div.kmltree-loading span {
 	margin-left: 1em; }
 
 .kmlTreeReset th, .kmlTreeReset td {
-	padding: 0em; }
+	padding: 0; }
 
 .kmlTreeReset th {
 	font-weight: bold;

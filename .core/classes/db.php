@@ -1,5 +1,6 @@
 <?php
 class db {
+    /** @var PDO */
     public static $con;
     public static $con_arr = array();
 
@@ -102,6 +103,7 @@ class db {
         if ($res) {
             return self::fetch($res, $class);
         }
+        return false;
     }
 
     static function query($sql, $params = array(), $throwable = false) {
@@ -114,14 +116,14 @@ class db {
         try {
             $prep_sql->execute();
         } catch (PDOException $e) {
-            if($e->getCode() == 'HY000' ){
+            if ($e->getCode() == 'HY000') {
                 self::connect();
                 self::query($sql, $params = array(), $throwable);
             } else {
-                $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : '' ), 1) . print_r($params, true) . '</div>';
+                $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
                 if (ajax) {
                     ajax::inject('body', 'append', $error);
-                    if(!$throwable) {
+                    if (!$throwable) {
                         ajax::do_serve();
                         die();
                     }

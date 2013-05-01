@@ -92,14 +92,14 @@ class igc_form extends form {
                     $flight->invis_info .= 'delayed as flight is old.';
                 }
                 $this->defined = false;
-                if($this->type == 'task') {
+                if ($this->type == 'task') {
                     $this->type = $track->task->type;
                     $this->defined = true;
                 }
                 $flight_type = new flight_type();
                 $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $this->type)));
                 $flight->ftid = $flight_type->ftid;
-                $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1 );
+                $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
 
                 if (!$this->defined) {
                     $flight->base_score = $track->{$this->type}->get_distance();

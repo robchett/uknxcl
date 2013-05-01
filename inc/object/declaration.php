@@ -8,7 +8,7 @@ class declaration extends table {
         return declaration_array::get_all($fields, $options);
     }
 
-    public function get_form(){
+    public function get_form() {
         $form = parent::get_form();
         $form->action = 'declaration:do_submit';
         $form->set_from_request();
@@ -17,13 +17,13 @@ class declaration extends table {
         $form->get_field_from_name('ftid')->hidden = true;
         $form->get_field_from_name('coordinates')->hidden = true;
         $form->get_field_from_name('pid')->label = 'Pilot';
-        $form->get_field_from_name('pid')->options = array('order'=>'pilot.name');
+        $form->get_field_from_name('pid')->options = array('order' => 'pilot.name');
         $form->h2 = 'Declare a flight';
         return $form;
     }
 
     public function do_submit() {
-        if(parent::do_submit()) {
+        if (parent::do_submit()) {
             ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
         }
     }

@@ -8,6 +8,7 @@ class manufacturer extends table {
     public $Number = 1;
     public $Glider;
     public $Num;
+    public $title;
 
     /* @return manufacturer_array */
     public static function get_all(array $fields, array $options = array()) {

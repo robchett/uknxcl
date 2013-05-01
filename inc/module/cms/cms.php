@@ -4,8 +4,13 @@ class cms extends core_module {
     public static $url_base = '/cms/';
     /** @var table */
     public $current;
+    public $current_class;
+    public $mid;
     public $module = 0;
     public $module_id = 0;
+    public $object;
+    public $tot;
+    public $where;
 
     public static function do_clear_filter() {
         unset($_SESSION['cms'][$_REQUEST['class']]);
@@ -16,7 +21,7 @@ class cms extends core_module {
     public function __controller(array $path) {
         core::$page_config['title_tag'] = 'Admin Login - UKNXCL';
         core::$css = array('/inc/module/cms/css/cms.css');
-        core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', ' /inc/module/cms/js/cms.js', '/js/jquery/colorbox.js','/plugins/ckeditor/ckeditor.js');
+        core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', ' /inc/module/cms/js/cms.js', '/js/jquery/colorbox.js', '/plugins/ckeditor/ckeditor.js');
         $this->view = 'login';
         if (isset($path[1]) && !empty($path[1]) && admin) {
             core::$page_config['pre_content'] = $this->get_nav();
@@ -199,12 +204,12 @@ class cms extends core_module {
     public function get_table_rows($objects, $class) {
         $nodes = html_node::create('tbody');
         //$objects->iterate(function ($obj) use ($nodes, $class) {
-        foreach($objects as $obj) {
-                $node = html_node::create('tr');
-                $node->add_child(html_node::create('td.edit', html_node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
-                $node->nest($obj->get_cms_list());
-                $node->add_child(html_node::create('td.delete', html_node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
-                $nodes->add_child($node);
+        foreach ($objects as $obj) {
+            $node = html_node::create('tr');
+            $node->add_child(html_node::create('td.edit', html_node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+            $node->nest($obj->get_cms_list());
+            $node->add_child(html_node::create('td.delete', html_node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+            $nodes->add_child($node);
         }
         //});
         return $nodes;

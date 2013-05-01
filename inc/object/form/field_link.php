@@ -1,6 +1,10 @@
 <?php
 
 class field_link extends field {
+    /** @var int|string */
+    public $link_module;
+    /** @var int|string */
+    public $link_field;
 
     public $options = array();
 
@@ -13,6 +17,7 @@ class field_link extends field {
         $class = (is_numeric($this->link_module) ? core::get_class_from_mid($this->link_module) : $this->link_module);
         $field_name = (is_numeric($this->link_field) ? core::get_field_from_fid($this->link_field) : $this->link_field);
         $object = new $class();
+        /** @var table $object */
         $object->do_retrieve_from_id(array($field_name, $object->table_key), $value);
         return (isset($object->{$object->table_key}) && $object->{$object->table_key} ? $object->$field_name : '-');
     }
@@ -34,7 +39,9 @@ class field_link extends field {
         if (is_numeric($this->link_module)) {
             $this->link_module = core::get_class_from_mid($this->link_module);
         }
+        /** @var $class table_array */
         $class = $this->link_module;
+        /** @var $object table */
         $obj = new $class();
         if (is_numeric($this->link_field)) {
             $this->link_field = core::get_field_from_fid($this->link_field);
@@ -52,18 +59,18 @@ class field_link extends field {
         $title_fields = $this->link_field;
         $selected = isset($this->parent_form->{$this->field_name}) ? $this->parent_form->{$this->field_name} : 0;
         //$options->iterate(function (table $object) use (&$html, $title_fields, $selected) {
-        foreach($options as $object) {
-                if (is_array($title_fields)) {
-                    $parts = array();
-                    foreach ($title_fields as $part) {
-                        $parts[] = $object->{str_replace('.', '_', $part)};
-                    }
-                    $title = implode(' - ', $parts);
-                } else {
-                    $title = $object->$title_fields;
+        foreach ($options as $object) {
+            if (is_array($title_fields)) {
+                $parts = array();
+                foreach ($title_fields as $part) {
+                    $parts[] = $object->{str_replace('.', '_', $part)};
                 }
-                $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($object->{$object->table_key} == $selected ? 'selected="selected"' : '') . '>' . $title . '</option>';
+                $title = implode(' - ', $parts);
+            } else {
+                $title = $object->$title_fields;
             }
+            $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($object->{$object->table_key} == $selected ? 'selected="selected"' : '') . '>' . $title . '</option>';
+        }
         //);
         return $html;
     }

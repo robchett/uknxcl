@@ -58,6 +58,7 @@ class html_node {
             $this->get_attributes() .
             '>';
         $html .= $this->content;
+        /** @var html_node $child */
         foreach ($this->children as $child) {
             $html .= $child->get();
         }
@@ -75,7 +76,7 @@ class html_node {
 
     /* @return html_node */
     public function nest() {
-        if(func_num_args() == 1) {
+        if (func_num_args() == 1) {
             $children = func_get_arg(0);
         } else {
             $children = func_get_args();
@@ -83,7 +84,7 @@ class html_node {
         if ($this->pointer) {
             $this->pointer->nest($children);
         } else {
-            if(is_array($children)) {
+            if (is_array($children)) {
                 foreach ($children as $child) {
                     if (is_array($child)) {
                         $this->nest($child);

@@ -22,7 +22,7 @@ function Airspace() {
 
     this.isLoaded = function (type) {
         return this.loaded[type];
-    }
+    };
     this.setLoaded = function (type, bool) {
         this.loaded[type] = bool;
     };
@@ -35,10 +35,10 @@ function Airspace() {
         }
         this.visible[type] = bool;
 
-    }
+    };
     this.setHeight = function (val) {
         this.maximum_base = val;
-    }
+    };
 
     this.load = function (type) {
         if (!this.isLoaded(type)) {
@@ -958,7 +958,7 @@ function Airspace() {
             }
 
         }
-    }
+    };
 
 
     this.loadAll = function (bool) {
@@ -988,39 +988,34 @@ function Airspace() {
             $('#airspace_DANGER').addClass('hidden');
             $('#airspace_CTACTR').addClass('hidden');
         }
-    }
+    };
 
-    var as = new Array();
-    var airSpaces = 0;
-
-    this.reload = function(currentHeight) {
-        for (var i in this._airspace) {
-            if (this._airspace[i]) {
-                var as = this._airspace[i];
-                if (this.varyWithTrack && currentHeight !== undefined) {
-                    if (as.level >= currentHeight / 0.3048 || as.top <= currentHeight / 0.3048) {
-                        as.poly.setMap(null);
-                        as.visible = false;
-                    } else if (as.level >= maximum_base) {
-                        as.poly.setMap(null);
-                        as.visible = false;
-                    }
-                    continue;
-                }
-                if (!this.isVisible(as.class)) {
+    var as = [];
+    this.reload = function (currentHeight) {
+        this._airspace.each(function (as) {
+            if (this.varyWithTrack && currentHeight !== undefined) {
+                if (as.level >= currentHeight / 0.3048 || as.top <= currentHeight / 0.3048) {
                     as.poly.setMap(null);
                     as.visible = false;
-                    break;
-                } else if (!as.visible) {
-                    as.poly.setMap(map.internal_map);
-                    as.visible = true;
-                    break;
+                } else if (as.level >= maximum_base) {
+                    as.poly.setMap(null);
+                    as.visible = false;
                 }
+                return;
             }
-        }
-    }
+            if (!this.isVisible(as.class)) {
+                as.poly.setMap(null);
+                as.visible = false;
+                return;
+            } else if (!as.visible) {
+                as.poly.setMap(map.internal_map);
+                as.visible = true;
+                return;
+            }
+        });
+    };
 
-    this.add = function(airClass, flightLevel, top, points, strokeWeight, strokeColour, strokeOpacity, fillColour, fillOpacity, name, type) {
+    this.add = function (airClass, flightLevel, top, points, strokeWeight, strokeColour, strokeOpacity, fillColour, fillOpacity, name) {
         var polygon = new google.maps.Polygon({
             strokeColor: strokeColour,
             strokeWeight: strokeWeight,

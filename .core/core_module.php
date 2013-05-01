@@ -11,14 +11,16 @@ abstract class core_module {
         'tables' => 'Tables',
         'planner' => 'Planner',
     );
+    /** @var table */
+    public $current;
     public $view = '';
     public $page = 1;
     public $npp = 50;
 
     public function __controller(array $path) {
 
-        if(count($path) > 3 && $path[count($path)-2] == 'page') {
-            if(end($path) == 'all') {
+        if (count($path) > 3 && $path[count($path) - 2] == 'page') {
+            if (end($path) == 'all') {
                 $this->npp = 99999999;
                 $this->page = 1;
             } else {
@@ -37,12 +39,13 @@ abstract class core_module {
 
     function get_main_nav() {
         $html = '';
-        $pages = page::get_all(array(),array('where'=>'nav=1'));
+        $pages = page::get_all(array(), array('where' => 'nav=1'));
         //$pages->iterate(function(page $page) use (&$html) {
-        foreach($pages as $page) {
-            $fn = (!empty($page->module_name) ? $page->module_name : 'pages-' .$page->pid );
-            $html .= '<li id="nav-' . $fn . '" ' . ($page->pid == core::$singleton->pid ? 'class="s"' : ''). '>';
-            $html .='<a href="' . $page->get_url() . '" data-page-post=\'{"module":"' . (!empty($page->module_name) ? $page->module_name : 'pages') . '","act":"ajax_load"' . (empty($page->module_name) ? ',"page":' . $page->pid : '' ) . '}\'>' . $page->nav_title  . '</a></li>';
+        /** @var page $page */
+        foreach ($pages as $page) {
+            $fn = (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid);
+            $html .= '<li id="nav-' . $fn . '" ' . ($page->pid == core::$singleton->pid ? 'class="s"' : '') . '>';
+            $html .= '<a href="' . $page->get_url() . '" data-page-post=\'{"module":"' . (!empty($page->module_name) ? $page->module_name : 'pages') . '","act":"ajax_load"' . (empty($page->module_name) ? ',"page":' . $page->pid : '') . '}\'>' . $page->nav_title . '</a></li>';
         }
         //});
         return $html;
@@ -50,9 +53,10 @@ abstract class core_module {
 
     public function get_body() {
         $html = '';
-        $pages = page::get_all(array(),array('where'=>'nav=1'));
+        $pages = page::get_all(array(), array('where' => 'nav=1'));
         //$pages->iterate(function(page $page) use (&$html) {
-        foreach($pages as $page) {
+        /** @var page $page */
+        foreach ($pages as $page) {
             if ($page->pid == core::$singleton->pid) {
                 $_REQUEST['page'] = $page->pid;
                 $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '">' . $this->get() . '</div>';
@@ -66,15 +70,15 @@ abstract class core_module {
 
     public function ajax_load() {
         $push_state = new push_state();
-        if(get_class($this) == 'pages') {
+        if (get_class($this) == 'pages') {
             $content = $this->get();
             ajax::inject('#pages-' . $this->current->pid, 'append', $content);
             $push_state->url = $this->current->get_url();
             $push_state->title = $this->current->nav_title;
             $push_state->data = (object) array(
-            'page' => array(
-            'url' => $this->current->get_url(),
-        )
+                'page' => array(
+                    'url' => $this->current->get_url(),
+                )
             );
         } else {
             ajax::inject('#' . get_class($this), 'append', $this->get());

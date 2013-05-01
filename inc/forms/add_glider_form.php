@@ -2,6 +2,9 @@
 
 class add_glider_form extends form {
 
+    public $mid;
+    public $name;
+
     public function __construct() {
         $this->glider = new glider();
         parent::__construct($this->glider->get_fields());
@@ -29,10 +32,10 @@ class add_glider_form extends form {
         $this->glider->name = ucwords($this->name);
         $this->glider->do_save();
         $manu = new manufacturer();
-        $manu->do_retrieve_from_id(array('title'),$this->mid);
+        $manu->do_retrieve_from_id(array('title'), $this->mid);
         if ($this->glider->gid) {
             $this->glider->do_update_selector();
-            jquery::colorbox(array("html"=> $manu->title . ' - ' . $this->glider->name . ' has been added to the database and should now be selectable from the list.'));
+            jquery::colorbox(array("html" => $manu->title . ' - ' . $this->glider->name . ' has been added to the database and should now be selectable from the list.'));
         }
     }
 }

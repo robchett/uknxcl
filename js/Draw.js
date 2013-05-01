@@ -17,7 +17,7 @@ function UKNXCL_Map($container) {
 
     this.$container = $container;
     this.$body = $('body');
-    this.$slider = $('#slider');
+    //this.$slider = $('#slider');
     this.$tree = $('#tree_content');
     this.mode = this.EARTH;
     /*@param {google.earth}*/
@@ -128,7 +128,7 @@ function UKNXCL_Map($container) {
             map.caller.is_ready();
             delete map.caller;
         });
-    }
+    };
 
     this.load_airspace = function () {
         if (this.mode == this.MAP) {
@@ -137,21 +137,8 @@ function UKNXCL_Map($container) {
             this.parseKML('/js/Airspace.kmz', this.airspace);
         }
         $(".load_airspace").remove();
-        $("#tree_content").prepend('<div class=\'kmltree new\'><ul class=\'kmltree\'>' +
-            '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' +
-            '<li data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' +
-            '<li data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' +
-            '<li data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' +
-            '<li data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' +
-            '<li data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' +
-            '</ul></li></ul></div>');
+        $("#tree_content").prepend('<div class=\'kmltree new\'><ul class=\'kmltree\'>' + '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' + '<li data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' + '<li data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' + '<li data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' + '<li data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' + '<li data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' + '</ul></li></ul></div>');
         return false;
-    }
-
-    this.toggle_airspace = function (type) {
-        $('#airspace_' + type).toggleClass('hidden');
-        this.airspace.setVisible(type, !this.airspace.isVisible(type));
-        this.airspace.reload();
     };
 
     this.setTime = function (index) {
@@ -1041,13 +1028,13 @@ $('body').on('click', '.kmltree .toggler', function () {
     if (map.mode == map.EARTH) {
         if (data.type == "comp") {
             var kml = map.comp.google_data.root;
-        } else if(data.type == "flight") {
+        } else if (data.type == "flight") {
             var kml = map.kmls[root_data.id].google_data.root;
         } else {
             var kml = map.airspace.google_data.root;
         }
         var kmlPath = [kml];
-        if(data.type != 'airspace') {
+        if (data.type != 'airspace') {
             kml = kml.getFeatures().getChildNodes().item(0);
         }
         if (data.path !== null) {

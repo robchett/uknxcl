@@ -1,8 +1,17 @@
 <?php
 class page extends table {
     public static $module_id = 1;
+    public $nav_title;
+    /** @var int */
+    public $pid;
+    /** @var string */
     public $table_key = 'pid';
+    /** @var string */
+    public $body;
+    /** @var string */
     public $module_name = '';
+    /** @var string */
+    public $title;
 
     /* @return page_array */
     public static function get_all(array $fields, array $options = array()) {

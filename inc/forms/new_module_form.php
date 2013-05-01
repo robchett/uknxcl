@@ -2,6 +2,15 @@
 
 class new_module_form extends form {
 
+    /** @var string */
+    public $table_name;
+    /** @var string */
+    public $title;
+    /** @var string */
+    public $primary_key;
+    /** @var int */
+    public $gid;
+
     public function __construct() {
         parent::__construct(array(
                 new field_int('gid'),
@@ -22,22 +31,23 @@ class new_module_form extends form {
             `live` tinyint(1) NOT NULL DEFAULT "0",
             `deleted` tinyint(1) NOT NULL DEFAULT "0",
             PRIMARY KEY (`' . $this->primary_key . '`)
-            ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;');
+            ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;'
+            );
             db::query('INSERT INTO _cms_modules SET gid=:gid, primary_key=:pkey, title=:title, `table_name`=:tname, live=1, deleted=0', array(
-                    'gid'=>$this->gid,
-                    'pkey'=>$this->primary_key,
-                    'title'=>$this->title,
-                    'tname'=>$this->table_name,
+                    'gid' => $this->gid,
+                    'pkey' => $this->primary_key,
+                    'title' => $this->title,
+                    'tname' => $this->table_name,
                 )
             );
             $mid = db::insert_id();
-            db::query('INSERT INTO _cms_fields SET field_name=:field_name, title="ID", `type`="int", mid=:mid, list=0,required=0', array(
-                    'mid'=>$mid,
+            db::query('INSERT INTO _cms_fields SET field_name=:field_name, title=\'ID\', `type`=\'int\', mid=:mid, list=0,required=0', array(
+                    'mid' => $mid,
                     'field_name' => $this->primary_key
                 )
             );
-            db::query('INSERT INTO _cms_fields SET field_name=:field_name, title="Parent ID", `type`="int", mid=:mid, list=0,required=0', array(
-                    'mid'=>$mid,
+            db::query('INSERT INTO _cms_fields SET field_name=:field_name, title=\'Parent ID\', `type`=\'int\', mid=:mid, list=0,required=0', array(
+                    'mid' => $mid,
                     'field_name' => 'parent_' . $this->primary_key
                 )
             );

@@ -17,7 +17,7 @@ class latest extends core_module {
             )
         );
         $wrapper = html_node::create('div.table_wrapper');
-        $wrapper->add_child(html_node::create('h3','Latest'));
+        $wrapper->add_child(html_node::create('h3', 'Latest'));
         $html = new html_node('table.results.main', '', array('style' => 'width:700px'));
         $html->add_child(
             html_node::create('thead')->add_child(
@@ -33,19 +33,20 @@ class latest extends core_module {
         );
         $body = new html_node('tbody');
         //$flights->iterate(function ($flight) use (&$body) {
-        foreach($flights as $flight) {
-                $added = substr($flight->added, 0, 10);
-                $body->add_child(html_node::create('tr')
-                        ->nest(array(
-                                html_node::create('td', $flight->fid),
-                                html_node::create('td', $flight->pilot_name),
-                                html_node::create('td', $flight->date),
-                                html_node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
-                                $flight->to_print(),
-                                html_node::create('td', $flight->coords)
-                            )
+        /** @var flight $flight */
+        foreach ($flights as $flight) {
+            $added = substr($flight->added, 0, 10);
+            $body->add_child(html_node::create('tr')
+                    ->nest(array(
+                            html_node::create('td', $flight->fid),
+                            html_node::create('td', $flight->pilot_name),
+                            html_node::create('td', $flight->date),
+                            html_node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
+                            $flight->to_print(),
+                            html_node::create('td', $flight->coords)
                         )
-                );
+                    )
+            );
         }
         //});
         $html->add_child($body);

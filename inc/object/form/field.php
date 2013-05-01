@@ -1,8 +1,11 @@
 <?php
 
 abstract class field extends html_element {
+    public $fid;
+    public $filter;
     public $label;
     public $field_name;
+    public $list;
     public $pre_text;
     public $post_text;
     public $raw = false;
@@ -13,6 +16,7 @@ abstract class field extends html_element {
     public $hidden;
     public $disabled = false;
     public $class = array();
+    public $title;
     public $wrapper_class = array();
     public $parent_form;
     public $value = '';
@@ -87,10 +91,11 @@ abstract class field extends html_element {
         if (!empty($this->class)) {
             return 'class="' . implode(' ', $this->class) . '"';
         }
+        return false;
     }
 
     public function get_wrapper_class() {
-        $this->wrapper_class[] =get_class($this) . '_wrapper';
+        $this->wrapper_class[] = get_class($this) . '_wrapper';
         if (!empty($this->wrapper_class)) {
             return '.' . implode('.', $this->wrapper_class);
         }

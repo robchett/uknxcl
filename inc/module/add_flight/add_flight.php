@@ -11,7 +11,7 @@ class add_flight extends core_module {
 
     public function get() {
         $this->page = new page();
-        $this->page->do_retrieve(array(),array('where_equals'=>array('module_name'=>'add_flight')));
+        $this->page->do_retrieve(array(), array('where_equals' => array('module_name' => 'add_flight')));
         $form = new igc_form();
         $form2 = new igc_upload_form();
         $form3 = new coordinates_form();
@@ -132,7 +132,7 @@ class add_flight extends core_module {
         $("#igc_upload_form").html("<p class=\"restart\">Your flight details have been saved, please complete the form below, \"Additional Details\", to finalise your sumbission.<br/><a data-ajax-click=\"igc_upload_form:reset\" href=\"#\" >Restart</a></p>");
         $("#igc_form input.submit").removeAttr("disabled");
     });';
-        if(ajax) {
+        if (ajax) {
             ajax::add_script($script);
         } else {
             core::$inline_script[] = $script;
