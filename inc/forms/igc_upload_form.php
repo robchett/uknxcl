@@ -110,13 +110,15 @@ class igc_upload_form extends form {
 
     private function get_task_select_html(track $track, $type) {
         $task = $track->$type;
-        $_SESSION['add_flight'][$track->id][$type] = array('distance'=>$task->get_distance(), 'coords'=> $task->get_session_coordinates(), 'duration' => $task->get_duration());
-        $flight_type = new flight_type();
-        $flight_type->do_retrieve(array('multi'), array('where'=>'fn=:fn', 'parameters'=>array('fn'=>$type)));
-        return '
-        <tr>
-            <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . ' / ' . number_format($flight_type->multi) . '</td><td> ' . $task->get_distance(3) * $flight_type->multi . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '"}\' class="choose">Choose</a></td>
-        </tr>';
+        if(isset($task->waypoints)){
+            $_SESSION['add_flight'][$track->id][$type] = array('distance'=>$task->get_distance(), 'coords'=> $task->get_session_coordinates(), 'duration' => $task->get_duration());
+            $flight_type = new flight_type();
+            $flight_type->do_retrieve(array('multi'), array('where'=>'fn=:fn', 'parameters'=>array('fn'=>$type)));
+            return '
+            <tr>
+                <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . ' / ' . number_format($flight_type->multi) . '</td><td> ' . $task->get_distance(3) * $flight_type->multi . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '"}\' class="choose">Choose</a></td>
+            </tr>';
+        }
     }
 
     public function do_validate() {
