@@ -61,6 +61,10 @@ class kml {
         $this->content .= $xml;
     }
 
+    public function add_html($html) {
+        $this->html .= $html;
+    }
+
     public function compile($external = false, $path = '') {
         $xml = '';
         if (!$external) {
@@ -72,6 +76,12 @@ class kml {
             $xml .= self::get_kml_footer();
 
         if (!empty($path)) {
+            file_put_contents(root . $path, $xml);
+            $zip = new ZipArchive();
+            $zip->open(str_replace('.kml', '.kmz', root . $path));
+            $zip->addFile(root . $path);
+            $zip->close();
+            unlink(root . $path);
             return file_put_contents(root . $path, $xml);
         } else {
             return $xml;
