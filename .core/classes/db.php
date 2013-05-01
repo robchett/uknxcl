@@ -15,7 +15,7 @@ class db {
             $username = "root";
             $password = "";
         }
-        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
+        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password, array(PDO::ATTR_PERSISTENT => true));
         self::$con = self::$con_arr[$name];
         self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
@@ -105,30 +105,36 @@ class db {
     }
 
     static function query($sql, $params = array(), $throwable = false) {
-        $sql = self::$con->prepare($sql);
+        $prep_sql = self::$con->prepare($sql);
         if (!empty($params)) {
             foreach ($params as $key => $val) {
-                $sql->bindValue($key, $val);
+                $prep_sql->bindValue($key, $val);
             }
         }
         try {
-            $sql->execute();
+            $prep_sql->execute();
         } catch (PDOException $e) {
-            $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r($sql->queryString, 1) . print_r($params, true) . '</div>';
-            if (ajax) {
-                ajax::inject('body', 'append', $error);
+            if($e->getCode() == 'HY000' ){
+                self::connect();
+                self::query($sql, $params = array(), $throwable);
             } else {
-                echo $error;
-            }
-            if (!$throwable) {
+                $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : '' ), 1) . print_r($params, true) . '</div>';
                 if (ajax) {
-                    ajax::do_serve();
+                    ajax::inject('body', 'append', $error);
+                    if(!$throwable) {
+                        ajax::do_serve();
+                        die();
+                    }
+                } else {
+                    echo $error;
+                    if (!$throwable) {
+                        die();
+                    }
                 }
-                die();
             }
         }
 
-        return $sql;
+        return $prep_sql;
     }
 
     static function fetch(PDOStatement $res, $class = 'stdClass') {
