@@ -143,7 +143,7 @@ div#pop {
   font-weight: bold;
   position: absolute;
   height: auto;
-  width: 240px;
+  width: 260px;
   right: -280px;
   z-index: 99999;
   top: -2px;
@@ -160,8 +160,7 @@ div#pop {
 
   span.arrow {
     border: 16px solid #0d4582;
-    border-color: transparent #0d4582 transparent transparent
-  ;
+    border-color: transparent #0d4582 transparent transparent;
     height: 0;
     width: 0;
     position: absolute;
@@ -175,7 +174,9 @@ div#pop {
       font-size: inherit;
     }
     td {
-      padding: 5px;
+      padding: 0 5px;
+      line-height: 11px;
+      height: 11px;
       a.download {
         float: left;
         width: 70px;
@@ -191,12 +192,12 @@ div#pop {
   }
   .close {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 20px;
+    top: 0;
+    right: 0;
+    width: 60px;
     height: 20px;
-    text-indent: -9999px;
-    background: url('/img/sprites.png') 0 -98px;
+    border: 1px solid #0d4582;
+    .border-radius(5px, 5px, 5px, 5px);
   }
 }
 
