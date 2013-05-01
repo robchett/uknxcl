@@ -5,6 +5,11 @@ class flight extends table {
     public static $module_id = 2;
     public $table_key = 'fid';
 
+    /* @return flight_array */
+    public static function get_all(array $fields, array $options = array()) {
+        return flight_array::get_all($fields, $options);
+    }
+
     public function download() {
         $id = (int) $_REQUEST['id'];
         $this->do_retrieve(
@@ -32,24 +37,51 @@ class flight extends table {
     }
 
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC', 'limit' => 100));
         $total_time = 0;
-        $flights->iterate(function (flight $flight) use (&$total_time) {
-                $track = new track();
-                $track->time = 0;
-                $time = time();
-                echo '<p> Track :' . $flight->fid . '</p>';
-                if ($track->generate($flight)) {
-                    $time = time() - $time;
-                    $total_time += $time;
-                    $flight->time = $time;
-                    $flight->do_save();
-                } else {
-                    echo '<p> Track :' . $flight->fid . ' failed to calculate</p>';
+        //$flights->iterate(function (flight $flight) use (&$total_time) {
+        foreach ($flights as $flight) {
+            $track = new track();
+            $track->time = 0;
+            $time = time();
+            echo '<p> Track :' . $flight->fid . '</p>';
+            if ($track->generate($flight)) {
+                $time = time() - $time;
+                $total_time += $time;
+                $flight->time = $time;
+                $flight->do_save();
+                switch ($flight->ftid) {
+                    case  1:
+                        if ($track->od->get_distance() > $flight->base_score) {
+                            echo '<span style="color:#00ff00">OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        } else {
+                            echo '<span style="color:#ff0000">OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        }
+                        break;
+                    case  2:
+                        if ($track->or->get_distance() > $flight->base_score) {
+                            echo '<span style="color:#00ff00">OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        } else {
+                            echo '<span style="color:#ff0000">OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        }
+                        break;
+                    case  3:
+                        break;
+                    case  4:
+                        if ($track->tr->get_distance() > $flight->base_score) {
+                            echo '<span style="color:#00ff00">TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        } else {
+                            echo '<span style="color:#ff0000">TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        }
+                        break;
                 }
-                flush();
+            } else {
+                $flight->time = 0;
+                echo '<p> Track :' . $flight->fid . ' failed to calculate</p>';
             }
-        );
+            flush();
+        }
+        //);
 
         $flights->uasort(function ($a, $b) {
                 return $b->time - $a->time;
@@ -63,11 +95,6 @@ class flight extends table {
         $average_time = $total_time / count($flights);
 
         echo '<p> Average Time :' . date('H:i:s', $average_time) . '</p>';
-    }
-
-    /* @return flight_array */
-    public static function get_all(array $fields, array $options = array()) {
-        return flight_array::get_all($fields, $options);
     }
 
     public function generate_files() {
@@ -137,7 +164,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ( $id > 100000 ? 'temp/' : '' ) . $id . '/track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ($id > 100000 ? 'temp/' : '') . $id . '/track.js')));
         }
     }
 
