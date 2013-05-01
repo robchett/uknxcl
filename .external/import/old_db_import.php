@@ -92,3 +92,6 @@ foreach ($tables as $table => $keys) {
         $statement->execute($params);
     }
 }
+
+
+db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
