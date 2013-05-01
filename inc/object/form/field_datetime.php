@@ -18,7 +18,7 @@ class field_datetime extends field {
         return date('Y-m-d h:i:s', strtotime(str_replace('/', '-', $value)));
     }
 
-    public function get_cms_list_wrapper($value, $class, $id){
+    public function get_cms_list_wrapper($value, $class, $id) {
         return $this->parent_form->{$this->field_name} = date('d/m/Y @h:i:s', strtotime($value));
     }
 }

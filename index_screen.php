@@ -1,3 +1,6 @@
+<?
+/** @var $this core */
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +11,7 @@
 
 <body>
 <?php echo core::$page_config['pre_content']; ?>
-<div id="content" class="<?php core::$page_config['body_class'];?>">
+<div id="content" class="<?php core::$page_config['body_class']; ?>">
     <?php echo $this->body; ?>
 </div>
 <?php echo  core::$page_config['post_content']; ?>

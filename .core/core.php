@@ -18,6 +18,8 @@ class core {
     public $pre_content = 'test';
     public $post_content = 'test';
     public $module_name = 'latest';
+    /** @var core_module */
+    public $module;
     /** @var page */
     public $page;
 
@@ -29,7 +31,7 @@ class core {
         if (!(isset($this->path[0])) || empty($this->path[0])) {
             $this->path[0] = 'latest';
         }
-        define('cms',$this->path[0] == 'cms');
+        define('cms', $this->path[0] == 'cms');
 
         if (isset($_REQUEST['module'])) {
             $module = new $_REQUEST['module']();
@@ -62,6 +64,7 @@ class core {
         } else {
             $this->module_name = 'latest';
         }
+
         $this->module = new $this->module_name();
 
         ob_start();
@@ -94,8 +97,8 @@ class core {
         $html = '<table><thead><th>File</th><th>Line</th><th>Function</th></thead>';
         foreach ($trace as $step) {
             $html .= '<tr>
-            ' . (isset($step['file']) ? '<td>' . $step['file'] . '</td>' : '' ) . '
-            ' . (isset($step['line']) ? '<td>' . $step['line'] . '</td>' : '' ) . '
+            ' . (isset($step['file']) ? '<td>' . $step['file'] . '</td>' : '') . '
+            ' . (isset($step['line']) ? '<td>' . $step['line'] . '</td>' : '') . '
             <td>' . (isset($step['class']) ? $step['class'] . (isset($step['type']) ? $step['type'] : '::') : '') . $step['function'] . '()</td>
             </tr>';
         }

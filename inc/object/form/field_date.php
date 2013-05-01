@@ -15,10 +15,11 @@ class field_date extends field {
     }
 
     public function get_html() {
-        if(isset($this->parent_form->{$this->field_name})) {
+        if (isset($this->parent_form->{$this->field_name})) {
             $this->parent_form->{$this->field_name} = date('d/m/Y', strtotime($this->parent_form->{$this->field_name}));
             return parent::get_html();
         }
+        return '';
     }
 
 }

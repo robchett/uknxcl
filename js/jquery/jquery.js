@@ -1198,12 +1198,12 @@
             var e = b.prop(this, "elements");
             return e ? b.makeArray(e) : this
         }).filter(function () {
-            var e = this.type;
-            return this.name && !b(this).is(":disabled") && hn.test(this.nodeName) && !dn.test(e) && (this.checked || !Nt.test(e))
-        }).map(function (e, t) {
-            var n = b(this).val();
-            return null == n ? null : b.isArray(n) ? b.map(n, function (e) {return{name: t.name, value: e.replace(fn, "\r\n")}}) : {name: t.name, value: n.replace(fn, "\r\n")}
-        }).get()
+                var e = this.type;
+                return this.name && !b(this).is(":disabled") && hn.test(this.nodeName) && !dn.test(e) && (this.checked || !Nt.test(e))
+            }).map(function (e, t) {
+                var n = b(this).val();
+                return null == n ? null : b.isArray(n) ? b.map(n, function (e) {return{name: t.name, value: e.replace(fn, "\r\n")}}) : {name: t.name, value: n.replace(fn, "\r\n")}
+            }).get()
     }}), b.param = function (e, n) {
         var r, i = [], o = function (e, t) {t = b.isFunction(t) ? t() : null == t ? "" : t, i[i.length] = encodeURIComponent(e) + "=" + encodeURIComponent(t)};
         if (n === t && (n = b.ajaxSettings && b.ajaxSettings.traditional), b.isArray(e) || e.jquery && !b.isPlainObject(e))b.each(e, function () {o(this.name, this.value)}); else for (r in e)gn(r, e[r], n, o);

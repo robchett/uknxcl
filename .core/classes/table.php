@@ -3,6 +3,7 @@ class table {
     public static $fields;
     public static $define_table = array();
     public static $module_id = 0;
+    public $mid;
     public $raw = false;
     public $table_key;
 
@@ -78,11 +79,12 @@ class table {
     }
 
     public function set_from_request() {
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
-            if($this->raw) {
+            if ($this->raw) {
                 $field->raw = true;
             }
-           $field->set_from_request();
+            $field->set_from_request();
         }
     }
 
@@ -91,6 +93,7 @@ class table {
         $elements = array();
         $parameters = array();
         $sql = (isset($this->{$this->table_key}) && $this->{$this->table_key} ? 'UPDATE ' : 'INSERT INTO ') . $class . ' SET ';
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->field_name != $this->table_key) {
                 if (isset($this->{$field->field_name})) {
@@ -138,7 +141,7 @@ class table {
             } else if (get_class($field) == 'field_textarea') {
                 core::$inline_script[] = 'CKEDITOR.replace("' . $field->field_name . '");';
             }
-            $field->label .= '<span class="field_name">' . $field->field_name. '</span>';
+            $field->label .= '<span class="field_name">' . $field->field_name . '</span>';
             $field->raw = true;
         }
         if (!isset($this->{$this->table_key}) || !$this->{$this->table_key}) {
@@ -172,6 +175,7 @@ class table {
             )
         );
 
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             $list->add_child(html_node::create('tr')->nest($field->get_cms_admin_edit()));
         }
@@ -179,6 +183,8 @@ class table {
     }
 
     public function get_cms_list() {
+        $nodes = array();
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->list) {
                 $nodes[] = html_node::create('td.' . get_class($field), $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->{$this->table_key}));
@@ -201,6 +207,7 @@ class table {
             $res = db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
             while ($row = db::fetch($res)) {
                 $class = 'field_' . $row->type;
+                /** @var field $field */
                 $field = new $class($row->field_name, array());
                 $field->label = $row->title;
                 $field->set_from_row($row);
@@ -225,7 +232,7 @@ class table_array extends ArrayObject {
     protected $original_retrieve_options = array();
 
     public function __construct() {
-        if (!self::set_statics()) {
+        if (!self::$statics_set) {
             $this->set_statics();
         }
     }
@@ -269,8 +276,15 @@ class table_array extends ArrayObject {
 
     }
 
+    /**
+     * @param array $fields_to_retrieve
+     * @param array $options
+     * @param int $log_sql
+     * @return table_array
+     */
     static function get_all(array $fields_to_retrieve, $options = array(), $log_sql = 0) {
         $class = get_called_class();
+        /** @var $return table_array */
         $return = new $class();
         $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
         $sql = db::get_query($return->get_class(), $fields_to_retrieve, $options, $parameters);

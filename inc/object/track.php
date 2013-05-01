@@ -38,6 +38,7 @@ class track {
     public $raw = 1;
     public $source;
     public $temp = false;
+    public $time;
     public $total_dist = 0;
     public $track_parts;
     public $track_points;
@@ -141,11 +142,6 @@ class track {
     }
 
     public function console($str) {
-        if (!$this->raw) {
-            echo "<script language='javascript' type='text/javascript'>window.top.window.console_log(\"$str\")</script>";
-            echo str_repeat(' ', 1024 * 64) . "\n";
-            flush();
-        }
         $this->log_file .= "$str\r\n";
     }
 
@@ -1137,7 +1133,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                             continue;
                         }
                         $z_minus = $z - 1;
-                        for ($y = floor(($x + $z) / 2); $y <= $z_minus; ++$y) {
+                        for ($y = (int) floor(($x + $z) / 2); $y <= $z_minus; ++$y) {
                             if ($this->distance_map[$x][$y] < $minleg) {
                                 $y += (int) (($minleg - $this->distance_map[$x][$y]) / $this->maximum_distance_between_two_points);
                                 continue;
@@ -1156,7 +1152,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                                 $minleg = max(1200, $d * 0.28);
                             }
                         }
-                        for ($y = floor(($x + $z) / 2); $y >= $x_plus; --$y) {
+                        for ($y = (int) floor(($x + $z) / 2); $y >= $x_plus; --$y) {
                             if ($this->distance_map[$x][$y] < $minleg) {
                                 $y -= (int) (($minleg - $this->distance_map[$x][$y]) / $this->maximum_distance_between_two_points);
                                 continue;

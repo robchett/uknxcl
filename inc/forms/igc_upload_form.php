@@ -38,7 +38,7 @@ class igc_upload_form extends form {
                 $track->id = time();
                 $this->create_track($track);
             } else {
-                ajax::add_script('stopUpload("Your browser has not sent the correct data to the server. Please upgrade your browser!"</p></pre>");');;
+                ajax::update('<div id="console">"Your browser has not sent the correct data to the server. Please upgrade your browser!</div>');
             }
         }
     }
@@ -60,7 +60,7 @@ class igc_upload_form extends form {
                     Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.</p>";
         }
         $defined = false;
-        if(!empty($this->coords)) {
+        if (!empty($this->coords)) {
             $defined = $track->set_task($this->coords);
         }
         $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
@@ -93,16 +93,16 @@ class igc_upload_form extends form {
     }
 
     private function get_choose_score_html(track $track, $start, $end, $defined) {
-        $_SESSION['add_flight'][$track->id] = array('duration' => $track->get_duration(), 'start'=>$start, 'end'=>$end);
+        $_SESSION['add_flight'][$track->id] = array('duration' => $track->get_duration(), 'start' => $start, 'end' => $end);
         $html = '<table><thead><tr><th>Type</th><th>Base Score / Multiplier</th><th>Score</th><th></tr></thead><tbody>';
         $html .= $this->get_task_select_html($track, 'od');
         $html .= $this->get_task_select_html($track, 'or');
         $html .= $this->get_task_select_html($track, 'tr');
         if ($defined) {
-            $_SESSION['add_flight'][$track->id]['task'] = array('type'=>$track->task->type,'distance'=>$track->task->get_distance(), 'coords'=> $track->task->get_coordinates(), 'duration' => $track->task->get_duration());
+            $_SESSION['add_flight'][$track->id]['task'] = array('type' => $track->task->type, 'distance' => $track->task->get_distance(), 'coords' => $track->task->get_coordinates(), 'duration' => $track->task->get_duration());
             $type = new flight_type();
-            $type->do_retrieve(array('multi_defined'), array('where'=>'fn=:fn', 'parameters'=>array('fn'=>$track->task->type)));
-            $html.= '<tr><td>' . $track->task->title . '</td><td> ' . $track->task->get_distance(3) . ' / ' . number_format($type->multi_defined,2) . '</td><td> ' . $track->task->get_distance(3) * $type->multi_defined . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"task"}\' class="choose">Choose</a></td></tr>';
+            $type->do_retrieve(array('multi_defined'), array('where' => 'fn=:fn', 'parameters' => array('fn' => $track->task->type)));
+            $html .= '<tr><td>' . $track->task->title . '</td><td> ' . $track->task->get_distance(3) . ' / ' . number_format($type->multi_defined, 2) . '</td><td> ' . $track->task->get_distance(3) * $type->multi_defined . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"task"}\' class="choose">Choose</a></td></tr>';
         }
         $html .= '</tbody></table>';
         return $html;
@@ -110,10 +110,10 @@ class igc_upload_form extends form {
 
     private function get_task_select_html(track $track, $type) {
         $task = $track->$type;
-        if(isset($task->waypoints)){
-            $_SESSION['add_flight'][$track->id][$type] = array('distance'=>$task->get_distance(), 'coords'=> $task->get_session_coordinates(), 'duration' => $task->get_duration());
+        if (isset($task->waypoints)) {
+            $_SESSION['add_flight'][$track->id][$type] = array('distance' => $task->get_distance(), 'coords' => $task->get_session_coordinates(), 'duration' => $task->get_duration());
             $flight_type = new flight_type();
-            $flight_type->do_retrieve(array('multi'), array('where'=>'fn=:fn', 'parameters'=>array('fn'=>$type)));
+            $flight_type->do_retrieve(array('multi'), array('where' => 'fn=:fn', 'parameters' => array('fn' => $type)));
             return '
             <tr>
                 <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . ' / ' . number_format($flight_type->multi) . '</td><td> ' . $task->get_distance(3) * $flight_type->multi . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '"}\' class="choose">Choose</a></td>

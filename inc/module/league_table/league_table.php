@@ -1,6 +1,10 @@
-<?php
+<?
+
 class league_table {
+    /** @var flight_array */
+    public $flights = null;
     public $official = 0;
+    public $pid;
     public $type = 0;
     public $TFlight = 1;
     public $launches = array(1, 2, 3);
@@ -287,7 +291,7 @@ class league_table {
     public function get_table() {
         switch ($this->type) {
             case(0):
-                include root. '/inc/module/league_table/view/custom_table.php';
+                include root . '/inc/module/league_table/view/custom_table.php';
                 $this->Title .= ' League';
                 break;
             case(1):

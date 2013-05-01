@@ -1,8 +1,20 @@
 <?php
 
 class article extends table {
+    /* @var string */
+    public $date;
+    /* @var string */
+    public $poster;
+    /* @var string */
+    public $post;
+    /* @var int */
+    public $aid;
+    /* @var string */
+    public $title;
+
     public $table_key = 'aid';
     public static $module_id = 8;
+
 
     public function get_title() {
         return '<span class="date">' . date('d/m/Y', strtotime($this->date)) . '</span><span class="name">' .
@@ -28,16 +40,20 @@ class article extends table {
         return $html;
     }
 
-    public function show_full () {
+    public function show_full() {
         $this->do_retrieve_from_id(array(), $_REQUEST['aid']);
-        if($this->aid) {
+        if ($this->aid) {
             $html = '<div id="article_wrapper"><article><h2>' . $this->title . '</h2>' . $this->post . '</article><a href="#" class="news_back button">Back to news</a></div>';
             ajax::update($html);
             ajax::add_script('$("#news").animate({left:-720}); $(".news_back").click(function() {$("#news").animate({left:0});})');
         }
     }
 
-    /* @return article_array */
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return article_array
+     */
     public static function get_all(array $fields, array $options = array()) {
         return article_array::get_all($fields, $options);
     }

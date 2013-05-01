@@ -39,16 +39,16 @@ function get_flight($type, $title, $defined = null) {
         $html .= '<tr><td>Distance</td><td>5</td><td>F</td><td>' . $t->name . '</td><td>' . $t->base_score . '</td><td>' . $t->date . '</td></tr>';
     }
     if (isset($defined) && $defined) {
-        if($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=1 AND base_score>100 AND p.gender = 1 ORDER BY speed DESC LIMIT 1'))) {
+        if ($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=1 AND base_score>100 AND p.gender = 1 ORDER BY speed DESC LIMIT 1'))) {
             $html .= '<tr><td>speed</td><td>1</td><td>M</td><td>' . $t->name . '</td><td>' . $t->speed . '</td><td>' . $t->date . '</td></tr>';
         }
-        if($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=5 AND base_score>100 AND p.gender = 1 ORDER BY speed DESC LIMIT 1'))) {
+        if ($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=5 AND base_score>100 AND p.gender = 1 ORDER BY speed DESC LIMIT 1'))) {
             $html .= '<tr><td>speed</td><td>5</td><td>M</td><td>' . $t->name . '</td><td>' . $t->speed . '</td><td>' . $t->date . '</td></tr>';
         }
-        if($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=1 AND base_score>100 AND p.gender = 2 ORDER BY speed DESC LIMIT 1'))) {
+        if ($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=1 AND base_score>100 AND p.gender = 2 ORDER BY speed DESC LIMIT 1'))) {
             $html .= '<tr><td>speed</td><td>1</td><td>F</td><td>' . $t->name . '</td><td>' . $t->speed . '</td><td>' . $t->date . '</td></tr>';
         }
-        if($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=5 AND base_score>100 AND p.gender = 2 ORDER BY speed DESC LIMIT 1'))) {
+        if ($t = db::fetch(db::query('SELECT p.name, base_score, date, base_score, speed FROM flight LEFT JOIN pilot p ON flight.pid=p.pid JOIN glider g ON flight.gid=g.gid WHERE ftid=3 AND g.class=5 AND base_score>100 AND p.gender = 2 ORDER BY speed DESC LIMIT 1'))) {
             $html .= '<tr><td>speed</td><td>5</td><td>F</td><td>' . $t->name . '</td><td>' . $t->speed . '</td><td>' . $t->date . '</td></tr>';
         }
     }

@@ -1,9 +1,41 @@
 <?php
 class flight extends table {
+    public $base_score;
+    public $club_name;
+    public $defined;
+    public $did;
+    /** @var int Flight ID */
+    public $fid;
+    /** @var string Date flown */
+    public $date;
+    public $ftid;
+    public $glider_name;
+    public $lid;
+    public $manufacturer_title;
+    public $multi;
+    /** @var string Pilot name */
+    public $p_name;
+    /** @var string Club name */
+    public $c_name;
+    /** @var string Glider name */
+    public $g_name;
+    /** @var string Glider manufacture name */
+    public $gm_title;
+    /** @var string Coordinates for the flight */
+    public $coords;
+    /** @var int glider class - 1 or 5 for rigid or flex */
+    public $class;
+    /** @var int The id used for a flight, depends on whether $class is 1 or 5 */
+    public $ClassID;
 
     public static $launch_types = array(0 => 'Foot', 1 => 'Aerotow', 2 => 'Winch');
     public static $module_id = 2;
+    public $pilot_name;
+    public $ridge;
+    public $score;
     public $table_key = 'fid';
+    public $time;
+    public $vis_info;
 
     /* @return flight_array */
     public static function get_all(array $fields, array $options = array()) {
@@ -40,6 +72,7 @@ class flight extends table {
         $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC', 'limit' => 100));
         $total_time = 0;
         //$flights->iterate(function (flight $flight) use (&$total_time) {
+        /** @var flight $flight */
         foreach ($flights as $flight) {
             $track = new track();
             $track->time = 0;

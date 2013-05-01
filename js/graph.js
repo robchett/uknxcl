@@ -44,12 +44,12 @@ function Graph($container) {
         }
         var max = -1000000;
         var min = 10000000;
-        this.obj.nxcl_data.track.each(function(track) {
+        this.obj.nxcl_data.track.each(function (track) {
             if (track.drawGraph) {
-                if (track[max_value] > max){
+                if (track[max_value] > max) {
                     max = track[max_value];
                 }
-                if (track[min_value] < min){
+                if (track[min_value] < min) {
                     min = track[min_value];
                 }
             }

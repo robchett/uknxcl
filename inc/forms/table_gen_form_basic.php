@@ -2,9 +2,16 @@
 
 class table_gen_form_basic extends form {
 
+    public $glider_mode;
+    public $no_min;
+    public $pilot;
+    public $split_classes;
+    public $type;
+    public $year;
+
     public function __construct() {
         $years = array(0 => 'All Time');
-        foreach (range(date('Y'),1991) as $year) {
+        foreach (range(date('Y'), 1991) as $year) {
             $years[$year] = $year;
         }
         $fields = array(
@@ -47,7 +54,7 @@ class table_gen_form_basic extends form {
             'glider_mode' => form::create('field_boolean', 'glider_mode')
                 ->set_attr('label', 'Score gliders not pilots'),
         );
-
+        /** @var field $field */
         foreach ($fields as $field) {
             $field->set_attr('required', false);
         }

@@ -2,6 +2,8 @@
 
 class cms_filter_form extends form {
 
+    public $npp;
+
     public function __construct($class_name = 'string') {
         if (ajax) {
             $class_name = $_REQUEST['_class_name'];

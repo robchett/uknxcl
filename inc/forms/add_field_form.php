@@ -2,6 +2,8 @@
 
 class add_field_form extends form {
 
+    public $mid;
+
     public function __construct() {
         parent::__construct(array(
                 form::create('field_string', 'title'),

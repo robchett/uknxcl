@@ -2,6 +2,7 @@
 
 class glider extends pilot {
     public static $module_id = 4;
+    public $gid;
     public $name;
     public $id;
     public $glider;

@@ -16,7 +16,7 @@ class field_int extends field {
         }
     }
 
-    public function get_database_create_query(){
+    public function get_database_create_query() {
         return 'int(32)';
     }
 }

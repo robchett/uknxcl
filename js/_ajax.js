@@ -1,5 +1,6 @@
 $(document).ready(function () {
-    $('body').on('click', null, function (event) {
+    var $body = $('body');
+    $body.on('click', null, function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
             if ($target.attr('data-ajax-click')) {
@@ -17,7 +18,7 @@ $(document).ready(function () {
             }
         }
     });
-    $('body').on('change', ':input', function (event) {
+    $body.on('change', ':input', function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
             if ($target.attr('data-ajax-change')) {
@@ -40,90 +41,89 @@ $(document).ready(function () {
             }
         }
     });
-})
 
-$.fn.ajax_factory = function (module, act, post, options) {
-    var options = options || {};
-    var post = post || {};
-    if (typeof (options.loading_target) !== 'undefined') {
-        var div = document.createElement('div');
-        div.className = 'loading_shroud';
-        div.style.width = $(options.loading_target).outerWidth() + 'px';
-        div.style.height = $(options.loading_target).outerHeight() + 'px';
-        div.style.left = 0;
-        div.style.top = 0;
-        if ($(options.loading_target).css('position') != 'absolute' || $(options.loading_target).css('position') != 'relative') {
-            $(options.loading_target).css({'position': 'relative'});
+    $.fn.ajax_factory = function (module, act, post, options) {
+        options = options || {};
+        post = post || {};
+        if (typeof (options.loading_target) !== 'undefined') {
+            var div = document.createElement('div');
+            div.className = 'loading_shroud';
+            div.style.width = $(options.loading_target).outerWidth() + 'px';
+            div.style.height = $(options.loading_target).outerHeight() + 'px';
+            div.style.left = 0;
+            div.style.top = 0;
+            if ($(options.loading_target).css('position') != 'absolute' || $(options.loading_target).css('position') != 'relative') {
+                $(options.loading_target).css({'position': 'relative'});
+            }
+            $(options.loading_target).prepend(div);
+            $.fn.colorbox.resize();
+            colorbox_recenter();
         }
-        $(options.loading_target).prepend(div);
-        $.fn.colorbox.resize();
-        colorbox_recenter();
-    }
-    $.extend(post, ({'module': module, 'act': act}));
-    $(".error_message").remove();
-    $.ajax({
-        url: '/',
-        global: false,
-        async: true,
-        type: 'POST',
-        dataType: 'json',
-        cache: false,
-        data: post,
-        success: handle_json_response
-    });
-}
-function colorbox_recenter(){
-    $('#colorbox').stop().animate({left:(725-$('#colorbox').width())/2});
-}
+        $.extend(post, ({'module': module, 'act': act}));
+        $(".error_message").remove();
+        $.ajax({
+            url: '/',
+            global: false,
+            async: true,
+            type: 'POST',
+            dataType: 'json',
+            cache: false,
+            data: post,
+            success: handle_json_response
+        });
+        $body.on('submit', 'form.ajax', function (e) {
+            e.preventDefault();
+            var arr = $(this).attr('action').split(':');
+            var module = arr[0];
+            var act = arr[1];
+            var data = {};
+            var ajax_shroud = $(this).attr('data-ajax-shroud');
 
-$('body').on('submit', 'form.ajax', function (e) {
-    e.preventDefault();
-    var arr = $(this).attr('action').split(':');
-    var module = arr[0];
-    var act = arr[1];
-    var data = {};
-    var ajax_shroud = $(this).attr('data-ajax-shroud');
+            $(this).find(':input').each(function () {
+                var name = $(this).attr('name');
+                if ($(this).attr('type') == 'checkbox') {
+                    if ($(this).is(':checked'))
+                        data[name] = $(this).val();
+                } else
+                    data[name] = $(this).val();
+            });
 
-    $(this).find(':input').each(function () {
-        var name = $(this).attr('name');
-        if ($(this).attr('type') == 'checkbox') {
-            if ($(this).is(':checked'))
-                data[name] = $(this).val();
-        } else
-            data[name] = $(this).val();
-    });
-
-    var options = {loading_target: ajax_shroud};
-    data.ajax_origin = $(event.target)[0].id;
+            var options = {loading_target: ajax_shroud};
+            data.ajax_origin = $(event.target)[0].id;
 
 
-    $.fn.ajax_factory(module, act, data, options);
-    return false;
-});
-$('body').on('submit', 'form.noajax', function (e) {
-    var ajax_shroud = $(this).attr('data-ajax-shroud');
-    if (typeof ajax_shroud != 'undefined') {
-        var div = document.createElement('div');
-        div.className = 'loading_shroud';
-        div.style.width = $(ajax_shroud).outerWidth() + 'px';
-        div.style.height = $(ajax_shroud).outerHeight() + 'px';
-        div.style.left = 0;
-        div.style.top = 0;
-        if ($(ajax_shroud).css('position') != 'absolute' || $(ajax_shroud).css('position') != 'relative') {
-            $(ajax_shroud).css({'position': 'relative'});
-        }
-        $(ajax_shroud).prepend(div);
+            $.fn.ajax_factory(module, act, data, options);
+            return false;
+        });
+        $body.on('submit', 'form.noajax', function () {
+            var ajax_shroud = $(this).attr('data-ajax-shroud');
+            if (typeof ajax_shroud != 'undefined') {
+                var div = document.createElement('div');
+                div.className = 'loading_shroud';
+                div.style.width = $(ajax_shroud).outerWidth() + 'px';
+                div.style.height = $(ajax_shroud).outerHeight() + 'px';
+                div.style.left = 0;
+                div.style.top = 0;
+                if ($(ajax_shroud).css('position') != 'absolute' || $(ajax_shroud).css('position') != 'relative') {
+                    $(ajax_shroud).css({'position': 'relative'});
+                }
+                $(ajax_shroud).prepend(div);
+            }
+        });
     }
 });
+
+function colorbox_recenter() {
+    var $cb = $('#colorbox');
+    $cb.stop().animate({left: (725 - $cb.width()) / 2});
+}
 
 function handle_json_response(json) {
     $('.loading_shroud').remove();
-    for (i in json.update) {
-        var upd = json.update[i];
+    json.update.each(function (upd) {
         $(upd.id).html(upd.html);
-    }
-    for (i in json.inject) {
-        var inj = json.inject[i];
+    });
+    json.inject.each(function (inj) {
         if (inj.over != '')
             $(inj.over).remove();
         switch (inj.pos) {
@@ -140,7 +140,7 @@ function handle_json_response(json) {
                 $(inj.id).after(inj.html);
                 break;
         }
-    }
+    })
     if (typeof json.push_state != "undefined")
         window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
 }

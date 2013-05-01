@@ -1,27 +1,27 @@
-<?php 
+<?php
 class field_type extends table {
     public $table_key = 'ftid';
     public static $module_id = 16;
-    
+
     /* @return field_type_array */
-    public static function get_all(array $fields, array $options = array()){
+    public static function get_all(array $fields, array $options = array()) {
         return field_type_array::get_all($fields, $options);
     }
 }
 
 class field_type_array extends table_array {
-    
-    public function __construct($input = array()){
-        parent::__construct($input,0,'field_type_iterator');
+
+    public function __construct($input = array()) {
+        parent::__construct($input, 0, 'field_type_iterator');
         $this->iterator = new field_type_iterator($input);
     }
 
     /* @return field_type */
-    public function next(){
+    public function next() {
         return parent::next();
     }
-    
-    protected  function set_statics() {
+
+    protected function set_statics() {
         parent::set_statics();
     }
 }
@@ -29,7 +29,7 @@ class field_type_array extends table_array {
 class field_type_iterator extends table_iterator {
 
     /* @return field_type */
-    public function key(){
+    public function key() {
         return parent::key();
     }
 }

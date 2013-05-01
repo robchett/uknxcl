@@ -6,15 +6,15 @@ class comps extends core_module {
 
     public function do_generate_all() {
         $comps = comp::get_all(array());
-        //$comps->iterate(function ($comp) {
+        /** @var $comp comp */
         foreach ($comps as $comp) {
-                $comp->do_zip_to_comp();
+            $comp->do_zip_to_comp();
         }
         //});
     }
 
     public function get() {
-        $comps = comp_array::get_all(array('type','round','task','comp.title AS title','date','cid', 'comp_group.title AS class', 'file'), array('join'=>array('comp_group' => 'comp.class = comp_group.cgid'),'order' => 'date DESC, round DESC, task DESC, class ASC'));
+        $comps = comp_array::get_all(array('type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title AS class', 'file'), array('join' => array('comp_group' => 'comp.class = comp_group.cgid'), 'order' => 'date DESC, round DESC, task DESC, class ASC'));
         $html = '';
         $html .= '<div id="comp_wrapper">';
         $html .= '<div id="comp_inner">';
@@ -33,8 +33,8 @@ class comps extends core_module {
             <th></th>
         </thead>';
         //$comps->iterate(function ($comp) use (&$html) {
-        foreach($comps as $comp) {
-                $html .= '
+        foreach ($comps as $comp) {
+            $html .= '
             <tr>
                 <td>' . $comp->type . '</td>
                 <td>Round ' . (int) $comp->round . '</td>

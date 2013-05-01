@@ -13,7 +13,7 @@ function __autoload($classname) {
     } else if (is_readable($filename = root . "/inc/module/" . $classname . "/" . $classname . ".php")) {
     } else if (is_readable($filename = root . "/inc/forms/" . $classname . ".php")) {
     } else if (is_readable($filename = root . "/inc/object/form/" . $classname . ".php")) {
-    } else if (is_readable($filename = core_dir . '/' .  $classname . ".php")) {
+    } else if (is_readable($filename = core_dir . '/' . $classname . ".php")) {
     } else if (is_readable($filename = core_dir . '/' . 'classes/' . $classname . ".php")) {
     } else {
         echo '<pre><p>Class not found ' . $classname . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
@@ -32,7 +32,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         }
     }
 );
-if(!defined('load_core') || load_core) {
+if (!defined('load_core') || load_core) {
     include (core_dir . '/core.php');
     $core = new core();
 }

@@ -22,7 +22,12 @@ $colours = array(
 
 class airspace {
     public $class;
+    public $cords;
     public $name;
+    public $prev_lat;
+
+    public $prev_lon;
+
     public $top;
     public $base;
     public $height;
@@ -82,7 +87,7 @@ foreach ($input as $a) {
         $lat = ConvertCord($matches[3], $matches[2]) * M_PI / 180;
         $lon = ConvertCord($matches[5], $matches[4]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1,0,0,$current->top);
+        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1, 0, 0, $current->top);
         $current->cords = $t[0];
         $current->cords2 = $t[1];
         continue;
@@ -91,7 +96,7 @@ foreach ($input as $a) {
         $lat = ConvertCord($matches[2], $matches[1]);
         $lon = ConvertCord($matches[4], $matches[3]);
         $current->cords .= encode($lat - $current->prev_lat) . encode($lon - $current->prev_lon);
-        $current->cords2[] = array($lon,$lat);
+        $current->cords2[] = array($lon, $lat);
         $current->prev_lat = $lat;
         $current->prev_lon = $lon;
         continue;
@@ -106,7 +111,7 @@ foreach ($input as $a) {
         $radius = round($matches[1], 2) * $bodgeFactor;
         $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
         $current->cords .= $t[0];
-        $current->cords2 = array_merge($current->cords2,$t[1]);
+        $current->cords2 = array_merge($current->cords2, $t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;
         $current->prev_lon = $lon2 * 180 / M_PI;
         continue;
@@ -121,7 +126,7 @@ foreach ($input as $a) {
         $radius = round($matches[1], 2) * $bodgeFactor;
         $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
         $current->cords .= $t[0];
-        $current->cords2 = array_merge($current->cords2,$t[1]);
+        $current->cords2 = array_merge($current->cords2, $t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;
         $current->prev_lon = $lon2 * 180 / M_PI;
         continue;
@@ -291,7 +296,7 @@ function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0, $
         $latOut = rad2deg($lat);
         $lonOut = rad2deg($lon);
         $out .= encode($latOut - $prev_lat) . encode($lonOut - $prev_lon);
-        $out2[] = array($lonOut,$latOut);
+        $out2[] = array($lonOut, $latOut);
 
         $prev_lat = $latOut;
         $prev_lon = $lonOut;
@@ -323,9 +328,9 @@ $out = "<?xml version='1.0' encoding='UTF-8'?>
     <open>1</open>
     <Style id='hideChildren'><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style>
 ";
-foreach ($colours as $key=>$c) {
+foreach ($colours as $key => $c) {
     $out .= '
-    <Style id="' .$key . '">
+    <Style id="' . $key . '">
         <LineStyle>
             <width>0.8</width>
             <color>FF' . $c[0] . '</color>
@@ -346,8 +351,8 @@ foreach ($classes as $c) {
             <name>' . $d->name . '</name>
             <open>1</open>
             <styleUrl>#hideChildren</styleUrl>';
-        foreach($d->cords2 as $key=>$coord) {
-            $next = isset($d->cords2[$key+1]) ? $d->cords2[$key+1] : $d->cords2[0];
+        foreach ($d->cords2 as $key => $coord) {
+            $next = isset($d->cords2[$key + 1]) ? $d->cords2[$key + 1] : $d->cords2[0];
             $out .= '
             <Placemark>
                 <styleUrl>#' . $d->type . '</styleUrl>
@@ -356,8 +361,8 @@ foreach ($classes as $c) {
                     <outerBoundaryIs>
                         <LinearRing>
                             <coordinates>
-                                ' . $coord[0].','.$coord[1]. ','.$d->base . ' ' . $coord[0].','.$coord[1]. ','.$d->top . '
-                                ' . $next[0].','.$next[1]. ','.$d->top . ' ' . $next[0].','.$next[1]. ','.$d->base . '
+                                ' . $coord[0] . ',' . $coord[1] . ',' . $d->base . ' ' . $coord[0] . ',' . $coord[1] . ',' . $d->top . '
+                                ' . $next[0] . ',' . $next[1] . ',' . $d->top . ' ' . $next[0] . ',' . $next[1] . ',' . $d->base . '
                             </coordinates>
                         </LinearRing>
                     </outerBoundaryIs>
@@ -372,8 +377,8 @@ foreach ($classes as $c) {
                     <outerBoundaryIs>
                         <LinearRing>
                             <coordinates>';
-        foreach($d->cords2 as $coord) {
-            $out .= $coord[0].','.$coord[1]. ','.$d->base . ' ';
+        foreach ($d->cords2 as $coord) {
+            $out .= $coord[0] . ',' . $coord[1] . ',' . $d->base . ' ';
         }
         $out .= '
                             </coordinates>
@@ -388,8 +393,8 @@ foreach ($classes as $c) {
                     <outerBoundaryIs>
                         <LinearRing>
                             <coordinates>';
-        foreach($d->cords2 as $coord) {
-            $out .= $coord[0].','.$coord[1]. ','.$d->top . ' ';
+        foreach ($d->cords2 as $coord) {
+            $out .= $coord[0] . ',' . $coord[1] . ',' . $d->top . ' ';
         }
         $out .= '
                             </coordinates>
