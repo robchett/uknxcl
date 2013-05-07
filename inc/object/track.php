@@ -293,8 +293,7 @@ class track {
             $kml->add($this->get_kml_time_aware_points());
         }
         if (!$external) {
-            $outFile = fopen($this->get_file_loc() . '/track.kml', 'w');
-            fwrite($outFile, $kml->compile());
+            $kml->compile(false, $this->get_file_loc() . '/track.kml');
         }
         return $kml;
     }
@@ -389,7 +388,7 @@ class track {
         $kml->add($this->get_animation());
         $kml->get_kml_folder_close();
         $kml->get_kml_folder_close();
-        fwrite(fopen($this->get_file_loc() . '/track_earth.kml', 'w'), $kml->compile());
+        $kml->compile(false, $this->get_file_loc() . '/track_earth.kml');
         return $kml;
     }
 
