@@ -36,6 +36,16 @@ function Airspace() {
         this.visible[type] = bool;
 
     };
+
+    this.getType = function(int) {
+        switch(int) {
+            case 0: return 'PROHIBITED';
+            case 1: return 'RESTRICTED';
+            case 2: return 'DANGER';
+            case 3: return 'OTHER';
+            case 4: return 'CTRCTA';
+        }
+    }
     this.setHeight = function (val) {
         this.maximum_base = val;
     };
@@ -992,24 +1002,25 @@ function Airspace() {
 
     var as = [];
     this.reload = function (currentHeight) {
-        this._airspace.each(function (as) {
+        this._airspace.each(function (airspace) {
             if (this.varyWithTrack && currentHeight !== undefined) {
-                if (as.level >= currentHeight / 0.3048 || as.top <= currentHeight / 0.3048) {
-                    as.poly.setMap(null);
-                    as.visible = false;
+                if (airspace.level >= currentHeight / 0.3048 || airspace.top <= currentHeight / 0.3048) {
+                    airspace.poly.setMap(null);
+                    airspace.visible = false;
                 } else if (as.level >= maximum_base) {
-                    as.poly.setMap(null);
-                    as.visible = false;
+                    airspace.poly.setMap(null);
+                    airspace.visible = false;
                 }
                 return;
             }
-            if (!this.isVisible(as.class)) {
-                as.poly.setMap(null);
-                as.visible = false;
+            var c = airspace._classs;
+            if (!this.isVisible(c)) {
+                airspace.poly.setMap(null);
+                airspace.visible = false;
                 return;
-            } else if (!as.visible) {
-                as.poly.setMap(map.internal_map);
-                as.visible = true;
+            } else if (!airspace.visible) {
+                airspace.poly.setMap(map.internal_map);
+                airspace.visible = true;
                 return;
             }
         });
@@ -1026,6 +1037,6 @@ function Airspace() {
             fillOpacity: fillOpacity,
             zIndex: (185 - flightLevel),
             title: name});
-        this._airspace.push({poly: polygon, class: airClass, level: flightLevel, top: top, visible: false});
+        this._airspace.push({poly: polygon, _class: airClass, level: flightLevel, top: top, visible: false});
     }
 }

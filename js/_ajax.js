@@ -89,7 +89,7 @@ $(document).ready(function () {
             });
 
             var options = {loading_target: ajax_shroud};
-            data.ajax_origin = $(event.target)[0].id;
+            data.ajax_origin = $(e.target)[0].id;
 
 
             $.fn.ajax_factory(module, act, data, options);
