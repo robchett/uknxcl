@@ -49,11 +49,11 @@ class pilot extends table {
     }
 
     public function output_csv($pos) {
-        $csv = "$pos','$this->name','$this->glider / $this->club',$this->flights";
+        $csv = $pos . ',\'' . $this->name . '\',\'' . $this->glider . '/' . $this->club . '\',' . strip_tags(implode(',',$this->flights));
         for ($i = $this->number_of_flights; $i < $this->max_flights - 1; $i++) {
-            $csv .= "'',";
+            $csv .= ',';
         }
-        $csv .= "$this->score,$this->total ($this->number_of_flights),\n\r";
+        $csv .= $this->score . ',' . $this->total . '(' . $this->number_of_flights . ')<br/>';
         return $csv;
     }
 
