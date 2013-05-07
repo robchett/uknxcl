@@ -275,9 +275,10 @@ function UKNXCL_Map($container) {
     };
 
     this.init_earth = function () {
+        var $map = $('#map').hide();
+        var $earth = $('#map3d').show().css({display:'block'});
         google.earth.createInstance('map3d', function (instance) {
-            $('#map').hide();
-            $('#map3d').show();
+            $earth.children('p.loading').remove();
             map.mode = map.EARTH;
             map.ge = instance;
             map.ge.getWindow().setVisibility(true);
@@ -310,8 +311,9 @@ function UKNXCL_Map($container) {
         }, function () {
             map.mode = map.MAP;
             map.load_map();
-            $('#map').show();
-            $('#map3d').hide();
+            $map.show().css({display:'block'});
+            $earth.hide();
+            $map.children('p.loading').remove();
         });
     };
     this.resize();
@@ -849,11 +851,11 @@ function Planner(parent) {
 
     this.clear = function () {
 
-        this.waypoints.each(function () {
-            if (this.parent.mode === this.parent.MAP) {
-                this.waypoints[a].setMap(null);
+        this.waypoints.each(function (point) {
+            if (map.mode === map.MAP) {
+                point.setMap(null);
             } else {
-                this.parent.ge.getFeatures().removeChild(this.waypoints[a]);
+                map.ge.getFeatures().removeChild(point);
             }
         })
         this.waypoints = [];
@@ -1074,9 +1076,24 @@ $('body').on('click', '.kmltree .toggler', function () {
         if (data.type == "comp") {
             var root = map.comp;
             var kml = map.comp.google_data;
-        } else {
+        } else if (data.type == 'flight'){
             var root = map.kmls[root_data.id];
             var kml = map.kmls[root_data.id].google_data;
+        } else {
+            if (typeof data.path[0] != 'undefined') {
+                if ($li.hasClass('visible')) {
+                    map.airspace.setVisible(map.airspace.getType(data.path[0]), false);
+                } else {
+                    map.airspace.setLoaded(map.airspace.getType(data.path[0]), true);
+                }
+            } else {
+                if ($li.hasClass('visible')) {
+                    map.airspace.loadAll(false);
+                } else {
+                    map.airspace.loadAll(true);
+                }
+            }
+            return false;
         }
 
         if (typeof data.path[0] != 'undefined') {
