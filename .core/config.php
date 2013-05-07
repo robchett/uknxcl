@@ -5,6 +5,14 @@ define('root', $_SERVER['DOCUMENT_ROOT']);
 define('core_dir', root . '/.core');
 define('ajax', isset($_REQUEST['module']));
 
+if(strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
+    define ('ie', true);
+    define ('ie_ver', 0);
+} else {
+    define ('ie', false);
+    define ('ie_ver', 0);
+}
+
 function __autoload($classname) {
 
     $classname = str_replace(array('_iterator', '_array'), '', $classname);
