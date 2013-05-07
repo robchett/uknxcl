@@ -41,8 +41,8 @@ class comps extends core_module {
                 <td>Task ' . (int) $comp->task . '</td>
                 <td>' . $comp->class . '</td>
                 <td>' . $comp->title . '</td>
-                <td>' . $comp->date . '</td>
-                <td><a onclick="map.add_comp(' . $comp->cid . ')">View</a></td>
+                <td>' . date('d/m/Y',strtotime($comp->date)) . '</td>
+                <td><a class="button" onclick="map.add_comp(' . $comp->cid . ')">View</a></td>
             </tr>';
         }
         //});
