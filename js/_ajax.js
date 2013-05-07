@@ -144,3 +144,15 @@ function handle_json_response(json) {
     if (typeof json.push_state != "undefined")
         window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
 }
+
+Array.prototype.each = function (callback, context) {
+    for (var i = 0; i < this.length; i++) {
+        callback(this[i], i, context);
+    }
+}
+Array.prototype.count = function () {
+    return this.length - 2;
+}
+String.prototype.isNumber = function () {
+    return !isNaN(parseFloat(this)) && isFinite(this);
+};

@@ -332,9 +332,9 @@ function Track(id, temp) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/track.kml', null, id);
+            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/track.kmz', null, id);
         } else {
-            map.parseKML('/uploads/track/' + this.temp + this.id + '/track_earth.kml', this);
+            map.parseKML('/uploads/track/' + this.temp + this.id + '/track_earth.kmz', this);
         }
     };
 
@@ -456,11 +456,11 @@ function Comp(id) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLcomp.parse('/uploads/comp/' + this.id + '/track.kml?' + Math.floor(Math.random() * 1000), null, id);
+            map.GeoXMLcomp.parse('/uploads/comp/' + this.id + '/track.kmz?' + Math.floor(Math.random() * 1000), null, id);
             this.google_data = true;
             this.is_ready();
         } else {
-            map.parseKML('/uploads/comp/' + this.id + '/track.kml', this);
+            map.parseKML('/uploads/comp/' + this.id + '/track.kmz', this);
         }
     };
 
@@ -1131,19 +1131,6 @@ $('body').on('click', '.kmltree .expander', function () {
         $li.find('li').addClass('open');
     }
 });
-
-
-Array.prototype.each = function (callback, context) {
-    for (var i = 0; i < this.length; i++) {
-        callback(this[i], i, context);
-    }
-}
-Array.prototype.count = function () {
-    return this.length - 2;
-}
-String.prototype.isNumber = function () {
-    return !isNaN(parseFloat(this)) && isFinite(this);
-};
 
 $(document).bind('cbox_complete', function () {
     var width = $('#colorbox').width();
