@@ -76,13 +76,14 @@ class kml {
             $xml .= self::get_kml_footer();
 
         if (!empty($path)) {
-            file_put_contents(root . $path, $xml);
+            $path = root . get::trim_root($path);
+            file_put_contents($path, $xml);
             $zip = new ZipArchive();
-            $zip->open(str_replace('.kml', '.kmz', root . $path));
-            $zip->addFile(root . $path);
+            $zip->open(str_replace('.kml', '.kmz', $path), ZIPARCHIVE::OVERWRITE);
+            $zip->addFile($path);
             $zip->close();
-            unlink(root . $path);
-            return file_put_contents(root . $path, $xml);
+            unlink($path);
+
         } else {
             return $xml;
         }

@@ -10,6 +10,10 @@ class get {
         return str_replace(array(' ', '.', ',', '-'), '_', strtolower($str));
     }
 
+    static function trim_root($string) {
+        return str_replace(root,'',$string);
+    }
+
     static function ordinal($num) {
         if (!in_array(($num % 100), array(11, 12, 13))) {
             switch ($num % 10) {
