@@ -288,6 +288,35 @@ class league_table {
         }
     }
 
+    public function generate_csv() {
+        $flights = flight::get_all(array('p.pid', 'p.name', 'c.name', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        /** @var  $array pilot_official[] */
+        $array = array();
+        /** @var  $flights flight[] */
+        foreach ($flights as $t) {
+            if (isset ($array [$t->p_pid]))
+                $array [$t->p_pid]->add_flight($t);
+            else {
+                $array [$t->p_pid] = new pilot_official();
+                $array [$t->p_pid]->set_from_flight($t, 6, 0);
+                $array [$t->p_pid]->output_function = 'csv';
+            }
+        }
+        usort($array, "cmp");
+        $class1 = $class5 = 1;
+        echo '<pre>Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n";
+        for ($j = 0; $j < sizeof($array); $j++) {
+            if ($array [$j]->Class == 1) {
+                echo $array [$j]->output($class1, 0);
+                $class1++;
+            } else {
+                echo $array [$j]->output($class5, 0);
+                $class5++;
+            }
+        }
+        die();
+    }
+
     public function get_table() {
         switch ($this->type) {
             case(0):
@@ -440,7 +469,6 @@ function cmp($a, $b) {
     }
     return ($a->score > $b->score) ? -1 : 1;
 }
-
 
 
 ?>
