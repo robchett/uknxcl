@@ -1062,6 +1062,7 @@ $('body').on('click', '.kmltree .toggler', function () {
                 $li.siblings("li").removeClass('visible');
                 $parent_li.addClass('visible');
             }
+            map.kmls[root_data.id].center();
             kml.setVisibility(true);
             $li.addClass('visible');
             if ($li.hasClass('radioFolder')) {
