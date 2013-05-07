@@ -67,6 +67,7 @@ class comp extends table {
             $track->source = $file;
             $track->parse_IGC();
             $track->trim();
+            $track->get_limits();
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
@@ -118,7 +119,7 @@ class comp extends table {
             $track->repair_track();
             $track->get_graph_values();
             $track->get_limits();
-            $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count - 1) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
+            $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             //$kml_earth->add($track->generate_kml_comp_earth());
             $html .= '<h5>' . $track->name . '</h5>';
@@ -211,7 +212,7 @@ class comp extends table {
             }
             $html .= '<pre>' . $track->log_file . '</pre>';
             $html .= '</div>';
-            fwrite($js_file, ($count != 1 ? ',' : '') . json_encode($js_track));
+            fwrite($js_file, ($count ? ',' : '') . json_encode($js_track));
             $track->cleanup();
             $count++;
         }
@@ -221,7 +222,7 @@ class comp extends table {
         fwrite($js_file, '], "html":' . json_encode($json_html) . '}');
         $kml_out->add($task->o);
         $kml_out->get_kml_folder_close();
-        $kml_out->compile(false, 'uploads/comp/' . $this->cid . '/track.kml');
+        $kml_out->compile(false, '/uploads/comp/' . $this->cid . '/track.kml');
         //$kml_earth->add($task->o);
         //$kml_earth->get_kml_folder_close();
         //$kml_earth->compile(false, 'uploads/comp/' . $this->cid . '/track_earth.kml');
