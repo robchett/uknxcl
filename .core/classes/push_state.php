@@ -15,12 +15,14 @@ class push_state {
     }
 
     public function get() {
-        if ($this->type == self::PUSH) {
-            core::$inline_script[] = 'window.history.pushState(' . json_encode($this->data) . ', "",
+        if (!ie) {
+            if ($this->type == self::PUSH) {
+                core::$inline_script[] = 'window.history.pushState(' . json_encode($this->data) . ', "",
             "' . $this->url . '")';
-        } else {
-            core::$inline_script[] = 'window.history.replaceState(' . json_encode($this->data) . ', "",
+            } else {
+                core::$inline_script[] = 'window.history.replaceState(' . json_encode($this->data) . ', "",
             "' . $this->url . '")';
+            }
         }
     }
 
