@@ -27,6 +27,6 @@
 
         <div id="tree_content"><a href="#" title="Load Airspace" class="load_airspace button" onclick="map.load_airspace();">Load Airspace</a></div>
     </div>
-    <div id="map"></div>
-    <div id="map3d"></div>
+    <div id="map"><p class="loading">Google Maps are loading...</p></div>
+    <div id="map3d"><p class="loading">Google Earth is loading...</p></div>
 </div>
