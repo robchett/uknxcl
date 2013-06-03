@@ -12,7 +12,7 @@ h2.form_title {
 #advanced_tables_wrapper { display: none; }
 
 form {
-  border: 1px solid #0e406d;
+  border: @blue_border;
   padding: 10px;
   margin-top: 0;
   .border-radius(0,10px,10px,0);
@@ -35,12 +35,29 @@ form {
         input.err, form select.err, form textarea.err {
           border: 1px solid red;
         }
+
         span {
           display: block;
           float: left;
           width: 100px;
           text-align: left;
           line-height: 26px;
+          &.checkbox_replace {
+            cursor: pointer;
+            display: inline-block;
+            width: 14px !important;
+            height: 14px !important;
+            padding: 0 !important;
+            border: 1px solid #2a2a2a;
+            &:hover { background-color: #e5e5e5;}
+            &.checked {
+              background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAA3NCSVQICAjb4U/gAAAAclBMVEXx8fHo6Ojj4+Pg4ODW1tbT09PR0dG7u7u6urq5ubmvr6+np6ehoaGenp6WlpaVlZWSkpKMjIyAgIB8fHx6enp5eXlvb29ubm5kZGRQUFBPT09HR0dGRkY/Pz87Ozs2NjY1NTUzMzMwMDAuLi4qKir///+NWczDAAAAJnRSTlP/////////////////////////////////////////////////AKd6gbwAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA2LzAzLzEz76odTwAAAFhJREFUCJk9zVcOgDAMA9Cy9x5lU8C5/xWB0uAvPytSBHGKYxDcW+w5o8YZkEEIZGRgrZDEaLDYGo5LnkL6bqLaVNRh1Aeix5v4A5VPn8mAJJD88K/JfLsBgKAR7rnTsRIAAAAASUVORK5CYII=) center center no-repeat;
+              &:hover { background-color: #e5e5e5;}
+            }
+            input {
+              display: none;
+            }
+          }
         }
         .long_text span {
           display: block;
@@ -100,6 +117,8 @@ form {
       clear: none;
       margin-right: 20px;
       margin-bottom: 5px;
+      width: 192px;
+      min-height: 20px;
 
       label span {
         width: 90px;
@@ -193,6 +212,7 @@ form {
         float: right;
         width: 595px;
         padding: 0 0 0 20px;
+        &.checkbox_replace {margin-top: 5px}
       }
       input {
         float: left;
