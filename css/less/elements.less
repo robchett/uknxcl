@@ -1,12 +1,15 @@
 @primary: #0c3f6b;
+@table_background: #D5E3FF;
+@default_border: solid 1px silver;
+@blue_border: solid 1px #0E406D;
+.blue_gradient() {
+  .gradient(#75b7fd,#0c3f6b,#0a4dad);
+  color: #ffffff;
+}
 
 .heading(@color: #75b7fd, @start: #0c3f6b, @stop: #0a4dad, @rad: 10px) {
-  .gradient(@color, @start, @stop)
-
-;
-  .border-radius(@rad, 0, 0, @rad)
-
-;
+  .gradient(@color, @start, @stop);
+  .border-radius(@rad, 0, 0, @rad);
   text-align: center;
   color: #ffffff;
   margin-bottom: 0;

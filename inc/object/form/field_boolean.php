@@ -33,7 +33,7 @@ class field_boolean extends field {
         if ($this->parent_form->{$this->field_name}) {
             $this->attributes['checked'] = 'checked';
         }
-        return '<input ' . $this->get_attributes() . '"/>' . "\n";
+        return '<span class="checkbox_replace"><input ' . $this->get_attributes() . '"/></span>' . "\n";
     }
 
 }
