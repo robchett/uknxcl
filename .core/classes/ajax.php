@@ -40,7 +40,18 @@ class ajax {
         if (isset(self::$push_state))
             $o->push_state = self::$push_state;
         if (isset($_REQUEST['no_ajax'])) {
-            echo '<script>window.top.window.handle_json_response(' . json_encode($o) . ')</script>';
+            echo '
+    <script>
+        Array.prototype.each = function (callback, context) {
+            for (var i = 0; i < this.length; i++) {
+                callback(this[i], i, context);
+            }
+        }
+        Array.prototype.count = function () {
+            return this.length - 2;
+        }
+            window.top.window.handle_json_response(' . json_encode($o) . ')
+    </script>';
         } else {
             echo json_encode($o);
         }
