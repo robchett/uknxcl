@@ -11,6 +11,15 @@ h2.form_title {
 
 #advanced_tables_wrapper { display: none; }
 
+#advanced_tables_wrapper, #basic_tables_form_wrapper {
+  margin-bottom: 20px;
+  .border-radius(10px,10px,10px,10px);
+  overflow: hidden;;
+  &.visible {
+    .border-radius(0,0,0,0)
+  }
+}
+
 form {
   border: @blue_border;
   padding: 10px;
@@ -49,10 +58,10 @@ form {
             height: 14px !important;
             padding: 0 !important;
             border: 1px solid #2a2a2a;
-            &:hover { background-color: #e5e5e5;}
+            &:hover { background-color: #e5e5e5; }
             &.checked {
               background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAA3NCSVQICAjb4U/gAAAAclBMVEXx8fHo6Ojj4+Pg4ODW1tbT09PR0dG7u7u6urq5ubmvr6+np6ehoaGenp6WlpaVlZWSkpKMjIyAgIB8fHx6enp5eXlvb29ubm5kZGRQUFBPT09HR0dGRkY/Pz87Ozs2NjY1NTUzMzMwMDAuLi4qKir///+NWczDAAAAJnRSTlP/////////////////////////////////////////////////AKd6gbwAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA2LzAzLzEz76odTwAAAFhJREFUCJk9zVcOgDAMA9Cy9x5lU8C5/xWB0uAvPytSBHGKYxDcW+w5o8YZkEEIZGRgrZDEaLDYGo5LnkL6bqLaVNRh1Aeix5v4A5VPn8mAJJD88K/JfLsBgKAR7rnTsRIAAAAASUVORK5CYII=) center center no-repeat;
-              &:hover { background-color: #e5e5e5;}
+              &:hover { background-color: #e5e5e5; }
             }
             input {
               display: none;
@@ -212,7 +221,7 @@ form {
         float: right;
         width: 595px;
         padding: 0 0 0 20px;
-        &.checkbox_replace {margin-top: 5px}
+        &.checkbox_replace { margin-top: 5px }
       }
       input {
         float: left;
