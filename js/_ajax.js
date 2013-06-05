@@ -42,6 +42,45 @@ $(document).ready(function () {
         }
     });
 
+    $body.on('submit', 'form.ajax', function (e) {
+        e.preventDefault();
+        var arr = $(this).attr('action').split(':');
+        var module = arr[0];
+        var act = arr[1];
+        var data = {};
+        var ajax_shroud = $(this).attr('data-ajax-shroud');
+
+        $(this).find(':input').each(function () {
+            var name = $(this).attr('name');
+            if ($(this).attr('type') == 'checkbox') {
+                if ($(this).is(':checked'))
+                    data[name] = $(this).val();
+            } else
+                data[name] = $(this).val();
+        });
+
+        var options = {loading_target: ajax_shroud};
+        data.ajax_origin = $(e.target)[0].id;
+
+
+        $.fn.ajax_factory(module, act, data, options);
+        return false;
+    });
+    $body.on('submit', 'form.noajax', function () {
+        var ajax_shroud = $(this).attr('data-ajax-shroud');
+        if (typeof ajax_shroud != 'undefined') {
+            var div = document.createElement('div');
+            div.className = 'loading_shroud';
+            div.style.width = $(ajax_shroud).outerWidth() + 'px';
+            div.style.height = $(ajax_shroud).outerHeight() + 'px';
+            div.style.left = 0;
+            div.style.top = 0;
+            if ($(ajax_shroud).css('position') != 'absolute' || $(ajax_shroud).css('position') != 'relative') {
+                $(ajax_shroud).css({'position': 'relative'});
+            }
+            $(ajax_shroud).prepend(div);
+        }
+    });
     $.fn.ajax_factory = function (module, act, post, options) {
         options = options || {};
         post = post || {};
@@ -71,46 +110,8 @@ $(document).ready(function () {
             data: post,
             success: handle_json_response
         });
-        $body.on('submit', 'form.ajax', function (e) {
-            e.preventDefault();
-            var arr = $(this).attr('action').split(':');
-            var module = arr[0];
-            var act = arr[1];
-            var data = {};
-            var ajax_shroud = $(this).attr('data-ajax-shroud');
-
-            $(this).find(':input').each(function () {
-                var name = $(this).attr('name');
-                if ($(this).attr('type') == 'checkbox') {
-                    if ($(this).is(':checked'))
-                        data[name] = $(this).val();
-                } else
-                    data[name] = $(this).val();
-            });
-
-            var options = {loading_target: ajax_shroud};
-            data.ajax_origin = $(e.target)[0].id;
-
-
-            $.fn.ajax_factory(module, act, data, options);
-            return false;
-        });
-        $body.on('submit', 'form.noajax', function () {
-            var ajax_shroud = $(this).attr('data-ajax-shroud');
-            if (typeof ajax_shroud != 'undefined') {
-                var div = document.createElement('div');
-                div.className = 'loading_shroud';
-                div.style.width = $(ajax_shroud).outerWidth() + 'px';
-                div.style.height = $(ajax_shroud).outerHeight() + 'px';
-                div.style.left = 0;
-                div.style.top = 0;
-                if ($(ajax_shroud).css('position') != 'absolute' || $(ajax_shroud).css('position') != 'relative') {
-                    $(ajax_shroud).css({'position': 'relative'});
-                }
-                $(ajax_shroud).prepend(div);
-            }
-        });
     }
+    $.fn.ajax_factory.defaults = {};
 });
 
 function colorbox_recenter() {
@@ -141,8 +142,12 @@ function handle_json_response(json) {
                 break;
         }
     })
-    if (typeof json.push_state != "undefined")
+    if (typeof json.push_state != "undefined") {
         window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
+    }
+    if($.fn.ajax_factory.defaults.complete) {
+        $.fn.ajax_factory.defaults.complete();
+    }
 }
 
 Array.prototype.each = function (callback, context) {
@@ -156,3 +161,4 @@ Array.prototype.count = function () {
 String.prototype.isNumber = function () {
     return !isNaN(parseFloat(this)) && isFinite(this);
 };
+
