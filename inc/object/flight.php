@@ -69,7 +69,7 @@ class flight extends table {
     }
 
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC', 'limit' => 100));
+        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
         $total_time = 0;
         //$flights->iterate(function (flight $flight) use (&$total_time) {
         /** @var flight $flight */
@@ -188,7 +188,7 @@ class flight extends table {
         }
 
         $html .= '</table>';
-        $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close [x]</a>';
+        $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
         ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
         ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
     }

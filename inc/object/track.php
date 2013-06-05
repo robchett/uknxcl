@@ -860,11 +860,6 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $this->console('-> Using ' . $this->calculation_subset_size . ' Track Points');
     }
 
-    public function python_test() {
-
-        echo shell_exec('python main.py');
-        echo phpinfo();
-    }
 
     public function repair_track() {
         $previous = $this->track_points->first();
