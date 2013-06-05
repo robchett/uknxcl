@@ -21,6 +21,7 @@
   text-align: center;
   font-weight: bold;
   color: @primary;
+  cursor: pointer;
 }
 
 .gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
@@ -54,9 +55,9 @@
 }
 
 .drop-shadow(@x-axis: 0, @y-axis: 1px, @blur: 2px, @alpha: 0.1) {
-  -webkit-box-shadow: @x-axis @y-axis @blur rgba(0, 0, 0, @alpha);
-  -moz-box-shadow: @x-axis @y-axis @blur rgba(0, 0, 0, @alpha);
-  box-shadow: @x-axis @y-axis @blur rgba(0, 0, 0, @alpha);
+  -webkit-box-shadow: @x-axis @y-axis @blur rgba(255, 255, 255, @alpha);
+  -moz-box-shadow: @x-axis @y-axis @blur rgba(255, 255, 255, @alpha);
+  box-shadow: @x-axis @y-axis @blur rgba(255, 255, 255, @alpha);
 }
 
 .rounded(@radius: 2px) {
@@ -178,3 +179,11 @@
   -webkit-background-clip: @argument;
   background-clip: @argument;
 }
+
+.cf:before, .cf:after { content: "\0020"; display: block; height: 0; overflow: hidden }
+
+.cf:after { clear: both }
+
+.cf { zoom: 1 }
+
+input:-webkit-autofill {background-color: inherit}

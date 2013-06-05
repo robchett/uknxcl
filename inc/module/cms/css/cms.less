@@ -1,10 +1,7 @@
 @import 'less/elements';
 
-.cf:before, .cf:after { content: "\0020"; display: block; height: 0; overflow: hidden }
-
-.cf:after { clear: both }
-
-.cf { zoom: 1 }
+@border: 2px solid #a9a9a9;
+html { height: 100% }
 
 body {
   padding: 10px 20px;
@@ -67,12 +64,60 @@ ul, li {
   list-style: none;
 }
 
-#content.cms_login {
-  width: 400px;
-  margin: auto;
-  border-radius: 30px;
-  border: 3px dashed #646464;
-  position: relative;
+.login {
+  display: table;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  #content {
+    display: table-cell;
+    vertical-align: middle;
+    border: none;
+    h2 {
+      text-align: center;
+      font-size: 30px;
+    }
+    div#form_wrapper {
+      height: 220px;
+      width: 400px;
+      margin: auto;
+      border-radius: 30px;
+      position: relative;
+      padding: 20px;
+      background-color: #333333;
+      .drop-shadow(0, 6px, 40px, 0.7);
+
+      input.submit {
+        margin-top: 10px;
+        .button();
+        display: block;
+        width: 370px;
+        color: @primary;
+      }
+      fieldset {
+        padding: 0;
+        li {
+          border-bottom: none;
+          label {
+
+            span {
+              display: none
+            }
+            input {
+              margin: 0;
+              width: 360px;
+              text-align: center;
+              font-size: 20px;
+              border: none;
+              padding: 8px;
+              background-color: #ffffff !important;
+              .border-radius(5px, 5px, 5px, 5px)
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 label span {
@@ -90,36 +135,42 @@ div#admin_box > div {
 ul#nav {
   clear: both;
   margin-left: 0px;
-}
-
-ul#nav li {
-  float: left;
-  margin-right: 10px;
-  padding: 5px 10px;
-  border: 1px solid #c6d4f2;
-  border-bottom: 0;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-ul#nav li ul {
-  position: absolute;
-  display: none;
-}
-
-ul#nav li ul li {
-  margin-top: 5px;
-  float: left;
-  margin-right: 10px;
-  padding: 5px 10px;
-  border: 1px solid #2c2c2c;
-  border-bottom: 0;
-  border-radius: 0px 0px 10px 10px;
+  li {
+    float: left;
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: @border;
+    border-bottom: 0;
+    border-top-left-radius: 10px;
+    position: relative;
+    font-size: 16px;
+    border-top-right-radius: 10px;
+    ul {
+      position: absolute;
+      display: none;
+      border: @border;
+      background-color: #333333;
+      left: -1px;
+      top: 24px;
+      padding: 10px;
+      .border-radius(0, 10px, 10px, 0);
+      li {
+        float: none;
+        margin: 0;
+        padding: 5px 10px;
+        border: 0;
+        color: #ffffff;
+        font-size: 14px;
+        text-align: left;
+        border-bottom: 1px solid #2c2c2c;
+      }
+    }
+  }
 }
 
 #content {
   clear: both;
-  border: 1px solid #c6d4f2;
+  border: @border;
   padding: 20px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -134,7 +185,7 @@ div#inner table {
 div#inner table th {
   color: #f5f5f5;
   padding: 5px;
-  border: 1px solid #d0d0d0;
+  border: @border;
   background-color: #5c5c5c;
   color: window;
   border-top-left-radius: 5px;
@@ -157,7 +208,7 @@ div#inner {
     tr {
       td {
         padding: 4px;
-        border: 1px solid #d0d0d0;
+        border: @border;
         text-align: left;
         &.field_button, &.field_file {
           vertical-align: middle;
@@ -287,7 +338,7 @@ p.success {
   margin-bottom: 20px;
   display: block;
   .rounded(10px);
-  border: 1px solid #6b6b6b;
+  border: @border;
   background-color: #494949;
   color: #ffffff;
   padding: 10px;
@@ -303,13 +354,13 @@ table#module_def {
   thead {
     th {
       background-color: #474747;
-      border: 1px solid #b7b7b7;
+      border: @border;
       padding: 5px;
     }
   }
   tr {
     td {
-      border: 1px solid #b7b7b7;
+      border: @border;
       padding: 2px;
     }
   }
