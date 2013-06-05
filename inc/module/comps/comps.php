@@ -68,7 +68,7 @@ class comps extends core_module {
             });";
 
         if (ajax) {
-            ajax::inject('body', 'after', '<script>' . $script . '</script>');
+            ajax::add_script($script);
         } else {
             core::$inline_script[] = $script;
         }
