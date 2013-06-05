@@ -37,6 +37,12 @@ class flight extends table {
     public $time;
     public $vis_info;
 
+    public static $default_joins = array(
+        'pilot' => 'flight.pid = pilot.pid',
+        'glider' => 'flight.gid = glider.gid',
+        'club' => 'flight.cid = club.cid',
+    );
+
     /* @return flight_array */
     public static function get_all(array $fields, array $options = array()) {
         return flight_array::get_all($fields, $options);
@@ -148,11 +154,9 @@ class flight extends table {
         $this->do_retrieve(
             array('flight.*', 'pilot.name', 'club.name', 'glider.name', 'manufacturer.title'),
             array(
-                'join' => array(
-                    'glider' => 'flight.gid=glider.gid',
-                    'club' => 'flight.cid=club.cid',
-                    'pilot' => 'flight.pid=pilot.pid',
-                    'manufacturer' => 'glider.mid=manufacturer.mid'
+                'join' => array_merge(
+                    flight::$default_joins,
+                    array('manufacturer' => 'glider.mid=manufacturer.mid')
                 ),
                 'where_equals' => array('flight.fid' => $id)
             )
