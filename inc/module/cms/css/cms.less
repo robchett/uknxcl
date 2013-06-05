@@ -64,7 +64,7 @@ ul, li {
   list-style: none;
 }
 
-.login {
+body.login {
   display: table;
   width: 100%;
   height: 100%;
@@ -115,6 +115,50 @@ ul, li {
             }
           }
         }
+      }
+    }
+  }
+}
+
+body.dashboard {
+  #summaries {
+    h4 {
+      font-size: 24px;
+    }
+    div {
+      padding: 5px;
+      margin-bottom: 20px;
+      border: @border;
+      .border-radius(10px, 10px, 10px, 10px);
+      background-color: #252525;
+      width: 50%;
+      .box-sizing();
+      float: left;
+    }
+  }
+  #latest_flights {
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    border: @border;
+    .border-radius(10px, 10px, 10px, 10px);
+    background-color: #2e2e2e;
+    .box-sizing();
+    thead {
+      background-color: #d7d7d7;
+      font-size: 16px;
+      th {
+        padding: 20px 10px;
+        color: #444444;
+      }
+    }
+    tr {
+      &:nth-child(2n) {
+        background-color: #464646;
+      }
+      td {
+        padding:10px;
       }
     }
   }
