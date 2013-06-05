@@ -52,7 +52,7 @@ $tables = array(
         'G_ID' => 'gid',
         'G_NAME' => 'name',
         'G_CLASS' => 'class',
-        'Manufacturer' => 'mid',
+        'Manufacturer' => array('get_manu','mid'),
         'Kingpost' => 'kingpost',
         'Single_Surface' => 'single_surface',
         'Hangies_League' => 'hangies',
@@ -77,7 +77,11 @@ foreach ($tables as $table => $keys) {
     $sql_arr = array();
     $sql = 'INSERT INTO ' . $table . ' SET ';
     foreach ($keys as $old => $new) {
-        $sql_arr[] = $new . '=:' . $old;
+        if(is_array($new)) {
+            $sql_arr[] = $new[1] . '=:' . $old;
+        } else {
+            $sql_arr[] = $new . '=:' . $old;
+        }
     }
     $sql .= implode(', ', $sql_arr);
     $statement = db::$con->prepare($sql);
@@ -86,12 +90,18 @@ foreach ($tables as $table => $keys) {
     while ($row = db::fetch($res)) {
         $params = array();
         foreach ($keys as $old => $new) {
-            $params[$old] = $row->$old;
+            if(is_array($new)) {
+                $params[$old] = $new[0] ($row->$old);
+            } else {
+                $params[$old] = $row->$old;
+            }
         }
 
         $statement->execute($params);
     }
 }
-
-
 db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
+
+function get_manu($manu) {
+    return db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title'=>$manu));
+}
