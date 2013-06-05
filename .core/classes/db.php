@@ -16,7 +16,7 @@ class db {
             $username = "root";
             $password = "";
         }
-        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password, array(PDO::ATTR_PERSISTENT => true));
+        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
         self::$con = self::$con_arr[$name];
         self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
