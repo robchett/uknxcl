@@ -18,4 +18,25 @@ class pages extends core_module {
         }
         return '';
     }
+
+    public function get_page_selector() {
+        return '#pages-' . $this->current->pid;
+    }
+
+    public function get_push_state() {
+        $push_state = new push_state();
+        $push_state->url = $this->current->get_url();
+        $push_state->title = $this->current->nav_title;
+        $push_state->data = (object) array(
+            'page' => array(
+                'url' => $push_state->url,
+            ),
+            'post' => array(
+                'module' => get_class($this),
+                'page' => $this->current->pid,
+                'act' => 'ajax_load'
+            )
+        );
+        return $push_state;
+    }
 }
