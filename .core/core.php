@@ -7,12 +7,8 @@ class core {
     public static $inline_script = array();
     public static $js = array();
     public static $css = array('/css');
-    public static $page_config = array(
-        'title_tag' => 'UKNXCL National Cross Country League',
-        'pre_content' => '',
-        'post_content' => '',
-        'body_class' => '',
-    );
+    /** @var page_config */
+    public static $page_config;
     public $body = '';
     public $pid = 0;
     public $pre_content = 'test';
@@ -24,9 +20,11 @@ class core {
     public $page;
 
     public function __construct() {
+        self::$page_config = new page_config();
         self::$singleton = $this;
         db::connect();
         $this->path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+        self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
         if (!(isset($this->path[0])) || empty($this->path[0])) {
             $this->path[0] = 'latest';

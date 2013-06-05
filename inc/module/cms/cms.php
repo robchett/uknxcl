@@ -19,12 +19,15 @@ class cms extends core_module {
     }
 
     public function __controller(array $path) {
-        core::$page_config['title_tag'] = 'Admin Login - UKNXCL';
+        core::$page_config->title_tag = 'Admin Login - UKNXCL';
         core::$css = array('/inc/module/cms/css/cms.css');
         core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', ' /inc/module/cms/js/cms.js', '/js/jquery/colorbox.js', '/plugins/ckeditor/ckeditor.js');
+        if(admin && !isset($path[1])) {
+            $path[1] = 'dashboard';
+        }
         $this->view = 'login';
         if (isset($path[1]) && !empty($path[1]) && admin) {
-            core::$page_config['pre_content'] = $this->get_main_nav();
+            core::$page_config->pre_content = $this->get_main_nav();
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
@@ -45,8 +48,6 @@ class cms extends core_module {
         if (isset($path[3]) && !empty($path[3]) && admin) {
             $this->current->do_retrieve_from_id(array(), $path[3]);
         }
-        core::$page_config['body_class'] = 'module_cms cms_' . $this->view;
-
         parent::__controller($path);
     }
 
