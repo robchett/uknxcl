@@ -11,7 +11,7 @@ class get {
     }
 
     static function trim_root($string) {
-        return str_replace(root,'',$string);
+        return str_replace(root, '', $string);
     }
 
     static function ordinal($num) {
