@@ -1030,10 +1030,13 @@ $('body').on('click', '.kmltree .toggler', function () {
     if (map.mode == map.EARTH) {
         if (data.type == "comp") {
             var kml = map.comp.google_data.root;
+            var root = map.comp;
         } else if (data.type == "flight") {
-            var kml = map.kmls[root_data.id].google_data.root;
+            root = map.kmls[root_data.id];
+            kml = map.kmls[root_data.id].google_data.root;
         } else {
-            var kml = map.airspace.google_data.root;
+            root = map.airspace;
+            kml = map.airspace.google_data.root;
         }
         var kmlPath = [kml];
         if (data.type != 'airspace') {
@@ -1062,7 +1065,7 @@ $('body').on('click', '.kmltree .toggler', function () {
                 $li.siblings("li").removeClass('visible');
                 $parent_li.addClass('visible');
             }
-            map.kmls[root_data.id].center();
+            root.center();
             kml.setVisibility(true);
             $li.addClass('visible');
             if ($li.hasClass('radioFolder')) {
