@@ -1,4 +1,8 @@
 <?php
+class login_view extends cms_view {
 
-$form = new cms_login_form();
-echo $form->get_html()->get();
+    public function get_view() {
+        $form = new cms_login_form();
+        return $form->get_html();
+    }
+}
