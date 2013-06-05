@@ -10,6 +10,7 @@ abstract class core_module {
         'comps' => 'Comps',
         'tables' => 'Tables',
         'planner' => 'Planner',
+        'cms' => 'CMS'
     );
     /** @var table */
     public $current;
@@ -29,12 +30,19 @@ abstract class core_module {
         }
         if (empty($this->view)) {
             $file = root . '/inc/module/_default/view/default.php';
-        } else
-            $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
-        if (is_readable($file))
             include_once($file);
-        else
-            throw new Exception('View not found, ' . $file);
+        } else {
+            $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
+            if (is_readable($file)) {
+                include_once($file);
+                $class = $this->view . '_view';
+                $view = new $class;
+                $view->module = $this;
+                echo $view->get_view()->get();
+            } else {
+                throw new Exception('View not found, ' . $file);
+            }
+        }
     }
 
     function get_main_nav() {
@@ -68,29 +76,31 @@ abstract class core_module {
         return $html;
     }
 
+    public function get_page_selector() {
+        return '#' . get_class($this);
+    }
+
     public function ajax_load() {
-        $push_state = new push_state();
-        if (get_class($this) == 'pages') {
-            $content = $this->get();
-            ajax::inject('#pages-' . $this->current->pid, 'append', $content);
-            $push_state->url = $this->current->get_url();
-            $push_state->title = $this->current->nav_title;
-            $push_state->data = (object) array(
-                'page' => array(
-                    'url' => $this->current->get_url(),
-                )
-            );
-        } else {
-            ajax::inject('#' . get_class($this), 'append', $this->get());
-            $push_state->url = '/' . get_class($this);
-            $push_state->title = self::$default_modules[get_class($this)];
-            $push_state->data = (object) array(
-                'page' => array(
-                    'url' => get_class($this),
-                )
-            );
-        }
+        $content = $this->get();
+        ajax::inject($this->get_page_selector(), 'append', $content);
+        $push_state = $this->get_push_state();
         ajax::push_state($push_state);
+    }
+
+    public function get_push_state() {
+        $push_state = new push_state();
+        $push_state->url = '/' . get_class($this);
+        $push_state->title = self::$default_modules[get_class($this)];
+        $push_state->data = (object) array(
+            'page' => array(
+                'url' => '/' . get_class($this),
+            ),
+            'post' => array(
+                'module' => get_class($this),
+                'act' => 'ajax_load'
+            )
+        );
+        return $push_state;
     }
 
     public abstract function get();

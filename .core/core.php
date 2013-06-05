@@ -71,11 +71,10 @@ class core {
         $this->module->__controller($this->path);
         $this->body = ob_get_contents();
         ob_end_clean();
-        $push_state = new push_state();
-        $push_state->type = push_state::REPLACE;
-        $push_state->url = $_SERVER['REQUEST_URI'];
-        $push_state->data = (object) array('page' => array('url' => $this->module_name));
-        $push_state->get();
+        $push_state = $this->module->get_push_state();
+        if($push_state) {
+            $push_state->get();
+        }
         require_once(root . '/index_screen.php');
     }
 
