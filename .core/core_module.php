@@ -43,6 +43,8 @@ abstract class core_module {
                 throw new Exception('View not found, ' . $file);
             }
         }
+
+        core::$page_config->add_body_class('module_' . get_class($this), $this->view);
     }
 
     function get_main_nav() {
