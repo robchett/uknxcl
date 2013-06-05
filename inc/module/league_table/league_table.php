@@ -429,7 +429,7 @@ class league_table {
                 $params['ftid'] = $i;
                 $flight = new flight();
                 $flight->do_retrieve(array('flight.*', $this->class . '.name AS name', 'glider.class AS class'), array(
-                        'join' => array('pilot' => 'flight.pid=pilot.pid', 'glider' => 'flight.gid=glider.gid'),
+                        'join' => flight::$default_joins,
                         'where' => $where_extend,
                         'order' => 'score DESC',
                         'parameters' => $params
