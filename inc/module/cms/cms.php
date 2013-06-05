@@ -24,7 +24,7 @@ class cms extends core_module {
         core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', ' /inc/module/cms/js/cms.js', '/js/jquery/colorbox.js', '/plugins/ckeditor/ckeditor.js');
         $this->view = 'login';
         if (isset($path[1]) && !empty($path[1]) && admin) {
-            core::$page_config['pre_content'] = $this->get_nav();
+            core::$page_config['pre_content'] = $this->get_main_nav();
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
@@ -48,6 +48,10 @@ class cms extends core_module {
         core::$page_config['body_class'] = 'module_cms cms_' . $this->view;
 
         parent::__controller($path);
+    }
+
+    public function get_push_state() {
+        return false;
     }
 
     public function do_paginate() {
@@ -136,7 +140,7 @@ class cms extends core_module {
         return $nodes;
     }
 
-    function get_nav() {
+    function get_main_nav() {
         $html = html_node::create('ul#nav');
         $res = db::query('SELECT * FROM _cms_group WHERE live = 1 AND deleted = 0');
         while ($row = db::fetch($res)) {
