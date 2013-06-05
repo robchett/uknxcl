@@ -17,12 +17,6 @@ function startUpload(a) {
     return true;
 }
 
-$("body").on('click', '.form_toggle', function () {
-    $("#basic_tables_form_wrapper").hide();
-    $("#advanced_tables_wrapper").hide();
-    $('#' + $(this).data("show")).show();
-});
-
 function page(a, post, is_push) {
     var module = post.module;
     is_push = is_push || 0;
@@ -33,7 +27,7 @@ function page(a, post, is_push) {
         $.fn.ajax_factory(module, 'ajax_load', post);
         loaded_modules[a] = true;
     } else if (!is_push) {
-        window.history.pushState({page: {url: a}}, '', a)
+        window.history.pushState({page: {url: a}, post: post}, '', a)
     }
     if (post.page) {
         var page = '-' + post.page;
@@ -65,10 +59,10 @@ Number.prototype.round = function (dp) {
     return Math.floor(this * Math.pow(10, dp)) / Math.pow(10, dp);
 };
 
-window.onpopstate = function (data) {
-    if (data.state !== undefined && data.state !== null) {
-        if ('page' in data.state) {
-            page(data.state.page.url, 1);
+window.onpopstate = function(event) {
+    if(event && event.state) {
+        if ('page' in event.state) {
+            page(event.state.page.url, event.state.post, 1);
         }
     }
 };
