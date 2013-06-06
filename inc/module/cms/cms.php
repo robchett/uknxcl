@@ -22,12 +22,11 @@ class cms extends core_module {
         core::$page_config->title_tag = 'Admin Login - UKNXCL';
         core::$css = array('/inc/module/cms/css/cms.css');
         core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', ' /inc/module/cms/js/cms.js', '/js/jquery/colorbox.js', '/plugins/ckeditor/ckeditor.js');
-        if(admin && !isset($path[1])) {
+        if (admin && !isset($path[1])) {
             $path[1] = 'dashboard';
         }
         $this->view = 'login';
         if (isset($path[1]) && !empty($path[1]) && admin) {
-            core::$page_config->pre_content = $this->get_main_nav();
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
@@ -44,6 +43,7 @@ class cms extends core_module {
                 }
                 $this->tot = db::result(db::get_query($this->module->table_name, array('count(*) AS count'), array('where_equals' => $this->where), $parameters), $parameters)->count;
             }
+            core::$page_config->pre_content = $this->get_main_nav();
         }
         if (isset($path[3]) && !empty($path[3]) && admin) {
             $this->current->do_retrieve_from_id(array(), $path[3]);
@@ -94,14 +94,6 @@ class cms extends core_module {
     }
 
     public function get() {
-    }
-
-    public function get_admin_add() {
-        return html_node::create('a#admin_edit.button', 'Add New ' . $this->module->title, array('href' => self::$url_base . 'edit/' . $this->mid));
-    }
-
-    public function get_admin_edit() {
-        return html_node::create('a#admin_edit.button', 'Edit Module', array('href' => self::$url_base . 'admin_edit/' . $this->mid));
     }
 
     public function get_admin_new_module_form() {
@@ -161,7 +153,11 @@ class cms extends core_module {
                 )
             );
         }
-        $html->nest(html_node::create('a#new_module', 'New Module', array('href' => '/cms/new_module/')));
+        if (isset($this->mid)) {
+            $html->nest(html_node::create('li.right', html_node::inline('a', 'Edit Module', array('href' => '/cms/admin_edit/' . $this->mid, 'title' => 'Edit ' . get_class($this->current)))));
+            $html->nest(html_node::create('li.right', html_node::inline('a', 'Add new ' . get_class($this->current) , array('href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)))));
+        }
+        $html->nest(html_node::create('li.right', html_node::inline('a', 'All Modules', array('href' => '/cms/module_list/', 'title' => 'View all modules'))));
         return $html->get();
     }
 
