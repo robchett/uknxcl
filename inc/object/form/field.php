@@ -28,7 +28,9 @@ abstract class field extends html_element {
             }
         }
         $this->field_name = $name;
-        $this->label = ucwords(str_replace('', ' ', $name));
+        if (!isset($this->label)) {
+            $this->label = ucwords(str_replace('', ' ', $name));
+        }
     }
 
     public function get_html_wrapper() {
@@ -38,7 +40,6 @@ abstract class field extends html_element {
         if (!$this->hidden && isset($this->label) && !empty($this->label)) $html .= '<label id="' . $this->field_name . '_wrapper"><span>' . $this->label . '</span>' . "\n";
         $html .= $this->get_html() . "\n";
         if (!$this->hidden && isset($this->label) && !empty($this->label)) $html .= '</label>' . "\n";
-        ;
         $html .= $this->post_text;
         return $html;
     }
