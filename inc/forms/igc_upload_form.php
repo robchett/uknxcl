@@ -66,7 +66,7 @@ class igc_upload_form extends form {
         $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
         $html = $track->error;
         if ($track->get_number_of_parts() > 1) {
-            file_convert::time_split_kml_plus_js($track);
+            geometry::time_split_kml_plus_js($track);
             $html .= $this->get_choose_track_html($track, $defined);
         } else {
             $track->calculate();

@@ -1,18 +1,81 @@
 <?php
 
-class file_convert {
+class geometry {
     static function Decimalize($a) {
 
     }
 
-    static function LatLongToOSGrid($p, $q) {
-        $lat = self::toRad($p);
-        $lon = self::toRad($q);
+    public static function get_distance(track_point $obj1, track_point $obj2) {
+        $x = $obj1->sin_lat * $obj2->sin_lat + $obj1->cos_lat * $obj2->cos_lat * cos($obj1->lonRad - $obj2->lonRad);
+        if (!is_nan($acos = acos($x))) {
+            return ($acos * 6371);
+        } else {
+            return 0;
+        }
+    }
+
+    public static function get_distance_ellipsoid(track_point $obj1, track_point $obj2) {
+        $a = 6378.137 / 1.852;
+        $f = 1 / 298.257223563;
+        $EPS = 0.00000000005;
+        $iter = 1;
+        $MAXITER = 100;
+        $arOut = array(0, 0.0, M_PI);
+        if (abs($obj1->latRad - $obj2->latRad) < $EPS && (abs($obj1->lonRad - $obj2->lonRad) < $EPS || abs(abs($obj1->lonRad - $obj2->lonRad) - 2 * M_PI) < $EPS)) {
+            return $arOut;
+        }
+        $r = 1 - $f;
+        $tu1 = $r * tan($obj1->latRad);
+        $tu2 = $r * tan($obj2->latRad);
+        $cu1 = 1 / (sqrt(1 + $tu1 * $tu1));
+        $su1 = $cu1 * $tu1;
+        $cu2 = 1 / (sqrt(1 + $tu2 * $tu2));
+        $s1 = $cu1 * $cu2;
+        $b1 = $s1 * $tu2;
+        $f1 = $b1 * $tu1;
+        $x = $obj2->lonRad - $obj1->lonRad;
+        $d = $x + 1;
+        while ((abs($d - $x) > $EPS) && ($iter < $MAXITER)) {
+            $iter++;
+            $sx = sin($x);
+            $cx = cos($x);
+            $tu1 = $cu2 * $sx;
+            $tu2 = $b1 - $su1 * $cu2 * $cx;
+            $sy = sqrt($tu1 * $tu1 + $tu2 * $tu2);
+            $cy = $s1 * $cx + $f1;
+            $y = atan2($sy, $cy);
+            $sa = $s1 * $sx / $sy;
+            $c2a = 1 - $sa * $sa;
+            $cz = $f1 + $f1;
+            if ($c2a > 0) {
+                $cz = $cy - $cz / $c2a;
+            }
+            $e = $cz * $cz * 2 - 1;
+            $c = ((-3 * $c2a + 4) * $f + 4) * $c2a * $f / 16;
+            $d = $x;
+            $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
+            $x = (1 - $c) * $x * $f + $obj2->lonRad - $obj1->lonRad;
+        }
+        $x = sqrt((1 / ($r * $r) - 1) * $c2a + 1);
+        $x++;
+        $x = ($x - 2) / $x;
+        $c = 1 - $x;
+        $c = ($x * $x / 4 + 1) / $c;
+        $d = (0.375 * $x * $x - 1) * $x;
+        $x = $e * $cy;
+        $s = (((($sy * $sy * 4 - 3) * (1 - $e - $e) * $cz * $d / 6 - $x) * $d / 4 + $cz) * $sy * $d + $y) * $c * $a * $r;
+        $arOut = $s * 1.852;
+        return $arOut;
+    }
+
+    static function lat_long_to_os($p, $q) {
+        $lat = deg2rad($p);
+        $lon = deg2rad($q);
         $a = 6377563.396;
         $b = 6356256.910;
         $F0 = 0.9996012717;
-        $lat0 = self::toRad(49);
-        $lon0 = self::toRad(-2);
+        $lat0 = deg2rad(49);
+        $lon0 = deg2rad(-2);
         $N0 = -100000;
         $E0 = 400000;
         $e2 = 1 - (($b * $b) / ($a * $a));
@@ -57,7 +120,7 @@ class file_convert {
         return self::gridrefNumToLet($E, $N, 6);
     }
 
-    static function OSGridToLatLong($gridRef) {
+    static function os_to_lat_long($gridRef) {
         $gr = self::gridrefLetToNum($gridRef);
         $E = $gr[0];
         $N = $gr[1];
@@ -120,7 +183,7 @@ class file_convert {
         $lat = $lat - $VII * $dE2 + $VIII * $dE4 - $IX * $dE6;
         $lon = $lon0 + $X * $dE - $XI * $dE3 + $XII * $dE5 - $XIIA * $dE7;
 
-        return Array(self::toDeg($lat), self::toDeg($lon));
+        return Array(rad2deg($lat), rad2deg($lon));
     }
 
     static function getCircleCords2(track_point $center_coordinate) {
@@ -152,7 +215,7 @@ class file_convert {
         if (!$isOR) {
             for ($i = $start; $i < $start + $cnum; $i++) {
                 $c = explode(",", substr($file[$i], 10), 4);
-                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
+                $a[$i - $start] = self::lat_long_to_os($c[1], $c[0]);
                 if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
                 else $out[0] = $a[$i - $start];
                 $out[1][$i - $start] = $a[$i - $start];
@@ -161,7 +224,7 @@ class file_convert {
             for ($i = $start; $i < $start + $cnum; $i++) {
                 $c = explode(",", substr($file[$i], 10), 4);
                 print_r($c);
-                $a[$i - $start] = self::LatLongToOSGrid($c[1], $c[0]);
+                $a[$i - $start] = self::lat_long_to_os($c[1], $c[0]);
                 if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
                 else $out[0] = $a[$i - $start];
                 $out[1][$i - $start] = $a[$i - $start];
@@ -318,13 +381,5 @@ class file_convert {
         fwrite($outFile, $output);
 
         $track->generate_js();
-    }
-
-    static function toDeg($a) { // convert radians to degrees (signed)
-        return $a * 180 / M_PI;
-    }
-
-    static function toRad($a) { // convert degrees to radians
-        return $a * M_PI / 180;
     }
 }
