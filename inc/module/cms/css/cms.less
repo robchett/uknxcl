@@ -138,28 +138,29 @@ body.dashboard {
   }
   #latest_flights {
   }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    border: @border;
-    .border-radius(10px, 10px, 10px, 10px);
-    background-color: #2e2e2e;
-    .box-sizing();
-    thead {
-      background-color: #d7d7d7;
-      font-size: 16px;
-      th {
-        padding: 20px 10px;
-        color: #444444;
-      }
+}
+
+table.module {
+  border-collapse: collapse;
+  width: 100%;
+  border: @border;
+  .border-radius(10px, 10px, 10px, 10px);
+  background-color: #2e2e2e;
+  .box-sizing();
+  thead {
+    background-color: #d7d7d7;
+    font-size: 16px;
+    th {
+      padding: 20px 10px;
+      color: #444444;
     }
-    tr {
-      &:nth-child(2n) {
-        background-color: #464646;
-      }
-      td {
-        padding:10px;
-      }
+  }
+  tr {
+    &:nth-child(2n) {
+      background-color: #464646;
+    }
+    td {
+      padding:10px;
     }
   }
 }
