@@ -156,6 +156,8 @@ class cms extends core_module {
         if (isset($this->mid)) {
             $html->nest(html_node::create('li.right', html_node::inline('a', 'Edit Module', array('href' => '/cms/admin_edit/' . $this->mid, 'title' => 'Edit ' . get_class($this->current)))));
             $html->nest(html_node::create('li.right', html_node::inline('a', 'Add new ' . get_class($this->current) , array('href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)))));
+        } else if($this->view === 'module_list' ) {
+            $html->nest(html_node::create('li.right', html_node::inline('a', 'Add new module' , array('href' => '/cms/new_module/', 'title' => 'Add new module'))));
         }
         $html->nest(html_node::create('li.right', html_node::inline('a', 'All Modules', array('href' => '/cms/module_list/', 'title' => 'View all modules'))));
         return $html->get();
