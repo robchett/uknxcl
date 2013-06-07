@@ -45,6 +45,8 @@ class db {
             foreach ($fields_to_retrieve as $field) {
                 if (strstr($field, '.') && !strstr($field, '.*') && !strstr($field, ' AS ')) {
                     $fields[] = $field . ' AS ' . str_replace('.', '_', $field);
+                } else if ( strstr($field, '(') === false && strstr($field, '.*') === false && strstr($field, '.')  === false){
+                    $fields[] = $object . '.' . $field;
                 } else {
                     $fields[] = $field;
                 }
