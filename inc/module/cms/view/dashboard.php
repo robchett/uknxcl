@@ -33,7 +33,7 @@ class dashboard_view extends cms_view {
 
     public function get_latest_flights() {
         $flights = flight::get_all(array('fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.name', 'admin_info'), array('join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC'));
-        $table = html_node::create('table#latest_flights');
+        $table = html_node::create('table#latest_flights.module');
         $table->nest(
             html_node::create('thead')->nest(
                 array(
@@ -66,7 +66,7 @@ class dashboard_view extends cms_view {
 
     public function get_latest_pilots() {
         $pilots = pilot::get_all(array('pid', 'name', 'bhpa_no', 'email'), array( 'limit' => 5, 'order' => 'pid DESC'));
-        $table = html_node::create('table#latest_pilots');
+        $table = html_node::create('table#latest_pilots.module');
         $table->nest(
             html_node::create('thead')->nest(
                 array(
@@ -96,7 +96,7 @@ class dashboard_view extends cms_view {
 
     public function get_latest_gliders() {
         $gliders = glider::get_all(array('gid', 'name', 'manufacturer.title'), array('join'=> array('manufacturer' => 'manufacturer.mid = glider.mid'), 'limit' => 5, 'order' => 'gid DESC'));
-        $table = html_node::create('table#latest_pilots');
+        $table = html_node::create('table#latest_pilots.module');
         $table->nest(
             html_node::create('thead')->nest(
                 array(
