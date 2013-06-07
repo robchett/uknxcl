@@ -52,7 +52,7 @@ class track {
 
     public function __construct() {
         $this->od = new task('Open Distance');
-        $this->or = new task('Out and Return');
+        $this->or = new out_and_return('Out and Return');
         $this->tr = new task('Triangle');
         $this->parent_flight = new flight();
         $this->track_parts = new track_part_array();
@@ -1078,11 +1078,11 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                     continue;
                 }
                 $x = $this->furthest_between($row, $col);
-                if (($this->distance_map[$row][$x] + $this->distance_map[$x][$col]) - $this->distance_map[$row][$col] > $maximum_distance_between_two_points) {
-                    $maximum_distance_between_two_points = $this->distance_map[$row][$x] + $this->distance_map[$x][$col];
+                if (($this->distance_map[$row][$x] * 2 - $this->distance_map[$row][$col]) > $maximum_distance_between_two_points) {
+                    $maximum_distance_between_two_points = $this->distance_map[$row][$x] *2 - $this->distance_map[$row][$col];
                     $best_results[] = array($row, $x, $col);
+                    $minLeg = $this->distance_map[$row][$col];
                 }
-                $minLeg = $this->distance_map[$row][$col];
             }
         }
         if (!$sub) {
@@ -1504,6 +1504,23 @@ class task {
     }
 
 
+}
+
+class out_and_return extends task {
+    public function get_distance($dp = 10) {
+        if (!isset($this->distance)) {
+            if (isset($this->waypoints)) {
+                if($this->waypoints->spherical) {
+                    $this->distance = $this->waypoints[0]->get_dist_to($this->waypoints[1]) * 2 - $this->waypoints[0]->get_dist_to($this->waypoints[2]);
+                } else {
+                    $this->distance = $this->waypoints[0]->get_dist_to_precise($this->waypoints[1]) * 2 - $this->waypoints[0]->get_dist_to_precise($this->waypoints[2]);
+                }
+            } else {
+                $this->distance = 0;
+            }
+        }
+        return number_format($this->distance, $dp);
+    }
 }
 
 class track_part_array extends object_array {
