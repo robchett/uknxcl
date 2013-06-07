@@ -13,9 +13,10 @@ class cms extends core_module {
     public $where;
 
     public static function do_clear_filter() {
-        unset($_SESSION['cms'][$_REQUEST['class']]);
-        ajax::add_script('window.location = window.location');
-        // TODO make this a true ajax act.
+        unset($_SESSION['cms'][$_REQUEST['_class_name']]);
+        $cms_filter_form = new cms_filter_form();
+        $cms_filter_form->do_submit();
+        unset($_SESSION['cms'][$_REQUEST['_class_name']]);
     }
 
     public function __controller(array $path) {
@@ -30,7 +31,7 @@ class cms extends core_module {
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
-                $this->npp = isset($_SESSION['cms'][$this->module->table_name]['npp']) ? $_SESSION['cms'][$this->module->table_name]['npp'] : 25;
+                $this->npp = isset($_SESSION['cms'][$this->module->table_name]['npp']) && !empty($_SESSION['cms'][$this->module->table_name]['npp']) ? $_SESSION['cms'][$this->module->table_name]['npp'] : 25;
                 $this->page = isset($path[4]) ? $path[4] : 1;
 
                 $this->current_class = new $this->module->table_name;
