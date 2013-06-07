@@ -12,11 +12,12 @@ class new_module_form extends form {
     public $gid;
 
     public function __construct() {
-        parent::__construct(array(
-                new field_int('gid'),
-                new field_string('primary_key'),
-                new field_string('title'),
-                new field_string('table_name'),
+        parent::__construct(
+            array(
+                form::create('field_link', 'gid', array('link_module' => '_cms_group', 'link_field' => 'title', 'label' => 'Group')),
+                new field_string('primary_key', array('label'=>'Primary Key')),
+                new field_string('title', array('label'=>'Title')),
+                new field_string('table_name', array('label'=>'Table Name')),
             )
         );
     }
