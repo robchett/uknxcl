@@ -30,7 +30,7 @@ class cms extends core_module {
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
-                $this->npp = isset($_SESSION['cms'][$this->mid]) ? $_SESSION['cms'][$this->mid] : 25;
+                $this->npp = isset($_SESSION['cms'][$this->module->table_name]['npp']) ? $_SESSION['cms'][$this->module->table_name]['npp'] : 25;
                 $this->page = isset($path[4]) ? $path[4] : 1;
 
                 $this->current_class = new $this->module->table_name;
