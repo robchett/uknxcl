@@ -102,18 +102,24 @@ class track {
         if ($this->calc_od) {
             $this->track_open_distance_3tp($use_rough_calcualations);
             if (isset($this->od->waypoints)) {
+                $this->od->waypoints->spherical = false;
+                unset($this->od->distance);
                 $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
             }
         }
         if ($this->calc_or) {
             $this->track_out_and_return($use_rough_calcualations);
             if (isset($this->or->waypoints)) {
+                $this->or->waypoints->spherical = false;
+                unset($this->or->distance);
                 $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
             }
         }
         if ($this->calc_tr) {
             $this->track_triangles($use_rough_calcualations);
             if (isset($this->tr->waypoints)) {
+                $this->tr->waypoints->spherical = false;
+                unset($this->tr->distance);
                 $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
             }
         }
@@ -744,6 +750,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $track_point->sin_lat = sin(M_PI * $track_point->lat / 180);
         $track_point->cos_lat = cos(M_PI * $track_point->lat / 180);
         $track_point->lonRad = M_PI * $track_point->lon / 180;
+        $track_point->latRad = M_PI * $track_point->lat / 180;
         if ($this->track_points->count() == 0) {
             $this->track_points[] = $track_point;
             $this->track_parts[] = new track_part($track_point, 0);
@@ -829,6 +836,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $this->repair_track();
         $this->get_graph_values();
         $this->get_limits();
+        $this->calculation_subset = array();
         if ($this->track_points->count() < self::$number_of_points_to_use) {
             $this->calculation_subset = $this->track_points;
         } else {
@@ -883,16 +891,19 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->od->coordinates = $_SESSION['add_flight'][$id]['od']['coords'];
             $this->od->timestamp = $_SESSION['add_flight'][$id]['od']['duration'];
             $this->od->get_waypoints_from_os();
+            $this->od->waypoints->spherical = false;
 
             $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
             $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
             $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
             $this->or->get_waypoints_from_os();
+            $this->or->waypoints->spherical = false;
 
             $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
             $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
             $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
             $this->tr->get_waypoints_from_os();
+            $this->tr->waypoints->spherical = false;
 
             if (isset($_SESSION['add_flight'][$id]['task'])) {
                 $this->task = new task();
@@ -942,7 +953,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $points = explode(';', $coordinates);
         foreach ($points as &$a) {
             $point = new track_point();
-            $lat_lon = file_convert::OSGridToLatLong($a);
+            $lat_lon = geometry::os_to_lat_long($a);
             $point->lat = $lat_lon[0];
             $point->lon = $lat_lon[1];
             $point->sin_lat = sin($point->lat * M_PI / 180);
@@ -984,8 +995,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         }
     }
 
-    public function
-    track_open_distance_3tp($sub = false) {
+    public function track_open_distance_3tp($sub = false) {
 
         $best_results = array();
 
@@ -1272,22 +1282,22 @@ class track_point {
     public $lat = 0;
     public $lon = 0;
     public $lonRad = 0;
+    public $latRad = 0;
     public $sin_lat = 0;
     public $speed = 0;
     public $time = 0;
     public $val = 0;
 
     public function get_coordinate() {
-        return file_convert::LatLongToOSGrid(($this->lat), ($this->lon));
+        return geometry::lat_long_to_os(($this->lat), ($this->lon));
     }
 
     public function get_dist_to(track_point $b) {
-        $x = $this->sin_lat * $b->sin_lat + $this->cos_lat * $b->cos_lat * cos($this->lonRad - $b->lonRad);
-        if (!is_nan($acos = acos($x))) {
-            return ($acos * 6371);
-        } else {
-            return 0;
-        }
+       return geometry::get_distance($this, $b);
+    }
+
+    public function get_dist_to_precise(track_point $b) {
+        return geometry::get_distance_ellipsoid($this, $b);
     }
 
     public function get_js_coordinate($time = 0) {
@@ -1475,7 +1485,7 @@ class task {
         $coords = explode(';', $this->coordinates);
         foreach ($coords as $coord) {
             list($coord, $ele) = explode(':', $coord);
-            $latlng = file_convert::OSGridToLatLong($coord);
+            $latlng = geometry::os_to_lat_long($coord);
             $track_point = new track_point();
             $track_point->lat = $latlng[0];
             $track_point->lon = $latlng[1];
@@ -1523,6 +1533,7 @@ class track_point_array extends object_array {
     /**
      * @return track_point
      */
+    public $spherical = true;
     public function first() {
         return parent::first();
     }
@@ -1540,7 +1551,11 @@ class track_point_array extends object_array {
         $distance = 0;
         if ($this->count() && $this->count() > 2) {
             foreach (range(0, $this->count() - 2) as $index) {
-                $distance += $this[$index]->get_dist_to($this[$index + 1]);
+                if($this->spherical) {
+                    $distance += $this[$index]->get_dist_to($this[$index + 1]);
+                } else {
+                    $distance += $this[$index]->get_dist_to_precise($this[$index + 1]);
+                }
             }
         }
         return $distance;
