@@ -39,6 +39,7 @@ class add_flight extends core_module {
         $script = '
     $(".add_flight_section a.back").click(function() {
         $("#add_flight_inner").animate({"left": 0});
+        $("#main").scrollTop(0);
     });
     $("body").on("change", "input#kml", function () {
         if ($(this).val().slice(-3) == "igc") {
