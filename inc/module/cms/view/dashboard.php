@@ -32,7 +32,7 @@ class dashboard_view extends cms_view {
     }
 
     public function get_latest_flights() {
-        $flights = flight::get_all(array('fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.name', 'admin_info'), array('join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC'));
+        $flights = flight::get_all(array('fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.name', 'admin_info', 'delayed'), array('join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC'));
         $table = html_node::create('table#latest_flights.module');
         $table->nest(
             html_node::create('thead')->nest(
@@ -43,6 +43,7 @@ class dashboard_view extends cms_view {
                     html_node::create('th', 'Glider'),
                     html_node::create('th', 'Club'),
                     html_node::create('th', 'Admin Notes'),
+                    html_node::create('th', 'Delayed'),
                 )
             )
         );
@@ -56,6 +57,7 @@ class dashboard_view extends cms_view {
                             html_node::create('td', html_node::inline('a', $flight->glider_name, array('href' => '/cms/module/4/' . $flight->glider_gid, 'title' => 'Glider: ' . $flight->glider_name))),
                             html_node::create('td', html_node::inline('a', $flight->club_name, array('href' => '/cms/module/12/' . $flight->club_cid, 'title' => 'Club: ' . $flight->club_name))),
                             html_node::create('td',$flight->admin_info),
+                            html_node::create('td',$flight->delayed ? 'Yes' : 'No'),
                         )
                     )
                 );
