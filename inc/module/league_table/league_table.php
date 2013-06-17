@@ -363,7 +363,7 @@ class league_table {
         }
         $score_select = $this->ScoreType . ($this->handicap ? ' * IF(g.kingpost,' . $this->KP_Mod . ',1) * IF(g.class = 5,' . $this->C5_Mod . ',1) ' : '');
 
-        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', 'c.name', 'class', 'g.name', 'gm.title', 'kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $score_select . ' AS score', 'date', 'coords'),
+        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', 'c.name', 'g.class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $score_select . ' AS score', 'date', 'coords'),
             array(
                 'join' => array(
                     'glider g' => 'flight.gid=g.gid',
