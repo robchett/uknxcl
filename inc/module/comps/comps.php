@@ -62,9 +62,11 @@ class comps extends core_module {
             "$('#comp').on('click','#comp_list ul li a',function () {
                 cpid = $(this).attr('data-click');
                 map.add_comp(cpid);
+                $('#main').scrollTop(0);
             });
             $('#comp_view a.comp_back').click(function () {
                 $('#comp_inner').animate({'left': 0});
+                $('#main').scrollTop(0);
             });";
 
         if (ajax) {
