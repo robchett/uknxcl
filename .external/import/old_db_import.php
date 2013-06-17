@@ -28,7 +28,7 @@ $tables = array(
         'Vis_Info' => 'vis_info',
         'Admin_Info' => 'admin_info',
         'Personal' => 'personal',
-        //'Delay' => 'delayed',
+        'Delay' => 'delayed',
         'Comp' => 'comp_id',
         'dim' => 'did',
         'flighttime' => 'duration',
@@ -52,12 +52,12 @@ $tables = array(
         'G_ID' => 'gid',
         'G_NAME' => 'name',
         'G_CLASS' => 'class',
-        'Manufacturer' => array('get_manu','mid'),
+        'Manufacturer' => array('get_manu', 'mid'),
         'Kingpost' => 'kingpost',
         'Single_Surface' => 'single_surface',
         'Hangies_League' => 'hangies',
     ),
-    'wayoints' => array(
+    'wayoint' => array(
         'ID' => 'wid',
         'INFO' => 'title',
         'Lat' => 'lat',
@@ -77,10 +77,10 @@ foreach ($tables as $table => $keys) {
     $sql_arr = array();
     $sql = 'INSERT INTO ' . $table . ' SET ';
     foreach ($keys as $old => $new) {
-        if(is_array($new)) {
-            $sql_arr[] = $new[1] . '=:' . $old;
+        if (is_array($new)) {
+            $sql_arr[] = '`' . $new[1] . '`=:' . $old;
         } else {
-            $sql_arr[] = $new . '=:' . $old;
+            $sql_arr[] = '`' . $new . '`=:' . $old;
         }
     }
     $sql .= implode(', ', $sql_arr);
@@ -90,7 +90,7 @@ foreach ($tables as $table => $keys) {
     while ($row = db::fetch($res)) {
         $params = array();
         foreach ($keys as $old => $new) {
-            if(is_array($new)) {
+            if (is_array($new)) {
                 $params[$old] = $new[0] ($row->$old);
             } else {
                 $params[$old] = $row->$old;
@@ -103,5 +103,5 @@ foreach ($tables as $table => $keys) {
 db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
 
 function get_manu($manu) {
-    return db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title'=>$manu));
+    return db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu))->mid;
 }
