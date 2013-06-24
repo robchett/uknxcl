@@ -9,6 +9,7 @@
     </div>
 </div>
 <div id="map_wrapper">
+    <div id="waypoint_mode_help" style="display:none">You are in waypoint mode</div>
     <div id="map_interface">
         <div id="map_interface_padding">
             <div id="graph_wrapper"></div>
