@@ -29,7 +29,7 @@ class planner extends core_module {
                 )
             );
 
-        $script = '$("a#enter_wp_mode").click(function(){map.planner.enabled = true;});';
+        $script = '$("a#enter_wp_mode").click(function(){map.planner.enable();});';
         $script .= '$("a#leave_wp_mode").click(function(){map.planner.clear();});';
         if (ajax) {
             ajax::add_script($script);

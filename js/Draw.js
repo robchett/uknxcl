@@ -30,6 +30,7 @@ function UKNXCL_Map($container) {
     this.playCycles = 10;
     this.playCount = 0;
     this.comp = null;
+    this.coordinate_tracks = [];
 
     this.resize = function () {
         var pageWidth = this.$body.width();
@@ -180,14 +181,45 @@ function UKNXCL_Map($container) {
     this.add_flightC = function (cords, id) {
         var array2 = [];
         var parms = cords.split(';');
-        parms.each(function (os) {
+        parms.each(function (os, i) {
             var cord = new Coordinate();
-            cord.set_from_OS(os);
-            array2[i] = new google.maps.LatLng(cord.lat(), cord.lng());
+            array2[i] = cord.set_from_OS(os);
         });
-        var Polyopt = {path: array2, strokeOpacity: 1.0, strokeWeight: 2, map: map.internal_map, strokeColor: 'FF0000'};
-        this.coordinate_tracks.push([id, new google.maps.Polyline(Polyopt)]);
+        this.draw_coords();
     };
+
+    this.draw_coords = function () {
+        this.coordinate_tracks.each(function (coord) {
+            if (this.mode === map.MAP) {
+                if (this.mapObject) {
+                    this.mapObject.setMap(null);
+                }
+                this.mapObject = new google.maps.Polyline({
+                    map: this.internal_map,
+                    path: function() {
+
+                    },
+                    strokeColor: "000000",
+                    strokeOpacity: 1,
+                    strokeWeight: 1.4
+                });
+            } else {
+                if (!this.mapObject) {
+                    var lineStringPlacemark = this.parent.ge.createPlacemark('');
+                    this.mapObject = this.parent.ge.createLineString('');
+                    lineStringPlacemark.setGeometry(this.mapObject);
+                    this.mapObject.setTessellate(true);
+                    this.parent.ge.getFeatures().appendChild(lineStringPlacemark);
+                    lineStringPlacemark.setStyleSelector(this.parent.ge.createStyle(''));
+                    lineStringPlacemark.getStyleSelector().getLineStyle().setColor('FFFFFF');
+                }
+                this.mapObject.getCoordinates().clear();
+                this.coordinates.each(function (coordinate, i, context) {
+                    context.mapObject.getCoordinates().pushLatLngAlt(coordinate.lat(), coordinate.lng(), 0);
+                }, this);
+            }
+        });
+    }
 
     this.add_flight = function (id, airspace, reload_flight, temp) {
         this.$tree.find('.track_' + id).remove();
@@ -276,7 +308,7 @@ function UKNXCL_Map($container) {
 
     this.init_earth = function () {
         var $map = $('#map').hide();
-        var $earth = $('#map3d').show().css({display:'block'});
+        var $earth = $('#map3d').show().css({display: 'block'});
         google.earth.createInstance('map3d', function (instance) {
             $earth.children('p.loading').remove();
             map.mode = map.EARTH;
@@ -311,7 +343,7 @@ function UKNXCL_Map($container) {
         }, function () {
             map.mode = map.MAP;
             map.load_map();
-            $map.show().css({display:'block'});
+            $map.show().css({display: 'block'});
             $earth.hide();
             $map.children('p.loading').remove();
         });
@@ -785,6 +817,11 @@ function Planner(parent) {
     this.total_distance_array = [0];
     this.R = 6371;
 
+    this.enable = function() {
+        this.enabled = true;
+        $("#waypoint_mode_help").show();
+    }
+
     this.writeplanner = function () {
         var out = "<table style='width:100%'>";
         this.coordinates.each(function (coordinate, a) {
@@ -862,6 +899,7 @@ function Planner(parent) {
         this.coordinates = [];
         this.count = 0;
         this.enabled = false;
+        $("#waypoint_mode_help").hide();
         this.writeplanner();
         this.draw();
     };
@@ -1020,7 +1058,11 @@ function trackData() {
 }
 
 var map = new UKNXCL_Map($("#map_wrapper"));
-map.load_earth();
+if (typeof google != 'undefined') {
+    map.load_earth();
+} else {
+    $('#map').children('p.loading').html('Falied to load googles resources');
+}
 
 $('body').on('click', '.kmltree .toggler', function () {
     var root_data = $(this).parents('div.kmltree').eq(0).data('post');
@@ -1080,7 +1122,7 @@ $('body').on('click', '.kmltree .toggler', function () {
         if (data.type == "comp") {
             var root = map.comp;
             var kml = map.comp.google_data;
-        } else if (data.type == 'flight'){
+        } else if (data.type == 'flight') {
             var root = map.kmls[root_data.id];
             var kml = map.kmls[root_data.id].google_data;
         } else {
