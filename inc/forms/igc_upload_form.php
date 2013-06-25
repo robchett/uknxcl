@@ -98,11 +98,10 @@ class igc_upload_form extends form {
         $html .= $this->get_task_select_html($track, 'od');
         $html .= $this->get_task_select_html($track, 'or');
         $html .= $this->get_task_select_html($track, 'tr');
+        $html .= $this->get_task_select_html($track, 'ft');
         if ($defined) {
             $_SESSION['add_flight'][$track->id]['task'] = array('type' => $track->task->type, 'distance' => $track->task->get_distance(), 'coords' => $track->task->get_coordinates(), 'duration' => $track->task->get_duration());
-            $type = new flight_type();
-            $type->do_retrieve(array('multi_defined'), array('where' => 'fn=:fn', 'parameters' => array('fn' => $track->task->type)));
-            $html .= '<tr><td>' . $track->task->title . '</td><td> ' . $track->task->get_distance(3) . ' / ' . number_format($type->multi_defined, 2) . '</td><td> ' . $track->task->get_distance(3) * $type->multi_defined . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"task"}\' class="choose">Choose</a></td></tr>';
+            $html .= '<tr><td>' . $track->task->title . '</td><td> ' . $track->task->get_distance(3) . ' / ' . flight_type::get_multiplier(flight_type::GO_ID,date('Y'), true) . '</td><td> ' . $track->task->get_distance(3) * flight_type::get_multiplier(flight_type::GO_ID,date('Y'), true) . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"task"}\' class="choose">Choose</a></td></tr>';
         }
         $html .= '</tbody></table>';
         return $html;
