@@ -24,7 +24,7 @@ table {
     font-size: 12px;
     width: 700px;
 
-    tr { height: 32px;
+    tr { height: 24px;
 
       &:nth-child(2n) { background: @table_background }
       th {
@@ -42,7 +42,12 @@ table {
           position: relative;
         }
         &.center { text-align: center !important; }
-        a { display: block; width: 100%; height: 100%; padding: 5px 0 }
+        a {
+          display: block; width: 100%; height: 100%; padding: 5px 0;
+          &.button {
+
+          }
+        }
       }
     }
   }
@@ -106,10 +111,6 @@ table {
   color: #ff00ee;
 }
 
-.kml {
-  font-style: oblique
-}
-
 .defined {
   font-weight: bolder;
 }
@@ -157,8 +158,7 @@ div#pop {
 
   span.arrow {
     border: 16px solid #0d4582;
-    border-color: transparent #0d4582 transparent transparent
-  ;
+    border-color: transparent #0d4582 transparent transparent;
     height: 0;
     width: 0;
     position: absolute;
@@ -176,17 +176,19 @@ div#pop {
     }
     td {
       padding: 0 5px;
-      line-height: 11px;
-      height: 11px;
+      line-height: 24px;
+      &.view {
+        padding: 5px 5px;
+      }
       a.download {
         float: left;
         width: 70px;
         height: 76px;
-        background: url('/img/sprites.png') -1px 0px;
+        background: url('/img/sprites.png') -81px 0px;
         text-indent: -9999px;
-        margin: 0 20px;
+        margin: 0 27px;
         &.kml {
-          background-position: -81px 0px;
+          background-position: -1px 0px;
         }
       }
     }
