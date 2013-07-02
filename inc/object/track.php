@@ -10,10 +10,13 @@
  */
 class track {
 
+    const FAI_RATIO = 0.275;
+
     public static $number_of_points_to_use = 700;
     public $calc_od = 1;
     public $calc_or = 1;
     public $calc_tr = 1;
+    public $calc_ft = 1;
     public $calculation_subset;
     public $colour = 0;
     public $date;
@@ -53,6 +56,7 @@ class track {
     public function __construct() {
         $this->od = new task('Open Distance');
         $this->or = new out_and_return('Out and Return');
+        $this->ft = new triangle('Flat Triangle');
         $this->tr = new triangle('Triangle');
         $this->parent_flight = new flight();
         $this->track_parts = new track_part_array();
@@ -98,7 +102,7 @@ class track {
         set_time_limit(0);
         $this->pre_calc();
         $this->get_dist_map();
-        $use_rough_calcualations = $this->calculation_subset_size < self::$number_of_points_to_use;
+        $use_rough_calcualations = self::$number_of_points_to_use > $this->track_points->count();
         if ($this->calc_od) {
             $this->track_open_distance_3tp($use_rough_calcualations);
             if (isset($this->od->waypoints)) {
@@ -113,6 +117,14 @@ class track {
                 $this->or->waypoints->spherical = false;
                 unset($this->or->distance);
                 $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
+            }
+        }
+        if ($this->calc_ft) {
+            $this->track_flat_triangles($use_rough_calcualations);
+            if (isset($this->ft->waypoints)) {
+                $this->ft->waypoints->spherical = false;
+                unset($this->ft->distance);
+                $this->console("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
             }
         }
         if ($this->calc_tr) {
@@ -212,16 +224,24 @@ class track {
         if ($this->parse_IGC()) {
             $this->calculate();
             $this->generate_output_files();
+
             $this->parent_flight->duration = $this->get_time();
+
             $this->parent_flight->od_score = $this->od->get_distance();
             $this->parent_flight->od_time = $this->od->get_time();
             $this->parent_flight->od_coordinates = $this->od->get_coordinates();
+
             $this->parent_flight->or_score = $this->or->get_distance();
             $this->parent_flight->or_time = $this->or->get_time();
             $this->parent_flight->or_coordinates = $this->or->get_coordinates();
+
             $this->parent_flight->tr_score = $this->tr->get_distance();
             $this->parent_flight->tr_time = $this->tr->get_time();
             $this->parent_flight->tr_coordinates = $this->tr->get_coordinates();
+
+            $this->parent_flight->ft_score = $this->ft->get_distance();
+            $this->parent_flight->ft_time = $this->ft->get_time();
+            $this->parent_flight->ft_coordinates = $this->ft->get_coordinates();
             return true;
         } else {
             return false;
@@ -240,6 +260,8 @@ class track {
             $track->or_time = $this->or->get_time();
             $track->tr_score = $this->tr->get_distance();
             $track->tr_time = $this->tr->get_time();
+            $track->ft_score = $this->ft->get_distance();
+            $track->ft_time = $this->ft->get_time();
         }
 
         $track_inner = new stdClass();
@@ -288,6 +310,9 @@ class track {
             $kml->get_kml_folder_close();
             $kml->get_kml_folder_open('FAI Triangle', 0, 'hideChildren', 0);
             $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
+            $kml->get_kml_folder_close();
+            $kml->get_kml_folder_open('Flat Triangle', 0, 'hideChildren', 0);
+            $kml->add($this->tr->get_kml_track('FF0066', 'Flat Triangle'));
             $kml->get_kml_folder_close();
             $kml->get_kml_folder_close();
         }
@@ -386,6 +411,9 @@ class track {
         $kml->get_kml_folder_close();
         $kml->get_kml_folder_open('FAI Triangle', 0, 'hideChildren', 0);
         $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
+        $kml->get_kml_folder_close();
+        $kml->get_kml_folder_open('Flat Triangle', 0, 'hideChildren', 0);
+        $kml->add($this->tr->get_kml_track('FF0066', 'Flat Triangle'));
         $kml->get_kml_folder_close();
         $kml->get_kml_folder_close();
 
@@ -905,6 +933,12 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->tr->get_waypoints_from_os();
             $this->tr->waypoints->spherical = false;
 
+            $this->ft->distance = $_SESSION['add_flight'][$id]['ft']['distance'];
+            $this->ft->coordinates = $_SESSION['add_flight'][$id]['ft']['coords'];
+            $this->ft->timestamp = $_SESSION['add_flight'][$id]['ft']['duration'];
+            $this->ft->get_waypoints_from_os();
+            $this->ft->waypoints->spherical = false;
+
             if (isset($_SESSION['add_flight'][$id]['task'])) {
                 $this->task = new task();
                 $this->task->distance = $_SESSION['add_flight'][$id]['task']['distance'];
@@ -1070,7 +1104,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $indexes[1] = 0;
         $indexes[2] = 0;
         for ($row = 0; $row < $this->calculation_subset_size; ++$row) {
-            $minLeg = 800;
+            $minLeg = 805;
             $row_plus = $row + 2;
             for ($col = $this->calculation_subset_size - 1; $col > $row_plus; --$col) {
                 if ($this->distance_map[$row][$col] > $minLeg) {
@@ -1079,7 +1113,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 }
                 $x = $this->furthest_between($row, $col);
                 if (($this->distance_map[$row][$x] * 2 - $this->distance_map[$row][$col]) > $maximum_distance_between_two_points) {
-                    $maximum_distance_between_two_points = $this->distance_map[$row][$x] *2 - $this->distance_map[$row][$col];
+                    $maximum_distance_between_two_points = $this->distance_map[$row][$x] * 2 - $this->distance_map[$row][$col];
                     $best_results[] = array($row, $x, $col);
                     $minLeg = $this->distance_map[$row][$col];
                 }
@@ -1110,16 +1144,15 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         }
     }
 
-    function track_triangles($sub = false) {
+    function track_flat_triangles($sub = false, $min_ratio = 0) {
+        return $this->track_triangles($sub, $min_ratio, $type = 'ft');
+    }
+
+    function track_triangles($sub = false, $min_ratio = 0.28, $type = 'tr') {
         $best_results = array();
         $closest_end = 0;
+
         $maximum_distance_between_two_points = 0;
-        $indexes[0] = 0;
-        $indexes[1] = 0;
-        $indexes[2] = 0;
-        $indexes[3] = 0;
-        $gap[0] = 0;
-        $gap[1] = 0;
         $minleg = max(800, $this->or->_temp_distance * 2 / 9);
         // for each entry in the dist table (moving forward)
         for ($row = 0; $row < $this->calculation_subset_size; ++$row) {
@@ -1148,10 +1181,10 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                             }
                             $d = ($this->distance_map[$x][$y] + $this->distance_map[$y][$z] + $this->distance_map[$z][$x]);
                             $min = min($this->distance_map[$x][$y], $this->distance_map[$y][$z], $this->distance_map[$z][$x]);
-                            if ($d > $maximum_distance_between_two_points && $min > (0.28 * $d)) {
+                            if ($d > $maximum_distance_between_two_points && $min > ($min_ratio * $d)) {
                                 $maximum_distance_between_two_points = $d;
                                 $best_results[] = array($row, $x, $y, $z, $col);
-                                $minleg = max(1200, $d * 0.28);
+                                $minleg = max(1200, $d * $min_ratio);
                             }
                         }
                         for ($y = (int) floor(($x + $z) / 2); $y >= $x_plus; --$y) {
@@ -1165,10 +1198,10 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                             }
                             $d = ($this->distance_map[$x][$y] + $this->distance_map[$y][$z] + $this->distance_map[$z][$x]);
                             $min = min($this->distance_map[$x][$y], $this->distance_map[$y][$z], $this->distance_map[$z][$x]);
-                            if ($d > $maximum_distance_between_two_points && $min > (0.28 * $d)) {
+                            if ($d > $maximum_distance_between_two_points && $min > ($min_ratio * $d)) {
                                 $maximum_distance_between_two_points = $d;
                                 $best_results[] = array($row, $x, $y, $z, $col);
-                                $minleg = max(1200, $d * 0.28);
+                                $minleg = max(1200, $d * $min_ratio);
                             }
                         }
                     }
@@ -1186,7 +1219,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             foreach (array_reverse($best_results) as $result) {
                 $cnt++;
                 $this->get_dist_remap($result);
-                $this->track_triangles(true);
+                $this->track_triangles(true, $min_ratio, $type);
                 if ($cnt == 10) {
                     break;
                 }
@@ -1196,30 +1229,34 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->calculation_subset_size = count($this->calculation_subset);
             $this->distance_map = $dist_map_backup;
         } else {
-            if ($maximum_distance_between_two_points > $this->tr->_temp_distance) {
-                $this->tr->_temp_distance = $maximum_distance_between_two_points;
+            if ($maximum_distance_between_two_points > $this->$type->_temp_distance) {
+                $this->$type->_temp_distance = $maximum_distance_between_two_points;
                 $res = end($best_results);
                 $gap = $this->distance_map[$res[0]][$res[4]];
-                for($a = $res[4]; $a > $res[3]; $a-- ) {
-                    for($b = $res[0]; $b < $res[1]; $b++) {
-                        if($this->distance_map[$b][$a] < $gap) {
+                for ($a = $res[4]; $a >= $res[3]; $a--) {
+                    for ($b = $res[0]; $b < $res[1]; $b++) {
+                        if ($this->distance_map[$b][$a] < $gap) {
                             $res[4] = $a;
                             $res[0] = $b;
                             $gap = $this->distance_map[$b][$a];
+                        } else {
+                            $b += (int) (($this->distance_map[$b][$a] - $gap) / $this->maximum_distance_between_two_points);
                         }
                     }
                 }
-                unset($best_results[count($best_results)-1]);
-                while(count($best_results) > 1) {
+                unset($best_results[count($best_results) - 1]);
+                while (count($best_results)) {
                     $sres = end($best_results);
                     $sgap = $this->distance_map[$sres[0]][$sres[4]];
-                    if(($d = ($this->distance_map[$sres[1]][$sres[2]] + $this->distance_map[$sres[2]][$sres[3]] + $this->distance_map[$sres[2]][$sres[3]]))  > $maximum_distance_between_two_points - $gap) {
-                        for($a = $sres[4]; $a > $sres[3]; $a-- ) {
-                            for($b = $sres[0]; $b < $sres[1]; $b++) {
-                                if($this->distance_map[$b][$a] < $sgap) {
+                    if (($d = ($this->distance_map[$sres[1]][$sres[2]] + $this->distance_map[$sres[2]][$sres[3]] + $this->distance_map[$sres[2]][$sres[3]])) > $maximum_distance_between_two_points - $gap) {
+                        for ($a = $sres[4]; $a >= $sres[3]; $a--) {
+                            for ($b = $sres[0]; $b < $sres[1]; $b++) {
+                                if ($this->distance_map[$b][$a] < $sgap) {
                                     $sres[4] = $a;
                                     $sres[0] = $b;
                                     $sgap = $this->distance_map[$b][$a];
+                                } else {
+                                    $b += (int) (($this->distance_map[$b][$a] - $gap) / $this->maximum_distance_between_two_points);
                                 }
                             }
                         }
@@ -1228,12 +1265,12 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                             $gap = $sgap;
                             $res = $sres;
                         }
-                        unset($best_results[count($best_results)-1]);
+                        unset($best_results[count($best_results) - 1]);
                     } else {
                         break;
                     }
                 }
-                $this->tr->set($this->get_list($res));
+                $this->$type->set($this->get_list($res));
             }
         }
     }
@@ -1279,6 +1316,9 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         } else {
             $this->console('1 Part');
         }
+        foreach ($this->track_points as $key => $index) {
+            $index->id = $key;
+        }
     }
 
     public function truncate($start, $end = 0) {
@@ -1321,7 +1361,7 @@ class track_point {
     }
 
     public function get_dist_to(track_point $b) {
-       return geometry::get_distance($this, $b);
+        return geometry::get_distance($this, $b);
     }
 
     public function get_dist_to_precise(track_point $b) {
@@ -1430,16 +1470,14 @@ class task {
         return date('H:i:s', $this->timestamp);
     }
 
-    public function get_kml_track($colour, $title = '') {
-        $output = '';
-        if (isset($this->waypoints)) {
-            $tot = 0;
-            $last = null;
-            $table_inner = '';
-            foreach ($this->waypoints as $key => $point) {
-                $distance = number_format(($last ? $point->get_dist_to($last) : 0), 2);
-                $tot += $distance;
-                $table_inner .= '
+    protected function get_kml_table() {
+        $html = '';
+        $tot = 0;
+        $last = null;
+        foreach ($this->waypoints as $key => $point) {
+            $distance = number_format(($last ? $point->get_dist_to($last) : 0), 2);
+            $tot += $distance;
+            $html .= '
                 <tr>
                     <td>' . $key . '</td>
                     <td>' . $point->lat . '</td>
@@ -1448,10 +1486,20 @@ class task {
                     <td>' . $distance . '</td>
                     <td>' . $tot . '</td>
                 </tr>';
-                $last = $point;
-            }
+            $last = $point;
+        }
+        return $html;
+    }
 
-            $coordinates = $this->waypoints->get_kml_coordinates();
+    public function get_kml_coordinates() {
+        return $this->waypoints->get_kml_coordinates();
+    }
+
+    public function get_kml_track($colour, $title = '') {
+        $output = '';
+        if (isset($this->waypoints)) {
+            $table_inner = $this->get_kml_table();
+            $coordinates = $this->get_kml_coordinates();
             $output = '
 <Placemark>
     <visibility>1</visibility>
@@ -1538,7 +1586,7 @@ class out_and_return extends task {
     public function get_distance($dp = 10) {
         if (!isset($this->distance)) {
             if (isset($this->waypoints)) {
-                if($this->waypoints->spherical) {
+                if ($this->waypoints->spherical) {
                     $this->distance = $this->waypoints[0]->get_dist_to($this->waypoints[1]) * 2 - $this->waypoints[0]->get_dist_to($this->waypoints[2]);
                 } else {
                     $this->distance = $this->waypoints[0]->get_dist_to_precise($this->waypoints[1]) * 2 - $this->waypoints[0]->get_dist_to_precise($this->waypoints[2]);
@@ -1554,8 +1602,8 @@ class out_and_return extends task {
 class triangle extends task {
     public function get_distance($dp = 10) {
         if (!isset($this->distance)) {
-            if (isset($this->waypoints)) {
-                if($this->waypoints->spherical) {
+            if (isset($this->waypoints) && $this->waypoints->count() == 5) {
+                if ($this->waypoints->spherical) {
                     $this->distance = $this->waypoints[1]->get_dist_to($this->waypoints[2]) + $this->waypoints[2]->get_dist_to($this->waypoints[3]) + $this->waypoints[1]->get_dist_to($this->waypoints[3]) - $this->waypoints[0]->get_dist_to($this->waypoints[4]);
                 } else {
                     $this->distance = $this->waypoints[1]->get_dist_to_precise($this->waypoints[2]) + $this->waypoints[2]->get_dist_to_precise($this->waypoints[3]) + $this->waypoints[1]->get_dist_to_precise($this->waypoints[3]) - $this->waypoints[0]->get_dist_to_precise($this->waypoints[4]);
@@ -1565,6 +1613,28 @@ class triangle extends task {
             }
         }
         return number_format($this->distance, $dp);
+    }
+
+    protected function get_kml_table() {
+        $html = '';
+        if ($this->waypoints->count() == 5) {
+            $waypoints = $this->waypoints;
+            $this->waypoints = new track_point_array(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $html = parent::get_kml_table();
+            $this->waypoints = $waypoints;
+        }
+        return $html;
+    }
+
+    public function get_kml_coordinates() {
+        $html = '';
+        if ($this->waypoints->count() == 5) {
+            $waypoints = $this->waypoints;
+            $this->waypoints = new track_point_array(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $html = parent::get_kml_coordinates();
+            $this->waypoints = $waypoints;
+        }
+        return $html;
     }
 }
 
@@ -1596,6 +1666,7 @@ class track_point_array extends object_array {
      * @return track_point
      */
     public $spherical = true;
+
     public function first() {
         return parent::first();
     }
@@ -1613,7 +1684,7 @@ class track_point_array extends object_array {
         $distance = 0;
         if ($this->count() && $this->count() > 2) {
             foreach (range(0, $this->count() - 2) as $index) {
-                if($this->spherical) {
+                if ($this->spherical) {
                     $distance += $this[$index]->get_dist_to($this[$index + 1]);
                 } else {
                     $distance += $this[$index]->get_dist_to_precise($this[$index + 1]);
@@ -1639,6 +1710,10 @@ class track_point_array extends object_array {
             $coordinates[] = $this[$index]->get_coordinate() . ':' . $this->ele;
         }
         return implode(';', $coordinates);
+    }
+
+    public function remove_first($int = 1) {
+        parent::remove_first($int);
     }
 
     /**
