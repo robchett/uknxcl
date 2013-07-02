@@ -95,7 +95,7 @@ abstract class core_module {
 
     public function get_push_state() {
         $push_state = new push_state();
-        $push_state->url = '/' . get_class($this);
+        $push_state->url = '/' . get_class($this) . ($this->view != '_default' ? '/' . $this->view : '');
         $push_state->title = self::$default_modules[get_class($this)];
         $push_state->data = (object) array(
             'page' => array(
