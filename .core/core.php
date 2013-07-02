@@ -23,7 +23,7 @@ class core {
         self::$page_config = new page_config();
         self::$singleton = $this;
         db::connect();
-        $this->path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+        $this->path = explode('/', trim(uri, '/'));
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
         if (!(isset($this->path[0])) || empty($this->path[0])) {
@@ -44,7 +44,7 @@ class core {
         $this->set_page_from_path();
 
         if (!$this->pid && is_numeric($this->path[0])) {
-            header('Location: http://uk.local.com/');
+            get::header_redirect(host . '/');
             die();
         }
         core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';

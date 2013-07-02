@@ -5,6 +5,10 @@ define('root', $_SERVER['DOCUMENT_ROOT']);
 define('core_dir', root . '/.core');
 define('ajax', isset($_REQUEST['module']));
 
+define('host', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'Unknown_Host' );
+define('uri', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'Unknown_URI' );
+
+define('debug', strpos(host,'local.com') !== false || strpos(host,'dev.'));
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
     define ('ie', true);
     define ('ie_ver', 0);

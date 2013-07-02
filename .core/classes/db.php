@@ -6,7 +6,7 @@ class db {
 
     public static function connect($name = 'new', $db = 'nxcl') {
 
-        if (strstr($_SERVER['HTTP_HOST'], 'uknxcl.co.uk') !== false) {
+        if (strstr(host, 'uknxcl.co.uk') !== false) {
             $db = 'eacommsc_' . $db;
             $host = "localhost";
             $username = "eacommsc_nxcl";
