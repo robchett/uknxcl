@@ -32,11 +32,12 @@ class league_table {
     public $max_flights = 6;
     public $KP_Mod = 1;
     public $C5_Mod = 1;
-    public $MinScore = 10;
+    public $min_score = 10;
     public $WHERE = '';
     public $date = null;
     public $in = array();
     public $parameters = array();
+    private $modifier_string = '';
 
     function __construct() {
         $this->set_default();
@@ -76,14 +77,14 @@ class league_table {
             $this->C5_Mod = $this->in ['c5'];
         }
         if (isset ($this->in ['Min']) && is_numeric($this->in ['Min'])) {
-            $this->MinScore = $this->in ['Min'];
+            $this->min_score = $this->in ['Min'];
         }
         if (isset ($this->in ['View'])) {
             $this->official = true;
         }
         if (isset ($this->in ['league']) && $this->in ['league'] == 'hangies') {
             $this->where[] = 'hangies = 1';
-            $this->MinScore = 0;
+            $this->min_score = 0;
         }
         if (isset ($this->in ['cls'])) {
             if ($this->in ['cls'] == 5 || $this->in ['cls'] == 1) {
@@ -332,7 +333,7 @@ class league_table {
                 $pilot = new pilot();
                 $pilot->do_retrieve_from_id(array('name'), $this->pid);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
-                $this->MinScore = 0;
+                $this->min_score = 0;
                 break;
             case(3):
                 include root . '/inc/module/league_table/view/TopTen.php';
@@ -352,7 +353,19 @@ class league_table {
             $this->class = $this->official_class;
         }
 
-        $this->where[] = $this->ScoreType . ' > ' . $this->MinScore;
+        $this->get_flights();
+        return makeTable($this);
+
+    }
+
+    public function set_modifier_string () {
+        $this->modifier_string = $this->ScoreType . ($this->handicap ? ' * IF(g.kingpost,' . $this->KP_Mod . ',1) * IF(g.class = 5,' . $this->C5_Mod . ',1) ' : '');
+    }
+
+    public function get_flights() {
+        $this->set_modifier_string();
+
+        $this->where[] = $this->ScoreType . ' > ' . $this->min_score;
         $this->where[] = '`delayed`=0';
         $this->where = implode(' AND ', $this->where);
         if (isset ($this->type) && $this->type == 2) {
@@ -361,9 +374,8 @@ class league_table {
         } else {
             $this->where .= " AND personal=0 ";
         }
-        $score_select = $this->ScoreType . ($this->handicap ? ' * IF(g.kingpost,' . $this->KP_Mod . ',1) * IF(g.class = 5,' . $this->C5_Mod . ',1) ' : '');
 
-        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', 'c.name', 'g.class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $score_select . ' AS score', 'date', 'coords'),
+        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', 'c.name', 'g.class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
             array(
                 'join' => array(
                     'glider g' => 'flight.gid=g.gid',
@@ -371,13 +383,11 @@ class league_table {
                     'pilot p' => 'flight.pid=p.pid',
                     'manufacturer gm' => 'g.mid = gm.mid'
                 ),
-                'where' => $this->where,
+                'where' => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
                 'order' => $this->OrderBy . ' DESC',
                 'parameters' => $this->parameters,
             )
         );
-        return makeTable($this);
-
     }
 
     function write_table_header($flights, $type = 'pid') {

@@ -78,7 +78,7 @@ class table_gen_form_basic extends form {
             if ($this->year)
                 $table->set_year($this->year);
             if ($this->no_min)
-                $table->MinScore = 0;
+                $table->min_score = 0;
             if ($this->glider_mode)
                 $table->set_glider_view();
             if ($this->split_classes)
