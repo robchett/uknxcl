@@ -123,7 +123,7 @@ class kml {
     public function set_animation_styles($full = 1) {
         for ($i = 0; $i < 10; $i++) {
             for ($j = 0; $j < 360; $j += 5) {
-                $this->styles .= '<Style id="A' . $i . $j . '"><IconStyle><heading>' . $j . '</heading><Icon><href>http://' . $_SERVER['HTTP_HOST'] . '/img/Markers/' . get::kml_colour($i) . '.gif' . '</href></Icon></IconStyle></Style>';
+                $this->styles .= '<Style id="A' . $i . $j . '"><IconStyle><heading>' . $j . '</heading><Icon><href>http://' . host . '/img/Markers/' . get::kml_colour($i) . '.gif' . '</href></Icon></IconStyle></Style>';
             }
         }
     }
