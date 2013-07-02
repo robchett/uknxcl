@@ -6,17 +6,19 @@ class pages extends core_module {
 
 
     public function __controller(array $path) {
+        if (isset($path[0])) {
+            $this->current->do_retrieve_from_id(array(),$path[0]);
+        }
+        if(!$this->current->pid) {
+            get::header_redirect('/latest');
+        } else if(uri != $this->current->get_url()) {
+            get::header_redirect($this->current->get_url());
+        }
         parent::__controller($path);
     }
 
-    public function get() {
-        if (isset($_REQUEST['page'])) {
-            $this->current = new page(array(), (int) $_REQUEST['page']);
-            if ($this->current->pid) {
-                return $this->current->body;
-            }
-        }
-        return '';
+    public function __construct() {
+        $this->current = new page();
     }
 
     public function get_page_selector() {
