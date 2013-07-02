@@ -216,7 +216,7 @@ $out .= "
 } 
 ";
 
-//file_put_contents('../../js/Airspace.js', $out);
+//file_put_contents(root . '/resources/airspace.js', $out);
 
 function encode($lat) {
     $lat = $lat * 1e5;
@@ -409,11 +409,11 @@ foreach ($classes as $c) {
 ";
 }
 $out .= '</Document>';
-file_put_contents('../../js/Airspace.kml', $out);
+file_put_contents(root . '/resources/airspace.kml', $out);
 
 $zip = new ZipArchive();
-$zip->open('../../js/Airspace.kmz', ZipArchive::OVERWRITE);
-$zip->addFile('../../js/Airspace.kml');
+$zip->open(root . '/resources/airspace.kmz', ZipArchive::OVERWRITE);
+$zip->addFile(root . '/resources/airspace.kml');
 $zip->close();
 
 ?>
