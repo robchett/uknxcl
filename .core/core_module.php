@@ -14,7 +14,7 @@ abstract class core_module {
     );
     /** @var table */
     public $current;
-    public $view = '';
+    public $view = '_default';
     public $page = 1;
     public $npp = 50;
 
@@ -28,19 +28,18 @@ abstract class core_module {
                 $this->page = end($path);
             }
         }
-        if (empty($this->view)) {
-            $file = root . '/inc/module/_default/view/default.php';
+        $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
+        if (is_readable($file)) {
             include_once($file);
+            $class = $this->view . '_view';
+            $view = new $class;
+            $view->module = $this;
+            echo $view->get();
         } else {
-            $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
-            if (is_readable($file)) {
-                include_once($file);
-                $class = $this->view . '_view';
-                $view = new $class;
-                $view->module = $this;
-                echo $view->get_view()->get();
+            if(debug) {
+            throw new Exception('View not found, ' . $file);
             } else {
-                throw new Exception('View not found, ' . $file);
+
             }
         }
 
@@ -104,7 +103,4 @@ abstract class core_module {
         );
         return $push_state;
     }
-
-    public abstract function get();
-
 }
