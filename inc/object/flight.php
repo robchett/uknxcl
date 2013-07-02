@@ -36,6 +36,8 @@ class flight extends table {
     public $table_key = 'fid';
     public $time;
     public $vis_info;
+    /** @var  bool Season the flight was flown in */
+    public $season;
 
     public static $default_joins = array(
         'pilot' => 'flight.pid = pilot.pid',
@@ -74,8 +76,45 @@ class flight extends table {
         }
     }
 
+    public function get_best_score() {
+        $scores = array(
+            array($this->od_score * $this->get_multiplier(flight_type::OD_ID, $this->season), flight_type::OD_ID),
+            array($this->or_score * $this->get_multiplier(flight_type::OR_ID, $this->season), flight_type::OR_ID),
+            array($this->tr_score * $this->get_multiplier(flight_type::TR_ID, $this->season), flight_type::TR_ID),
+            array($this->ft_score * $this->get_multiplier(flight_type::FT_ID, $this->season), flight_type::FT_ID),
+        );
+        usort($scores, function ($a, $b) {
+                return $a[0] - $b[0];
+            }
+        );
+        return end($scores);
+    }
+
+    public function get_multiplier($type = null, $season = null) {
+        if(!$this->ridge) {
+            return flight_type::get_multiplier(isset($type) ? $type : $this->ftid, isset($season) ? $season : $this->season, $this->ridge);
+        } else {
+            return 1;
+        }
+    }
+
+    public function get_statistics() {
+        $year_stats = array();
+        foreach(range(1991, 2013) as $key=>$year) {
+            $months = array();
+            foreach(range(1,12) as $key2=>$month) {
+                $score = db::result('SELECT sum(score) as score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year'=>$year, 'month'=>$month))->score;
+                $tot = db::result('SELECT count(fid) as count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year'=>$year, 'month'=>$month))->count;
+                $months[$key2] = array($score, $tot);
+            }
+            $year_stats[$key] = $months;
+        }
+        echo json_encode($year_stats);
+        die();
+    }
+
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1 AND season = 2012 AND ftid != 3 AND fid>=8946', 'order' => 'fid DESC'));
         $total_time = 0;
         //$flights->iterate(function (flight $flight) use (&$total_time) {
         /** @var flight $flight */
@@ -84,11 +123,11 @@ class flight extends table {
             $track->time = 0;
             $time = time();
             echo '<p> Track :' . $flight->fid . '</p>';
-            if ($track->generate($flight)) {
+            if ($flight->ftid != 3 && $track->generate($flight)) {
                 $time = time() - $time;
                 $total_time += $time;
                 $flight->time = $time;
-                $flight->do_save();
+                $best_score = $flight->get_best_score();
                 switch ($flight->ftid) {
                     case  1:
                         if ($track->od->get_distance() > $flight->base_score) {
@@ -113,7 +152,39 @@ class flight extends table {
                             echo '<span style="color:#ff0000">TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
                         }
                         break;
+                    case  5:
+                        if ($track->ft->get_distance() > $flight->base_score) {
+                            echo '<span style="color:#00ff00">TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        } else {
+                            echo '<span style="color:#ff0000">TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                        }
+                        break;
                 }
+                if ($flight->ftid != $best_score[1]) {
+                    echo 'Flight Scored better as a' . $best_score[1];
+                    switch ($best_score[0]) {
+                        case  flight_type::OD_ID:
+                            $flight->coords = $track->od->get_coordinates();
+                            $flight->base_score = $track->od->get_distance();
+                            break;
+                        case  flight_type::OR_ID:
+                            $flight->coords = $track->or->get_coordinates();
+                            $flight->base_score = $track->or->get_distance();
+                            break;
+                        case  flight_type::TR_ID:
+                            $flight->coords = $track->tr->get_coordinates();
+                            $flight->base_score = $track->tr->get_distance();
+                            break;
+                        case  flight_type::FT_ID:
+                            $flight->coords = $track->ft->get_coordinates();
+                            $flight->base_score = $track->ft->get_distance();
+                            break;
+                    }
+                    $flight->score = $best_score[0];
+                    $flight->ftid = $best_score[1];
+                    $flight->multi = $flight->get_multiplier();
+                }
+                $flight->do_save();
             } else {
                 $flight->time = 0;
                 echo '<p> Track :' . $flight->fid . ' failed to calculate</p>';
@@ -137,8 +208,8 @@ class flight extends table {
     }
 
     public function generate_files() {
-        if (isset($_POST['id'])) {
-            $this->do_retrieve_from_id(array(), $_POST['id']);
+        if (isset($_REQUEST['id'])) {
+            $this->do_retrieve_from_id(array(), $_REQUEST['id']);
             if ($this->fid) {
                 $track = new track();
                 $track->generate($this);
@@ -178,9 +249,9 @@ class flight extends table {
             <tr><td>Coordinates </td><td>' . str_replace(';', '; ', $this->coords) . '</td></tr>
             <tr><td>Info</td><td>' . $this->vis_info . '</td></tr>';
 
-        if (file_exists(root . '/uploads/track/' . $id . '/track.kml')) {
+        if (file_exists(root . '/uploads/track/' . $id . '/track.kmz')) {
             $html .= '
-            <tr><td colspan="2" class="center"><a href="#" class="button" onclick="map.add_flight(' . $id . ')">Add trace to Map</a></td></tr>
+            <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $id . ')">Add trace to Map</a></td></tr>
             <tr>
                 <td class="center" colspan="2">
                     <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $id . '" title="Download IGC" class="download igc">Download IGC</a>
@@ -188,7 +259,7 @@ class flight extends table {
                 </td>
             </tr>';
         } else {
-            $html .= '<tr><td colspan="2" class="center"><input type="submit" onclick="map.add_flightC(\'' . $this->coords . '\',' . $id . ')" value="Add coordinates to map"/></td></tr>';
+            $html .= '<tr><td colspan="2"class="center view coords"><a href="#" class="button" onclick="map.add_flightC(\'' . $this->coords . '\',' . $id . ');return false;"> Add coordinates to map<a/></td></tr>';
         }
 
         $html .= '</table>';
