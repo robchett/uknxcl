@@ -3,6 +3,7 @@
 abstract class view extends core_view {
 
     public function get() {
+        core::$inline_script[] = 'loaded_modules = {"' . uri . '":true};';
         return '
 <div id="left_col">
     <div id="nav">

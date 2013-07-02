@@ -67,7 +67,7 @@ class core {
 
         ob_start();
         $this->module->__controller($this->path);
-        $this->body = ob_get_contents();
+        $this->body = $this->module->view_object->get();
         ob_end_clean();
         $push_state = $this->module->get_push_state();
         if($push_state) {
