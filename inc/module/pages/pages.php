@@ -22,7 +22,12 @@ class pages extends core_module {
     }
 
     public function get_page_selector() {
-        return '#pages-' . $this->current->pid;
+        return 'pages-' . $this->current->pid;
+    }
+
+    public function ajax_load() {
+        $this->current->do_retrieve_from_id(array(),$_REQUEST['page']);
+        parent::ajax_load();
     }
 
     public function get_push_state() {

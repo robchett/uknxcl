@@ -17,6 +17,7 @@ abstract class core_module {
     public $view = '_default';
     public $page = 1;
     public $npp = 50;
+    public $view_object;
 
     public function __controller(array $path) {
 
@@ -28,20 +29,7 @@ abstract class core_module {
                 $this->page = end($path);
             }
         }
-        $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
-        if (is_readable($file)) {
-            include_once($file);
-            $class = $this->view . '_view';
-            $view = new $class;
-            $view->module = $this;
-            echo $view->get();
-        } else {
-            if(debug) {
-            throw new Exception('View not found, ' . $file);
-            } else {
-
-            }
-        }
+       $this->set_view();
 
         core::$page_config->add_body_class('module_' . get_class($this), $this->view);
     }
@@ -69,21 +57,38 @@ abstract class core_module {
             if ($page->pid == core::$singleton->pid) {
                 $_REQUEST['page'] = $page->pid;
                 $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '">' . $this->get() . '</div>';
-                $html .= '<script>loaded_modules = {"' . $page->get_url() . '":true}</script>';
-            } else
+            } else {
                 $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '" class="loading" style="display:none"></div>';
+            }
         }
         //});
         return $html;
     }
 
     public function get_page_selector() {
-        return '#' . get_class($this);
+        return get_class($this);
+    }
+
+    public function set_view() {
+        $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
+        if (is_readable($file)) {
+            include_once($file);
+            $class = $this->view . '_view';
+            $this->view_object = new $class;
+            $this->view_object->module = $this;
+        } else {
+            if(debug) {
+                throw new Exception('View not found, ' . $file);
+            } else {
+
+            }
+        }
     }
 
     public function ajax_load() {
-        $content = $this->get();
-        ajax::inject($this->get_page_selector(), 'append', $content);
+        $this->set_view();
+        $content = $this->view_object->get_view();
+        ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '">' . $content . '</div>');
         $push_state = $this->get_push_state();
         ajax::push_state($push_state);
     }
