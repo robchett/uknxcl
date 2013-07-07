@@ -21,11 +21,7 @@ class pages extends core_module {
         $this->current = new page();
     }
 
-    public function get_page_selector() {
-        return 'pages-' . $this->current->pid;
-    }
-
-    public function ajax_load() {
+     public function ajax_load() {
         $this->current->do_retrieve_from_id(array(),$_REQUEST['page']);
         parent::ajax_load();
     }
@@ -35,14 +31,11 @@ class pages extends core_module {
         $push_state->url = $this->current->get_url();
         $push_state->title = $this->current->nav_title;
         $push_state->data = (object) array(
-            'page' => array(
-                'url' => $push_state->url,
-            ),
-            'post' => array(
-                'module' => get_class($this),
-                'page' => $this->current->pid,
-                'act' => 'ajax_load'
-            )
+            'url' => $push_state->url,
+            'module' => get_class($this),
+            'page' => $this->current->pid,
+            'act' => 'ajax_load',
+            'id' => '#' . $this->view_object->get_page_selector()
         );
         return $push_state;
     }

@@ -111,7 +111,9 @@ $(document).ready(function () {
             success: handle_json_response
         });
     }
-    $.fn.ajax_factory.defaults = {};
+    $.fn.ajax_factory.defaults = {
+        complete: []
+    };
 });
 
 function colorbox_recenter() {
@@ -146,7 +148,9 @@ function handle_json_response(json) {
         window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
     }
     if($.fn.ajax_factory.defaults.complete) {
-        $.fn.ajax_factory.defaults.complete();
+        $.fn.ajax_factory.defaults.complete.each(function (method, i, json) {
+            window[method](json);
+        }, json);
     }
 }
 
