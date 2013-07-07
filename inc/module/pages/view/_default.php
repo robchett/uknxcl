@@ -5,4 +5,8 @@ class _default_view extends view {
         return $this->module->current->body;
         return '';
     }
+
+    public function get_page_selector() {
+        return 'pages-' . $this->module->current->pid;
+    }
 }
