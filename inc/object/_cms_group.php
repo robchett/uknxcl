@@ -1,7 +1,7 @@
 <?php 
 class _cms_group extends table {
     public $table_key = 'gid';
-    public static $module_id = 0;
+    public static $module_id = 19;
     
     /* @return _cms_group_array */
     public static function get_all(array $fields, array $options = array()){
