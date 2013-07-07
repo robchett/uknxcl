@@ -5,12 +5,11 @@ class waypoint extends table {
     /** @var float */
     public $lon;
     public $table_key = 'wid';
-    public static $fields = array( /* array(type, name) */
-    );
+    public static $module_id = 22;
 
     /* @return waypoint_array */
     public static function get_all(array $fields, array $options = array()) {
-        return waypoint_array::get_all('waypoint', $fields, $options);
+        return waypoint_array::get_all($fields, $options);
     }
 
     public function get_js() {
