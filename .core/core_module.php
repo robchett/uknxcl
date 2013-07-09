@@ -40,8 +40,7 @@ abstract class core_module {
         //$pages->iterate(function(page $page) use (&$html) {
         /** @var page $page */
         foreach ($pages as $page) {
-            $fn = (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid);
-            $html .= '<li id="nav-' . $fn . '" ' . ($page->pid == core::$singleton->pid ? 'class="s"' : '') . '>';
+            $html .= '<li ' . ($page->pid == core::$singleton->pid ? 'class="sel"' : '') . '>';
             $html .= '<a href="' . $page->get_url() . '" data-page-post=\'{"module":"' . (!empty($page->module_name) ? $page->module_name : 'pages') . '","act":"ajax_load"' . (empty($page->module_name) ? ',"page":' . $page->pid : '') . '}\'>' . $page->nav_title . '</a></li>';
         }
         //});
@@ -65,10 +64,6 @@ abstract class core_module {
         return $html;
     }
 
-    public function get_page_selector() {
-        return get_class($this);
-    }
-
     public function set_view() {
         $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
         if (is_readable($file)) {
@@ -87,24 +82,21 @@ abstract class core_module {
 
     public function ajax_load() {
         $this->set_view();
-        $content = $this->view_object->get_view();
-        ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '">' . $content . '</div>');
+        $this->view_object->get_view_ajax();
         $push_state = $this->get_push_state();
         ajax::push_state($push_state);
     }
 
     public function get_push_state() {
         $push_state = new push_state();
-        $push_state->url = '/' . get_class($this) . ($this->view != '_default' ? '/' . $this->view : '');
+        $push_state->url = isset($this->current) ? $this->current->get_url() : '/' . get_class($this) . ($this->view != '_default' ? '/' . $this->view : '');
         $push_state->title = self::$default_modules[get_class($this)];
         $push_state->data = (object) array(
-            'page' => array(
-                'url' => '/' . get_class($this),
-            ),
-            'post' => array(
-                'module' => get_class($this),
-                'act' => 'ajax_load'
-            )
+            'url' => $push_state->url,
+            'module' => get_class($this),
+            'act' => isset($_REQUEST['ajax_act']) ? $_REQUEST['ajax_act'] : 'ajax_load',
+            'request' => $_REQUEST,
+            'id' => '#' . $this->view_object->get_page_selector()
         );
         return $push_state;
     }

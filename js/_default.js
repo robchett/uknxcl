@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('body').on('click','a', function(e) {
-        if($(this).data('page-post') != 'undefined') {
+        if(typeof $(this).data('page-post') != 'undefined') {
             e.preventDefault();
             page($(this).attr('href'), $(this).data('page-post'));
         }
@@ -10,7 +10,7 @@ $(document).ready(function () {
 });
 
 function page_callback(json) {
-    if(json) {
+    if(json && json.push_state) {
       toggle_page(json.push_state.data);
     }
 };
