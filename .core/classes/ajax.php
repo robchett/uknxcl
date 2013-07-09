@@ -31,14 +31,20 @@ class ajax {
     }
 
     public static function do_serve() {
+        if (!empty(core::$inline_script)) {
+            foreach (core::$inline_script as $script) {
+                self::add_script($script);
+            }
+        }
         if (isset(self::$redirect)) {
             self::inject('body', 'append', '<script>window.location.href = "' . self::$redirect . '";</script>');
         }
         $o = new stdClass();
         $o->update = self::$update;
         $o->inject = array_merge(self::$inject, self::$inject_script);
-        if (isset(self::$push_state))
+        if (isset(self::$push_state)) {
             $o->push_state = self::$push_state;
+        }
         if (isset($_REQUEST['no_ajax'])) {
             echo '
     <script>
