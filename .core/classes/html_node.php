@@ -88,11 +88,11 @@ class html_node {
                 foreach ($children as $child) {
                     if (is_array($child)) {
                         $this->nest($child);
-                    } else {
+                    } else if($child) {
                         $this->add_child($child);
                     }
                 }
-            } else {
+            } else if($children) {
                 $this->add_child($children);
             }
         }
