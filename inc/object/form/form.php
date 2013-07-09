@@ -115,6 +115,7 @@ class form extends html_element {
     }
 
     public function get_html() {
+        $html = html_node::create('div#' . $this->id . '_wrapper');
         $this->attributes = array_merge(array(
                 'name' => $this->id,
                 'method' => $this->method,
@@ -122,11 +123,10 @@ class form extends html_element {
                 'data-ajax-shroud' => '#' . $this->id,
             ), $this->attributes
         );
-        $html = html_node::create('div#' . $this->id . '_wrapper')->nest(array(
-                html_node::create('h2.form_title', $this->h2),
-                $this->get_html_body()
-            )
-        );
+        if ($this->h2) {
+            $html->nest(html_node::create('h2.form_title', $this->h2));
+        }
+        $html->nest($this->get_html_body());
         if (!$this->use_ajax) {
             $html->add_child(html_node::create('iframe#form_target_' . $this->id . '.form_frame', '', array('width' => 1, 'height' => 1, 'frame-border' => 0, 'border' => 0, 'src' => '/inc/module/blank.html', 'name' => 'form_target_' . $this->id)));
         }
@@ -174,12 +174,16 @@ class form extends html_element {
     }
 
     public function get_hidden_fields() {
+        $hidden = false;
         $html = html_node::create('ul.hidden');
         foreach ($this->fields as $field) {
-            if ($field->hidden)
+            if ($field->hidden) {
+                $hidden = true;
                 $html->add_child(html_node::create('li', $field->get_html_wrapper(), array('data-for' => $this->id, 'class' => $field->get_wrapper_class())));
+            }
+
         }
-        return $html;
+        return ($hidden ? $html : false);
     }
 
     public function get_submit() {
