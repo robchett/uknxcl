@@ -6,7 +6,7 @@ class core {
     public static $singleton;
     public static $inline_script = array();
     public static $js = array();
-    public static $css = array('/css');
+    public static $css = array('/css/');
     /** @var page_config */
     public static $page_config;
     public $body = '';
@@ -63,17 +63,19 @@ class core {
             $this->module_name = 'latest';
         }
 
-        $this->module = new $this->module_name();
+        if (class_exists($this->module_name)) {
+            $this->module = new $this->module_name();
 
-        ob_start();
-        $this->module->__controller($this->path);
-        $this->body = $this->module->view_object->get();
-        ob_end_clean();
-        $push_state = $this->module->get_push_state();
-        if($push_state) {
-            $push_state->get();
+            ob_start();
+            $this->module->__controller($this->path);
+            $this->body = $this->module->view_object->get();
+            ob_end_clean();
+            $push_state = $this->module->get_push_state();
+            if ($push_state) {
+                $push_state->get();
+            }
+            require_once(root . '/index_screen.php');
         }
-        require_once(root . '/index_screen.php');
     }
 
     public function set_page_from_path() {
