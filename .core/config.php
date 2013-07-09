@@ -28,7 +28,8 @@ function __autoload($classname) {
     } else if (is_readable($filename = core_dir . '/' . $classname . ".php")) {
     } else if (is_readable($filename = core_dir . '/' . 'classes/' . $classname . ".php")) {
     } else {
-        echo '<pre><p>Class not found ' . $classname . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
+        //echo '<pre><p>Class not found ' . $classname . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
+        return false;
     }
     require_once($filename);
 }
