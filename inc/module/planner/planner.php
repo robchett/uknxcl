@@ -11,17 +11,4 @@ class planner extends core_module {
             jquery::colorbox(array('html' => $form->get_html()->get()));
         }
     }
-
-    public function do_load_bos() {
-        $points = waypoint_array::get_all(array('lat', 'lon'));
-        $js = '';
-        //$points->iterate(function ($point) use (&$js) {
-        foreach ($points as $point) {
-            $js .= $point->get_js();
-        }
-        //);
-        ajax::add_script($js);
-
-    }
-
 }

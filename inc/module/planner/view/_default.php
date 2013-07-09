@@ -3,12 +3,14 @@
 class _default_view extends view {
 
     public function get_view() {
+        $form = new planner_load_waypoints();
         $html = html_node::create('div#waypoints')
             ->nest(array(
                     html_node::create('h3', 'Flight Planner'),
                     html_node::create('a#enter_wp_mode.button', 'Enter Planner mode'),
                     html_node::create('ul')->nest(array(
-                            html_node::create('li', 'Click the map to add a waypoint or ' . html_node::inline('a.button.inline', 'load the BOS waypoints', array('data-ajax-click' => 'planner:do_load_bos'))),
+                            html_node::create('li', 'Click the map to add a waypoint or load the a predefined set of waypoints: '),
+                            $form->get_html(),
                             html_node::create('li', 'Click waypoints to add them to your flight path'),
                         )
                     ),
