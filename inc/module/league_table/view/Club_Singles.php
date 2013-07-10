@@ -1,6 +1,6 @@
 <?php
 
-function makeTable(league_table $data) {
+function make_table(league_table $data) {
     $html = '';
     makeHeader();
     $Club = $_GET ['club'];

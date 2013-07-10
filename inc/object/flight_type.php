@@ -34,6 +34,18 @@ class flight_type extends table {
             }
         }
     }
+
+    public static function get_title($type) {
+        if(!isset(self::$all_rows)) {
+            self::$all_rows = flight_type::get_all(array());
+        }
+        foreach (self::$all_rows as $ftype) {
+            if($ftype->ftid == $type) {
+                return $ftype->title;
+            }
+        }
+    }
+
 }
 
 class flight_type_array extends table_array {
