@@ -16,7 +16,7 @@ class league_table {
     public $league = null;
     public $use_multipliers = true;
     public $where = array();
-    public $year = null; // if not set in GET use all-time
+    public $year = 'All time'; // if not set in GET use all-time
     public $show_top_4 = false;
     public $split_classes = false;
     public $handicap = false;
@@ -29,6 +29,7 @@ class league_table {
     public $class_table_alias = 'p';
     public $official_class = 'pilot_official';
     public $SClass = 'club';
+    public $S_alias = 'c';
     public $max_flights = 6;
     public $KP_Mod = 1;
     public $C5_Mod = 1;
@@ -38,6 +39,8 @@ class league_table {
     public $in = array();
     public $parameters = array();
     private $modifier_string = '';
+    /** @var  result */
+    private $result;
 
     function __construct() {
         $this->set_default();
@@ -179,23 +182,28 @@ class league_table {
     public function  set_year($year_string) {
         $param_count = 0;
         $parts = array();
+        $str_parts = array();
 
         $groups = explode(',', $year_string);
         foreach ($groups as $group) {
             $c = explode('-', $group);
             if (count($c) > 1 && count($c) < 3) {
                 $parts[] = '(season>=:year' . $param_count . ' AND season<=:year' . ($param_count + 1) . ')';
+                $str_parts[] = $c[0] . '-' . $c[1];
                 $this->parameters['year' . $param_count] = $c[0];
                 $param_count++;
                 $this->parameters['year' . $param_count] = $c[1];
                 $param_count++;
             } else {
                 $parts[] = 'season=:year' . $param_count;
+                $str_parts[] = $group;
                 $this->parameters['year' . $param_count] = $group;
             }
 
-            if ($parts) ;
+        }
+        if ($parts) {
             $this->where[] = '(' . implode('OR', $parts) . ')';
+            $this->year = implode(',', $str_parts);
         }
     }
 
@@ -205,6 +213,7 @@ class league_table {
         $this->class_table_alias = 'g';
         $this->official_class = 'glider_official';
         $this->SClass = 'manufacturer';
+        $this->S_alias = 'gm';
     }
 
     public function use_preset($type) {
@@ -290,7 +299,7 @@ class league_table {
     }
 
     public function generate_csv() {
-        $flights = flight::get_all(array('p.pid', 'p.name', 'c.name', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        $flights = flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
         /** @var  $array pilot_official[] */
         $array = array();
         /** @var  $flights flight[] */
@@ -321,32 +330,32 @@ class league_table {
     public function get_table() {
         switch ($this->type) {
             case(0):
-                include root . '/inc/module/league_table/view/custom_table.php';
+                $this->result = new result_league();
                 $this->Title .= ' League';
                 break;
             case(1):
-                include root . '/inc/module/league_table/view/custom_club.php';
+                $this->result = new result_club();
                 $this->Title .= ' Club League';
                 break;
             case(2):
-                include root . '/inc/module/league_table/view/custom_pilot.php';
+                $this->result = new result_pilot();
                 $pilot = new pilot();
                 $pilot->do_retrieve_from_id(array('name'), $this->pid);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
                 $this->min_score = 0;
                 break;
             case(3):
-                include root . '/inc/module/league_table/view/TopTen.php';
+                $this->result = new result_top_ten();
                 $this->Title .= ' Top 10s';
                 break;
             case(4):
                 $this->OrderBy = 'date';
-                include root . '/inc/module/league_table/view/CustomList.php';
+                $this->result = new result_list();
                 $this->Title .= ' List';
                 break;
             case(5):
-                include root . '/inc/module/league_table/view/Records.php';
-                return makeTable();
+                $this->result = new result_records();
+                return $this->result->make_table();
         }
 
         if ($this->official) {
@@ -354,7 +363,7 @@ class league_table {
         }
 
         $this->get_flights();
-        return makeTable($this);
+        return $this->result->make_table($this);
 
     }
 
@@ -375,7 +384,7 @@ class league_table {
             $this->where .= " AND personal=0 ";
         }
 
-        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', 'c.name', 'g.class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
+        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', $this->S_alias . '.title AS c_name', 'g.class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
             array(
                 'join' => array(
                     'glider g' => 'flight.gid=g.gid',

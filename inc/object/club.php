@@ -31,13 +31,12 @@ class club extends table {
     }
 
     function writeClubSemiHead($pos) {
-        $a = '
+        return '
             <div class="table_wrapper inner"><h3>
             <span class="pos">' . $pos . '</span>
             <span class="score">' . $this->score . '</span>
             <span class="name">' . $this->name . '</span>
             </h3>';
-        return $a;
     }
 }
 

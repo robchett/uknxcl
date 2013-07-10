@@ -1,5 +1,5 @@
 <?php
-class manufacturer extends table {
+class manufacturer extends club {
     public static $module_id = 5;
     public $table_key = 'mid';
     public $Name;
@@ -15,29 +15,21 @@ class manufacturer extends table {
         return manufacturer_array::get_all($fields, $options);
     }
 
-    public function AddSub($glider, $flights) {
-        if ($this->Number < $this->Num) {
-            $this->Score += $glider->Score;
-            $this->Number++;
-            $this->Glider .= $glider->Output($this->Number, $flights);
-        }
-    }
-
     public function set_from_pilot(glider $glider, $num = 6, $flights) {
-        $this->Num = $num;
-        $this->Name = $glider->Manu;
-        $this->Score = $glider->Score;
-        $this->Total = $this->Score;
-        $this->Glider = $glider->Output(1, $flights);
+        $this->max_pilots = $num;
+        $this->name = $glider->club;
+        $this->score = $glider->score;
+        $this->total = $this->score;
+        $this->content = $glider->output(1);
     }
 
     function writeClubSemiHead($pos) {
-        $a = "
-            <table class='Title'><th style=\"width:50px\">$pos</th>
-            <th  style=\"width:90px\">$this->Score</th>
-            <th  style=\"width:538px\">$this->Name</th>
-            </table>";
-        return $a;
+        return '
+            <div class="table_wrapper inner"><h3>
+            <span class="pos">' . $pos . '</span>
+            <span class="score">' . $this->score . '</span>
+            <span class="name">' . $this->name . '</span>
+            </h3>';
     }
 
 }
