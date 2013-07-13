@@ -11,7 +11,7 @@ abstract class view extends core_view {
     }
 
     public function get_page_selector() {
-        return get_class($this->module);
+        return get_class($this->module) . (isset($this->module->current) && $this->module->current->get_primary_key() ? '-' . $this->module->current->get_primary_key() : '');
     }
 
     public function get() {
