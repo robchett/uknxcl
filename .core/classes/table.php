@@ -26,6 +26,13 @@ class table {
         }
     }
 
+    public function get_primary_key() {
+        if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
+            return $this->{$this->table_key};
+        }
+        return false;
+    }
+
     public static function get_count(array $options = array()) {
         $class = get_called_class();
         $return = new $class();
