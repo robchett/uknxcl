@@ -223,7 +223,7 @@ class flight extends table {
         $html = '';
         $id = (int) $_REQUEST['fid'];
         $this->do_retrieve(
-            array('flight.*', 'pilot.name', 'club.name', 'glider.name', 'manufacturer.title'),
+            array('flight.*', 'pilot.name', 'club.title', 'glider.name', 'manufacturer.title'),
             array(
                 'join' => array_merge(
                     flight::$default_joins,

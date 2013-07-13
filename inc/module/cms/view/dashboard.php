@@ -32,7 +32,7 @@ class dashboard_view extends cms_view {
     }
 
     public function get_latest_flights() {
-        $flights = flight::get_all(array('fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.name', 'admin_info', 'delayed'), array('join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC'));
+        $flights = flight::get_all(array('fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.title', 'admin_info', 'delayed'), array('join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC'));
         $table = html_node::create('table#latest_flights.module');
         $table->nest(
             html_node::create('thead')->nest(

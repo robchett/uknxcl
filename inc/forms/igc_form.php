@@ -24,8 +24,8 @@ class igc_form extends form {
                     ->set_attr('label', 'Club:')
                     ->set_attr('required', true)
                     ->set_attr('link_module', 'club')
-                    ->set_attr('link_field', 'name')
-                    ->set_attr('options', array('order' => 'name')),
+                    ->set_attr('link_field', 'title')
+                    ->set_attr('options', array('order' => 'title')),
                 form::create('field_link', 'lid')
                     ->set_attr('label', 'Launch:')
                     ->set_attr('required', true)
