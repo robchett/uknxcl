@@ -14,7 +14,7 @@ function UKNXCL_Map($container) {
     this.planner = new Planner(this);
     this.airspace = new Airspace();
     this.graph = new Graph($('#graph_wrapper'));
-    if(typeof google != 'undefined') {
+    if (typeof google != 'undefined') {
         this.internal_map = new google.maps.Map(document.getElementById('map'), {
             zoom: 7,
             center: new google.maps.LatLng(53, -2),
@@ -233,6 +233,7 @@ function UKNXCL_Map($container) {
         this.$tree.append('<div class="track_' + id + '"></div>');
         if (this.kmls[id] === undefined || reload_flight) {
             this.kmls[id] = new Track(id, temp);
+            this.kmls[id].load();
         } else {
             this.swap(map.kmls[id]);
         }
@@ -309,7 +310,7 @@ function UKNXCL_Map($container) {
 
 
 function Track(id, temp) {
-    // variables
+    var ths = this;
     this.type = 0;
     this.id = id;
     this.google_data = null;
@@ -338,7 +339,7 @@ function Track(id, temp) {
         }
     }
 
-    this.add_nxcl_data = function () {
+    this.add_nxcl_data = function (callback) {
         $.ajax({
             url: '?module=flight&act=get_js&id=' + this.id,
             context: this,
@@ -347,7 +348,7 @@ function Track(id, temp) {
             dataType: 'json',
             success: function (result) {
                 this.nxcl_data.loadFromAjax(result);
-                this.is_ready();
+                callback();
             }
         });
     };
@@ -386,11 +387,13 @@ function Track(id, temp) {
     };
 
     this.hide = function () {
-        this.marker.setMap(null);
-        this.google_data.gpolylines.each(function (polyline) {
-            polyline.setMap(null);
-        });
-        map.graph.setGraph();
+        if (map.mode == map.MAP) {
+            this.marker.setMap(null);
+            this.google_data.gpolylines.each(function (polyline) {
+                polyline.setMap(null);
+            });
+            map.graph.setGraph();
+        }
     };
 
     this.remove = function (depth) {
@@ -427,8 +430,10 @@ function Track(id, temp) {
         }
     }
 
-    this.add_google_data();
-    this.add_nxcl_data();
+    this.load = function () {
+        this.add_google_data();
+        this.add_nxcl_data(function () {ths.is_ready()});
+    }
 }
 
 function Comp(id) {
