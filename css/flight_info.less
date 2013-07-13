@@ -1,0 +1,38 @@
+#flight_info { }
+
+.flight_wrapper {
+  h1 {
+    span {
+      font-size: 17px;
+    }
+  }
+  .graph {
+    height: 200px;
+  }
+  table {
+    margin: 20px 0;
+    &.stats {
+      width: 50%;
+    }
+    thead {
+      .heading();
+      border: 1px solid #0a4dad ;
+      overflow: hidden;
+      th {
+         padding: 3px 0;
+       }
+    }
+    tbody {
+      tr {
+        background-color: #ffffff;
+        &:nth-child(2n) {
+          background-color: #d5e3ff;
+        }
+        td {
+          border: 1px solid #c0c0c0;
+          padding: 2px 5px;
+        }
+      }
+    }
+  }
+}

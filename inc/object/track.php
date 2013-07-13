@@ -11,6 +11,10 @@
 class track {
 
     const FAI_RATIO = 0.275;
+    const STAT_ALL = 0;
+    const STAT_MIN = 1;
+    const STAT_MAX = 2;
+    const STAT_AVERAGE = 4;
 
     public static $number_of_points_to_use = 700;
     public $calc_od = 1;
@@ -97,14 +101,40 @@ class track {
         }
     }
 
+    /**
+     * @param $field
+     * @return stat_object
+     * @throws Exception
+     */
+    public function get_stats($field) {
+        $stat_object = new stat_object();
+        if (!isset($this->track_points)) {
+            throw new Exception('Trying to calculate stats on a track before it has been parsed.');
+        }
+        $stat_object->min = $this->track_points->first()->$field;
+        foreach ($this->track_points as $point) {
+            if ($point->$field < $stat_object->min) {
+                $stat_object->min = $point->$field;
+                $stat_object->min_point = $point;
+            }
+            if ($point->$field > $stat_object->max) {
+                $stat_object->max = $point->$field;
+                $stat_object->min_point = $point;
+            }
+            $stat_object->total += $point->$field;
+        }
+        $stat_object->average = $stat_object->total / $this->track_points->count();
+        return $stat_object;
+    }
+
     public function calculate() {
         db::query('SET wait_timeout=1200');
         set_time_limit(0);
         $this->pre_calc();
         $this->get_dist_map();
-        $use_rough_calcualations = self::$number_of_points_to_use > $this->track_points->count();
+        $use_rough_calculations = self::$number_of_points_to_use > $this->track_points->count();
         if ($this->calc_od) {
-            $this->track_open_distance_3tp($use_rough_calcualations);
+            $this->track_open_distance_3tp($use_rough_calculations);
             if (isset($this->od->waypoints)) {
                 $this->od->waypoints->spherical = false;
                 unset($this->od->distance);
@@ -112,7 +142,7 @@ class track {
             }
         }
         if ($this->calc_or) {
-            $this->track_out_and_return($use_rough_calcualations);
+            $this->track_out_and_return($use_rough_calculations);
             if (isset($this->or->waypoints)) {
                 $this->or->waypoints->spherical = false;
                 unset($this->or->distance);
@@ -120,7 +150,7 @@ class track {
             }
         }
         if ($this->calc_ft) {
-            $this->track_flat_triangles($use_rough_calcualations);
+            $this->track_flat_triangles($use_rough_calculations);
             if (isset($this->ft->waypoints)) {
                 $this->ft->waypoints->spherical = false;
                 unset($this->ft->distance);
@@ -128,7 +158,7 @@ class track {
             }
         }
         if ($this->calc_tr) {
-            $this->track_triangles($use_rough_calcualations);
+            $this->track_triangles($use_rough_calculations);
             if (isset($this->tr->waypoints)) {
                 $this->tr->waypoints->spherical = false;
                 unset($this->tr->distance);
@@ -1840,4 +1870,15 @@ class object_array extends ArrayObject {
         }
         return $sub;
     }
+}
+
+class stat_object {
+    public $min = null;
+    /** @var track_point */
+    public $min_point;
+    public $max = null;
+    /** @var  track_point */
+    public $max_point;
+    public $average = null;
+    public $total = null;
 }

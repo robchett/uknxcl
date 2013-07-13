@@ -43,6 +43,14 @@ class flight extends table {
         'pilot' => 'flight.pid = pilot.pid',
         'glider' => 'flight.gid = glider.gid',
         'club' => 'flight.cid = club.cid',
+        'manufacturer' => 'glider.mid = manufacturer.mid'
+    );
+    public static $default_fields = array(
+        'flight.*',
+        'pilot.name',
+        'club.title',
+        'glider.name',
+        'manufacturer.title'
     );
 
     /* @return flight_array */
@@ -91,7 +99,7 @@ class flight extends table {
     }
 
     public function get_multiplier($type = null, $season = null) {
-        if(!$this->ridge) {
+        if (!$this->ridge) {
             return flight_type::get_multiplier(isset($type) ? $type : $this->ftid, isset($season) ? $season : $this->season, $this->ridge);
         } else {
             return 1;
@@ -100,11 +108,11 @@ class flight extends table {
 
     public function get_statistics() {
         $year_stats = array();
-        foreach(range(1991, 2013) as $key=>$year) {
+        foreach (range(1991, 2013) as $key => $year) {
             $months = array();
-            foreach(range(1,12) as $key2=>$month) {
-                $score = db::result('SELECT sum(score) as score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year'=>$year, 'month'=>$month))->score;
-                $tot = db::result('SELECT count(fid) as count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year'=>$year, 'month'=>$month))->count;
+            foreach (range(1, 12) as $key2 => $month) {
+                $score = db::result('SELECT sum(score) AS score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->score;
+                $tot = db::result('SELECT count(fid) AS count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->count;
                 $months[$key2] = array($score, $tot);
             }
             $year_stats[$key] = $months;
@@ -219,14 +227,14 @@ class flight extends table {
         }
     }
 
-    public function get_info() {
+    public function get_info_ajax() {
         $html = '';
         $id = (int) $_REQUEST['fid'];
         $this->do_retrieve(
-            array('flight.*', 'pilot.name', 'club.title', 'glider.name', 'manufacturer.title'),
+            self::$default_fields,
             array(
                 'join' => array_merge(
-                    flight::$default_joins,
+                    self::$default_joins,
                     array('manufacturer' => 'glider.mid=manufacturer.mid')
                 ),
                 'where_equals' => array('flight.fid' => $id)
@@ -234,13 +242,63 @@ class flight extends table {
         );
         if (!isset($this->fid) || !$this->fid) {
             $html .= 'Flight not found, this is a bug...';
+        } else {
+            $html = $this->get_info();
         }
-        $html .= '  <table width="100%">
-            <tr><td>Flight ID </td><td>' . $id . '</td></tr>
+        ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
+        ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
+    }
+
+    public function get_stats() {
+        $track = new track();
+        $track->id = $this->fid;
+        $track->parse_IGC();
+        $track->trim();
+        $track->get_graph_values();
+        $height = $track->get_stats('ele');
+        $speed = $track->get_stats('speed');
+        $climb = $track->get_stats('climbRate');
+        $html = '
+<table class="stats">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Average</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Elevation</td>
+            <td>' . $height->min . 'ft</td>
+            <td>' . $height->max . 'ft</td>
+            <td>' . number_format($height->average, 2) . 'ft</td>
+        </tr>
+        <tr>
+            <td>Speed</td>
+            <td>' . $speed->min . 'km/h</td>
+            <td>' . $speed->max . 'km/h</td>
+            <td>' . number_format($speed->average, 2) . 'km/h</td>
+        </tr>
+        <tr>
+            <td>Climb</td>
+            <td>' . $climb->min . 'ft/s</td>
+            <td>' . $climb->max . 'ft/s</td>
+            <td>' . number_format($climb->average, 2) . 'ft/s</td>
+        </tr>
+    </tbody>
+</table>';
+        return $html;
+    }
+
+    public function get_info() {
+        $html = '  <table width="100%">
+            <tr><td>Flight ID </td><td>' . $this->fid . '</td></tr>
             <tr><td>Pilot </td><td>' . $this->pilot_name . '</td></tr>
             <tr><td>Date </td><td>' . $this->date . '</td></tr>
             <tr><td>Glider </td><td>' . $this->manufacturer_title . ' - ' . $this->glider_name . '</td></tr>
-            <tr><td>Club </td><td>' . $this->club_name . '</td></tr>
+            <tr><td>Club </td><td>' . $this->club_title . '</td></tr>
             <tr><td>Defined </td><td>' . get::bool($this->defined) . '</td></tr>
             <tr><td>Launch </td><td>' . get::launch($this->lid) . '</td></tr>
             <tr><td>Type </td><td>' . get::flight_type($this->ftid) . '</td></tr>
@@ -249,23 +307,23 @@ class flight extends table {
             <tr><td>Coordinates </td><td>' . str_replace(';', '; ', $this->coords) . '</td></tr>
             <tr><td>Info</td><td>' . $this->vis_info . '</td></tr>';
 
-        if (file_exists(root . '/uploads/track/' . $id . '/track.kmz')) {
+        if (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz')) {
             $html .= '
-            <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $id . ')">Add trace to Map</a></td></tr>
+            <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $this->fid . ')">Add trace to Map</a></td></tr>
             <tr>
                 <td class="center" colspan="2">
-                    <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $id . '" title="Download IGC" class="download igc">Download IGC</a>
-                    <a href="/?module=flight&amp;act=download&amp;type=kml&amp;id=' . $id . '" title="Download KML" class="download kml">Download KML</a>
+                    <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $this->fid . '" title="Download IGC" class="download igc">Download IGC</a>
+                    <a href="/?module=flight&amp;act=download&amp;type=kml&amp;id=' . $this->fid . '" title="Download KML" class="download kml">Download KML</a>
                 </td>
             </tr>';
         } else {
-            $html .= '<tr><td colspan="2"class="center view coords"><a href="#" class="button" onclick="map.add_flightC(\'' . $this->coords . '\',' . $id . ');return false;"> Add coordinates to map<a/></td></tr>';
+            $html .= '<tr><td colspan="2"class="center view coords"><a href="#" class="button" onclick="map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;"> Add coordinates to map<a/></td></tr>';
         }
-
+        if (ajax) {
+            $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
+        }
         $html .= '</table>';
-        $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
-        ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
-        ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
+        return $html;
     }
 
     public function get_js() {
@@ -294,7 +352,11 @@ class flight extends table {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('data-ajax-click' => 'flight:get_info', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
+        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
+    }
+
+    public function get_url() {
+        return '/flight_info/' . $this->fid;
     }
 }
 

@@ -1,11 +1,16 @@
 function Graph($container) {
+    var ths = this;
     this.$container = $container;
-    this.$container.html("<a style='position:absolute;left:60px;z-index:1000000'>" + '<input type="radio" name="graph_type" onclick="map.graph.changeType(1)" checked>Height</input>' + '<input type="radio" name="graph_type" onclick="map.graph.changeType(2)">Climb</input>' + '<input type="radio" name="graph_type" onclick="map.graph.changeType(3)">Speed</input></a>' + "<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='200'></canvas>");
+    this.$container.html("<a style='position:absolute;left:60px;z-index:1000000'>" + '<input type="radio" name="graph_type" data-type="1" checked>Height</input>' + '<input type="radio" name="graph_type" data-type="2">Climb</input>' + '<input type="radio" name="graph_type" data-type="3">Speed</input></a>' + "<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='200'></canvas>");
     this.a_canvas = $('#graph_a_canvas');
     this.width = this.$container.width();
     this.height = this.$container.height();
     this.obj = null;
     this.type = 1;
+
+    this.$container.find("[name=graph_type]").change(function(){
+        ths.changeType($(this).data('type'));
+    });
 
     this.resize = function (width) {
         this.width = width - 5;
@@ -32,15 +37,15 @@ function Graph($container) {
             var max_value = 'maxEle';
             var index = 2;
         } else if (this.type == 2) {
-            var title = 'Clime Rate (m/s)';
-            var min_value = 'min_cr';
-            var max_value = 'maximum_cr';
-            var index = 4;
+            title = 'Clime Rate (m/s)';
+            min_value = 'min_cr';
+            max_value = 'maximum_cr';
+            index = 4;
         } else {
-            var title = 'Speed (m/s)';
-            var min_value = 'min_speed';
-            var max_value = 'maximum_speed';
-            var index = 5;
+            title = 'Speed (m/s)';
+            min_value = 'min_speed';
+            max_value = 'maximum_speed';
+            index = 5;
         }
         var max = -1000000;
         var min = 10000000;
