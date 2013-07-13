@@ -1,6 +1,8 @@
 <?php
 
 abstract class view extends core_view {
+    /** @var  core_module */
+    public $module;
 
 
     public function get_view_ajax() {

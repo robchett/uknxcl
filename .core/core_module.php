@@ -1,23 +1,15 @@
 <?php
 
 abstract class core_module {
-    public static $default_modules = array(
-        'latest' => 'Latest',
-        'news' => 'News',
-        'rules' => 'Rules',
-        'add_flight' => 'New Flight',
-        'contact' => 'Contact',
-        'comps' => 'Comps',
-        'tables' => 'Tables',
-        'planner' => 'Planner',
-        'cms' => 'CMS'
-    );
+    public static $page_fields_to_retrieve = array('pid', 'body', 'title');
     /** @var table */
     public $current;
     public $view = '_default';
     public $page = 1;
     public $npp = 50;
     public $view_object;
+    /** @var  page */
+    public $page_object;
 
     public function __controller(array $path) {
 
@@ -29,9 +21,18 @@ abstract class core_module {
                 $this->page = end($path);
             }
         }
-       $this->set_view();
-
+        $this->set_view();
+        $this->set_page();
         core::$page_config->add_body_class('module_' . get_class($this), $this->view);
+    }
+
+    function set_page() {
+        $this->page_object = new page();
+        if (!isset($this->pid)) {
+            $this->page_object->do_retrieve(self::$page_fields_to_retrieve, array('where_equals' => array('module_name' => get_class($this))));
+        } else {
+            $this->page_object->do_retrieve_from_id(self::$page_fields_to_retrieve, $this->pid);
+        }
     }
 
     function get_main_nav() {
@@ -72,7 +73,7 @@ abstract class core_module {
             $this->view_object = new $class;
             $this->view_object->module = $this;
         } else {
-            if(debug) {
+            if (debug) {
                 throw new Exception('View not found, ' . $file);
             } else {
 
@@ -90,7 +91,7 @@ abstract class core_module {
     public function get_push_state() {
         $push_state = new push_state();
         $push_state->url = isset($this->current) ? $this->current->get_url() : '/' . get_class($this) . ($this->view != '_default' ? '/' . $this->view : '');
-        $push_state->title = self::$default_modules[get_class($this)];
+        $push_state->title = $this->page_object->title;
         $push_state->data = (object) array(
             'url' => $push_state->url,
             'module' => get_class($this),

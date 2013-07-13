@@ -37,9 +37,6 @@ class core {
             ajax::do_serve();
             exit();
         }
-        if (admin) {
-            core_module::$default_modules['comp_maker'] = 'Comp Maker';
-        }
 
         $this->set_page_from_path();
 

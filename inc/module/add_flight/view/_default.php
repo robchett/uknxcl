@@ -2,8 +2,6 @@
 
 class _default_view extends view {
     public function get_view() {
-        $this->page = new page();
-        $this->page->do_retrieve(array(), array('where_equals' => array('module_name' => 'add_flight')));
         $form = new igc_form();
         $form2 = new igc_upload_form();
         $form3 = new coordinates_form();
@@ -12,7 +10,7 @@ class _default_view extends view {
     <div id="add_flight_wrapper">
         <div id="add_flight_inner">
             <div id="type_wrapper">
-            ' . $this->page->body . '
+            ' . $this->module->page_object->body . '
             </div>
             <div class="add_flight_section upload">';
         $html .= $form2->get_html()->get();
