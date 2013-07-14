@@ -119,7 +119,7 @@ class track {
             }
             if ($point->$field > $stat_object->max) {
                 $stat_object->max = $point->$field;
-                $stat_object->min_point = $point;
+                $stat_object->max_point = $point;
             }
             $stat_object->total += $point->$field;
         }
