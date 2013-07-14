@@ -69,12 +69,14 @@ function Graph($container) {
         context.fillRect(0, 0, this.width, this.height);
 
         for (x1 = 0; x1 <= 20; x1++) {
-            context.moveTo(x1 * this.width / 20, 0);
-            context.lineTo(x1 * this.width / 20, this.height);
+            var x_coord = x1 * this.width / 20;
+            context.moveTo(x_coord, 0);
+            context.lineTo(x_coord, this.height);
         }
-        for (y1 = 0.5; y1 < this.height; y1 += 10) {
-            context.moveTo(0, y1);
-            context.lineTo(this.width, y1);
+        for (y1 = 0; y1 <= 10; y1 ++) {
+            var y_coord = y1 * this.height / 10
+            context.moveTo(0, y_coord);
+            context.lineTo(this.width, y_coord);
         }
         context.strokeStyle = '#DBDBDB';
         context.stroke();
@@ -102,8 +104,8 @@ function Graph($container) {
         }
         context.font = '12px sans-serif';
         context.fillStyle = '#444';
-        context.fillText(max, 10, 10);
-        context.fillText(min, 10, this.height);
+        context.fillText(max, 10, 15);
+        context.fillText(min, 10, this.height - 5);
         context.fillText(text, 10, this.height / 2);
     }
 }
