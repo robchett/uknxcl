@@ -7,8 +7,4 @@ class post_view extends view {
         core::$inline_script[] = $script;
         return $html;
     }
-
-    public function get_page_selector() {
-        return get_class($this->module) . '-' . $this->module->current->aid;
-    }
 }
