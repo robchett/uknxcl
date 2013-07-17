@@ -25,7 +25,7 @@ class core {
         db::connect();
         $this->path = explode('/', trim(uri, '/'));
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
-
+			
         if (!(isset($this->path[0])) || empty($this->path[0])) {
             $this->path[0] = 'latest';
         }
@@ -37,7 +37,6 @@ class core {
             ajax::do_serve();
             exit();
         }
-
         $this->set_page_from_path();
 
         if (!$this->pid && is_numeric($this->path[0])) {
@@ -48,7 +47,7 @@ class core {
         core::$js[] = 'https://www.google.com/jsapi';
         core::$js[] = '/js/jquery/jquery.js';
         core::$js[] = '/js/jquery/colorbox.js';
-        core::$js[] = '/js';
+        core::$js[] = '/js/';
 
         if (isset($this->path[0])) {
             if (!is_numeric($this->path[0])) {
