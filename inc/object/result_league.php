@@ -1,4 +1,4 @@
-<?
+<?php
 class result_league extends result {
     function make_table(league_table $data) {
         $html = '';

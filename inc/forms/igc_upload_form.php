@@ -1,4 +1,4 @@
-<?
+<?php
 
 class igc_upload_form extends form {
 

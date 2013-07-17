@@ -1,4 +1,4 @@
-<?
+<?php
 
 class league_table {
     /** @var flight_array */
