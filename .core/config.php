@@ -16,19 +16,19 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
     define ('ie', false);
     define ('ie_ver', 0);
 }
-
 function __autoload($classname) {
 
     $classname = str_replace(array('_iterator', '_array'), '', $classname);
 
-    if (is_readable($filename = root . "/inc/object/" . $classname . ".php")) {
+    if        (is_readable($filename = root . "/inc/object/" . $classname . ".php")) {
     } else if (is_readable($filename = root . "/inc/module/" . $classname . "/" . $classname . ".php")) {
     } else if (is_readable($filename = root . "/inc/forms/" . $classname . ".php")) {
     } else if (is_readable($filename = root . "/inc/object/form/" . $classname . ".php")) {
     } else if (is_readable($filename = core_dir . '/' . $classname . ".php")) {
-    } else if (is_readable($filename = core_dir . '/' . 'classes/' . $classname . ".php")) {
+    } else if (is_readable($filename = core_dir . '/classes/' . $classname . ".php")) {
+    } else if (is_readable($filename = core_dir . '/interfaces/' . $classname . ".php")) {
     } else {
-        //echo '<pre><p>Class not found ' . $classname . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
+        echo '<pre><p>Class not found ' . $classname . $filename . '</p><p>' . print_r(debug_backtrace(), 1) . '</p></pre>';
         return false;
     }
     require_once($filename);
@@ -49,4 +49,3 @@ if (!defined('load_core') || load_core) {
     include(core_dir . '/core.php');
     $core = new core();
 }
-
