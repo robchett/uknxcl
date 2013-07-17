@@ -1,5 +1,5 @@
 <?php
-class db {
+class db implements database_interface {
     /** @var PDO */
     public static $con;
     public static $con_arr = array();
@@ -7,9 +7,8 @@ class db {
     public static function connect($name = 'new', $db = 'nxcl') {
 
         if (strstr(host, 'uknxcl.co.uk') !== false) {
-            $db = 'eacommsc_' . $db;
-            $host = "localhost";
-            $username = "eacommsc_nxcl";
+            $host = "dev-1.cnswj6yabz6s.eu-west-1.rds.amazonaws.com";
+            $username = "nxcl";
             $password = '2TTFBDJ4Q$zD';
         } else {
             $host = '127.0.0.1';
@@ -25,8 +24,12 @@ class db {
         mysql_real_escape_string($str);
     }
 
-    /* @return array */
-    public static function fetch_all(PDOStatement $res, $class = 'stdClass') {
+    /* @return array
+     * @var PDOStatement res
+     * @var string class
+     * @return mixed
+     */
+    public static function fetch_all($res, $class = 'stdClass') {
         if ($class != null) {
             return $res->fetchAll(PDO::FETCH_OBJ);
         } else {
@@ -92,11 +95,15 @@ class db {
         return self::$con->lastInsertId();
     }
 
-    static function num(PDOStatement $res) {
+    /**
+     * @param PDOStatement $res
+     * @return int
+     */
+    static function num($res) {
         return $res->rowCount();
     }
 
-    public static function prepare($sql) {
+    private static function prepare($sql) {
         return self::$con->prepare($sql);
     }
 
@@ -141,7 +148,12 @@ class db {
         return $prep_sql;
     }
 
-    static function fetch(PDOStatement $res, $class = 'stdClass') {
+    /**
+     * @param PDOStatement $res
+     * @param string $class
+     * @return mixed
+     */
+    static function fetch($res, $class = 'stdClass') {
         if ($class != null) {
             return $res->fetchObject($class);
         } else {
