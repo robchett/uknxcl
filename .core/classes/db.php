@@ -2,31 +2,42 @@
 class db implements database_interface {
     /** @var PDO */
     public static $con;
+    public static $con_name;
     public static $con_arr = array();
+    public static $timeout = 30;
 
-    public static function connect($name = 'new', $db = 'nxcl') {
-
-        if (strstr(host, 'uknxcl.co.uk') !== false) {
-            $host = "dev-1.cnswj6yabz6s.eu-west-1.rds.amazonaws.com";
-            $username = "nxcl";
-            $password = '***REMOVED***';
-        } else {
-            $host = '127.0.0.1';
-            $username = "root";
-            $password = "";
-        }
-        self::$con_arr[$name] = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
-        self::$con = self::$con_arr[$name];
+    public static function connect($host, $db, $username, $password, $name = 'default') {
+        self::$con_arr[$name] = array(
+            'connection' => new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password),
+            'settings' => array(
+                'host' => $host,
+                'database' => $db,
+                'username' => $username,
+                'password' => $password,
+            ),
+            'created' => time()
+        );
+        self::$con_name = $name;
+        self::$con = self::$con_arr[$name]['connection'];
         self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    static function esc($str) {
+    public static function reconnect() {
+        $settings = self::$con_arr[self::$con_name]['settings'];
+        self::connect($settings['host'], $settings['database'], $settings['username'], $settings['password'], self::$con_name);
+    }
+
+    public static function default_connection() {
+        self::connect(get::ini('server', 'mysql'), get::ini('database', 'mysql'),  get::ini('username', 'mysql'), get::ini('password', 'mysql'));
+    }
+
+    public static function esc($str) {
         mysql_real_escape_string($str);
     }
 
     /* @return array
-     * @var PDOStatement res
-     * @var string class
+     * @param res PDOStatement
+     * @param class string
      * @return mixed
      */
     public static function fetch_all($res, $class = 'stdClass') {
@@ -37,7 +48,7 @@ class db implements database_interface {
         }
     }
 
-    static function get_query($object, array $fields_to_retrieve, $options, &$parameters = array()) {
+    public static function get_query($object, array $fields_to_retrieve, $options, &$parameters = array()) {
         $fields = array();
         $where = 'WHERE 1 ';
         $order = '';
@@ -48,7 +59,7 @@ class db implements database_interface {
             foreach ($fields_to_retrieve as $field) {
                 if (strstr($field, '.') && !strstr($field, '.*') && !strstr($field, ' AS ')) {
                     $fields[] = $field . ' AS ' . str_replace('.', '_', $field);
-                } else if ( strstr($field, '(') === false && strstr($field, '.*') === false && strstr($field, '.')  === false){
+                } else if (strstr($field, '(') === false && strstr($field, '.*') === false && strstr($field, '.') === false) {
                     $fields[] = $object . '.' . $field;
                 } else {
                     $fields[] = $field;
@@ -99,7 +110,7 @@ class db implements database_interface {
      * @param PDOStatement $res
      * @return int
      */
-    static function num($res) {
+    public static function num($res) {
         return $res->rowCount();
     }
 
@@ -107,7 +118,7 @@ class db implements database_interface {
         return self::$con->prepare($sql);
     }
 
-    static function result($sql, $params = array(), $class = 'stdClass') {
+    public static function result($sql, $params = array(), $class = 'stdClass') {
         $res = self::query($sql, $params);
         if ($res) {
             return self::fetch($res, $class);
@@ -115,7 +126,15 @@ class db implements database_interface {
         return false;
     }
 
+    public static function has_timed_out() {
+        return time() - self::$con_arr[self::$con_name]['created'] > self::$timeout;
+    }
+
     static function query($sql, $params = array(), $throwable = false) {
+        // Attempt to reconnect if connection has gone away.
+        if (self::has_timed_out()) {
+            self::reconnect();
+        }
         $prep_sql = self::$con->prepare($sql);
         if (!empty($params)) {
             foreach ($params as $key => $val) {
@@ -125,22 +144,17 @@ class db implements database_interface {
         try {
             $prep_sql->execute();
         } catch (PDOException $e) {
-            if ($e->getCode() == 'HY000') {
-                self::connect();
-                self::query($sql, $params = array(), $throwable);
+            $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
+            if (ajax) {
+                ajax::inject('body', 'append', $error);
+                if (!$throwable) {
+                    ajax::do_serve();
+                    die();
+                }
             } else {
-                $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
-                if (ajax) {
-                    ajax::inject('body', 'append', $error);
-                    if (!$throwable) {
-                        ajax::do_serve();
-                        die();
-                    }
-                } else {
-                    echo $error;
-                    if (!$throwable) {
-                        die();
-                    }
+                echo $error;
+                if (!$throwable) {
+                    die();
                 }
             }
         }
@@ -153,7 +167,7 @@ class db implements database_interface {
      * @param string $class
      * @return mixed
      */
-    static function fetch($res, $class = 'stdClass') {
+    public static function fetch($res, $class = 'stdClass') {
         if ($class != null) {
             return $res->fetchObject($class);
         } else {
