@@ -22,7 +22,7 @@ class core {
     public function __construct() {
         self::$page_config = new page_config();
         self::$singleton = $this;
-        db::connect();
+        db::default_connection();
         $this->path = explode('/', trim(uri, '/'));
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 			

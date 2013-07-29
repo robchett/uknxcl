@@ -2,7 +2,7 @@
 
 interface database_interface {
 
-    public static function connect();
+    public static function connect($host, $db, $username, $password, $name = 'new');
 
     public static function esc($str);
 
