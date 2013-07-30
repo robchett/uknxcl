@@ -48,23 +48,6 @@ abstract class core_module {
         return $html;
     }
 
-    public function get_body() {
-        $html = '';
-        $pages = page::get_all(array(), array('where' => 'nav=1'));
-        //$pages->iterate(function(page $page) use (&$html) {
-        /** @var page $page */
-        foreach ($pages as $page) {
-            if ($page->pid == core::$singleton->pid) {
-                $_REQUEST['page'] = $page->pid;
-                $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '">' . $this->get() . '</div>';
-            } else {
-                $html .= '<div id="' . (!empty($page->module_name) ? $page->module_name : 'pages-' . $page->pid) . '" class="loading" style="display:none"></div>';
-            }
-        }
-        //});
-        return $html;
-    }
-
     public function set_view() {
         $file = root . '/inc/module/' . get_class($this) . '/view/' . $this->view . '.php';
         if (is_readable($file)) {
@@ -97,8 +80,9 @@ abstract class core_module {
             'module' => get_class($this),
             'act' => isset($_REQUEST['ajax_act']) ? $_REQUEST['ajax_act'] : 'ajax_load',
             'request' => $_REQUEST,
-            'id' => '#' . $this->view_object->get_page_selector()
+            'id' => '#' . $this->view_object->get_page_selector(),
         );
+        $push_state->push = isset($_REQUEST['is_popped']) ? !$_REQUEST['is_popped'] : 0;
         return $push_state;
     }
 }
