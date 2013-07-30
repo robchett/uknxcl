@@ -73,7 +73,7 @@ abstract class core_module {
             $this->view_object = new $class;
             $this->view_object->module = $this;
         } else {
-            if (debug) {
+            if (dev) {
                 throw new Exception('View not found, ' . $file);
             } else {
 
