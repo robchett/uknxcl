@@ -11,12 +11,12 @@ define('uri', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'Unknow
 define('ip', isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'Unknown_IP' );
 
 define('dev', strpos(host,'local.com') !== false || strpos(host,'dev.'));
-define('debug', ip == '2.26.246.27');
+define('debug', ip == '2.26.220.251');
 
 if(debug) {
-    error_reporting(-1);
+   error_reporting(-1);
+   ini_set('display_errors', '1');
 }
-
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
     define ('ie', true);
     define ('ie_ver', 0);
