@@ -1,11 +1,36 @@
 <?php
+/**
+ * Class db
+ */
 class db implements database_interface {
     /** @var PDO */
     public static $con;
+    /**
+     * @var
+     */
     public static $con_name;
+    /**
+     * @var array
+     */
     public static $con_arr = array();
+    /**
+     * @var int
+     */
     public static $timeout = 30;
 
+    public static $default_table_settings = array(
+        'ENGINE' => 'innoDB',
+        'CHARACTER SET' => 'utf8',
+    );
+
+    /**
+     * @param $host
+     * @param $db
+     * @param $username
+     * @param $password
+     * @param string $name
+     * @return bool
+     */
     public static function connect($host, $db, $username, $password, $name = 'default') {
         self::$con_arr[$name] = array(
             'connection' => new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password),
@@ -22,22 +47,32 @@ class db implements database_interface {
         self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
+    /**
+     *
+     */
     public static function reconnect() {
         $settings = self::$con_arr[self::$con_name]['settings'];
         self::connect($settings['host'], $settings['database'], $settings['username'], $settings['password'], self::$con_name);
     }
 
+    /**
+     *
+     */
     public static function default_connection() {
-        self::connect(get::ini('server', 'mysql'), get::ini('database', 'mysql'),  get::ini('username', 'mysql'), get::ini('password', 'mysql'));
+        self::connect(get::ini('server', 'mysql'), get::ini('database', 'mysql'), get::ini('username', 'mysql'), get::ini('password', 'mysql'));
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     public static function esc($str) {
-        mysql_real_escape_string($str);
+        return mysql_real_escape_string($str);
     }
 
-    /* @return array
-     * @param res PDOStatement
-     * @param class string
+    /**
+     * @param $res
+     * @param string $class
      * @return mixed
      */
     public static function fetch_all($res, $class = 'stdClass') {
@@ -48,6 +83,13 @@ class db implements database_interface {
         }
     }
 
+    /**
+     * @param $object
+     * @param array $fields_to_retrieve
+     * @param $options
+     * @param array $parameters
+     * @return string
+     */
     public static function get_query($object, array $fields_to_retrieve, $options, &$parameters = array()) {
         $fields = array();
         $where = 'WHERE 1 ';
@@ -102,6 +144,9 @@ class db implements database_interface {
 
     }
 
+    /**
+     * @return string
+     */
     public static function insert_id() {
         return self::$con->lastInsertId();
     }
@@ -114,10 +159,20 @@ class db implements database_interface {
         return $res->rowCount();
     }
 
+    /**
+     * @param $sql
+     * @return PDOStatement
+     */
     private static function prepare($sql) {
         return self::$con->prepare($sql);
     }
 
+    /**
+     * @param $sql
+     * @param array $params
+     * @param string $class
+     * @return bool|mixed
+     */
     public static function result($sql, $params = array(), $class = 'stdClass') {
         $res = self::query($sql, $params);
         if ($res) {
@@ -126,10 +181,19 @@ class db implements database_interface {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function has_timed_out() {
         return time() - self::$con_arr[self::$con_name]['created'] > self::$timeout;
     }
 
+    /**
+     * @param $sql
+     * @param array $params
+     * @param bool $throwable
+     * @return PDOStatement
+     */
     static function query($sql, $params = array(), $throwable = false) {
         // Attempt to reconnect if connection has gone away.
         if (self::has_timed_out()) {
@@ -175,7 +239,51 @@ class db implements database_interface {
         }
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public static function swap_connection($name) {
-        self::$con = self::$con_arr[$name];
+        if(isset(self::$con_arr[$name])) {
+            self::$con = self::$con_arr[$name];
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param $table
+     * @return bool
+     */
+    public static function table_exists($table) {
+        $res = self::query('show tables like "test1"');
+        return db::num($res);
+    }
+
+    /**
+     * @param $table string
+     * @param $column string
+     * @return bool
+     */
+    public static function column_exists($table, $column) {
+        $res = self::query("SHOW COLUMNS FROM `table` LIKE 'fieldname'");
+        return db::num($res);
+    }
+
+    public static function create_table($table_name, $fields = array(), $settings = array()) {
+        $sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name;
+        $column_strings = array();
+        foreach($fields as $field => $structure) {
+            $column_strings[] = '`' . $field . '` ' . $structure;
+        }
+        $sql .= ' (' . implode(',', $column_strings) . ') ';
+        $setting_strings = array();
+        $settings = array_merge(self::$default_table_settings, $settings);
+        foreach($settings as $setting => $value) {
+            $setting_strings[] = $setting . ' = ' . $value;
+        }
+        $sql .= implode(',', $setting_strings);
+        self::query($sql);
     }
 }
