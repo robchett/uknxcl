@@ -7,7 +7,7 @@ abstract class view extends core_view {
 
     public function get_view_ajax() {
         $content = $this->get_view();
-        ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '">' . $content . '</div>', '#' . $this->get_page_selector());
+        ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri ) . '">' . $content . '</div>', '#' . $this->get_page_selector());
     }
 
     public function get_page_selector() {
@@ -24,7 +24,7 @@ abstract class view extends core_view {
         </ul>
     </div>
     <div id="main">
-        <div id="' . $this->get_page_selector() . '">
+        <div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri ) . '">
             ' . $this->get_view() . '
         </div>
     </div>
