@@ -8,7 +8,15 @@ define('ajax', isset($_REQUEST['module']));
 define('host', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'Unknown_Host' );
 define('uri', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'Unknown_URI' );
 
-define('debug', strpos(host,'local.com') !== false || strpos(host,'dev.'));
+define('ip', isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'Unknown_IP' );
+
+define('dev', strpos(host,'local.com') !== false || strpos(host,'dev.'));
+define('debug', ip == '2.26.246.27');
+
+if(debug) {
+    error_reporting(-1);
+}
+
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
     define ('ie', true);
     define ('ie_ver', 0);
