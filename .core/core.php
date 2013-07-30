@@ -67,6 +67,7 @@ class core {
             $this->body = $this->module->view_object->get();
             ob_end_clean();
             $push_state = $this->module->get_push_state();
+            $push_state->type = $push_state::REPLACE;
             if ($push_state) {
                 $push_state->get();
             }
