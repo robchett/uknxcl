@@ -66,6 +66,7 @@ abstract class core_module {
 
     public function ajax_load() {
         $this->set_view();
+        $this->set_page();
         $this->view_object->get_view_ajax();
         $push_state = $this->get_push_state();
         ajax::push_state($push_state);
