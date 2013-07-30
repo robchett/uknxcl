@@ -7,6 +7,7 @@ class push_state {
     public $url = '';
     public $title = '';
     public $type;
+    public $push = 0;
 
 
     public function __construct() {
