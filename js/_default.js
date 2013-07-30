@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    $('body').on('click','a', function(e) {
-        if(typeof $(this).data('page-post') != 'undefined') {
+    $('body').on('click', 'a', function (e) {
+        if (typeof $(this).data('page-post') != 'undefined') {
             e.preventDefault();
             page($(this).attr('href'), $(this).data('page-post'));
         }
@@ -10,18 +10,23 @@ $(document).ready(function () {
 });
 
 function page_callback(json) {
-    if(json && json.push_state) {
-      toggle_page(json.push_state.data);
+    if (json && json.push_state) {
+        toggle_page($(json.push_state.data.id));
     }
 };
 
-function toggle_page(data) {
-    $('#main').children('div').hide();
-    $(data.id).show();
+function toggle_page($page) {
+    if ($page.css('z-index') != 2) {
+        $('#main').children('div').stop(true, true).css({'z-index': 1});
+        $page.css({'position': 'absolute', top: 0, left: '700px', 'z-index': 2}).show().animate({left: 0}, 1000, function () {
+            $('#main').children('div').hide();
+            $page.show();
+        });
 
-    $("a").removeClass('sel').parent('li').removeClass('sel');
-    var $links = $('a[href="' + data.url + '"]');
-    $links.addClass('sel').parent('li').addClass('sel');
+        $("a").removeClass('sel').parent('li').removeClass('sel');
+        var $links = $('a[href="' + $page.data('url') + '"]');
+        $links.addClass('sel').parent('li').addClass('sel');
+    }
 }
 
 
@@ -40,14 +45,18 @@ function startUpload(a) {
 function page(url, post, is_popped) {
     var module = post.module;
     var act = post.act;
-    is_popped = is_popped || 0;
-    if (!is_popped) {
+    post.is_popped = is_popped || 0;
+    var $page = $("div[data-url='" + url + "']");
+    if ($page.length) {
+        if (!is_popped) {
+            window.history.pushState(post, '', url);
+        }
+        toggle_page($page);
+    } else {
         delete post.module;
         delete post.act;
+        post.url = url;
         $.fn.ajax_factory(module, act, post);
-        //loaded_modules[url] = true;
-    } else {
-        toggle_page(post)
     }
 }
 
