@@ -145,7 +145,11 @@ function handle_json_response(json) {
         }
     })
     if (typeof json.push_state != "undefined") {
-        window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
+        if(json.push_state.push) {
+            window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
+        } else if (json.push_state.replace) {
+            window.history.replaceState(json.push_state.data, json.push_state.title, json.push_state.url);
+        }
     }
     if($.fn.ajax_factory.defaults.complete) {
         $.fn.ajax_factory.defaults.complete.each(function (method, i, json) {
