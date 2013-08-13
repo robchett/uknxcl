@@ -1,5 +1,10 @@
 <?php
 class launch_type extends table {
+
+    const WINCH = 3;
+    const AERO = 2;
+    const FOOT = 1;
+
     public $table_key = 'lid';
     public static $module_id = 9;
     public $lid;
