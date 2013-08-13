@@ -42,7 +42,7 @@ abstract class core_module {
         /** @var page $page */
         foreach ($pages as $page) {
             $html .= '<li ' . ($page->pid == core::$singleton->pid ? 'class="sel"' : '') . '>';
-            $html .= '<a href="' . $page->get_url() . '" data-page-post=\'{"module":"' . (!empty($page->module_name) ? $page->module_name : 'pages') . '","act":"ajax_load"' . (empty($page->module_name) ? ',"page":' . $page->pid : '') . '}\'>' . $page->nav_title . '</a></li>';
+            $html .= '<a href="' . $page->get_url() . '">' . $page->nav_title . '</a></li>';
         }
         //});
         return $html;
@@ -82,8 +82,8 @@ abstract class core_module {
             'act' => isset($_REQUEST['ajax_act']) ? $_REQUEST['ajax_act'] : 'ajax_load',
             'request' => $_REQUEST,
             'id' => '#' . $this->view_object->get_page_selector(),
-        );
-        $push_state->push = isset($_REQUEST['is_popped']) ? !$_REQUEST['is_popped'] : 0;
+        );;
+        $push_state->push = !isset($_REQUEST['is_popped']) ? true : !$_REQUEST['is_popped'];
         return $push_state;
     }
 }
