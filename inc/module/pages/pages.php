@@ -37,7 +37,7 @@ class pages extends core_module {
             'act' => 'ajax_load',
             'id' => '#' . $this->view_object->get_page_selector(),
         );
-        $push_state->push = isset($_REQUEST['is_popped']) ? !$_REQUEST['is_popped'] : 0;
+        $push_state->push = !isset($_REQUEST['is_popped']) ? true : !$_REQUEST['is_popped'];
         return $push_state;
     }
 }

@@ -13,7 +13,7 @@ class igc_supported_view extends view {
         <div class="add_flight_section upload">
             ' . $form2->get_html()->get() . '
             ' . $form->get_html()->get() . '
-            <a href="/add_flight" data-page-post=\'{"module":"add_flight","act":"ajax_load"}\' class="back button">Back</a>
+            <a href="/add_flight" class="back button">Back</a>
         </div>';
         $script = '
     $("body").on("change", "input#kml", function () {

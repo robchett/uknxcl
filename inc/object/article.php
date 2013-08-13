@@ -37,7 +37,7 @@ class article extends table {
         $html .= $this->get_title();
         $html .= '</div>';
         $html .= '<div class="content">';
-        $html .= (empty($this->snippet) ? $this->post : $this->snippet . '<a href="' . $this->get_url() . '" class="button" data-page-post=\'{"module":"news","act":"show_full", "page":' . $this->aid . '}\'>Read more</a>');
+        $html .= (empty($this->snippet) ? $this->post : $this->snippet . '<a href="' . $this->get_url() . '" class="button">Read more</a>');
         $html .= '</div>';
         $html .= '</article>';
         return $html;

@@ -11,7 +11,7 @@ class coordinate_view extends view {
         $html = '
         <div class="add_flight_section coordinate">
             ' . $form->get_html()->get() . '
-            <a href="/add_flight" data-page-post=\'{"module":"add_flight","act":"ajax_load"}\' class="back button">Back</a>
+            <a href="/add_flight" class="back button">Back</a>
         </div>';
         $script = '
     $("body").on("change","input#coords",function () {

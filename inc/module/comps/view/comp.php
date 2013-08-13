@@ -10,16 +10,12 @@ class comp_view extends view {
             $data = json_decode($file);
             $html .= $data->html;
         }
-        $html .= '<a class="comp_back button">Back To List</a>';
+        $html .= '<a href="/comps" class="comp_back button">Back To List</a>';
 
-        core::$inline_script[] =
-            "$('#comp_view a.comp_back').click(function () {
-                $('#main').scrollTop(0);
-            });
+        core::$inline_script[] = "
             map.callback = function() {
                 map.add_comp(" . $this->module->current->cid . ");
-            };
-            ";
+            }; ";
         return $html;
     }
 }
