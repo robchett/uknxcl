@@ -15,6 +15,22 @@ $(document).ready(function () {
                 var data = $target.data('ajax-post') || {};
                 data['origin'] = $target.attr('id');
                 $.fn.ajax_factory(module, act, data, options);
+            } else if ($target.is('a')) {
+                var href = $target.attr('href');
+                if (typeof href != "undefined") {
+                    if (!href.match('http')) {
+                        var post = {module:'core', act:'load_page'};
+                        var options = {call_as_uri: href, loading_target: '#main' };
+                        event.preventDefault();
+                        var $page = $("div[data-url='" + href + "']");
+                        if ($page.length) {
+                            window.history.pushState(post, '', href);
+                            toggle_page($page);
+                        } else {
+                            $.fn.ajax_factory('core', 'load_page', post, options);
+                        }
+                    }
+                }
             }
         }
     });
@@ -101,7 +117,7 @@ $(document).ready(function () {
         $.extend(post, ({'module': module, 'act': act}));
         $(".error_message").remove();
         $.ajax({
-            url: '/',
+            url: options.call_as_uri || '/',
             global: false,
             async: true,
             type: 'POST',
@@ -145,13 +161,13 @@ function handle_json_response(json) {
         }
     })
     if (typeof json.push_state != "undefined") {
-        if(json.push_state.push) {
+        if (json.push_state.push) {
             window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
         } else if (json.push_state.replace) {
             window.history.replaceState(json.push_state.data, json.push_state.title, json.push_state.url);
         }
     }
-    if($.fn.ajax_factory.defaults.complete) {
+    if ($.fn.ajax_factory.defaults.complete) {
         $.fn.ajax_factory.defaults.complete.each(function (method, i, json) {
             window[method](json);
         }, json);

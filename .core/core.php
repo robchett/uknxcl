@@ -25,14 +25,18 @@ class core {
         db::default_connection();
         $this->path = explode('/', trim(uri, '/'));
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
-			
+
         if (!(isset($this->path[0])) || empty($this->path[0])) {
             $this->path[0] = 'latest';
         }
         define('cms', $this->path[0] == 'cms');
 
         if (isset($_REQUEST['module'])) {
-            $module = new $_REQUEST['module']();
+            if ($_REQUEST['module'] == 'core' || $_REQUEST['module'] == 'this') {
+                $module = $this;
+            } else {
+                $module = new $_REQUEST['module']();
+            }
             $module->{$_REQUEST['act']}();
             ajax::do_serve();
             exit();
@@ -49,6 +53,10 @@ class core {
         core::$js[] = '/js/jquery/colorbox.js';
         core::$js[] = '/js/';
 
+        $this->load_page();
+    }
+
+    public function load_page() {
         if (isset($this->path[0])) {
             if (!is_numeric($this->path[0])) {
                 $this->module_name = $this->path[0];
@@ -61,17 +69,20 @@ class core {
 
         if (class_exists($this->module_name)) {
             $this->module = new $this->module_name();
-
-            ob_start();
             $this->module->__controller($this->path);
             $this->body = $this->module->view_object->get();
-            ob_end_clean();
             $push_state = $this->module->get_push_state();
             if ($push_state) {
-                $push_state->type = push_state::REPLACE;
-                $push_state->get();
+                if(!ajax) {
+                    $push_state->type = push_state::REPLACE;
+                    $push_state->get();
+                } else {
+                    ajax::push_state($push_state);
+                }
             }
-            require_once(root . '/index_screen.php');
+            if(!ajax) {
+                require_once(root . '/index_screen.php');
+            }
         }
     }
 

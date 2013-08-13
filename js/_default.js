@@ -17,15 +17,17 @@ function page_callback(json) {
 
 function toggle_page($page) {
     if ($page.css('z-index') != 2) {
-        $('#main').children('div').stop(true, true).css({'z-index': 1});
+        var $main = $('#main');
+        $main.children('div').stop(true, true).css({'z-index': 1});
         $page.css({'position': 'absolute', top: 0, left: '700px', 'z-index': 2}).show().animate({left: 0}, 1000, function () {
-            $('#main').children('div').hide();
+            $main.children('div').hide();
             $page.show();
         });
 
         $("a").removeClass('sel').parent('li').removeClass('sel');
         var $links = $('a[href="' + $page.data('url') + '"]');
         $links.addClass('sel').parent('li').addClass('sel');
+        $main.scrollTop(0);
     }
 }
 
