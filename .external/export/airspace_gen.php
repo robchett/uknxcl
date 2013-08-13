@@ -274,7 +274,7 @@ function binary_left_shift($lat) {
 function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0, $top) {
     $out = "";
     $out2 = array();
-    $angularDistance = $cords [2] / 6371000;
+    $angularDistance = $cords [2] / geometry::EARTH_RADIUS;
     $count = 0;
     if ($dir < 0) $totat_angle = ($end - $start);
     else {

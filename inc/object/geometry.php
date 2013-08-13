@@ -1,6 +1,9 @@
 <?php
 
 class geometry {
+
+    const EARTH_RADIUS = 6371000;
+
     static function Decimalize($a) {
 
     }
