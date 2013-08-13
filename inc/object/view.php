@@ -15,6 +15,7 @@ abstract class view extends core_view {
     }
 
     public function get() {
+        if(!ajax) {
         core::$inline_script[] = 'loaded_modules = {"' . uri . '":true};';
         return '
 <div id="left_col">
@@ -52,6 +53,9 @@ abstract class view extends core_view {
     <div id="map"><p class="loading">Google Maps are loading...</p></div>
     <div id="map3d"><p class="loading">Google Earth is loading...</p></div>
 </div>';
+    } else {
+            $this->get_view_ajax();
+        }
     }
 
     public function get_ajax() {

@@ -22,6 +22,7 @@ class _default_view extends view {
         </thead>';
         //$comps->iterate(function ($comp) use (&$html) {
         foreach ($comps as $comp) {
+            /** @var comp $comp */
             $html .= '
             <tr>
                 <td>' . $comp->type . '</td>
@@ -30,7 +31,7 @@ class _default_view extends view {
                 <td>' . $comp->class . '</td>
                 <td>' . $comp->title . '</td>
                 <td>' . date('d/m/Y', strtotime($comp->date)) . '</td>
-                <td><a class="button" data-page-post=\'{"module":"comps","act":"ajax_load", "cid":"' . $comp->cid . '"}\' >View</a></td>
+                <td><a class="button" href="' . $comp->get_url() . '" >View</a></td>
             </tr>';
         }
         //});
