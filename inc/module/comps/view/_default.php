@@ -30,7 +30,7 @@ class _default_view extends view {
                 <td>' . $comp->class . '</td>
                 <td>' . $comp->title . '</td>
                 <td>' . date('d/m/Y', strtotime($comp->date)) . '</td>
-                <td><a class="button" onclick="map.add_comp(' . $comp->cid . ')">View</a></td>
+                <td><a class="button" data-page-post=\'{"module":"comps","act":"ajax_load", "cid":"' . $comp->cid . '"}\' >View</a></td>
             </tr>';
         }
         //});
@@ -39,8 +39,6 @@ class _default_view extends view {
 
 
         $html .= '<div id="comp_view">';
-        $html .= '<div id="WriteHereComp"></div>';
-        $html .= '<a class="comp_back button">Back To List</a>';
         $html .= "</div>";
 
         $html .= "</div>";
@@ -49,12 +47,7 @@ class _default_view extends view {
         $script =
             "$('#comp').on('click','#comp_list ul li a',function () {
                 cpid = $(this).attr('data-click');
-                map.add_comp(cpid);
-                $('#main').scrollTop(0);
-            });
-            $('#comp_view a.comp_back').click(function () {
-                $('#comp_inner').animate({'left': 0});
-                $('#main').scrollTop(0);
+                page('/comp/' + cpid);
             });";
 
         if (ajax) {
