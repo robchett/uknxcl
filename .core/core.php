@@ -23,7 +23,7 @@ class core {
         self::$page_config = new page_config();
         self::$singleton = $this;
         db::default_connection();
-        $this->path = explode('/', trim(uri, '/'));
+        $this->set_path(uri);
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
         if (!(isset($this->path[0])) || empty($this->path[0])) {
@@ -95,6 +95,10 @@ class core {
         }
         $this->pid = (isset($this->page->pid) ? $this->page->pid : 0);
 
+    }
+
+    public function set_path($uri) {
+       $this->path = explode('/', trim(uri, '/'));
     }
 
     public static function get_backtrace() {
