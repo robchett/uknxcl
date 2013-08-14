@@ -32,7 +32,7 @@ class get {
     }
 
     public static function header_redirect($url = '', $code = 404) {
-        header('Location: http://uk.local.com/');
+        header('Location:' . (!strstr('http', $url) ? 'http://' . host . '/' . trim($url,'/') : $url ));
         die();
     }
 
