@@ -5,7 +5,7 @@ class html_element {
         $this->set_standard_attributes();
         $html = '';
         foreach ($this->attributes as $key => $val) {
-            $html .= $key . ' = \'' . $val . '\' ';
+            $html .= $key . ' = \'' . str_replace('\'', '"', $val) . '\' ';
 
         }
         return $html;
