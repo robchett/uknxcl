@@ -12,7 +12,7 @@ class field_select extends field {
 
     public function get_html() {
         $html = '';
-        $html .= '<select id="' . $this->field_name . '" name="' . $this->field_name . '" ' . $this->get_class() . ' ' . ($this->required ? ' false' : '') . '">' . "\n";
+        $html .= '<select ' . $this->get_attributes() . '>' . "\n";
         if (!empty($this->default)) $html .= '<option value="default">' . $this->default . '</option>' . "\n";
         foreach ($this->options as $k => $v) {
             $html .= '<option value="' . $k . '" ' . ($this->parent_form->{$this->field_name} == $k ? 'selected="selected"' : '') . '>' . $v . '</option>' . "\n";
