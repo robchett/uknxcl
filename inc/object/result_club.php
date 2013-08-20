@@ -43,6 +43,7 @@ class result_club extends result {
             $html .= $data->write_table_header($data->max_flights, $data->class_primary_key);
             $html .= $Clubarray[$j]->content;
             $html .= "</table>";
+            $html .= "</div>";
         }
 
         $html .= '</div>';
