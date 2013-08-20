@@ -60,7 +60,7 @@ class pilot extends table {
     public function output_table($pos) {
         $flights = implode('', $this->flights);
         for ($i = count($this->flights); $i < $this->max_flights; $i++) {
-            $flights .= '<td/>';
+            $flights .= '<td></td>';
         }
         return '
 <tr class="class' . $this->class . '">
