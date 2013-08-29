@@ -4,7 +4,7 @@ class result_club extends result {
     function make_table(league_table $data) {
         $html = '';
         $pilots = 2000;
-        if ($data->official) {
+        if ($data->options->official) {
             $pilots = 4;
         }
         $pilots_array = array();

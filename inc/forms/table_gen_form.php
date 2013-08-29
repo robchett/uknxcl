@@ -19,10 +19,10 @@ class table_gen_form extends form {
                 ),
             form::create('field_select', 'pilot')
                 ->set_attr('label', 'Pilot:')
-                ->set_attr('default', '')
                 ->set_attr('options', alphabeticalise::pilot_array())
                 ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
-                ->add_class('pilot_select'),
+                ->add_class('pilot_select')
+                ->set_attr('disabled', true),
             form::create('field_string', 'year')
                 ->set_attr('label', 'Season:')
                 ->set_attr('help', "Choose a specific year 'xxxx' or a range 'xxxx-yyyy' or multiple|'xxxx,yyyy'. These can be combined so ie. a range plus some other|'xxxx-yyyy,zzzz' (note don't add the '').")
@@ -63,7 +63,7 @@ class table_gen_form extends form {
             form::create('field_boolean', 'noMulti')
                 ->set_attr('label', 'No Multipliers')
                 ->set_attr('help', 'Do not add multipliers for qualifying flights, useful for looking up records.'),
-            form::create('field_boolean', 'TFlight')
+            form::create('field_boolean', 'show_top_4')
                 ->set_attr('label', 'Top Flights')
                 ->set_attr('help', 'Show a sub table with the highest scoring flights in each category.'),
             form::create('field_boolean', 'View')
@@ -108,10 +108,34 @@ class table_gen_form extends form {
         $this->h2 = 'Advanced Options';
     }
 
+    public function get_html() {
+        core::$inline_script[] = '$("#' . $this->id . ' #t").change(function() {
+            if($(this).val() == 2) {
+                $("#' . $this->id . ' #pilot").attr("disabled", false);
+            } else {
+                $("#' . $this->id . ' #pilot").attr("disabled", true);
+            }
+        });';
+        return parent::get_html();
+    }
+
+    public function set_from_options(league_table_options $options) {
+        foreach ($options as $key => $value) {
+            if (isset($this->fields[$key])) {
+                $this->$key = $value;
+            }
+        }
+        if (!$options->minimum_score) {
+            $this->no_min = true;
+        }
+        if ($options->pilot_id) {
+            unset($this->get_field_from_name('pilot')->attributes['disabled']);
+        }
+    }
+
     public function do_submit() {
         $table = new league_table();
         $table->set_from_request();
-
-        ajax::update('<div id="generated_tables">' . $table->get_table() . '</div>');
+        get::header_redirect($table->get_url() . '?module=core&act=load_page');
     }
 }

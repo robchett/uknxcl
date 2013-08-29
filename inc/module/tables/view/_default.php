@@ -2,16 +2,22 @@
 
 class _default_view extends view {
 
+    /** @var  tables $module */
+    public $module;
+
+
     public function get_view() {
-        $table = new league_table();
-        $table->use_preset(0);
-        $table->set_year(date('Y'));
-        $table->type = 0;
+        /** @var league_table $table */
+        $table = $this->module->current;
+        //$table->use_preset(0);
+        //$table->type = 0;
         $html = '';
         $form = new table_gen_form_basic();
+        $form->set_from_options($table->options);
         $form->post_submit_text = $this->get_key();
         $html .= $form->get_html()->get();
         $form = new table_gen_form();
+        $form->set_from_options($table->options);
         $form->post_submit_text = $this->get_key();
         $html .= $form->get_html()->get();
         $html .= '<div id="generated_tables">' . $table->get_table() . '</div>';
