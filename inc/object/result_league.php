@@ -6,7 +6,7 @@ class result_league extends result {
         $array = array();
         /* @var $t flight */
         foreach ($data->flights as $t) {
-            if ($data->split_classes && $t->class == 5) {
+            if ($data->options->split_classes && $t->class == 5) {
                 $t->ClassID += 8000;
             }
             if (isset ($array [$t->ClassID])) {
@@ -14,7 +14,7 @@ class result_league extends result {
             } else {
                 /** @var $class pilot */
                 $class = new $data->class();
-                $class->set_from_flight($t, $data->max_flights, $data->split_classes);
+                $class->set_from_flight($t, $data->max_flights, $data->options->split_classes);
                 $array[$t->ClassID] = $class;
             }
         }

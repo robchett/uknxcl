@@ -36,14 +36,16 @@ class pilot_official extends pilot {
         $this->total += $flight->score;
         $this->number_of_flights = 1;
         $this->flights[] = $flight->to_print()->get();
-        if ($flight->defined)
+        if ($flight->defined) {
             $this->defined = true;
-        else
+        } else {
             $this->undefined = true;
-        if ($split == 1)
+        }
+        if ($split == 1) {
             $this->class = $flight->class;
-        else
+        } else {
             $this->class = 1;
+        }
         $this->id = $flight->ClassID;
         $this->name = $flight->p_name;
     }
