@@ -112,6 +112,7 @@ class track {
             throw new Exception('Trying to calculate stats on a track before it has been parsed.');
         }
         $stat_object->min = $this->track_points->first()->$field;
+        $stat_object->min_point = $this->track_points->first();
         foreach ($this->track_points as $point) {
             if ($point->$field < $stat_object->min) {
                 $stat_object->min = $point->$field;
