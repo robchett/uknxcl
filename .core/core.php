@@ -98,7 +98,8 @@ class core {
     }
 
     public function set_path($uri) {
-       $this->path = explode('/', trim($uri, '/'));
+       $uri_no_qs = parse_url($uri, PHP_URL_PATH);
+       $this->path = explode('/', trim($uri_no_qs, '/'));
     }
 
     public static function get_backtrace() {
