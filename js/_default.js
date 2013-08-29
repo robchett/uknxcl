@@ -18,11 +18,14 @@ function page_callback(json) {
 function toggle_page($page) {
     if ($page.css('z-index') != 2) {
         var $main = $('#main');
-        $main.children('div').stop(true, true).css({'z-index': 1});
-        $page.css({'position': 'absolute', top: 0, left: '700px', 'z-index': 2}).show().animate({left: 0}, 1000, function () {
-            $main.children('div').hide();
+        $page.hide();
+        $main.stop(true, true).addClass('flipped');
+        $children = $main.children('div');
+        setTimeout(function() {
+            $children.hide();
             $page.show();
-        });
+            $main.removeClass('flipped');
+        }, 600);
 
         $("a").removeClass('sel').parent('li').removeClass('sel');
         var $links = $('a[href="' + $page.data('url') + '"]');
@@ -30,8 +33,6 @@ function toggle_page($page) {
         $main.scrollTop(0);
     }
 }
-
-
 window.onresize = function () {
     if (map)map.resize()
 };
