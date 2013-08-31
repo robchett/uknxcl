@@ -23,7 +23,7 @@ function UKNXCL_Map($container) {
         });
     }
 
-    this.callback = null;
+    this.callback = function () {}
 
     this.$container = $container;
     this.$body = $('body');
@@ -81,29 +81,26 @@ function UKNXCL_Map($container) {
             zIndex: 1
         });
 
-        /*        this.GeoXMLsingle = new geoXML3.Parser({
-         map: this.internal_map,
-         singleInfoWindow: true,
-         processStyles: true,
-         afterParse: function (doc) {
-         var path = doc[0].baseUrl.split('/');
-         if ((path[3].isNumber())) {
-         map.kmls[path[3]].google_data = doc[0];
-         map.kmls[path[3]].is_ready();
-         } else {
-         map.kmls[path[4]].google_data = doc[0];
-         map.kmls[path[4]].is_ready();
-         }
-         }
-         });
-         this.GeoXMLcomp = new geoXML3.Parser({
-         map: this.internal_map,
-         singleInfoWindow: true,
-         afterParse: function (doc) {
-         map.comp.google_data = doc[0];
-         map.comp.is_ready();
-         }
-         });*/
+        this.GeoXMLsingle = new geoXML3.Parser({
+            map: this.internal_map,
+            singleInfoWindow: true,
+            processStyles: true,
+            afterParse: function (doc) {
+                var path = doc[0].url.split('&id=');
+                if ((path[1].isNumber())) {
+                    map.kmls[path[1]].google_data = doc[0];
+                    map.kmls[path[1]].is_ready();
+                }
+            }
+        });
+        this.GeoXMLcomp = new geoXML3.Parser({
+            map: this.internal_map,
+            singleInfoWindow: true,
+            afterParse: function (doc) {
+                map.comp.google_data = doc[0];
+                map.comp.is_ready();
+            }
+        });
         map.callback();
     };
 
@@ -113,7 +110,7 @@ function UKNXCL_Map($container) {
         obj.center();
 
         if (obj.type === 0 && map.mode === map.MAP) {
-            this.internal_map.fitBounds(obj.get_bounds());
+            //this.internal_map.fitBounds(obj.get_bounds());
         }
         //this.$slider.slider({max: obj.size()});
         this.graph.swap(obj);
@@ -276,40 +273,40 @@ function UKNXCL_Map($container) {
     this.init_earth = function () {
         $('#map').hide();
         var $earth = $('#map3d').show().css({display: 'block'});
-        google.earth.createInstance('map3d', function (instance) {
-            $earth.children('p.loading').remove();
-            map.mode = map.EARTH;
-            map.ge = instance;
-            map.ge.getWindow().setVisibility(true);
-            map.ge.getNavigationControl().setVisibility(map.ge.VISIBILITY_AUTO);
-            map.ge.getLayerRoot().enableLayerById(map.ge.LAYER_ROADS, true);
-            var la = map.ge.createLookAt('');
-            la.set(52, -2, 5, map.ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 500000);
-            map.ge.getView().setAbstractView(la);
-            google.earth.addEventListener(map.ge.getGlobe(), 'mousedown', function (event) {
-                map._earth_drag = false;
-            });
-            google.earth.addEventListener(map.ge.getGlobe(), 'mousemove', function (event) {
-                map._earth_drag = true;
-            });
-            google.earth.addEventListener(map.ge.getGlobe(), 'mouseup', function (event) {
-                if (map.planner.enabled) {
-                    if (!map._earth_drag && !map.dragInfo) {
-                        map.planner.addWaypoint(event.getLatitude(), event.getLongitude(), 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue.png');
-                    }
-                    map.planner.writeplanner();
-                    map.planner.draw();
-                }
-                map.dragInfo = null;
-                map.mousedown = false;
-            });
-            $earth.css({display: 'block'});
-            if (map.callback) {
-                map.callback();
-            }
-        }, function () {
-            map.load_map();
-        });
+        /*        google.earth.createInstance('map3d', function (instance) {
+         $earth.children('p.loading').remove();
+         map.mode = map.EARTH;
+         map.ge = instance;
+         map.ge.getWindow().setVisibility(true);
+         map.ge.getNavigationControl().setVisibility(map.ge.VISIBILITY_AUTO);
+         map.ge.getLayerRoot().enableLayerById(map.ge.LAYER_ROADS, true);
+         var la = map.ge.createLookAt('');
+         la.set(52, -2, 5, map.ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 500000);
+         map.ge.getView().setAbstractView(la);
+         google.earth.addEventListener(map.ge.getGlobe(), 'mousedown', function (event) {
+         map._earth_drag = false;
+         });
+         google.earth.addEventListener(map.ge.getGlobe(), 'mousemove', function (event) {
+         map._earth_drag = true;
+         });
+         google.earth.addEventListener(map.ge.getGlobe(), 'mouseup', function (event) {
+         if (map.planner.enabled) {
+         if (!map._earth_drag && !map.dragInfo) {
+         map.planner.addWaypoint(event.getLatitude(), event.getLongitude(), 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue.png');
+         }
+         map.planner.writeplanner();
+         map.planner.draw();
+         }
+         map.dragInfo = null;
+         map.mousedown = false;
+         });
+         $earth.css({display: 'block'});
+         if (map.callback) {
+         map.callback();
+         }
+         }, function () {*/
+        map.load_map();
+        //});
     };
     this.resize();
 }
@@ -327,7 +324,7 @@ function Track(id, temp) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLsingle.parse('/uploads/track/' + this.temp + this.id + '/track.kmz', null, id);
+            map.GeoXMLsingle.parse('?module=flight&act=download&type=kmz&id=' + id, null, id);
         } else {
             map.parseKML('/uploads/track/' + this.temp + this.id + '/track_earth.kmz', this);
         }
@@ -999,6 +996,7 @@ function Planner(parent) {
         this.draw();
         this.writeplanner();
         this.count--;
+        return false;
     };
 
     this.calculate_distances = function () {
@@ -1231,7 +1229,11 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         if (map.mode == map.EARTH) {
             this.index(i).setVisibility(bool);
         } else {
-            this._map_recursiveHide(earthObject);
+            if(bool) {
+                this._map_recursiveHide(this.index(i));
+            } else {
+                this._map_recursiveShow(this.index(i));
+            }
         }
     }
 
@@ -1253,6 +1255,28 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 var kml = ths.kml.getFeatures().getChildNodes().item(index);
                 ths.push(kml);
                 ths.kml = kml;
+            }, this);
+        }
+    }
+
+    this._map_load = function () {
+        if (this.data.type == "comp") {
+            this.root = map.comp;
+            this.push(this.root.google_data.structure[0][0]);
+            this.path = this.root.google_data.structure[0][0];
+        } else if (this.data.type == "flight") {
+            this.root = map.kmls[this.root_data.id];
+            this.push(this.root.google_data.structure[0][0]);
+            this.path = this.root.google_data.structure[0][0];
+        } else {
+            this.root = map.airspace;
+            this.kml = map.airspace.google_data.root;
+        }
+        if (this.data.path !== null) {
+            this.data.path.each(function (index, i, ths) {
+                ths.path = ths.path[index];
+                ths.push(ths.path);
+
             }, this);
         }
     }
@@ -1288,6 +1312,37 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         this.root.center();
     }
 
+    this._map_toggle = function () {
+        if (this.$li.hasClass('visible')) {
+            if (this.$parent_li.hasClass('radioFolder')) {
+                return;
+            }
+            if (this.$li.hasClass('radioFolder') || this.$li.hasClass('KmlFolder')) {
+                this.recursiveHide(this.last());
+            }
+            this.$li.removeClass('visible');
+            this.$li.find('li').removeClass('visible');
+        } else {
+            if (this.$parent_li.hasClass('radioFolder')) {
+                this.recursiveHide(this.index(-1));
+                this.setVisibility(-1, true);
+                this.$parent_li.addClass('visible');
+                this.$li.siblings("li").removeClass('visible');
+            }
+            this.setVisibility();
+            this.$li.addClass('visible');
+            if (this.$li.hasClass('radioFolder')) {
+                this.recursiveShow(this.last());
+                this.$li.find('li').eq(0).addClass('visible');
+
+            } else {
+                this.$li.find('li').addClass('visible');
+                this.recursiveShow(this.last());
+            }
+        }
+        this.root.center();
+    }
+
     this._earth_recursiveHide = function (earthObject) {
         if (typeof earthObject == 'object' && typeof earthObject.getFeatures == 'function') {
             var siblings = earthObject.getFeatures().getChildNodes();
@@ -1296,6 +1351,16 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 this.recursiveHide(siblings.item(i));
             }
             earthObject.setVisibility(false);
+        }
+    }
+
+    this._map_recursiveHide = function (relative_placemarks) {
+        for (var i = 0; i < relative_placemarks.length; i++) {
+            if (typeof relative_placemarks[i] == 'object') {
+                this.recursiveHide(relative_placemarks[i]);
+            } else {
+                this.root.google_data.placemarks[relative_placemarks[i]].polyline.setMap(null);
+            }
         }
     }
 
@@ -1310,7 +1375,14 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         }
     }
 
-    this._map_load = function () {
+    this._map_recursiveShow = function (relative_placemarks) {
+        for (var i = 0; i < relative_placemarks.length; i++) {
+            if (typeof relative_placemarks[i] == 'object') {
+                this.recursiveShow(relative_placemarks[i]);
+            } else {
+                this.root.google_data.placemarks[relative_placemarks[i]].polyline.setMap(map.internal_map);
+            }
+        }
     }
 }
 
@@ -1319,53 +1391,6 @@ $('body').on('click', '.kmltree .toggler', function (event) {
     kmlPath = new UKNXCL_Map.KmlPath(event, $(this));
     kmlPath.load();
     kmlPath.toggle();
-    if (map.mode == map.EARTH) {
-    } else {
-        if (data.type == "comp") {
-            var root = map.comp;
-            var kml = map.comp.google_data;
-        } else if (data.type == 'flight') {
-            var root = map.kmls[root_data.id];
-            var kml = map.kmls[root_data.id].google_data;
-        } else {
-            if (typeof data.path[0] != 'undefined') {
-                if ($li.hasClass('visible')) {
-                    map.airspace.setVisible(map.airspace.getType(data.path[0]), false);
-                } else {
-                    map.airspace.setLoaded(map.airspace.getType(data.path[0]), true);
-                }
-            } else {
-                if ($li.hasClass('visible')) {
-                    map.airspace.loadAll(false);
-                } else {
-                    map.airspace.loadAll(true);
-                }
-            }
-            return false;
-        }
-
-        if (typeof data.path[0] != 'undefined') {
-            if ($li.hasClass('visible')) {
-                root.toggle_track(data.path[0], false);
-                $li.removeClass('visible');
-            } else {
-                root.toggle_track(data.path[0], true);
-                $li.addClass('visible');
-            }
-        } else {
-            if ($li.hasClass('visible')) {
-                root.hide();
-                $li.removeClass('visible');
-                $li.find('li').removeClass('visible');
-            } else {
-                root.show();
-                $li.addClass('visible');
-                $li.find('li').addClass('visible');
-            }
-
-        }
-
-    }
 });
 
 $('body').on('click', '.kmltree .expander', function () {

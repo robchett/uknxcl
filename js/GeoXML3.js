@@ -256,6 +256,32 @@ geoXML3.Parser = function (options) {
         return coordListA;
     }
 
+    function buildStructure(xml, structure, placemark_index) {
+        if(xml.childElementCount) {
+            for(var i = 0; i < xml.childElementCount; i++) {
+                var Node = xml.children[i];
+                if(Node.nodeName == 'Folder') {
+                    sub = [];
+                    var res = buildStructure(Node, sub, placemark_index);
+                    placemark_index = res[1];
+                    structure.push(res[0]);
+                } else if (Node.nodeName == 'Placemark') {
+                    structure.push(placemark_index);
+                    placemark_index++;
+                } else {
+                    var res = buildStructure(Node, [], placemark_index);
+                    placemark_index = res[1];
+                    if(res[0].length) {
+                        for(var j=0; j<res[0].length; j++) {
+                            structure.push(res[0][j]);
+                        }
+                    }
+                }
+            }
+        }
+        return [structure, placemark_index];
+    }
+
     var render = function (responseXML, doc) {
         // Callback for retrieving a KML document: parse the KML and display it on the map
         if (!responseXML) {
@@ -275,6 +301,7 @@ geoXML3.Parser = function (options) {
             doc.networkLinks = [];
             doc.gpolygons = [];
             doc.gpolylines = [];
+            doc.structure = [];
 
             // Declare some helper functions in local scope for better performance
             var nodeValue = geoXML3.nodeValue;
@@ -314,8 +341,9 @@ geoXML3.Parser = function (options) {
                     doc.markers[i].active = false;
                 }
             }
-            var placemark, node, coords, path, marker, poly;
-            var placemark, coords, path, pathLength, marker, polygonNodes, coordList;
+            doc.structure = buildStructure(responseXML, [], 0);
+
+            var placemark, node, marker, poly, pathLength,  polygonNodes, coordList;
             var placemarkNodes = responseXML.getElementsByTagName('Placemark');
             for (pm = 0; pm < placemarkNodes.length; pm++) {
                 // Init the placemark object
@@ -474,146 +502,6 @@ geoXML3.Parser = function (options) {
                         }
                         doc.markers[i].setMap(null);
                         doc.markers.splice(i, 1);
-                    }
-                }
-            }
-
-            // Parse ground overlays
-            if (!!doc.reload && !!doc.groundoverlays) {
-                for (i = 0; i < doc.groundoverlays.length; i++) {
-                    doc.groundoverlays[i].active = false;
-                }
-            }
-
-            if (!!doc) {
-                doc.groundoverlays = doc.groundoverlays || [];
-            }
-            // doc.groundoverlays =[];
-            var groundOverlay, color, transparency, overlay;
-            var groundNodes = responseXML.getElementsByTagName('GroundOverlay');
-            for (i = 0; i < groundNodes.length; i++) {
-                node = groundNodes[i];
-
-                // Init the ground overlay object
-                groundOverlay = {
-                    name: geoXML3.nodeValue(node.getElementsByTagName('name')[0]),
-                    description: geoXML3.nodeValue(node.getElementsByTagName('description')[0]),
-                    icon: {href: geoXML3.nodeValue(node.getElementsByTagName('href')[0])},
-                    latLonBox: {
-                        north: parseFloat(geoXML3.nodeValue(node.getElementsByTagName('north')[0])),
-                        east: parseFloat(geoXML3.nodeValue(node.getElementsByTagName('east')[0])),
-                        south: parseFloat(geoXML3.nodeValue(node.getElementsByTagName('south')[0])),
-                        west: parseFloat(geoXML3.nodeValue(node.getElementsByTagName('west')[0]))
-                    }
-                };
-                if (!!google.maps) {
-                    doc.bounds = doc.bounds || new google.maps.LatLngBounds();
-                    doc.bounds.union(new google.maps.LatLngBounds(new google.maps.LatLng(groundOverlay.latLonBox.south, groundOverlay.latLonBox.west), new google.maps.LatLng(groundOverlay.latLonBox.north, groundOverlay.latLonBox.east)));
-                }
-
-                // Opacity is encoded in the color node
-                var colorNode = node.getElementsByTagName('color');
-                if (colorNode && colorNode.length && (colorNode.length > 0)) {
-                    groundOverlay.opacity = geoXML3.getOpacity(nodeValue(colorNode[0]));
-                } else {
-                    groundOverlay.opacity = 0.45;
-                }
-
-                doc.groundoverlays.push(groundOverlay);
-
-                if (!!parserOptions.createOverlay) {
-                    // User-defined overlay handler
-                    parserOptions.createOverlay(groundOverlay, doc);
-                } else { // ! user defined createOverlay
-                    // Check to see if this overlay was created on a previous load of this document
-                    var found = false;
-                    if (!!doc) {
-                        doc.groundoverlays = doc.groundoverlays || [];
-                        if (doc.reload) {
-                            overlayBounds = new google.maps.LatLngBounds(new google.maps.LatLng(groundOverlay.latLonBox.south, groundOverlay.latLonBox.west), new google.maps.LatLng(groundOverlay.latLonBox.north, groundOverlay.latLonBox.east));
-                            var overlays = doc.groundoverlays;
-                            for (i = overlays.length; i--;) {
-                                if ((overlays[i].bounds().equals(overlayBounds)) && (overlays.url_ === groundOverlay.icon.href)) {
-                                    found = overlays[i].active = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (!found) {
-                        // Call the built-in overlay creator
-                        overlay = createOverlay(groundOverlay, doc);
-                        overlay.active = true;
-                    }
-                }
-                if (!!doc.reload && !!doc.groundoverlays && !!doc.groundoverlays.length) {
-                    var overlays = doc.groundoverlays;
-                    for (i = overlays.length; i--;) {
-                        if (!overlays[i].active) {
-                            overlays[i].remove();
-                            overlays.splice(i, 1);
-                        }
-                    }
-                    doc.groundoverlays = overlays;
-                }
-            }
-            // Parse network links
-            var networkLink;
-            var docPath = document.location.pathname.split('/');
-            docPath = docPath.splice(0, docPath.length - 1).join('/');
-            var linkNodes = responseXML.getElementsByTagName('NetworkLink');
-            for (i = 0; i < linkNodes.length; i++) {
-                node = linkNodes[i];
-
-                // Init the network link object
-                networkLink = {
-                    name: geoXML3.nodeValue(node.getElementsByTagName('name')[0]),
-                    link: {
-                        href: geoXML3.nodeValue(node.getElementsByTagName('href')[0]),
-                        refreshMode: geoXML3.nodeValue(node.getElementsByTagName('refreshMode')[0])
-                    }
-                };
-
-                // Establish the specific refresh mode
-                if (networkLink.link.refreshMode === '') {
-                    networkLink.link.refreshMode = 'onChange';
-                }
-                if (networkLink.link.refreshMode === 'onInterval') {
-                    networkLink.link.refreshInterval = parseFloat(geoXML3.nodeValue(node.getElementsByTagName('refreshInterval')[0]));
-                    if (isNaN(networkLink.link.refreshInterval)) {
-                        networkLink.link.refreshInterval = 0;
-                    }
-                } else if (networkLink.link.refreshMode === 'onChange') {
-                    networkLink.link.viewRefreshMode = geoXML3.nodeValue(node.getElementsByTagName('viewRefreshMode')[0]);
-                    if (networkLink.link.viewRefreshMode === '') {
-                        networkLink.link.viewRefreshMode = 'never';
-                    }
-                    if (networkLink.link.viewRefreshMode === 'onStop') {
-                        networkLink.link.viewRefreshTime = geoXML3.nodeValue(node.getElementsByTagName('refreshMode')[0]);
-                        networkLink.link.viewFormat = geoXML3.nodeValue(node.getElementsByTagName('refreshMode')[0]);
-                        if (networkLink.link.viewFormat === '') {
-                            networkLink.link.viewFormat = 'BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]';
-                        }
-                    }
-                }
-
-                if (!/^[\/|http]/.test(networkLink.link.href)) {
-                    // Fully-qualify the HREF
-                    networkLink.link.href = docPath + '/' + networkLink.link.href;
-                }
-
-                // Apply the link
-                if ((networkLink.link.refreshMode === 'onInterval') && (networkLink.link.refreshInterval > 0)) {
-                    // Reload at regular intervals
-                    setInterval(parserName + '.parse("' + networkLink.link.href + '")', 1000 * networkLink.link.refreshInterval);
-                } else if (networkLink.link.refreshMode === 'onChange') {
-                    if (networkLink.link.viewRefreshMode === 'never') {
-                        // Load the link just once
-                        doc.internals.parser.parse(networkLink.link.href, doc.internals.docSet);
-                    } else if (networkLink.link.viewRefreshMode === 'onStop') {
-                        // Reload when the map view changes
-
                     }
                 }
             }
