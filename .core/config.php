@@ -12,7 +12,7 @@ define('ip', isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'Unknown
 
 define('dev', strpos(host,'local.com') !== false || strpos(host,'dev.'));
 define('debug', ip == '2.26.220.251');
-
+date_default_timezone_set('Europe/London');
 if(debug) {
    error_reporting(-1);
    ini_set('display_errors', '1');
