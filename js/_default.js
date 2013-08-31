@@ -7,6 +7,7 @@ $(document).ready(function () {
     });
 
     $.fn.ajax_factory.defaults.complete.push('page_callback');
+    $.fn.ajax_factory.defaults.load_pages_ajax = true;
 });
 
 function page_callback(json) {
