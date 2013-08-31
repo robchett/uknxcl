@@ -15,7 +15,8 @@ class flight_view extends view {
             core::$inline_script[] = '
 var graph = new Graph($("#graph-' . $this->module->current->fid . '"));
 var flight = new Track(' . $this->module->current->fid . ');
-flight.add_nxcl_data(function() {graph.swap(flight)});';
+flight.add_nxcl_data(function() {graph.swap(flight)});
+            map.callback = function() {this.add_flight(' . $this->module->current->fid . ')};';
         }
         $html .= '</div>';
         return $html;
