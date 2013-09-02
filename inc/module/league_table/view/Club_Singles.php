@@ -15,7 +15,7 @@ function make_table(league_table $data) {
         $WHERE2 = "WHERE cid=$Club $launch";
     }
 
-    $club_name = SelectOne("club.name", "club", "cid=$Club");
+    $club_name = SelectOne("club.title", "club", "cid=$Club");
     $flights = isset($_GET['flights']) ? $_GET['flights'] : 6;
     $sql = "SELECT pid,gid,pilot.name,C_Name,class,G_Name,Manufacturer,flight.* FROM flight
         LEFT JOIN glider ON flight.gid=glider.gid
