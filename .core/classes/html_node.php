@@ -13,8 +13,8 @@ class html_node {
 
     public function __construct($type, $content = '', $attr = array()) {
         $nodes = explode(' ', $type, 2);
-        if (strstr($type, '#')) {
-            list($this->type, $id) = explode('#', $type);
+        if (strstr($nodes[0], '#')) {
+            list($this->type, $id) = explode('#', $nodes[0], 2);
             if (strstr($id, '.')) {
                 list($this->id, $classes) = explode('.', $id, 2);
                 $this->class = explode('.', $classes);
