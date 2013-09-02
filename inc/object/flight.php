@@ -73,18 +73,18 @@ class flight extends table {
         header("Content-type: application/octet-stream");
         header("Cache-control: private");
         $fullPath = '';
-        if (isset($this->fid) && $this->fid) {
+        if ((isset($this->fid) && $this->fid) || isset($_REQUEST['temp'])) {
             if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml') {
                 $fullPath = root . '/uploads/track/' . $id . '/track_earth.kml';
             } else if ($_REQUEST['type'] == 'igc') {
                 $fullPath = root . '/uploads/track/' . $id . '/track.igc';
             } else if ($_REQUEST['type'] == 'kmz') {
-                $zip = zip_open(root . '/uploads/track/' . $id . '/track.kmz');
+                $zip = zip_open(root . '/uploads/track/' . (isset($_REQUEST['temp']) ? 'temp/' : '' ) . $id . '/track.kmz');
                 $fullPath = zip_read($zip);
                 $size = zip_entry_filesize($fullPath);
                 $file = zip_entry_read($fullPath, $size);
                 header("Content-length: $size");
-                header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date . '.kml"');
+                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date : '') . '.kml"');
                 echo $file;
                 zip_close($zip);
                 return;
