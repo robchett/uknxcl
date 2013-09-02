@@ -144,8 +144,9 @@ function handle_json_response(json) {
         $(upd.id).html(upd.html);
     });
     json.inject.each(function (inj) {
-        if (inj.over != '')
+        if (inj.over != '') {
             $(inj.over).remove();
+        }
         switch (inj.pos) {
             case 'append':
                 $(inj.id).append(inj.html);
