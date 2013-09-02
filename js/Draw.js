@@ -806,6 +806,7 @@ function Planner(parent) {
     this.enable = function () {
         this.enabled = true;
         $("#waypoint_mode_help").show();
+        $("#wp_overlay").hide();
     }
 
     this.writeplanner = function () {
@@ -975,6 +976,7 @@ function Planner(parent) {
         this.count = 0;
         this.enabled = false;
         $("#waypoint_mode_help").hide();
+        $("#wp_overlay").show();
         this.writeplanner();
         this.draw();
     };
