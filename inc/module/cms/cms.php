@@ -194,7 +194,7 @@ class cms extends core_module {
         return $node;
     }
 
-    public function get_table_head(table $obj) {
+    public function get_table_head($obj) {
         $node = html_node::create('thead');
         $node->add_child(html_node::create('th.edit', ''));
         foreach ($obj->get_fields() as $field) {
