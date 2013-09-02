@@ -18,6 +18,7 @@ class form extends html_element {
     public $has_submit = true;
     public $attributes = array();
     public $validation_errors = array();
+    public $wrapper_class = '.form_wrapper';
 
     public function  __construct(array $fields) {
         $this->fields = $fields;
@@ -115,7 +116,7 @@ class form extends html_element {
     }
 
     public function get_html() {
-        $html = html_node::create('div#' . $this->id . '_wrapper.form_wrapper');
+        $html = html_node::create('div#' . $this->id . '_wrapper.' . $this->wrapper_class);
         $this->attributes = array_merge(array(
                 'name' => $this->id,
                 'method' => $this->method,
