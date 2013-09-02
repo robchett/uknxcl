@@ -29,9 +29,6 @@ class form extends html_element {
         foreach ($this->fields as $field) {
             if (get_class($field) == 'field_file') {
                 $this->use_ajax = false;
-                $this->action = '/index.php?module=' . get_class($this) . '&act=do_submit&no_ajax=on&ajax_origin=' . $this->id;
-                $this->attributes['target'] = 'form_target_' . get_class($this);
-                $this->attributes['enctype'] = 'multipart/form-data';
                 break;
             }
         }
@@ -116,6 +113,11 @@ class form extends html_element {
     }
 
     public function get_html() {
+        if(!$this->use_ajax) {
+            $this->action = '/index.php?module=' . get_class($this) . '&act=do_submit&no_ajax=on&ajax_origin=' . $this->id;
+            $this->attributes['target'] = 'form_target_' . $this->id;
+            $this->attributes['enctype'] = 'multipart/form-data';
+        }
         $html = html_node::create('div#' . $this->id . '_wrapper.' . $this->wrapper_class);
         $this->attributes = array_merge(array(
                 'name' => $this->id,
