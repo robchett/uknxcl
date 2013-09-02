@@ -1,5 +1,5 @@
 <?php
-class _cms_modules extends table {
+class _cms_modules { use table;
     public $table_key = 'mid';
     public static $module_id = 20;
 

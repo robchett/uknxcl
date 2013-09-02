@@ -1,5 +1,5 @@
 <?php
-class pilot extends table {
+class pilot { use table;
     public static $module_id = 3;
     public $class = 1;
     public $club;

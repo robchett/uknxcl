@@ -1,29 +1,25 @@
 <?php
-class table {
+/** @property string table_key */
+trait table {
     public static $fields;
     public static $define_table = array();
-    public static $module_id = 0;
+    //public $table_key;
+    /** @var  int $module_id */
+    //public static $module_id = 0;
     public $mid;
     public $raw = false;
-    public $table_key;
 
     public function  __construct($fields = array(), $id = 0) {
         if ($id) {
             $this->do_retrieve_from_id($fields, $id);
         }
+        if (!isset(static::$fields)) {
+            static::_set_fields();
+        }
     }
 
     public function do_retrieve_from_id(array $fields, $id) {
-        $parameters = array();
-        $sql = db::get_query(get_class($this), $fields, array('limit' => '1', 'where_equals' => array($this->table_key => $id)), $parameters);
-        $res = db::query($sql, $parameters);
-        if (db::num($res)) {
-            $row = db::fetch($res);
-            foreach ($row as $key => $val) {
-                $this->$key = $val;
-            }
-
-        }
+        $this->do_retrieve($fields, array('limit' => '1', 'where_equals' => array($this->table_key => $id)));
     }
 
     public function get_primary_key() {
@@ -52,17 +48,24 @@ class table {
         return 1;
     }
 
+    public function set_from_row($row) {
+        foreach ($row as $key => $val) {
+            if (isset(static::$fields[$key])) {
+                $class = get_class(static::$fields[$key]);
+                $this->$key = $class::sanitise_from_db($val);
+            } else {
+                $this->$key = $val;
+            }
+        }
+    }
+
     public function do_retrieve(array $fields, array $options) {
         $options['limit'] = 1;
         $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
         $sql = db::get_query(get_class($this), $fields, $options, $parameters);
         $res = db::query($sql, $parameters);
         if (db::num($res)) {
-            $row = db::fetch($res);
-            foreach ($row as $key => $val) {
-                $this->$key = $val;
-            }
-
+            $this->set_from_row(db::fetch($res));
         }
     }
 
@@ -161,6 +164,9 @@ class table {
     public function  get_form() {
         $form = new form($this->get_fields());
         $form->id = get_class($this) . '_form';
+        if (isset($form->attributes['target'])) {
+            $form->attributes['target'] = 'form_target_' . $form->id;
+        }
         return $form;
     }
 
@@ -210,19 +216,23 @@ class table {
         return $fields;
     }
 
+    public static function _set_fields() {
+        $fields = array();
+        $res = db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
+        while ($row = db::fetch($res)) {
+            $class = 'field_' . $row->type;
+            /** @var field $field */
+            $field = new $class($row->field_name, array());
+            $field->label = $row->title;
+            $field->set_from_row($row);
+            $fields[$row->field_name] = $field;
+        }
+        static::$fields = $fields;
+    }
+
     private static function _get_fields() {
         if (!isset(static::$fields)) {
-            $fields = array();
-            $res = db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
-            while ($row = db::fetch($res)) {
-                $class = 'field_' . $row->type;
-                /** @var field $field */
-                $field = new $class($row->field_name, array());
-                $field->label = $row->title;
-                $field->set_from_row($row);
-                $fields[] = $field;
-            }
-            static::$fields = $fields;
+            static::_set_fields();
         }
         $clone = array();
         foreach (static::$fields as $key => $field) {

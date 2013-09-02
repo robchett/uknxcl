@@ -1,5 +1,5 @@
 <?php
-class waypoint extends table {
+class waypoint { use table;
     /** @var float */
     public $lat;
     /** @var float */

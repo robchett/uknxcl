@@ -1,5 +1,5 @@
 <?php
-class result_records extends table {
+class result_records { use table;
     function make_table() {
         $html = '<div class="table_wrapper"><h3>Results</h3>';
         $html .= '<table class="results main">

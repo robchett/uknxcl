@@ -1,5 +1,5 @@
 <?php
-class dimension extends table {
+class dimension { use table;
     public $table_key = 'did';
     public static $module_id = 11;
 

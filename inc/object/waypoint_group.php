@@ -1,5 +1,5 @@
 <?php 
-class waypoint_group extends table {
+class waypoint_group { use table;
     public $table_key = 'wgid';
     public static $module_id = 21;
     

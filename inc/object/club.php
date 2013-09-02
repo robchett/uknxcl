@@ -1,5 +1,5 @@
 <?php
-class club extends table {
+class club { use table;
     public static $module_id = 12;
     public $table_key = 'cid';
     public $name;

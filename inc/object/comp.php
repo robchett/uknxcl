@@ -1,5 +1,5 @@
 <?php
-class comp extends table {
+class comp { use table;
     public static $module_id = 17;
     public $table_key = 'cid';
     public $cid;

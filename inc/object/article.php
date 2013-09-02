@@ -1,6 +1,6 @@
 <?php
 
-class article extends table {
+class article { use table;
     /* @var string */
     public $date;
     /* @var string */
