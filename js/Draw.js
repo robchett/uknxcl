@@ -320,11 +320,11 @@ function Track(id, temp) {
     this.nxcl_data = new trackData();
     this.loaded = false;
     this.visible = true;
-    this.temp = temp ? 'temp/' : '';
+    this.temp = temp ? '&temp=true' : '';
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLsingle.parse('?module=flight&act=download&type=kmz&id=' + id, null, id);
+            map.GeoXMLsingle.parse('?module=flight&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
         } else {
             map.parseKML('/uploads/track/' + this.temp + this.id + '/track_earth.kmz', this);
         }
@@ -1229,7 +1229,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         if (map.mode == map.EARTH) {
             this.index(i).setVisibility(bool);
         } else {
-            if(bool) {
+            if (bool) {
                 this._map_recursiveHide(this.index(i));
             } else {
                 this._map_recursiveShow(this.index(i));
