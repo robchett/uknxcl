@@ -1,5 +1,5 @@
 <?php
-class flight_type extends table {
+class flight_type { use table;
 
     const OD_ID = 1;
     const OR_ID = 2;

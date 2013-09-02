@@ -1,5 +1,5 @@
 <?php
-class field_type extends table {
+class field_type { use table;
     public $table_key = 'ftid';
     public static $module_id = 16;
 

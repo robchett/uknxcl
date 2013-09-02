@@ -1,5 +1,5 @@
 <?php
-class launch_type extends table {
+class launch_type { use table;
 
     const WINCH = 3;
     const AERO = 2;

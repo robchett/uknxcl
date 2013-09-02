@@ -1,5 +1,9 @@
 <?php
-class flight extends table {
+/**
+ * @property mixed club_title
+ */
+class flight {
+    use table;
     public $base_score;
     public $club_name;
     public $defined;

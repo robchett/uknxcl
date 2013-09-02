@@ -1,5 +1,5 @@
 <?php
-class page extends table {
+class page { use table;
     public static $module_id = 1;
     public $nav_title;
     /** @var int */

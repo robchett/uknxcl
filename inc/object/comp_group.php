@@ -1,5 +1,5 @@
 <?php
-class comp_group extends table {
+class comp_group { use table;
     public $table_key = 'cgid';
     public static $module_id = 18;
 

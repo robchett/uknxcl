@@ -1,5 +1,5 @@
 <?php
-class declaration extends table {
+class declaration { use table;
     public $table_key = 'did';
     public static $module_id = 13;
 
@@ -19,6 +19,7 @@ class declaration extends table {
         $form->get_field_from_name('pid')->label = 'Pilot';
         $form->get_field_from_name('pid')->options = array('order' => 'pilot.name');
         $form->h2 = 'Declare a flight';
+        $form->date = time();;
         return $form;
     }
 
