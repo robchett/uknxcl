@@ -45,7 +45,15 @@ abstract class field extends html_element {
     }
 
     public function get_html() {
-        return '<input ' . $this->get_attributes() . ' value="' . htmlentities($this->parent_form->{$this->field_name}) . '"/>' . "\n";
+        return '<input ' . $this->get_attributes() . ' value="' . htmlentities($this->get_value()) . '"/>' . "\n";
+    }
+
+    public static function sanitise_from_db($value) {
+        return $value;
+    }
+
+    public function get_value() {
+        return $this->parent_form->{$this->field_name};
     }
 
     public function set_standard_attributes() {
