@@ -334,22 +334,22 @@ class track {
             $kml->get_kml_folder_open('Track ' . $this->id, 1, '', 1);
             $kml->add($this->get_meta_linestring());
             $kml->get_kml_folder_close();
-            $kml->get_kml_folder_open('Task', 0, '', 0);
-            $kml->get_kml_folder_open('Open Distance', 0, 'hideChildren', 0);
+            $kml->get_kml_folder_open('Task', 1, '', 0);
+            $kml->get_kml_folder_open('Open Distance', 1, 'hideChildren', 0);
             $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
             $kml->get_kml_folder_close();
             if ($this->or->distance) {
-                $kml->get_kml_folder_open('Out And Return', 0, 'hideChildren', 0);
+                $kml->get_kml_folder_open('Out And Return', 1, 'hideChildren', 0);
                 $kml->add($this->or->get_kml_track('00FF00', 'Out And Return'));
                 $kml->get_kml_folder_close();
             }
             if ($this->tr->distance) {
-                $kml->get_kml_folder_open('FAI Triangle', 0, 'hideChildren', 0);
+                $kml->get_kml_folder_open('FAI Triangle', 1, 'hideChildren', 0);
                 $kml->add($this->tr->get_kml_track('0000FF', 'FAI Triangle'));
                 $kml->get_kml_folder_close();
             }
             if ($this->ft->distance) {
-                $kml->get_kml_folder_open('Flat Triangle', 0, 'hideChildren', 0);
+                $kml->get_kml_folder_open('Flat Triangle', 1, 'hideChildren', 0);
                 $kml->add($this->tr->get_kml_track('FF0066', 'Flat Triangle'));
                 $kml->get_kml_folder_close();
             }
