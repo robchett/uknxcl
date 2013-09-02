@@ -78,7 +78,7 @@ class table {
         if ($ok) {
             $type = (!isset($this->{$this->table_key}) || !$this->{$this->table_key} ? 'Added' : 'Updated');
             $this->do_save();
-            ajax::inject($_REQUEST['ajax_origin'], 'before', '<p class="success ' . strtolower($type) . '">' . $type . ' successfully</p>');
+            ajax::inject('#' . $_REQUEST['ajax_origin'], 'before', '<p class="success boxed ' . strtolower($type) . '">' . $type . ' successfully</p>');
         } else {
             ajax::update($form->get_html()->get());
         }
@@ -159,7 +159,9 @@ class table {
     }
 
     public function  get_form() {
-        return new form($this->get_fields());
+        $form = new form($this->get_fields());
+        $form->id = get_class($this) . '_form';
+        return $form;
     }
 
     public function lazy_load($fields) {
