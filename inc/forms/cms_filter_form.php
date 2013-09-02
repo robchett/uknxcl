@@ -31,6 +31,7 @@ class cms_filter_form extends form {
         $this->id = 'filter_form';
         $this->submit = 'Filter';
         $this->_class_name = $class_name;
+        $this->wrapper_class = '';
         if (isset($_SESSION['cms'][$class_name])) {
             $this->post_fields_text = '<a class="button" href="#" data-ajax-click="cms:do_clear_filter" data-ajax-post=\'{"_class_name":"' . $class_name . '"}\' data-ajax-shroud="#filter_form">Clear Filters</a>';
         }
