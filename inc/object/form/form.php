@@ -115,7 +115,7 @@ class form extends html_element {
     }
 
     public function get_html() {
-        $html = html_node::create('div#' . $this->id . '_wrapper');
+        $html = html_node::create('div#' . $this->id . '_wrapper.form_wrapper');
         $this->attributes = array_merge(array(
                 'name' => $this->id,
                 'method' => $this->method,
