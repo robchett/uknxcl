@@ -12,6 +12,7 @@ class planner_load_waypoints extends form {
             )
         );
         $this->submit = 'Load';
+        $this->id = 'planner_load_waypoints';
     }
 
     public function do_submit() {
