@@ -118,7 +118,7 @@ class form extends html_element {
             $this->attributes['target'] = 'form_target_' . $this->id;
             $this->attributes['enctype'] = 'multipart/form-data';
         }
-        $html = html_node::create('div#' . $this->id . '_wrapper.' . $this->wrapper_class);
+        $html = html_node::create('div#' . $this->id . '_wrapper' . trim($this->wrapper_class));
         $this->attributes = array_merge(array(
                 'name' => $this->id,
                 'method' => $this->method,
