@@ -21,7 +21,7 @@ class ajax {
                 $o->id .= '#' . $node->attributes->getNamedItem('id')->nodeValue;
             }
             if (isset($node->attributes->getNamedItem('class')->nodeValue)) {
-                $o->id .= '.' . str_replace('.', ' ', $node->attributes->getNamedItem('class')->nodeValue);
+                $o->id .= '.' . trim(str_replace('.', ' ', $node->attributes->getNamedItem('class')->nodeValue));
             }
             foreach ($node->childNodes as $subnode) {
                 $o->html .= $dom->saveXML($subnode);
