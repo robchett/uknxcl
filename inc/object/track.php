@@ -1654,6 +1654,17 @@ class triangle extends task {
         return number_format($this->distance, $dp);
     }
 
+    public function get_coordinates() {
+        $html = '';
+        if ($this->waypoints->count() == 5) {
+            $waypoints = $this->waypoints;
+            $this->waypoints = new track_point_array(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $html = parent::get_coordinates();
+            $this->waypoints = $waypoints;
+        }
+        return $html;
+    }
+
     protected function get_kml_table() {
         $html = '';
         if ($this->waypoints->count() == 5) {
