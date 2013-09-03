@@ -82,7 +82,7 @@ class igc_form extends form {
                 $track->pre_calc();
                 $track->set_from_session($flight, $this->temp_id);
 
-                $flight->date = $track->get_date();
+                $flight->date = $track->date;
                 $flight->did = $track->get_dim();
                 $flight->winter = $track->is_winter();
 
