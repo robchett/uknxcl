@@ -1661,6 +1661,8 @@ class triangle extends task {
             $this->waypoints = new track_point_array(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
             $html = parent::get_coordinates();
             $this->waypoints = $waypoints;
+        } else {
+            return parent::get_coordinates();
         }
         return $html;
     }
