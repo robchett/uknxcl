@@ -519,12 +519,12 @@ function Comp(id) {
             marker.setMap(map.internal_map);
         });
         if (map.mode == map.MAP) {
-            for (var i in this.google_data.gpolylines) {
-                this.google_data.gpolylines[i].setMap(map.internal_map);
-            }
-            for (i in this.google_data.gpolygons) {
-                this.google_data.gpolygons[i].setMap(map.internal_map);
-            }
+            this.google_data.gpolylines.each(function(element) {
+               element.setMap(map.internal_map);
+            });
+            this.google_data.gpolygons.each(function(element) {
+                element.setMap(map.internal_map);
+            });
             this.visible = true;
             map.graph.setGraph();
         }
