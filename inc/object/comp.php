@@ -1,5 +1,7 @@
 <?php
-class comp { use table;
+class comp {
+    use table;
+
     public static $module_id = 17;
     public $table_key = 'cid';
     public $cid;
@@ -457,6 +459,47 @@ class comp { use table;
             }
         } else {
             parent::do_upload_file($field);
+        }
+    }
+
+    public function download() {
+        $id = (int) $_REQUEST['id'];
+        $this->do_retrieve(
+            array('flight.*', 'pilot.name'),
+            array(
+                'join' => array('pilot' => 'flight.pid=pilot.pid'),
+                'where_equals' => array('flight.fid' => $id)
+            )
+        );
+        header("Content-type: application/octet-stream");
+        header("Cache-control: private");
+        $fullPath = '';
+        if ((isset($this->fid) && $this->fid) || isset($_REQUEST['temp'])) {
+            if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml') {
+                $fullPath = root . '/uploads/track/' . $id . '/track_earth.kml';
+            } else if ($_REQUEST['type'] == 'igc') {
+                $fullPath = root . '/uploads/track/' . $id . '/track.igc';
+            } else if ($_REQUEST['type'] == 'kmz') {
+                $zip = zip_open(root . '/uploads/track/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
+                $fullPath = zip_read($zip);
+                $size = zip_entry_filesize($fullPath);
+                $file = zip_entry_read($fullPath, $size);
+                header("Content-length: $size");
+                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date : '') . '.kml"');
+                echo $file;
+                zip_close($zip);
+                return;
+            }
+            if ($fullPath && $fd = fopen($fullPath, "r")) {
+                $fsize = filesize($fullPath);
+                header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
+                header("Content-length: $fsize");
+                while (!feof($fd)) {
+                    $buffer = fread($fd, 2048);
+                    echo $buffer;
+                }
+                fclose($fd);
+            }
         }
     }
 }
