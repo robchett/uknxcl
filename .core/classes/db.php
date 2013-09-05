@@ -32,8 +32,13 @@ class db implements database_interface {
      * @return bool
      */
     public static function connect($host, $db, $username, $password, $name = 'default') {
+        try {
+            $var = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
+        } catch (MemcachedException $e) {
+            die('Could not connect to database, please try again shortly...');
+        }
         self::$con_arr[$name] = array(
-            'connection' => new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password),
+            'connection' => $var,
             'settings' => array(
                 'host' => $host,
                 'database' => $db,
