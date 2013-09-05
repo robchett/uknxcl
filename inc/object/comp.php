@@ -53,10 +53,10 @@ class comp {
      * @param $tp
      * @return int
      */
-    public function distCalc3($point, $tp) {
+    public function distCalc3(lat_lng $point, $tp) {
         $tp_lat = deg2rad($tp->lat);
         $tp_lon = deg2rad($tp->lon);
-        $x = (int) (acos($point->sin_lat * sin($tp_lat) + $point->cos_lat * cos($tp_lat) * cos($point->lonRad - $tp_lon)) * geometry::EARTH_RADIUS);
+        $x = (int) (acos($point->sin_lat * sin($tp_lat) + $point->cos_lat * cos($tp_lat) * cos($point->lng_rad() - $tp_lon)) * geometry::EARTH_RADIUS);
         return $x;
     }
 

@@ -4,7 +4,9 @@
  */
 class flight {
     use table;
+
     public $base_score;
+    public $cid;
     public $club_name;
     public $defined;
     public $did;
@@ -13,6 +15,7 @@ class flight {
     /** @var string Date flown */
     public $date;
     public $ftid;
+    public $gid;
     public $glider_name;
     public $lid;
     public $manufacturer_title;
@@ -31,6 +34,7 @@ class flight {
     public $class;
     /** @var int The id used for a flight, depends on whether $class is 1 or 5 */
     public $ClassID;
+    public $pid;
 
     /** @var track */
     public $track = null;
@@ -45,6 +49,19 @@ class flight {
     public $vis_info;
     /** @var  bool Season the flight was flown in */
     public $season;
+    public $duration;
+    public $od_score;
+    public $od_time;
+    public $od_coordinates;
+    public $or_score;
+    public $or_time;
+    public $or_coordinates;
+    public $tr_score;
+    public $tr_time;
+    public $tr_coordinates;
+    public $ft_score;
+    public $ft_time;
+    public $ft_coordinates;
 
     public static $default_joins = array(
         'pilot' => 'flight.pid = pilot.pid',
@@ -83,7 +100,7 @@ class flight {
             } else if ($_REQUEST['type'] == 'igc') {
                 $fullPath = root . '/uploads/track/' . $id . '/track.igc';
             } else if ($_REQUEST['type'] == 'kmz') {
-                $zip = zip_open(root . '/uploads/track/' . (isset($_REQUEST['temp']) ? 'temp/' : '' ) . $id . '/track.kmz');
+                $zip = zip_open(root . '/uploads/track/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
                 $fullPath = zip_read($zip);
                 $size = zip_entry_filesize($fullPath);
                 $file = zip_entry_read($fullPath, $size);
@@ -353,7 +370,7 @@ class flight {
         $coords = explode(';', $this->coords);
         foreach ($coords as $coord) {
             $lat_lng = geometry::os_to_lat_long($coord);
-            $html .= 'Lat Long: ' . ($lat_lng[0] > 0 ? 'N' : 'S') . number_format(abs($lat_lng[0]), 5) . ', ' . ($lat_lng[1] > 0 ? 'E' : 'W') . number_format(abs($lat_lng[1]), 5) . '; OS: ' . $coord . '<br/>';
+            $html .= 'Lat Long: ' . ($lat_lng->lat() > 0 ? 'N' : 'S') . number_format(abs($lat_lng->lat()), 5) . ', ' . ($lat_lng[1] > 0 ? 'E' : 'W') . number_format(abs($lat_lng->lng()), 5) . '; OS: ' . $coord . '<br/>';
         }
         return $html;
     }
