@@ -9,7 +9,7 @@ class geometry {
     }
 
     public static function get_distance(track_point $obj1, track_point $obj2) {
-        $x = $obj1->sin_lat * $obj2->sin_lat + $obj1->cos_lat * $obj2->cos_lat * cos($obj1->lonRad - $obj2->lonRad);
+        $x = $obj1->sin_lat * $obj2->sin_lat + $obj1->cos_lat * $obj2->cos_lat * cos($obj1->lng_rad() - $obj2->lng_rad());
         if (!is_nan($acos = acos($x))) {
             return ($acos * 6371);
         } else {
@@ -24,19 +24,19 @@ class geometry {
         $iter = 1;
         $MAXITER = 100;
         $arOut = array(0, 0.0, M_PI);
-        if (abs($obj1->latRad - $obj2->latRad) < $EPS && (abs($obj1->lonRad - $obj2->lonRad) < $EPS || abs(abs($obj1->lonRad - $obj2->lonRad) - 2 * M_PI) < $EPS)) {
+        if (abs($obj1->lat_rad() - $obj2->lat_rad()) < $EPS && (abs($obj1->lng_rad() - $obj2->lng_rad()) < $EPS || abs(abs($obj1->lng_rad() - $obj2->lng_rad()) - 2 * M_PI) < $EPS)) {
             return $arOut;
         }
         $r = 1 - $f;
-        $tu1 = $r * tan($obj1->latRad);
-        $tu2 = $r * tan($obj2->latRad);
+        $tu1 = $r * tan($obj1->lat_rad());
+        $tu2 = $r * tan($obj2->lat_rad());
         $cu1 = 1 / (sqrt(1 + $tu1 * $tu1));
         $su1 = $cu1 * $tu1;
         $cu2 = 1 / (sqrt(1 + $tu2 * $tu2));
         $s1 = $cu1 * $cu2;
         $b1 = $s1 * $tu2;
         $f1 = $b1 * $tu1;
-        $x = $obj2->lonRad - $obj1->lonRad;
+        $x = $obj2->lng_rad() - $obj1->lng_rad();
         $d = $x + 1;
         while ((abs($d - $x) > $EPS) && ($iter < $MAXITER)) {
             $iter++;
@@ -57,7 +57,7 @@ class geometry {
             $c = ((-3 * $c2a + 4) * $f + 4) * $c2a * $f / 16;
             $d = $x;
             $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
-            $x = (1 - $c) * $x * $f + $obj2->lonRad - $obj1->lonRad;
+            $x = (1 - $c) * $x * $f + $obj2->lng_rad() - $obj1->lng_rad();
         }
         $x = sqrt((1 / ($r * $r) - 1) * $c2a + 1);
         $x++;
@@ -71,9 +71,10 @@ class geometry {
         return $arOut;
     }
 
-    static function lat_long_to_os($p, $q) {
-        $lat = deg2rad($p);
-        $lon = deg2rad($q);
+    static function lat_long_to_os(lat_lng $point) {
+        $point = gps_datums::convert($point, 'WGS84', 'OSGB36');
+        $lat = $point->lat_rad();
+        $lon = $point->lng_rad();
         $a = 6377563.396;
         $b = 6356256.910;
         $F0 = 0.9996012717;
@@ -123,6 +124,9 @@ class geometry {
         return self::gridrefNumToLet($E, $N, 6);
     }
 
+    /**
+     * @param string $gridRef
+     * @return lat_lng */
     static function os_to_lat_long($gridRef) {
         $gr = self::gridrefLetToNum($gridRef);
         $E = $gr[0];
@@ -186,17 +190,17 @@ class geometry {
         $lat = $lat - $VII * $dE2 + $VIII * $dE4 - $IX * $dE6;
         $lon = $lon0 + $X * $dE - $XI * $dE3 + $XII * $dE5 - $XIIA * $dE7;
 
-        return Array(rad2deg($lat), rad2deg($lon));
+        return new lat_lng(rad2deg($lat), rad2deg($lon));
     }
 
-    static function getCircleCords2(track_point $center_coordinate) {
+    static function getCircleCords2(lat_lng $center_coordinate, $radius = 400) {
         $out = "";
-        $angularDistance = 400 / 6378137;
+        $angularDistance = $radius / 6378137;
         for ($i = 0; $i <= 360; $i++) {
             $bearing = deg2rad($i);
             $lat = asin($center_coordinate->sin_lat * cos($angularDistance) + $center_coordinate->cos_lat * sin($angularDistance) * cos($bearing));
             $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat, cos($angularDistance) - $center_coordinate->sin_lat * sin($lat));
-            $lon = fmod(($center_coordinate->lonRad + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $lon = fmod(($center_coordinate->lng_rad() + $dlon + M_PI), 2 * M_PI) - M_PI;
             $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
         }
         return $out;
@@ -272,7 +276,7 @@ class geometry {
         // convert grid letters into 100km-square indexes from false origin (grid square SV):
         $e = (($l1 - 2) % 5) * 5 + ($l2 % 5);
         $n = (19 - floor($l1 / 5) * 5) - floor($l2 / 5);
-        // skip grid letters to get numeric part of ref, stripping any spaces:
+        // skip grid letters to get numeric part of ref, stripping any space's'=>
         $gridref = substr($gridref, 2);
         // append numeric part of references to grid index:
         $e .= substr($gridref, 0, (strlen($gridref) / 2));
@@ -307,6 +311,10 @@ class geometry {
         return $gridRef;
     }
 
+    static function osgb32_to_wgs84($lat, $lng) {
+
+    }
+
     static function outputTask(task $task) {
         $xml = '<Folder><name>Task</name>';
         foreach ($task->waypoints as $point) {
@@ -339,8 +347,9 @@ class geometry {
     <altitudeMode>clampToGround</altitudeMode>
         <coordinates>";
 
+        /** @var lat_lng $point */
         foreach ($task->waypoints as $point) {
-            $xml .= $point->lon . ',' . $point->lat . ",-100 ";
+            $xml .= $point->lng() . ',' . $point->lat() . ",-100 ";
         }
         $xml .= "</coordinates>
     </LineString>
@@ -358,7 +367,7 @@ class geometry {
     static function time_split_kml_plus_js(track $track) {
         $count1 = 0;
         $output = kml::get_kml_header();
-        /** @var track_part */
+        /** @track_part */
         foreach ($track->track_parts as $a) {
             $output .= '
     <Placemark>
@@ -384,5 +393,103 @@ class geometry {
         fwrite($outFile, $output);
 
         $track->generate_js();
+    }
+
+}
+
+class gps_datums {
+    private static $ellipse = [
+        'WGS84' => ['a' => 6378137, 'b' => 6356752.3142, 'f' => 0.0033528106647475],
+        'GRS80' => ['a' => 6378137, 'b' => 6356752.314140, 'f' => 0.0033528106811823],
+        'OSGB36' => ['a' => 6377563.396, 'b' => 6356256.910, 'f' => 0.0033408506414971],
+        'AiryModified' => ['a' => 6377340.189, 'b' => 6356034.448, 'f' => 0.003340850692839],
+        'Intl1924' => ['a' => 6378388.000, 'b' => 6356911.946, 'f' => 0.0033670033670034]
+    ];
+
+    private static $transform = [
+        'OSGB36' => ['tx' => -446.448, 'ty' => 125.157, 'tz' => -542.060, 'rx' => -0.1502, 'ry' => -0.2470, 'rz' => -0.8421, 's' => 20.4894],
+        'ED50' => ['tx' => 89.5, 'ty' => 93.8, 'tz' => 123.1, 'rx' => 0.0, 'ry' => 0.0, 'rz' => 0.156, 's' => -1.2],
+        'Irl1975' => ['tx' => -482.530, 'ty' => 130.596, 'tz' => -564.557, 'rx' => -1.042, 'ry' => -0.214, 'rz' => -0.631, 's' => -8.150]];
+
+    public static function convert(lat_lng $point, $from, $to) {
+        $from_to = true; // Moving in the positive direction;
+        if (!isset(self::$ellipse[$from]) && !isset(self::$ellipse[$to])) {
+            throw new Exception('The transform for this conversion doesn\'t exitst. Please add a Helmert transform');
+        }
+        if (!isset(self::$ellipse[$to]) || !isset(self::$ellipse[$from])) {
+            throw new Exception('No ellipsis is available for this transform');
+        }
+
+        if (!isset(self::$transform[$to])) {
+            $transform = [];
+            $from_to = false;
+            foreach (self::$transform[$from] as $key => $val) {
+                $transform[$key] = -$val;
+            }
+        } else {
+            $transform = self::$transform[$to];
+        }
+        $e1 = ($from_to ? self::$ellipse[$from] : self::$ellipse[$to]);
+        $e2 = ($from_to ? self::$ellipse[$to] : self::$ellipse[$from]);
+
+        return self::__convert($point, $e1, $e2, $transform);
+    }
+
+    private static function __convert(lat_lng $point, $source_ellipse, $target_ellipse, $transform) {
+        $lat = $point->lat_rad();
+        $lon = $point->lng_rad();
+
+        $a = $source_ellipse['a'];
+        $b = $source_ellipse['b'];
+
+        $sinPhi = sin($lat);
+        $cosPhi = cos($lat);
+        $sinLambda = sin($lon);
+        $cosLambda = cos($lon);
+        $H = 24.7; // for the moment
+
+        $eSq = ($a * $a - $b * $b) / ($a * $a);
+        $nu = $a / sqrt(1 - $eSq * $sinPhi * $sinPhi);
+
+        $x1 = ($nu + $H) * $cosPhi * $cosLambda;
+        $y1 = ($nu + $H) * $cosPhi * $sinLambda;
+        $z1 = ((1 - $eSq) * $nu + $H) * $sinPhi;
+
+
+        // -- 2: apply helmert transform using appropriate params
+
+        $tx = $transform['tx'];
+        $ty = $transform['ty'];
+        $tz = $transform['tz'];
+        $rx = deg2rad($transform['rx'] / 3600); // normalise seconds to radians
+        $ry = deg2rad($transform['ry'] / 3600);
+        $rz = deg2rad($transform['rz'] / 3600);
+        $s1 = ($transform['s'] / 1e6) + 1; // normalise ppm to (s+1)
+
+        // apply transform
+        $x2 = $tx + $x1 * $s1 - $y1 * $rz + $z1 * $ry;
+        $y2 = $ty + $x1 * $rz + $y1 * $s1 - $z1 * $rx;
+        $z2 = $tz - $x1 * $ry + $y1 * $rx + $z1 * $s1;
+
+
+        // -- 3: convert cartesian to polar coordinates (using ellipse 2)
+
+        $a = $target_ellipse['a'];
+        $b = $target_ellipse['b'];
+        $precision = 4 / $a; // results accurate to around 4 metres
+
+        $eSq = ($a * $a - $b * $b) / ($a * $a);
+        $p = sqrt($x2 * $x2 + $y2 * $y2);
+        $phi = atan2($z2, $p * (1 - $eSq));
+        $phiP = 2 * M_PI;
+        while (abs($phi - $phiP) > $precision) {
+            $nu = $a / sqrt(1 - $eSq * sin($phi) * sin($phi));
+            $phiP = $phi;
+            $phi = atan2($z2 + $eSq * $nu * sin($phi), $p);
+        }
+        $lambda = atan2($y2, $x2);
+        $H = $p / cos($phi) - $nu;
+
+        return new lat_lng(rad2deg($phi), rad2deg($lambda), $H);
     }
 }
