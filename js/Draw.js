@@ -452,7 +452,7 @@ function Comp(id) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLcomp.parse('/uploads/comp/' + this.id + '/track_earth.kmz?' + Math.floor(Math.random() * 1000), null, id);
+            map.GeoXMLcomp.parse('?module=comp&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
             this.google_data = true;
             this.is_ready();
         } else {
