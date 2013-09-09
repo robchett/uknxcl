@@ -23,8 +23,8 @@ class field_select extends field {
     }
 
     public function do_validate(&$error_array) {
-        if ($this->required && (empty($this->parent_form->{$this->field_name})))
-            $error_array[$this->field_name] = $this->field_name . ' is required field';
+        /*if ($this->required && (empty($this->parent_form->{$this->field_name})))
+            $error_array[$this->field_name] = $this->field_name . ' is required field';*/
         if ($this->parent_form->{$this->field_name} == 'default' && $this->required)
             $error_array[$this->field_name] = $this->field_name . ' please choose an option';
     }
