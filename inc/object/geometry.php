@@ -8,8 +8,8 @@ class geometry {
 
     }
 
-    public static function get_distance(track_point $obj1, track_point $obj2) {
-        $x = $obj1->sin_lat * $obj2->sin_lat + $obj1->cos_lat * $obj2->cos_lat * cos($obj1->lng_rad() - $obj2->lng_rad());
+    public static function get_distance(lat_lng $obj1, lat_lng $obj2) {
+        $x = $obj1->sin_lat() * $obj2->sin_lat() + $obj1->cos_lat() * $obj2->cos_lat() * cos($obj1->lng_rad() - $obj2->lng_rad());
         if (!is_nan($acos = acos($x))) {
             return ($acos * 6371);
         } else {
@@ -37,8 +37,7 @@ class geometry {
         $b1 = $s1 * $tu2;
         $f1 = $b1 * $tu1;
         $x = $obj2->lng_rad() - $obj1->lng_rad();
-        $d = $x + 1;
-        while ((abs($d - $x) > $EPS) && ($iter < $MAXITER)) {
+        do {
             $iter++;
             $sx = sin($x);
             $cx = cos($x);
@@ -58,7 +57,7 @@ class geometry {
             $d = $x;
             $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
             $x = (1 - $c) * $x * $f + $obj2->lng_rad() - $obj1->lng_rad();
-        }
+        } while((abs($d - $x) > $EPS) && ($iter < $MAXITER));
         $x = sqrt((1 / ($r * $r) - 1) * $c2a + 1);
         $x++;
         $x = ($x - 2) / $x;
@@ -198,8 +197,8 @@ class geometry {
         $angularDistance = $radius / 6378137;
         for ($i = 0; $i <= 360; $i++) {
             $bearing = deg2rad($i);
-            $lat = asin($center_coordinate->sin_lat * cos($angularDistance) + $center_coordinate->cos_lat * sin($angularDistance) * cos($bearing));
-            $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat, cos($angularDistance) - $center_coordinate->sin_lat * sin($lat));
+            $lat = asin($center_coordinate->sin_lat() * cos($angularDistance) + $center_coordinate->cos_lat() * sin($angularDistance) * cos($bearing));
+            $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat(), cos($angularDistance) - $center_coordinate->sin_lat() * sin($lat));
             $lon = fmod(($center_coordinate->lng_rad() + $dlon + M_PI), 2 * M_PI) - M_PI;
             $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
         }

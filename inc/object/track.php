@@ -622,8 +622,8 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
                 } else
                     $track_point->speed = 0;
                 if ($previous->time !== $next_point->time) {
-                    $y = sin($next_point->lng_rad() - $previous->lng_rad()) * $next_point->cos_lat;
-                    $x = $previous->cos_lat * $next_point->sin_lat - $previous->sin_lat * $next_point->cos_lat * cos($next_point->lng_rad() - $previous->lng_rad());
+                    $y = sin($next_point->lng_rad() - $previous->lng_rad()) * $next_point->cos_lat();
+                    $x = $previous->cos_lat() * $next_point->sin_lat() - $previous->sin_lat() * $next_point->cos_lat() * cos($next_point->lng_rad() - $previous->lng_rad());
                     $track_point->bearing = atan2($y, $x) * 180 / M_PI;
                 } else {
                     $track_point->bearing = 0;
@@ -833,9 +833,6 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $track_point->alt = (int) substr($p, $pos, 5);
         $pos += 5;
         $track_point->ele = (int) substr($p, $pos, 5);
-
-        $track_point->sin_lat = sin(M_PI * $track_point->lat() / 180);
-        $track_point->cos_lat = cos(M_PI * $track_point->lat() / 180);
         if ($this->track_points->count() == 0) {
             $this->track_points[] = $track_point;
             $this->track_parts[] = new track_part($track_point, 0);
@@ -1046,8 +1043,6 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $points = explode(';', $coordinates);
         foreach ($points as &$a) {
             $point = geometry::os_to_lat_long($a);
-            $point->sin_lat = sin($point->lat() * M_PI / 180);
-            $point->cos_lat = cos($point->lat() * M_PI / 180);
             $task->waypoints[] = $point;
         }
 
@@ -1410,10 +1405,8 @@ class track_point extends lat_lng {
     public $bestBack;
     public $bestFwrd;
     public $climbRate = 0;
-    public $cos_lat = 0;
     public $ele = 0;
     public $id = 0;
-    public $sin_lat = 0;
     public $speed = 0;
     public $time = 0;
     public $val = 0;
