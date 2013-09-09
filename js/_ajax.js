@@ -1,4 +1,18 @@
 $(document).ready(function () {
+
+    function get_form_data($this) {
+        var data = {}
+        $this.find(':input').each(function () {
+            var name = $(this).attr('name');
+            if ($(this).attr('type') == 'checkbox') {
+                if ($(this).is(':checked'))
+                    data[name] = $(this).val();
+            } else
+                data[name] = $(this).val();
+        });
+        return data;
+    }
+
     var $body = $('body');
     $body.on('click', null, function (event) {
         var $target = $(event.target);
@@ -19,7 +33,7 @@ $(document).ready(function () {
                 var href = $target.attr('href');
                 if (typeof href != "undefined" && href != '#') {
                     if (!href.match('http')) {
-                        var post = {module:'core', act:'load_page'};
+                        var post = {module: 'core', act: 'load_page'};
                         var options = {call_as_uri: href, loading_target: '#main' };
                         event.preventDefault();
                         var $page = $("div[data-url='" + href + "']");
@@ -54,6 +68,19 @@ $(document).ready(function () {
                     options.loading_target = $target.data('ajax-shroud');
                 }
                 $.fn.ajax_factory(module, act, data, options);
+            } else {
+                var $parent = $target.parents('form').eq(0);
+                if ($parent.data('ajax-change')) {
+                    var arr = $parent.attr('data-ajax-change').split(':');
+                    var module = arr[0];
+                    var act = arr[1];
+                    var ajax_shroud = $parent.attr('data-ajax-shroud');
+                    var data = get_form_data($parent);
+                    var options = {loading_target: ajax_shroud};
+                    data.ajax_origin = $parent.id;
+                    $.fn.ajax_factory(module, act, data, options);
+                    return false;
+                }
             }
         }
     });
@@ -63,21 +90,10 @@ $(document).ready(function () {
         var arr = $(this).attr('action').split(':');
         var module = arr[0];
         var act = arr[1];
-        var data = {};
         var ajax_shroud = $(this).attr('data-ajax-shroud');
-
-        $(this).find(':input').each(function () {
-            var name = $(this).attr('name');
-            if ($(this).attr('type') == 'checkbox') {
-                if ($(this).is(':checked'))
-                    data[name] = $(this).val();
-            } else
-                data[name] = $(this).val();
-        });
-
+        var data = get_form_data($(this));
         var options = {loading_target: ajax_shroud};
         data.ajax_origin = $(e.target)[0].id;
-
 
         $.fn.ajax_factory(module, act, data, options);
         return false;
