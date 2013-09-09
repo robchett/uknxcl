@@ -71,7 +71,7 @@ class geometry {
         return $arOut;
     }
 
-    static function lat_long_to_os(lat_lng $point) {
+    static function lat_long_to_os(lat_lng $point, $precision = 6) {
         $point = gps_datums::convert($point, 'WGS84', 'OSGB36');
         $lat = $point->lat_rad();
         $lon = $point->lng_rad();
@@ -121,7 +121,7 @@ class geometry {
 
         $N = $I + $II * $dLon2 + $III * $dLon4 + $IIIA * $dLon6;
         $E = $E0 + $IV * $dLon + $V * $dLon3 + $VI * $dLon5;
-        return self::gridrefNumToLet($E, $N, 6);
+        return self::gridrefNumToLet($E, $N, $precision);
     }
 
     /**
@@ -278,16 +278,20 @@ class geometry {
         $n = (19 - floor($l1 / 5) * 5) - floor($l2 / 5);
         // skip grid letters to get numeric part of ref, stripping any space's'=>
         $gridref = substr($gridref, 2);
+        $precision = (strlen($gridref) / 2);
         // append numeric part of references to grid index:
-        $e .= substr($gridref, 0, (strlen($gridref) / 2));
-        $n .= substr($gridref, (strlen($gridref) / 2));
+        $e .= substr($gridref, 0, $precision);
+        $n .= substr($gridref, $precision);
         // normalise to 1m grid, rounding up to centre of grid square:
-        $e .= '50';
-        $n .= '50';
+        $factor = 5 * pow(10, 4 - $precision);
+        $e .= $factor;
+        $n .= $factor;
+
         return Array($e, $n);
     }
 
     static function gridrefNumToLet($e, $n, $digits) {
+        $precision = $digits/2;
         // get the 100km-grid indices
         $e100k = floor($e / 100000);
         $n100k = floor($n / 100000);
@@ -305,9 +309,9 @@ class geometry {
         $letPair = chr($l1 + ord('A')) . chr($l2 + ord('A'));
 
         // strip 100km-grid indices from easting & northing, and reduce precision
-        $e = floor(($e % 100000) / pow(10, 5 - $digits / 2));
-        $n = floor(($n % 100000) / pow(10, 5 - $digits / 2));
-        $gridRef = $letPair . self::padLZ($e) . self::padLZ($n);
+        $e = floor(($e % 100000) / pow(10, 5 - $precision));
+        $n = floor(($n % 100000) / pow(10, 5 - $precision));
+        $gridRef = $letPair . self::padLZ($e, $precision) . self::padLZ($n, $precision);
         return $gridRef;
     }
 
@@ -358,10 +362,12 @@ class geometry {
         return $xml;
     }
 
-    static function padLZ($n) {
-        $j = strlen($n);
-        for ($i = 0; $i < 3 - $j; $i++) $n = '0' . $n;
-        return $n;
+    static function padLZ($number, $precision) {
+        $length = strlen($number);
+        for ($i = 0; $i < $precision - $length; $i++) {
+            $number = '0' . $number;
+        }
+        return $number;
     }
 
     static function time_split_kml_plus_js(track $track) {
