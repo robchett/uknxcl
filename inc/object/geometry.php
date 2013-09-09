@@ -4,10 +4,6 @@ class geometry {
 
     const EARTH_RADIUS = 6371000;
 
-    static function Decimalize($a) {
-
-    }
-
     public static function get_distance(lat_lng $obj1, lat_lng $obj2) {
         $x = $obj1->sin_lat() * $obj2->sin_lat() + $obj1->cos_lat() * $obj2->cos_lat() * cos($obj1->lng_rad() - $obj2->lng_rad());
         if (!is_nan($acos = acos($x))) {
@@ -57,7 +53,7 @@ class geometry {
             $d = $x;
             $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
             $x = (1 - $c) * $x * $f + $obj2->lng_rad() - $obj1->lng_rad();
-        } while((abs($d - $x) > $EPS) && ($iter < $MAXITER));
+        } while ((abs($d - $x) > $EPS) && ($iter < $MAXITER));
         $x = sqrt((1 / ($r * $r) - 1) * $c2a + 1);
         $x++;
         $x = ($x - 2) / $x;
@@ -120,14 +116,15 @@ class geometry {
 
         $N = $I + $II * $dLon2 + $III * $dLon4 + $IIIA * $dLon6;
         $E = $E0 + $IV * $dLon + $V * $dLon3 + $VI * $dLon5;
-        return self::gridrefNumToLet($E, $N, $precision);
+        return self::gridref_number_to_letter($E, $N, $precision);
     }
 
     /**
      * @param string $gridRef
-     * @return lat_lng */
+     * @return lat_lng
+     */
     static function os_to_lat_long($gridRef) {
-        $gr = self::gridrefLetToNum($gridRef);
+        $gr = self::gridref_letter_to_number($gridRef);
         $E = $gr[0];
         $N = $gr[1];
 
@@ -192,7 +189,7 @@ class geometry {
         return gps_datums::convert(new lat_lng(rad2deg($lat), rad2deg($lon)), 'OSGB36', 'WGS84');
     }
 
-    static function getCircleCords2(lat_lng $center_coordinate, $radius = 400) {
+    static function get_circle_coordinates(lat_lng $center_coordinate, $radius = 400) {
         $out = "";
         $angularDistance = $radius / 6378137;
         for ($i = 0; $i <= 360; $i++) {
@@ -205,67 +202,7 @@ class geometry {
         return $out;
     }
 
-    static function getCords($file, $cnum, $lookup, $isOR = 0) {
-        $start = 0;
-        $match_no = 0;
-        for ($i = 0; $i < sizeof($file); $i++) {
-            if (preg_match("%<coordinates>%", $file[$i])) {
-                $match_no++;
-                if ($match_no == $lookup) {
-                    $start = $i + 1;
-                }
-            }
-        }
-        $out[0] = "";
-        $a = Array();
-        if (!$isOR) {
-            for ($i = $start; $i < $start + $cnum; $i++) {
-                $c = explode(",", substr($file[$i], 10), 4);
-                $a[$i - $start] = self::lat_long_to_os($c[1], $c[0]);
-                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
-                else $out[0] = $a[$i - $start];
-                $out[1][$i - $start] = $a[$i - $start];
-            }
-        } else {
-            for ($i = $start; $i < $start + $cnum; $i++) {
-                $c = explode(",", substr($file[$i], 10), 4);
-                print_r($c);
-                $a[$i - $start] = self::lat_long_to_os($c[1], $c[0]);
-                if ($out[0] != "") $out[0] = $out[0] . ";" . $a[$i - $start];
-                else $out[0] = $a[$i - $start];
-                $out[1][$i - $start] = $a[$i - $start];
-            }
-            if (self::getDist(Array($out[1][0], $out[1][1])) <= 0.8) {
-                $copy = $out[1][1];
-                $out[1][1] = $out[1][2];
-                $out[1][2] = $copy;
-                $c = explode(";", $out[0]);
-                $out[0] = "$c[0];$c[2];$c[1]";
-            }
-        }
-        //print_r($out[1]);
-        $out[1] = self::getDist($out[1]);
-        return $out;
-    }
-
-    static function getDist($cords) {
-        $score = 0;
-        for ($i = 0; $i < count($cords) - 1; $i++) {
-            $p1 = self::gridrefLetToNum($cords[$i]);
-            $p2 = self::gridrefLetToNum($cords[$i + 1]);
-
-            $deltaE = $p2[0] - $p1[0];
-            $deltaN = $p2[1] - $p1[1];
-
-            $dist = sqrt($deltaE * $deltaE + $deltaN * $deltaN);
-
-            $score += ($dist / 1000);
-        }
-        $score = round($score, 2);
-        return $score;
-    }
-
-    static function gridrefLetToNum($gridref) {
+    static function gridref_letter_to_number($gridref) {
         // get numeric values of letter references, mapping A->0, B->1, C->2, etc:
         $l1 = ord($gridref[0]) - ord('A');
         $l2 = ord($gridref[1]) - ord('A');
@@ -289,8 +226,8 @@ class geometry {
         return Array($e, $n);
     }
 
-    static function gridrefNumToLet($e, $n, $digits) {
-        $precision = $digits/2;
+    static function gridref_number_to_letter($e, $n, $digits) {
+        $precision = $digits / 2;
         // get the 100km-grid indices
         $e100k = floor($e / 100000);
         $n100k = floor($n / 100000);
@@ -310,7 +247,7 @@ class geometry {
         // strip 100km-grid indices from easting & northing, and reduce precision
         $e = floor(($e % 100000) / pow(10, 5 - $precision));
         $n = floor(($n % 100000) / pow(10, 5 - $precision));
-        $gridRef = $letPair . self::padLZ($e, $precision) . self::padLZ($n, $precision);
+        $gridRef = $letPair . self::pad_number($e, $precision) . self::pad_number($n, $precision);
         return $gridRef;
     }
 
@@ -318,7 +255,7 @@ class geometry {
 
     }
 
-    static function outputTask(task $task) {
+    static function get_task_output(task $task) {
         $xml = '<Folder><name>Task</name>';
         foreach ($task->waypoints as $point) {
             $xml .= "<Placemark>
@@ -334,7 +271,7 @@ class geometry {
             <outerBoundaryIs>
                 <LinearRing>
                     <coordinates>
-                    " . self::getCircleCords2($point) . "
+                    " . self::get_circle_coordinates($point) . "
                     </coordinates>
                 </LinearRing>
             </outerBoundaryIs>
@@ -361,7 +298,7 @@ class geometry {
         return $xml;
     }
 
-    static function padLZ($number, $precision) {
+    static function pad_number($number, $precision) {
         $length = strlen($number);
         for ($i = 0; $i < $precision - $length; $i++) {
             $number = '0' . $number;
@@ -388,7 +325,7 @@ class geometry {
     </Placemark>';
         }
         if (isset($track->task)) {
-            $output .= self::outputTask($track->task);
+            $output .= self::get_task_output($track->task);
         }
         $output .= kml::get_kml_footer();
 

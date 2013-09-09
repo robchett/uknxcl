@@ -1694,11 +1694,11 @@ class defined_task extends task {
 
         $xml = '';
         if ($this->ftid != flight_type::TR_ID) {
-            $xml .= geometry::outputTask($this);
+            $xml .= geometry::get_task_output($this);
         } else {
             $waypoints = $this->waypoints;
             $this->waypoints = new track_point_array(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
-            $xml .= geometry::outputTask($this);
+            $xml .= geometry::get_task_output($this);
             $this->waypoints = $waypoints;
         }
         return $xml;
