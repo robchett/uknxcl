@@ -46,11 +46,11 @@ class lat_lng {
         return geometry::lat_long_to_os($this);
     }
 
-    public function get_dist_to(track_point $b) {
+    public function get_dist_to(lat_lng $b) {
         return geometry::get_distance($this, $b);
     }
 
-    public function get_dist_to_precise(track_point $b) {
+    public function get_dist_to_precise(lat_lng $b) {
         return geometry::get_distance_ellipsoid($this, $b);
     }
 
