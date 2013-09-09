@@ -29,7 +29,7 @@ class coordinate_conversion_form extends form {
         );
         parent::__construct($fields);
         $this->id = 'coordinate_conversion_form';
-        //$this->attributes['data-ajax-change'] = 'coordinate_conversion_form:do_submit';
+        $this->attributes['data-ajax-change'] = 'coordinate_conversion_form:do_submit';
     }
 
     public function set_disabled() {
