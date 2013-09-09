@@ -1045,7 +1045,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $task->waypoints = new track_point_array();
         $points = explode(';', $coordinates);
         foreach ($points as &$a) {
-            $point = gps_datums::convert(geometry::os_to_lat_long($a), 'OSGB36', 'WGS84');
+            $point = geometry::os_to_lat_long($a);
             $point->sin_lat = sin($point->lat() * M_PI / 180);
             $point->cos_lat = cos($point->lat() * M_PI / 180);
             $task->waypoints[] = $point;
