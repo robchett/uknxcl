@@ -2,12 +2,15 @@
 
 class lat_lng {
 
+    public $ele = 0;
+    private $cos_lat;
+    private $sin_lat;
     private $lat;
     private $lng;
     private $lat_rad;
     private $lng_rad;
 
-    public function __construct($lat = false, $lng = false) {
+    public function __construct($lat = null, $lng = null) {
         if ($lat !== false) {
             $this->set_lat($lat);
         }
@@ -40,6 +43,20 @@ class lat_lng {
 
     public function lng() {
         return $this->lng;
+    }
+
+    public function sin_lat() {
+        if(!$this->sin_lat) {
+            $this->sin_lat = sin($this->lat);
+        }
+        return $this->sin_lat;
+    }
+
+    public function cos_lat() {
+        if(!$this->cos_lat) {
+            $this->cos_lat = cos($this->lat);
+        }
+        return $this->cos_lat;
     }
 
     public function get_coordinate() {
