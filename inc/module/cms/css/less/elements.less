@@ -1,12 +1,8 @@
 @primary: #0c3f6b;
 
 .heading(@color: #75b7fd, @start: #0c3f6b, @stop: #0a4dad, @rad: 10px) {
-  .gradient(@color, @start, @stop)
-
-;
-  .border-radius(@rad, 0, 0, @rad)
-
-;
+  .gradient(@color, @start, @stop);
+  .border-radius(@rad, 0, 0, @rad);
   text-align: center;
   color: #ffffff;
   margin-bottom: 0;
@@ -15,8 +11,8 @@
 .button() {
   display: block;
   padding: 5px;
-  .bw-gradient(200,240);
-  .border-radius(10px,10px,10px,10px);
+  .bw-gradient(200, 240);
+  .border-radius(10px, 10px, 10px, 10px);
   border: 1px solid #cccccc;
   text-align: center;
   font-weight: bold;
@@ -186,4 +182,4 @@
 
 .cf { zoom: 1 }
 
-input:-webkit-autofill {background-color: inherit}
+input:-webkit-autofill { background-color: inherit }
