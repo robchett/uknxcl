@@ -11,7 +11,7 @@ class page_config {
         return implode(' ', $this->body_classes);
     }
 
-    /** @param string $class... */
+    /** @param string $class ... */
     public function add_body_class() {
         $classes = func_get_args();
         $this->body_classes = array_merge($this->body_classes, $classes);
