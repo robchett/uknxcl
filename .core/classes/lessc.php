@@ -3371,7 +3371,7 @@ class lessc_formatter_classic {
             }
 
             if (lessc::$debug && $block->file) {
-                echo '@media -sass-debug-info{filename{font-family:file\:\/\/\/' . str_replace(array('C:/','/','.'),array('','\/','\.'),$block->file) . '}line{font-family:\0000336}}' . "\n";
+                echo '@media -sass-debug-info{filename{font-family:file\:\/\/\/' . str_replace(array('C:/', '/', '.'), array('', '\/', '\.'), $block->file) . '}line{font-family:\0000336}}' . "\n";
             }
             echo $pre . implode($selectorSeparator, $block->selectors);
             if ($isSingle) {
