@@ -8,7 +8,7 @@ function Graph($container) {
     this.obj = null;
     this.type = 1;
 
-    this.$container.find("[name=graph_type]").change(function(){
+    this.$container.find("[name=graph_type]").change(function () {
         ths.changeType($(this).data('type'));
     });
 
@@ -73,7 +73,7 @@ function Graph($container) {
             context.moveTo(x_coord, 0);
             context.lineTo(x_coord, this.height);
         }
-        for (y1 = 0; y1 <= 10; y1 ++) {
+        for (y1 = 0; y1 <= 10; y1++) {
             var y_coord = y1 * this.height / 10
             context.moveTo(0, y_coord);
             context.lineTo(this.width, y_coord);

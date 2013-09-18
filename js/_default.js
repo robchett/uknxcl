@@ -22,7 +22,7 @@ function toggle_page($page) {
         $page.hide();
         $main.stop(true, true).addClass('flipped');
         $children = $main.children('div');
-        setTimeout(function() {
+        setTimeout(function () {
             $children.hide();
             $page.show();
             $main.removeClass('flipped');

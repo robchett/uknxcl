@@ -257,10 +257,10 @@ geoXML3.Parser = function (options) {
     }
 
     function buildStructure(xml, structure, placemark_index) {
-        if(xml.childElementCount) {
-            for(var i = 0; i < xml.childElementCount; i++) {
+        if (xml.childElementCount) {
+            for (var i = 0; i < xml.childElementCount; i++) {
                 var Node = xml.children[i];
-                if(Node.nodeName == 'Folder') {
+                if (Node.nodeName == 'Folder') {
                     sub = [];
                     var res = buildStructure(Node, sub, placemark_index);
                     placemark_index = res[1];
@@ -271,8 +271,8 @@ geoXML3.Parser = function (options) {
                 } else {
                     var res = buildStructure(Node, [], placemark_index);
                     placemark_index = res[1];
-                    if(res[0].length) {
-                        for(var j=0; j<res[0].length; j++) {
+                    if (res[0].length) {
+                        for (var j = 0; j < res[0].length; j++) {
                             structure.push(res[0][j]);
                         }
                     }
@@ -343,7 +343,7 @@ geoXML3.Parser = function (options) {
             }
             doc.structure = buildStructure(responseXML, [], 0);
 
-            var placemark, node, marker, poly, pathLength,  polygonNodes, coordList;
+            var placemark, node, marker, poly, pathLength, polygonNodes, coordList;
             var placemarkNodes = responseXML.getElementsByTagName('Placemark');
             for (pm = 0; pm < placemarkNodes.length; pm++) {
                 // Init the placemark object
