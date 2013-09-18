@@ -31,7 +31,8 @@ $(document).ready(function () {
                 $.fn.ajax_factory(module, act, data, options);
             } else if ($target.is('a') && $.fn.ajax_factory.defaults.load_pages_ajax) {
                 var href = $target.attr('href');
-                if (typeof href != "undefined" && href != '#') {
+                var rel = $target.attr('rel');
+                if (typeof href != "undefined" && href != '#' && (typeof rel == 'undefined' || rel != 'external')) {
                     if (!href.match('http')) {
                         var post = {module: 'core', act: 'load_page'};
                         var options = {call_as_uri: href, loading_target: '#main' };
