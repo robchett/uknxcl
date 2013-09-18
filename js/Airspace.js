@@ -37,13 +37,18 @@ function Airspace() {
 
     };
 
-    this.getType = function(int) {
-        switch(int) {
-            case 0: return 'PROHIBITED';
-            case 1: return 'RESTRICTED';
-            case 2: return 'DANGER';
-            case 3: return 'OTHER';
-            case 4: return 'CTRCTA';
+    this.getType = function (int) {
+        switch (int) {
+            case 0:
+                return 'PROHIBITED';
+            case 1:
+                return 'RESTRICTED';
+            case 2:
+                return 'DANGER';
+            case 3:
+                return 'OTHER';
+            case 4:
+                return 'CTRCTA';
         }
     }
     this.setHeight = function (val) {
