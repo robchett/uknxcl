@@ -23,3 +23,7 @@ Header unset ETag
 <FilesMatch "\.(html|htm|xml|txt|xsl)$">
   Header set Cache-Control "max-age=7200, must-revalidate"
 </FilesMatch>
+
+<FilesMatch "\.(igc|kml|kmz)$">
+  Header set Content-Type "application/octet-stream"
+</FilesMatch>
