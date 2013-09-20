@@ -10,19 +10,19 @@ function __autoload($classname) {
     include_once($filename);
 }
 
-db::connect();
+\db::connect();
 
-$res = db::query('SELECT DISTINCT(mid) FROM glider');
+$res = \db::query('SELECT DISTINCT(mid) FROM glider');
 
-$insert_statement = db::prepare('INSERT INTO manufacturer SET title=:title');
-$update_statement = db::prepare('UPDATE glider SET manufacturer =:mid WHERE manufacturer = :title');
+$insert_statement = \db::prepare('INSERT INTO manufacturer SET title=:title');
+$update_statement = \db::prepare('UPDATE glider SET manufacturer =:mid WHERE manufacturer = :title');
 
 
-while ($row = db::fetch($res)) {
+while ($row = \db::fetch($res)) {
 
     $insert_statement->execute(array('title' => $row->manufacturer));
 
-    $id = db::insert_id();
+    $id = \db::insert_id();
 
     $update_statement->execute(array('title' => $row->manufacturer, 'mid' => $id));
 

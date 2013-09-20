@@ -71,7 +71,6 @@ function deg_min_2_os($lat, $lon) {
     else
         $lon = round((int) $lon[1] + ((int) $lon[2]) / 60 + ((float) $lon[3]) / 3600, 4);
 
-    return LatLongToOSGrid($lat, $lon);
+    return geometry::lat_long_to_os(new lat_lng($lat, $lon));
 }
 
-?>

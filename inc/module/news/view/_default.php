@@ -1,6 +1,6 @@
 <?php
-
-class _default_view extends view {
+namespace news;
+class _default_view extends \view {
     public function get_view() {
         $html = '<div id="list_wrapper">';
         $articles = article::get_all(array('aid', 'date', 'title', 'poster', 'post', 'snippet',), array('order' => 'date DESC', 'where' => 'parent_aid=0'));

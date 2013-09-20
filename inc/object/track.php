@@ -136,7 +136,7 @@ class track {
     }
 
     public function calculate() {
-        db::query('SET wait_timeout=1200');
+        \db::query('SET wait_timeout=1200');
         set_time_limit(0);
         $this->pre_calc();
         $this->get_dist_map();
@@ -498,21 +498,21 @@ class track {
         $var = ($max - $min ? $max - $min : 1);
         $last_level = floor(($this->track_points[0]->$value - $min) * 16 / $var);
 
-        $coords = array();
+        $coordinates = array();
         $current_level = 0;
         /** @var track_point $point */
         foreach ($this->track_points as $point) {
-            $coords[] = $point;
+            $coordinates[] = $point;
             $current_level = floor(($point->$value - $min) * 16 / $var);
             if ($current_level != $last_level && $current_level != 16) {
-                $output .= kml::create_linestring('#S' . $last_level, $coords);
-                $coords = array();
-                $coords[] = $point;
+                $output .= kml::create_linestring('#S' . $last_level, $coordinates);
+                $coordinates = array();
+                $coordinates[] = $point;
                 $last_level = $current_level;
             }
         }
-        if (!empty($coords))
-            $output .= kml::create_linestring('#S' . $current_level, $coords);
+        if (!empty($coordinates))
+            $output .= kml::create_linestring('#S' . $current_level, $coordinates);
         if ($scale)
             $output .= kml::get_scale($min, $max);
         return $output;
@@ -1597,8 +1597,8 @@ class task {
 
     public function get_waypoints_from_os() {
         $this->waypoints = new track_point_array();
-        $coords = explode(';', $this->coordinates);
-        foreach ($coords as $coord) {
+        $coordinates = explode(';', $this->coordinates);
+        foreach ($coordinates as $coord) {
             list($coord, $ele) = explode(':', $coord);
             $latlng = geometry::os_to_lat_long($coord);
             $track_point = new lat_lng($latlng->lat(), $latlng->lng());

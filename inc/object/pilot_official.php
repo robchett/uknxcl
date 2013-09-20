@@ -21,10 +21,10 @@ class pilot_official extends pilot {
                 $this->score += $flight->score;
                 $this->flights[] = $flight->to_print()->get();
                 $this->used_flights++;
-                if($flight->defined) {
+                if ($flight->defined) {
                     $this->defined = true;
                 }
-                if($flight->ftid == 1) {
+                if ($flight->ftid == 1) {
                     $this->undefined = true;
                 }
             }

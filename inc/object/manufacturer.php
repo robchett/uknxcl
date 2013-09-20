@@ -10,7 +10,6 @@ class manufacturer extends club {
     public $Num;
     public $title;
 
-    /* @return manufacturer_array */
     public static function get_all(array $fields, array $options = array()) {
         return manufacturer_array::get_all($fields, $options);
     }

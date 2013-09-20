@@ -5,25 +5,10 @@ class gradient {
     public $color;
 
     public function __construct() {
-        $this->createDefaultHeatMapGradient();
+        $this->create_default_heat_map_gradient();
     }
 
-    public function  addColorPoint($red, $green, $blue, $value) {
-        for ($i = 0; $i < count($this->color); $i++) {
-            if ($value < $this->color[$i]->val) {
-                $this->color->inject($i, new ColorPoint(red, green, blue, value));
-                return;
-            }
-        }
-        $this->color[new ColorPoint(red, green, blue, value)];
-    }
-
-    public function clearGradient() {
-        $this->color->clear();
-    }
-
-//-- places a 5color heapmap gradient into the "color" vector
-    public function createDefaultHeatMapGradient() {
+    public function create_default_heat_map_gradient() {
         $this->color = new table_array();
         $this->color[] = new ColorPoint(1, 0, 0, 0.0); // blue
         $this->color[] = new ColorPoint(1, 1, 0, 0.25); // cyan
@@ -32,9 +17,10 @@ class gradient {
         $this->color[] = new ColorPoint(0, 0, 1, 1.0); // red
     }
 
-    public function getColorAtValue($value) {
-        if (count($this->color) == 0)
-            return;
+    public function get_color_at_value($value) {
+        if (count($this->color) == 0){
+            return '';
+        }
 
         for ($i = 0; $i < count($this->color); $i++) {
             $currC = $this->color[$i];
@@ -60,8 +46,6 @@ class gradient {
 
 }
 
-;
-
 class  ColorPoint {
     public $r, $g, $b, $val;
 
@@ -72,5 +56,3 @@ class  ColorPoint {
         $this->val = $value;
     }
 }
-
-;

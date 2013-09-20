@@ -16,13 +16,13 @@ class core {
     public $module_name = 'latest';
     /** @var core_module */
     public $module;
-    /** @var page */
+    /** @var \pages\page */
     public $page;
 
     public function __construct() {
         self::$page_config = new page_config();
         self::$singleton = $this;
-        db::default_connection();
+        \db::default_connection();
         $this->set_path(uri);
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
@@ -32,13 +32,19 @@ class core {
         define('cms', $this->path[0] == 'cms');
 
         if (isset($_REQUEST['module'])) {
+
             if ($_REQUEST['module'] == 'core' || $_REQUEST['module'] == 'this') {
                 $module = $this;
             } else {
-                $module = new $_REQUEST['module']();
+                if (class_exists($_REQUEST['module'])) {
+                    $module = new $_REQUEST['module']();
+                } else {
+                    $class_name = $_REQUEST['module'] . '\\controller';
+                    $module = new $class_name();
+                }
             }
             $module->{$_REQUEST['act']}();
-            ajax::do_serve();
+            \ajax::do_serve();
             exit();
         }
         $this->set_page_from_path();
@@ -47,11 +53,11 @@ class core {
             get::header_redirect(host . '/');
             die();
         }
-        core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
-        core::$js[] = 'https://www.google.com/jsapi';
-        core::$js[] = '/js/jquery/jquery.js';
-        core::$js[] = '/js/jquery/colorbox.js';
-        core::$js[] = '/js/';
+        \core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
+        \core::$js[] = 'https://www.google.com/jsapi';
+        \core::$js[] = '/js/jquery/jquery.js';
+        \core::$js[] = '/js/jquery/colorbox.js';
+        \core::$js[] = '/js/';
 
         $this->load_page();
     }
@@ -67,27 +73,28 @@ class core {
             $this->module_name = 'latest';
         }
 
-        if (class_exists($this->module_name)) {
-            $this->module = new $this->module_name();
+        if (class_exists($this->module_name . '\controller')) {
+            $class_name = $this->module_name . '\controller';
+            $this->module = new $class_name();
             $this->module->__controller($this->path);
             $this->body = $this->module->view_object->get();
             $push_state = $this->module->get_push_state();
             if ($push_state) {
-                if(!ajax) {
+                if (!ajax) {
                     $push_state->type = push_state::REPLACE;
                     $push_state->get();
                 } else {
-                    ajax::push_state($push_state);
+                    \ajax::push_state($push_state);
                 }
             }
-            if(!ajax) {
+            if (!ajax) {
                 require_once(root . '/index_screen.php');
             }
         }
     }
 
     public function set_page_from_path() {
-        $this->page = new page();
+        $this->page = new \pages\page();
         if (is_numeric($this->path[0])) {
             $this->page->do_retrieve_from_id(array(), (int) $this->path[0]);
         } else {
@@ -98,8 +105,8 @@ class core {
     }
 
     public function set_path($uri) {
-       $uri_no_qs = parse_url($uri, PHP_URL_PATH);
-       $this->path = explode('/', trim($uri_no_qs, '/'));
+        $uri_no_qs = parse_url($uri, PHP_URL_PATH);
+        $this->path = explode('/', trim($uri_no_qs, '/'));
     }
 
     public static function get_backtrace() {
@@ -119,14 +126,14 @@ class core {
     }
 
     public static function get_class_from_mid($mid) {
-        $res = db::query('SELECT table_name FROM _cms_modules WHERE mid=:mid', array('mid' => $mid));
-        $row = db::fetch($res);
-        return $row->table_name;
+        $res = \db::query('SELECT `table_name`, `namespace` FROM _cms_modules WHERE mid=:mid', array('mid' => $mid));
+        $row = \db::fetch($res);
+        return $row->namespace . '\\' . $row->table_name;
     }
 
     public static function get_field_from_fid($fid) {
-        $res = db::query('SELECT field_name FROM _cms_fields WHERE fid=:fid', array('fid' => $fid));
-        $row = db::fetch($res);
+        $res = \db::query('SELECT field_name FROM _cms_fields WHERE fid=:fid', array('fid' => $fid));
+        $row = \db::fetch($res);
         return $row->field_name;
     }
 

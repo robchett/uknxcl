@@ -1,16 +1,44 @@
 <?php
 
+/**
+ * Class kml
+ */
 class kml {
 
+    /**
+     * @var string
+     */
     private $content = '';
+    /**
+     * @var string
+     */
     private $html = '';
+    /**
+     * @var int
+     */
     private $open_folders = 0;
+    /**
+     * @var array
+     */
     private $path = array();
+    /**
+     * @var string
+     */
     private $styles = '';
 
+    /**
+     *
+     */
     public function __construct() {
     }
 
+    /**
+     * @param $colour
+     * @param track_point[] $coordinates
+     * @param string $altitude_mode
+     * @param bool $extrude
+     * @return string
+     */
     public static function create_linestring($colour, array $coordinates, $altitude_mode = 'absolute', $extrude = false) {
         $xml = '';
         $xml .= '<Placemark>';
@@ -29,14 +57,25 @@ class kml {
         return $xml;
     }
 
+    /**
+     * @return string
+     */
     public static function get_kml_footer() {
         return "\n" . '</Document>';
     }
 
+    /**
+     * @return string
+     */
     public static function get_kml_header() {
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n\t" . '<Document><open>1</open>';
     }
 
+    /**
+     * @param $min
+     * @param $max
+     * @return string
+     */
     public static function get_scale($min, $max) {
         $xml = '
     <ScreenOverlay>
@@ -50,6 +89,11 @@ class kml {
         return $xml;
     }
 
+    /**
+     * @param $s
+     * @param $e
+     * @return string
+     */
     public static function get_timespan($s, $e) {
         return '<TimeSpan>
 				<begin>' . date('Y-m-d', $s) . "T" . date('H:i:s', $s) . 'Z</begin>
@@ -57,14 +101,25 @@ class kml {
 			</TimeSpan>';
     }
 
+    /**
+     * @param $xml
+     */
     public function add($xml) {
         $this->content .= $xml;
     }
 
+    /**
+     * @param $html
+     */
     public function add_html($html) {
         $this->html .= $html;
     }
 
+    /**
+     * @param bool $external
+     * @param string $path
+     * @return string
+     */
     public function compile($external = false, $path = '') {
         $xml = '';
         if (!$external) {
@@ -83,16 +138,20 @@ class kml {
             $zip->addFile($path);
             $zip->close();
             unlink($path);
-
-        } else {
-            return $xml;
         }
+        return $xml;
     }
 
+    /**
+     * @return string
+     */
     public function get_html() {
         return $this->html . '</div>';
     }
 
+    /**
+     *
+     */
     public function get_kml_folder_close() {
         $this->open_folders--;
         $this->content .= '</Folder>';
@@ -106,6 +165,12 @@ class kml {
         }
     }
 
+    /**
+     * @param $title
+     * @param int $visibility
+     * @param string $class
+     * @param bool $open
+     */
     public function get_kml_folder_open($title, $visibility = 1, $class = '', $open = false) {
         $this->content .= '<Folder id="' . get::fn($title) . '"><name>' . $title . '</name><visibility>' . (int) $visibility . '</visibility>';
         if (!$this->open_folders) {
@@ -120,7 +185,10 @@ class kml {
             $this->content .= "\n\t<open>1</open>";
     }
 
-    public function set_animation_styles($full = 1) {
+    /**
+     *
+     */
+    public function set_animation_styles() {
         for ($i = 0; $i < 10; $i++) {
             for ($j = 0; $j < 360; $j += 5) {
                 $this->styles .= '<Style id="A' . $i . $j . '"><IconStyle><heading>' . $j . '</heading><Icon><href>http://' . host . '/img/Markers/' . get::kml_colour($i) . '.gif' . '</href></Icon></IconStyle></Style>';
@@ -128,11 +196,17 @@ class kml {
         }
     }
 
+    /**
+     *
+     */
     public function set_folder_styles() {
         $this->styles .= '<Style id="hideChildren"><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style>';
         $this->styles .= '<Style id="radioFolder"><ListStyle><listItemType>radioFolder</listItemType></ListStyle></Style>';
     }
 
+    /**
+     * @param int $full
+     */
     public function set_gradient_styles($full = 0) {
         $this->styles .= '<Style id="shadow"><LineStyle><color>AA000000</color><width>1</width></LineStyle><PolyStyle><color>55AAAAAA</color></PolyStyle></Style>';
         if (!$full)
@@ -140,11 +214,14 @@ class kml {
         else {
             $grad = new gradient();
             for ($i = 0; $i < 16; $i++) {
-                $this->styles .= '<Style id="S' . $i . '"><LineStyle><width>2</width><color>FF' . $grad->getColorAtValue($i / 16) . '</color></LineStyle></Style>';
+                $this->styles .= '<Style id="S' . $i . '"><LineStyle><width>2</width><color>FF' . $grad->get_color_at_value($i / 16) . '</color></LineStyle></Style>';
             }
         }
     }
 
+    /**
+     * @return string
+     */
     private function get_path() {
         return implode(',', $this->path);
     }

@@ -46,14 +46,14 @@ class lat_lng {
     }
 
     public function sin_lat() {
-        if(!$this->sin_lat) {
+        if (!$this->sin_lat) {
             $this->sin_lat = sin($this->lat);
         }
         return $this->sin_lat;
     }
 
     public function cos_lat() {
-        if(!$this->cos_lat) {
+        if (!$this->cos_lat) {
             $this->cos_lat = cos($this->lat);
         }
         return $this->cos_lat;

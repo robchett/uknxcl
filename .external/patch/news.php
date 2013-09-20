@@ -10,15 +10,15 @@ function __autoload($classname) {
     include_once($filename);
 }
 
-db::connect();
-db::connect();
+\db::connect();
+\db::connect();
 
-$res = db::query('SELECT DISTINCT ID,Name FROM forum_subsection');
+$res = \db::query('SELECT DISTINCT ID,Name FROM forum_subsection');
 
-$update_statement = db::prepare('UPDATE news SET title =:title WHERE title = :old_title');
+$update_statement = \db::prepare('UPDATE news SET title =:title WHERE title = :old_title');
 
 
-while ($row = db::fetch($res)) {
+while ($row = \db::fetch($res)) {
 
     $update_statement->execute(array('title' => $row->Name, 'old_title' => $row->ID));
 

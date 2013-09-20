@@ -31,8 +31,8 @@ class ajax {
     }
 
     public static function do_serve() {
-        if (!empty(core::$inline_script)) {
-            foreach (core::$inline_script as $script) {
+        if (!empty(\core::$inline_script)) {
+            foreach (\core::$inline_script as $script) {
                 self::add_script($script);
             }
         }

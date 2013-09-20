@@ -1,9 +1,9 @@
 <?php
-
-class coordinate_view extends view {
+namespace add_flight;
+class coordinate_view extends \view {
 
     public function get_page_selector() {
-        return get_class($this->module) . '-coordinate';
+        return \get::__class_name($this->module) . '-coordinate';
     }
 
     public function get_view() {
@@ -62,9 +62,9 @@ class coordinate_view extends view {
         $(this).parents("form").find(".defined_info").html(str);
     });';
         if (ajax) {
-            ajax::add_script($script);
+            \ajax::add_script($script);
         } else {
-            core::$inline_script[] = $script;
+            \core::$inline_script[] = $script;
         };
         return $html;
     }

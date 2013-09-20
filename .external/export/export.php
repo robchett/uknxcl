@@ -1,18 +1,18 @@
 <?php
-set_time_limit(0);
+/*set_time_limit(0);
 
 if (!isset($_REQUEST['start']) || !isset($_REQUEST['end']) || !isset($_REQUEST['bl']) || !isset($_REQUEST['tr'])) {
 
-    ?>
+    */?><!--
     <form action="export.php">
-        <label>Start Date<input type="text" name="start" value="<?php echo (isset($_REQUEST['start']) ? $_REQUEST['start'] : '2009-01-01') ?>"></label>
-        <label>End Date<input type="text" name="end" value="<?php echo (isset($_REQUEST['end']) ? $_REQUEST['end'] : date('Y-m-d')) ?>"></label>
-        <label>Bottom LEft (unused for now)<input type="text" name="bl" value="<?php echo (isset($_REQUEST['bl']) ? $_REQUEST['bl'] : '49.894634,-5.979858') ?>"></label>
-        <label>Top Right (unused for now)<input type="text" name="tr" value="<?php echo (isset($_REQUEST['tr']) ? $_REQUEST['tr'] : '59.467408,1.57544') ?>"></label>
+        <label>Start Date<input type="text" name="start" value="<?php /*echo(isset($_REQUEST['start']) ? $_REQUEST['start'] : '2009-01-01') */?>"></label>
+        <label>End Date<input type="text" name="end" value="<?php /*echo(isset($_REQUEST['end']) ? $_REQUEST['end'] : date('Y-m-d')) */?>"></label>
+        <label>Bottom LEft (unused for now)<input type="text" name="bl" value="<?php /*echo(isset($_REQUEST['bl']) ? $_REQUEST['bl'] : '49.894634,-5.979858') */?>"></label>
+        <label>Top Right (unused for now)<input type="text" name="tr" value="<?php /*echo(isset($_REQUEST['tr']) ? $_REQUEST['tr'] : '59.467408,1.57544') */?>"></label>
         <input type="submit" value="Go!"/>
     </form>
-<?php
-} else {
+--><?php
+/*} else {
     function __autoload($classname) {
 
         if (is_readable($filename = $_SERVER['DOCUMENT_ROOT'] . "/inc/object/" . $classname . ".php")) {
@@ -24,12 +24,12 @@ if (!isset($_REQUEST['start']) || !isset($_REQUEST['end']) || !isset($_REQUEST['
         include_once($filename);
     }
 
-    db::connect();
+    \db::connect();
 
     $bl = explode(',', $_REQUEST['bl']);
     $tr = explode(',', $_REQUEST['tr']);
 
-//    $res = db::query('SELECT fid,date FROM flight
+//    $res = \db::query('SELECT fid,date FROM flight
 //    WHERE maximum_north > :north
 //    AND maximum_south > :south
 //    AND maximum_east > :east
@@ -48,7 +48,7 @@ if (!isset($_REQUEST['start']) || !isset($_REQUEST['end']) || !isset($_REQUEST['
 //    ));
 
 
-    $res = db::query('SELECT fid,`date` FROM flight
+    $res = \db::query('SELECT fid,`date` FROM flight
     WHERE `date` > :start
     AND `date` < :end
     AND did > 1
@@ -68,8 +68,8 @@ if (!isset($_REQUEST['start']) || !isset($_REQUEST['end']) || !isset($_REQUEST['
     $year_open = false;
     $month_open = false;
 
-    if (db::num($res)) {
-        while ($row = db::fetch($res)) {
+    if (\db::num($res)) {
+        while ($row = \db::fetch($res)) {
 
             if ($current_year != substr($row->date, 0, 4)) {
                 if ($month_open) fwrite($file, kml::get_kml_folder_close());
@@ -103,4 +103,4 @@ if (!isset($_REQUEST['start']) || !isset($_REQUEST['end']) || !isset($_REQUEST['
     fwrite($file, kml::get_kml_footer());
 
 
-}
+}*/

@@ -1,9 +1,9 @@
 <?php
-class pilot_rating { use table;
+class pilot_rating extends table { use table_trait
+
     public $table_key = 'prid';
     public static $module_id = 15;
 
-    /* @return pilot_rating_array */
     public static function get_all(array $fields, array $options = array()) {
         return pilot_rating_array::get_all($fields, $options);
     }

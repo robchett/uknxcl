@@ -6,6 +6,6 @@ class jquery {
 
     public static function colorbox($options = array()) {
         $options = array_merge($options, self::$colourbox_defaults);
-        ajax::inject('body', 'append', '<script>$.colorbox(' . json_encode($options) . ')</script>');
+        \ajax::inject('body', 'append', '<script>$.colorbox(' . json_encode($options) . ')</script>');
     }
 }

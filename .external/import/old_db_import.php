@@ -2,8 +2,8 @@
 
 define('load_core', false);
 include '../../index.php';
-db::connect();
-db::connect('old', 'nxcl2');
+\db::connect();
+\db::connect('old', 'nxcl2');
 
 set_time_limit(0);
 
@@ -67,11 +67,11 @@ $tables = array(
 
 foreach ($tables as $table => $keys) {
 
-    db::swap_connection('old');
-    $res = db::query('SELECT * FROM ' . $table . 's');
+    \db::swap_connection('old');
+    $res = \db::query('SELECT * FROM ' . $table . 's');
 
-    db::swap_connection('new');
-    db::query('TRUNCATE ' . $table);
+    \db::swap_connection('new');
+    \db::query('TRUNCATE ' . $table);
 
     // prepare_statement
     $sql_arr = array();
@@ -84,10 +84,10 @@ foreach ($tables as $table => $keys) {
         }
     }
     $sql .= implode(', ', $sql_arr);
-    $statement = db::$con->prepare($sql);
+    $statement = \db::$con->prepare($sql);
 
 
-    while ($row = db::fetch($res)) {
+    while ($row = \db::fetch($res)) {
         $params = array();
         foreach ($keys as $old => $new) {
             if (is_array($new)) {
@@ -100,8 +100,8 @@ foreach ($tables as $table => $keys) {
         $statement->execute($params);
     }
 }
-db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
+\db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
 
 function get_manu($manu) {
-    return db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu))->mid;
+    return \db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu))->mid;
 }

@@ -1,20 +1,55 @@
 <?php
-class club { use table;
+/**
+ * Class club
+ */
+class club extends table { use table_trait
+
+    /**
+     * @var int
+     */
     public static $module_id = 12;
+    /**
+     * @var string
+     */
     public $table_key = 'cid';
+    /**
+     * @var
+     */
     public $name;
+    /**
+     * @var int
+     */
     public $score = 0;
+    /**
+     * @var int
+     */
     public $total = 0;
+    /**
+     * @var int
+     */
     public $number = 1;
+    /**
+     * @var
+     */
     public $content;
+    /**
+     * @var
+     */
     public $max_pilots;
 
-    /* @return club_array */
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return table_array
+     */
     public static function get_all(array $fields, array $options = array()) {
         return club_array::get_all($fields, $options);
     }
 
-    public function AddSub($pilot, $flights) {
+    /**
+     * @param pilot|pilot_official $pilot
+     */
+    public function AddSub($pilot) {
         if ($this->number < $this->max_pilots) {
             $this->score += $pilot->score;
             $this->number++;
@@ -22,7 +57,11 @@ class club { use table;
         }
     }
 
-    function set_from_pilot($pilot, $num, $flights) {
+    /**
+     * @param pilot|pilot_official $pilot
+     * @param $num
+     */
+    function set_from_pilot($pilot, $num) {
         $this->max_pilots = $num;
         $this->name = $pilot->club;
         $this->score = $pilot->score;
@@ -30,6 +69,10 @@ class club { use table;
         $this->content = $pilot->output(1);
     }
 
+    /**
+     * @param $pos
+     * @return string
+     */
     function writeClubSemiHead($pos) {
         return '
             <div class="table_wrapper inner"><h3>
@@ -40,8 +83,14 @@ class club { use table;
     }
 }
 
+/**
+ * Class club_array
+ */
 class club_array extends table_array {
 
+    /**
+     * @param array $input
+     */
     public function __construct($input = array()) {
         parent::__construct($input, 0, 'club_iterator');
         $this->iterator = new club_iterator($input);
@@ -52,11 +101,17 @@ class club_array extends table_array {
         return parent::next();
     }
 
+    /**
+     *
+     */
     protected function set_statics() {
         parent::set_statics();
     }
 }
 
+/**
+ * Class club_iterator
+ */
 class club_iterator extends table_iterator {
 
     /* @return club */

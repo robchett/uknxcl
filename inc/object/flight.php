@@ -1,9 +1,12 @@
 <?php
 /**
  * @property mixed club_title
+ * @property mixed invis_info
+ * @property mixed winter
+ * @property mixed delayed
  */
-class flight {
-    use table;
+class
+flight extends table { use table_trait;
 
     public $base_score;
     public $cid;
@@ -29,12 +32,13 @@ class flight {
     /** @var string Glider manufacture name */
     public $gm_title;
     /** @var string Coordinates for the flight */
-    public $coords;
+    public $coordinates;
     /** @var int glider class - 1 or 5 for rigid or flex */
     public $class;
     /** @var int The id used for a flight, depends on whether $class is 1 or 5 */
     public $ClassID;
     public $pid;
+    public $speed;
 
     /** @var track */
     public $track = null;
@@ -77,11 +81,18 @@ class flight {
         'manufacturer.title'
     );
 
-    /* @return flight_array */
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return table_array
+     */
     public static function get_all(array $fields, array $options = array()) {
         return flight_array::get_all($fields, $options);
     }
 
+    /**
+     *
+     */
     public function download() {
         $id = (int) $_REQUEST['id'];
         $this->do_retrieve(
@@ -123,6 +134,9 @@ class flight {
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function get_best_score() {
         $scores = array(
             array($this->od_score * $this->get_multiplier(flight_type::OD_ID, $this->season), flight_type::OD_ID),
@@ -137,6 +151,11 @@ class flight {
         return end($scores);
     }
 
+    /**
+     * @param null $type
+     * @param null $season
+     * @return int|mixed
+     */
     public function get_multiplier($type = null, $season = null) {
         if (!$this->ridge) {
             return flight_type::get_multiplier(isset($type) ? $type : $this->ftid, isset($season) ? $season : $this->season, $this->ridge);
@@ -145,13 +164,16 @@ class flight {
         }
     }
 
+    /**
+     *
+     */
     public function get_statistics() {
         $year_stats = array();
         foreach (range(1991, 2013) as $key => $year) {
             $months = array();
             foreach (range(1, 12) as $key2 => $month) {
-                $score = db::result('SELECT sum(score) AS score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->score;
-                $tot = db::result('SELECT count(fid) AS count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->count;
+                $score = \db::result('SELECT sum(score) AS score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->score;
+                $tot = \db::result('SELECT count(fid) AS count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->count;
                 $months[$key2] = array($score, $tot);
             }
             $year_stats[$key] = $months;
@@ -160,6 +182,9 @@ class flight {
         die();
     }
 
+    /**
+     *
+     */
     public function generate_benchmark() {
         $flights = flight::get_all(array(), array('where' => 'did > 1 AND season = 2012 AND ftid != 3 AND fid>=8946', 'order' => 'fid DESC'));
         $total_time = 0;
@@ -254,6 +279,9 @@ class flight {
         echo '<p> Average Time :' . date('H:i:s', $average_time) . '</p>';
     }
 
+    /**
+     *
+     */
     public function generate_files() {
         if (isset($_REQUEST['id'])) {
             $this->do_retrieve_from_id(array(), $_REQUEST['id']);
@@ -266,6 +294,9 @@ class flight {
         }
     }
 
+    /**
+     *
+     */
     public function get_info_ajax() {
         $html = '';
         $id = (int) $_REQUEST['fid'];
@@ -301,8 +332,8 @@ class flight {
             <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $this->fid . ')">Add trace to Map</a></td></tr>
             <tr>
                 <td class="center" colspan="2">
-                    <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $this->fid . '" title="Download IGC" class="download igc">Download IGC</a>
-                    <a href="/?module=flight&amp;act=download&amp;type=kml&amp;id=' . $this->fid . '" title="Download KML" class="download kml">Download KML</a>
+                    <a href="/uploads/track/' . $this->fid . '/track.igc" title="Download IGC" class="download igc" rel="external">Download IGC</a>
+                    <a href="/uploads/track/' . $this->fid . '/track.kmz" title="Download KML" class="download kml" rel="external">Download KML</a>
                 </td>
             </tr>';
             } else {
@@ -311,10 +342,13 @@ class flight {
             $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
             $html .= '</table>';
         }
-        ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
-        ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
+        \ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
+        \ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
     }
 
+    /**
+     *
+     */
     private function set_track() {
         $track = new track();
         $track->id = $this->fid;
@@ -323,6 +357,9 @@ class flight {
         $this->track = $track;
     }
 
+    /**
+     * @return string
+     */
     public function get_stats() {
         if (!isset($this->track)) {
             $this->set_track();
@@ -365,16 +402,22 @@ class flight {
         return $html;
     }
 
+    /**
+     * @return string
+     */
     private function coord_info() {
         $html = '';
-        $coords = explode(';', $this->coords);
-        foreach ($coords as $coord) {
+        $coordinates = explode(';', $this->coords);
+        foreach ($coordinates as $coord) {
             $lat_lng = geometry::os_to_lat_long($coord);
-            $html .= 'Lat Long: ' . ($lat_lng->lat() > 0 ? 'N' : 'S') . number_format(abs($lat_lng->lat()), 5) . ', ' . ($lat_lng[1] > 0 ? 'E' : 'W') . number_format(abs($lat_lng->lng()), 5) . '; OS: ' . $coord . '<br/>';
+            $html .= 'Lat Long: ' . ($lat_lng->lat() > 0 ? 'N' : 'S') . number_format(abs($lat_lng->lat()), 5) . ', ' . ($lat_lng->lng() > 0 ? 'E' : 'W') . number_format(abs($lat_lng->lng()), 5) . '; OS: ' . $coord . '<br/>';
         }
         return $html;
     }
 
+    /**
+     * @return string
+     */
     public function get_info() {
         if (!isset($this->track)) {
             $this->set_track();
@@ -399,8 +442,8 @@ class flight {
             <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $this->fid . ')">Add trace to Map</a></td></tr>
             <tr>
                 <td class="center" colspan="2">
-                    <a href="/?module=flight&amp;act=download&amp;type=igc&amp;id=' . $this->fid . '" title="Download IGC" class="download igc">Download IGC</a>
-                    <a href="/?module=flight&amp;act=download&amp;type=kml&amp;id=' . $this->fid . '" title="Download KML" class="download kml">Download KML</a>
+                    <a href="/uploads/track/' . $this->fid . '/track.igc" title="Download IGC" class="download igc" rel="external">Download IGC</a>
+                    <a href="/uploads/track/' . $this->fid . '/track.kmz" title="Download KML" class="download kml" rel="external">Download KML</a>
                 </td>
             </tr>';
         } else {
@@ -413,6 +456,9 @@ class flight {
         return $html;
     }
 
+    /**
+     *
+     */
     public function get_js() {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
@@ -421,6 +467,10 @@ class flight {
         }
     }
 
+    /**
+     * @param string $prefix
+     * @return \html\node
+     */
     function to_print($prefix = '') {
         if ($this->did == 3) {
             $lead = '&#8801;';
@@ -439,16 +489,25 @@ class flight {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return html_node::create('td.' . $type . $d . $i . ' div.wrap', html_node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
+        return \html\node::create('td.' . $type . $d . $i . ' div.wrap', \html\node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
     }
 
+    /**
+     * @return string
+     */
     public function get_url() {
         return '/flight_info/' . $this->fid;
     }
 }
 
+/**
+ * Class flight_array
+ */
 class flight_array extends table_array {
 
+    /**
+     * @param array $input
+     */
     public function __construct($input = array()) {
         parent::__construct($input);
     }
@@ -459,6 +518,9 @@ class flight_array extends table_array {
     }
 }
 
+/**
+ * Class flight_iterator
+ */
 class flight_iterator extends table_iterator {
 
     /* @return flight */
