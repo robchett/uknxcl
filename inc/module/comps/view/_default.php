@@ -1,6 +1,6 @@
 <?php
-
-class _default_view extends view {
+namespace comps;
+class _default_view extends \view {
     public function get_view() {
         $comps = comp_array::get_all(array('type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title AS class', 'file'), array('join' => array('comp_group' => 'comp.class = comp_group.cgid'), 'order' => 'date DESC, round DESC, task DESC, class ASC'));
         $html = '';
@@ -52,9 +52,9 @@ class _default_view extends view {
             });";
 
         if (ajax) {
-            ajax::add_script($script);
+            \ajax::add_script($script);
         } else {
-            core::$inline_script[] = $script;
+            \core::$inline_script[] = $script;
         }
 
         return $html;

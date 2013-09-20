@@ -1,5 +1,6 @@
 <?php
-class pilot { use table;
+class pilot extends table { use table_trait;
+
     public static $module_id = 3;
     public $class = 1;
     public $club;
@@ -36,12 +37,12 @@ class pilot { use table;
     }
 
     public function do_update_selector() {
-        $field = form::create('field_link', 'pid')
+        $field = form\form::create('field_link', 'pid')
             ->set_attr('link_module', 'pilot')
             ->set_attr('link_field', 'name')
             ->set_attr('options', array('order' => 'name'));
         $field->parent_form = $this;
-        ajax::update($field->get_html());
+        \ajax::update($field->get_html());
     }
 
     public function output($pos) {
@@ -49,7 +50,7 @@ class pilot { use table;
     }
 
     public function output_csv($pos) {
-        $csv = $pos . ',\'' . $this->name . '\',\'' . $this->glider . '/' . $this->club . '\',' . strip_tags(implode(',',$this->flights));
+        $csv = $pos . ',\'' . $this->name . '\',\'' . $this->glider . '/' . $this->club . '\',' . strip_tags(implode(',', $this->flights));
         for ($i = $this->number_of_flights; $i < $this->max_flights - 1; $i++) {
             $csv .= ',';
         }
@@ -104,4 +105,3 @@ class pilot_iterator extends table_iterator {
     }
 }
 
-?>

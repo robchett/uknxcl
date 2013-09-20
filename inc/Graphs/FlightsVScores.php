@@ -1,5 +1,5 @@
 <?php
-function new_graph($height, $width) {
+/*function new_graph($height, $width) {
     echo "<canvas id='b' height='$height px' width='$width px' style='border:1px solid silver'></canvas>";
     $height -= 20;
     $width -= 40;
@@ -55,7 +55,7 @@ function new_graph($height, $width) {
 
     context.beginPath();
 
-    $out1
+    $out1;
 
     context.strokeStyle = '#F00';
     context.stroke();
@@ -63,7 +63,7 @@ function new_graph($height, $width) {
     context.beginPath();
     context.moveTo(0, $height);
 
-    $out2
+    $out2;
 
     context.strokeStyle = '#00F';
     context.stroke();
@@ -74,7 +74,7 @@ function new_graph($height, $width) {
     context.fillText('$min1', 0, $height);
     context.fillText('Number of flight', 10, $height/2);
 
-    context.fillStyle = '#00F'
+    context.fillStyle = '#00F';
     context.fillText('$max2', $width-20, 10);
     context.fillText('$min2', $width+25, $height);
     context.fillText('Points scored', $width-50, ($height/2));
@@ -92,4 +92,4 @@ function new_graph($height, $width) {
 </script>";
 }
 
-?>
+*/

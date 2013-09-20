@@ -1,4 +1,5 @@
 <?php
+namespace cms;
 class login_view extends cms_view {
 
     public function get_view() {

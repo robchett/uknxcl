@@ -271,7 +271,7 @@ function binary_left_shift($lat) {
     return $a . "0";
 }
 
-function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0, $top) {
+function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0) {
     $out = "";
     $out2 = array();
     $angularDistance = $cords [2] / geometry::EARTH_RADIUS;
@@ -416,4 +416,3 @@ $zip->open(root . '/resources/airspace.kmz', ZipArchive::OVERWRITE);
 $zip->addFile(root . '/resources/airspace.kml');
 $zip->close();
 
-?>

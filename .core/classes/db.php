@@ -2,7 +2,7 @@
 /**
  * Class db
  */
-class db implements database_interface {
+class db implements interfaces\database_interface {
     /** @var PDO */
     public static $con;
     /**
@@ -76,7 +76,7 @@ class db implements database_interface {
     }
 
     /**
-     * @param $res
+     * @param PDOStatement $res
      * @param string $class
      * @return mixed
      */
@@ -102,18 +102,19 @@ class db implements database_interface {
         $limit = '';
         $join = '';
         $group = '';
+        $base_object = get::__class_name($object);
         if (!empty($fields_to_retrieve)) {
             foreach ($fields_to_retrieve as $field) {
                 if (strstr($field, '.') && !strstr($field, '.*') && !strstr($field, ' AS ')) {
                     $fields[] = $field . ' AS ' . str_replace('.', '_', $field);
                 } else if (strstr($field, '(') === false && strstr($field, '.*') === false && strstr($field, '.') === false) {
-                    $fields[] = $object . '.' . $field;
+                    $fields[] = $base_object . '.' . $field;
                 } else {
                     $fields[] = $field;
                 }
             }
         } else {
-            $fields[] = $object . '.*';
+            $fields[] = $base_object . '.*';
         }
         if (isset($options['join'])) {
             foreach ($options['join'] as $key => $val) {
@@ -145,7 +146,7 @@ class db implements database_interface {
         if (isset($options['group'])) {
             $group .= 'GROUP BY ' . $options['group'];
         }
-        return $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $object . ' ' . $join . ' ' . $where . ' ' . $group . ' ' . $order . ' ' . $limit . ' ';
+        return $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $base_object . ' ' . $join . ' ' . $where . ' ' . $group . ' ' . $order . ' ' . $limit . ' ';
 
     }
 
@@ -213,11 +214,11 @@ class db implements database_interface {
         try {
             $prep_sql->execute();
         } catch (PDOException $e) {
-            $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
+            $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . \core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
             if (ajax) {
-                ajax::inject('body', 'append', $error);
+                \ajax::inject('body', 'append', $error);
                 if (!$throwable) {
-                    ajax::do_serve();
+                    \ajax::do_serve();
                     die();
                 }
             } else {
@@ -249,7 +250,7 @@ class db implements database_interface {
      * @return bool
      */
     public static function swap_connection($name) {
-        if(isset(self::$con_arr[$name])) {
+        if (isset(self::$con_arr[$name])) {
             self::$con = self::$con_arr[$name];
             return true;
         } else {
@@ -263,7 +264,7 @@ class db implements database_interface {
      */
     public static function table_exists($table) {
         $res = self::query('show tables like "test1"');
-        return db::num($res);
+        return \db::num($res);
     }
 
     /**
@@ -273,19 +274,19 @@ class db implements database_interface {
      */
     public static function column_exists($table, $column) {
         $res = self::query("SHOW COLUMNS FROM `table` LIKE 'fieldname'");
-        return db::num($res);
+        return \db::num($res);
     }
 
     public static function create_table($table_name, $fields = array(), $settings = array()) {
         $sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name;
         $column_strings = array();
-        foreach($fields as $field => $structure) {
+        foreach ($fields as $field => $structure) {
             $column_strings[] = '`' . $field . '` ' . $structure;
         }
         $sql .= ' (' . implode(',', $column_strings) . ') ';
         $setting_strings = array();
         $settings = array_merge(self::$default_table_settings, $settings);
-        foreach($settings as $setting => $value) {
+        foreach ($settings as $setting => $value) {
             $setting_strings[] = $setting . ' = ' . $value;
         }
         $sql .= implode(',', $setting_strings);

@@ -1,8 +1,8 @@
 <?php
+namespace comps;
+class comp_view extends \view {
 
-class comp_view extends view {
-
-    /** @return html_node */
+    /** @return \html\node */
     public function get_view() {
         $html = '';
         $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/points.js');
@@ -12,13 +12,13 @@ class comp_view extends view {
         }
         $html .= '<a href="/comps" class="comp_back button">Back To List</a>';
 
-        if(!ajax) {
-        core::$inline_script[] = "
+        if (!ajax) {
+            \core::$inline_script[] = "
             map.callback = function() {
                 map.add_comp(" . $this->module->current->cid . ");
             }; ";
         } else {
-            ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
+            \ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
         }
         return $html;
     }

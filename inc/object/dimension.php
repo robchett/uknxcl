@@ -1,9 +1,9 @@
 <?php
-class dimension { use table;
+class dimension extends table { use table_trait
+
     public $table_key = 'did';
     public static $module_id = 11;
 
-    /* @return dimension_array */
     public static function get_all(array $fields, array $options = array()) {
         return dimension_array::get_all($fields, $options);
     }

@@ -1,7 +1,7 @@
 <?php
-
-class flight_view extends view {
-    /** @var  flight_info */
+namespace flight_info;
+class flight_view extends \view {
+    /** @var  controller */
     public $module;
 
     public function get_view() {
@@ -12,7 +12,7 @@ class flight_view extends view {
         if ($this->module->current->did > 1) {
             $html .= $this->module->current->get_stats();
             $html .= '<div id="graph-' . $this->module->current->fid . '" class="graph"></div>';
-            core::$inline_script[] = '
+            \core::$inline_script[] = '
 var graph = new Graph($("#graph-' . $this->module->current->fid . '"));
 var flight = new Track(' . $this->module->current->fid . ');
 flight.add_nxcl_data(function() {graph.swap(flight)});

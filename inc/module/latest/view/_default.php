@@ -1,8 +1,10 @@
 <?php
+namespace latest;
+use html\node;
 
-class _default_view extends view {
+class _default_view extends \view {
     public function get_view() {
-        $flights = flight_array::get_all(
+        $flights = \flight_array::get_all(
             array('flight.*', 'pilot.name', 'pilot.pid'),
             array(
                 'join' => array(
@@ -13,34 +15,34 @@ class _default_view extends view {
                 'order' => 'fid DESC'
             )
         );
-        $wrapper = html_node::create('div.table_wrapper');
-        $wrapper->add_child(html_node::create('h3', 'Latest'));
-        $html = new html_node('table.results.main', '', array('style' => 'width:700px'));
+        $wrapper = node::create('div.table_wrapper');
+        $wrapper->add_child(node::create('h3', 'Latest'));
+        $html = new node('table.results.main', '', array('style' => 'width:700px'));
         $html->add_child(
-            html_node::create('thead')->add_child(
-                html_node::create('tr')->nest(array(
-                        html_node::create('th', 'ID'),
-                        html_node::create('th', 'Pilot'),
-                        html_node::create('th', 'Date Flown'),
-                        html_node::create('th', 'Date Added'),
-                        html_node::create('th', 'Score'),
-                        html_node::create('th', 'Flight Waypoints'))
+            node::create('thead')->add_child(
+                node::create('tr')->nest(array(
+                        node::create('th', 'ID'),
+                        node::create('th', 'Pilot'),
+                        node::create('th', 'Date Flown'),
+                        node::create('th', 'Date Added'),
+                        node::create('th', 'Score'),
+                        node::create('th', 'Flight Waypoints'))
                 )
             )
         );
-        $body = new html_node('tbody');
+        $body = new node('tbody');
         //$flights->iterate(function ($flight) use (&$body) {
-        /** @var flight $flight */
+        /** @var \flight $flight */
         foreach ($flights as $flight) {
             $added = substr($flight->added, 0, 10);
-            $body->add_child(html_node::create('tr')
+            $body->add_child(node::create('tr')
                     ->nest(array(
-                            html_node::create('td', $flight->fid),
-                            html_node::create('td', $flight->pilot_name),
-                            html_node::create('td', $flight->date),
-                            html_node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
+                            node::create('td', $flight->fid),
+                            node::create('td', $flight->pilot_name),
+                            node::create('td', $flight->date),
+                            node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
                             $flight->to_print(),
-                            html_node::create('td', $flight->coords)
+                            node::create('td', $flight->coords)
                         )
                     )
             );

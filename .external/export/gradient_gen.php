@@ -43,4 +43,3 @@ for ($i = 0; $i <= $theNumSteps; $i++) {
     printf("\"%06X\",<br/>", $theVal);
 }
 echo "</table>\n";
-?>

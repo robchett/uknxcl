@@ -1,9 +1,9 @@
 <?php
-class gender { use table;
+class gender extends table { use table_trait
+
     public $table_key = 'gid';
     public static $module_id = 14;
 
-    /* @return gender_array */
     public static function get_all(array $fields, array $options = array()) {
         return gender_array::get_all($fields, $options);
     }

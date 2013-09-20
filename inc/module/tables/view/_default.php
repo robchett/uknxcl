@@ -1,8 +1,8 @@
 <?php
+namespace tables;
+class _default_view extends \view {
 
-class _default_view extends view {
-
-    /** @var  tables $module */
+    /** @var  \tables\controller $module */
     public $module;
 
 
@@ -42,9 +42,9 @@ class _default_view extends view {
         });
         $("#basic_tables_form_wrapper form,#advanced_tables_wrapper form").slideUp();';
         if (ajax) {
-            ajax::add_script($inline_script);
+            \ajax::add_script($inline_script);
         } else {
-            core::$inline_script[] = $inline_script;
+            \core::$inline_script[] = $inline_script;
         }
         return $html;
     }

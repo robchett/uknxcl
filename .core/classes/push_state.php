@@ -18,10 +18,10 @@ class push_state {
     public function get() {
         if (!ie) {
             if ($this->type == self::PUSH) {
-                core::$inline_script[] = 'window.history.pushState(' . json_encode($this->data) . ', "",
+                \core::$inline_script[] = 'window.history.pushState(' . json_encode($this->data) . ', "",
             "' . $this->url . '")';
             } else {
-                core::$inline_script[] = 'window.history.replaceState(' . json_encode($this->data) . ', "",
+                \core::$inline_script[] = 'window.history.replaceState(' . json_encode($this->data) . ', "",
             "' . $this->url . '")';
             }
         }

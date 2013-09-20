@@ -1,6 +1,6 @@
 <?php
-
-function make_table(league_table $data) {
+/*
+function make_table() {
     $html = '';
     makeHeader();
     $Club = $_GET ['club'];
@@ -8,11 +8,11 @@ function make_table(league_table $data) {
     if (isset ($_GET ['year'])) {
         $Year = $_GET ['year'];
         $WHERE = "WHERE Season=$Year AND $launch";
-        $WHERE2 = "WHERE Season=$Year AND cid=$Club $launch";
+        //$WHERE2 = "WHERE Season=$Year AND cid=$Club $launch";
     } else {
         $Year = "All Time";
         $WHERE = "WHERE $launch";
-        $WHERE2 = "WHERE cid=$Club $launch";
+        //$WHERE2 = "WHERE cid=$Club $launch";
     }
 
     $club_name = SelectOne("club.title", "club", "cid=$Club");
@@ -58,5 +58,4 @@ function make_table(league_table $data) {
 
     return $html;
 }
-
-?>
+*/

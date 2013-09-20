@@ -531,4 +531,3 @@ function console($str, &$track, $script = 0, $raw = 0)
 }
 
 */
-?>

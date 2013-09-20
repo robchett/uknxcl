@@ -7,25 +7,25 @@ abstract class view extends core_view {
 
     public function get_view_ajax() {
         $content = $this->get_view();
-        ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri ) . '">' . $content . '</div>', '#' . $this->get_page_selector());
+        \ajax::inject('#main', 'append', '<div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri) . '">' . $content . '</div>', '#' . $this->get_page_selector());
     }
 
     public function get_page_selector() {
-        return get_class($this->module) . (isset($this->module->current) && $this->module->current->get_primary_key() ? '-' . $this->module->current->get_primary_key() : '');
+        return get::__class_name($this->module) . (isset($this->module->current) && $this->module->current->get_primary_key() ? '-' . $this->module->current->get_primary_key() : '');
     }
 
     public function get() {
-        if(!ajax) {
-        core::$inline_script[] = 'loaded_modules = {"' . uri . '":true};';
-        return '
+        if (!ajax) {
+            \core::$inline_script[] = 'loaded_modules = {"' . uri . '":true};';
+            return '
 <div id="left_col">
     <div id="nav">
         <ul>
-            ' . core::$singleton->module->get_main_nav() . '
+            ' . \core::$singleton->module->get_main_nav() . '
         </ul>
     </div>
     <div id="main">
-        <div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri ) . '">
+        <div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri) . '">
             ' . $this->get_view() . '
         </div>
     </div>
@@ -53,9 +53,10 @@ abstract class view extends core_view {
     <div id="map"><p class="loading">Google Maps are loading...</p></div>
     <div id="map3d"><p class="loading">Google Earth is loading...</p></div>
 </div>';
-    } else {
+        } else {
             $this->get_view_ajax();
         }
+        return '';
     }
 
     public function get_ajax() {

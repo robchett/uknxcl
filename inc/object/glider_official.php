@@ -27,4 +27,3 @@ class glider_official extends pilot_official {
     }
 }
 
-?>

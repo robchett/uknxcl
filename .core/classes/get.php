@@ -8,6 +8,23 @@ class get {
         return htmlentities(html_entity_decode($html));
     }
 
+    public static function __class_name($object) {
+        if(is_string($object)) {
+            $name = trim($object, '\\');
+        } else {
+            $name = trim(get_class($object),'\\');
+        }
+        if(($pos = strrpos($name, '\\')) !== false) {
+            $pos++;
+        }
+        return substr($name, $pos);
+    }
+
+    public static function __namespace($object) {
+        $name = trim(get_class($object), '\\');
+        return substr($name, 0, strrpos($name, '\\'));
+    }
+
     public static function fn($str) {
         return str_replace(array(' ', '.', ',', '-'), '_', strtolower($str));
     }
@@ -32,7 +49,7 @@ class get {
     }
 
     public static function header_redirect($url = '', $code = 404) {
-        header('Location:' . (!strstr('http', $url) ? 'http://' . host . '/' . trim($url,'/') : $url ));
+        header('Location:' . (!strstr('http', $url) ? 'http://' . host . '/' . trim($url, '/') : $url), $code);
         die();
     }
 
@@ -150,6 +167,7 @@ class get {
             case (0) :
                 return '0000FF'; // Red
         }
+        return '';
     }
 
     static function js_colour($i) {
@@ -173,6 +191,7 @@ class get {
             case (0) :
                 return 'FF0000'; // Red
         }
+        return '';
     }
 
     public static function ini($key, $block = 'site', $default = null) {
@@ -184,8 +203,8 @@ class get {
             }
             if (defined('host') && is_readable(root . '/.conf/' . host . '.ini')) {
                 $sub_settings = parse_ini_file(root . '/.conf/' . host . '.ini', true);
-                foreach($sub_settings as $ini_block => $ini_keys) {
-                    if(isset(self::$settings[$ini_block])) {
+                foreach ($sub_settings as $ini_block => $ini_keys) {
+                    if (isset(self::$settings[$ini_block])) {
                         self::$settings[$ini_block] = $ini_keys;
                     } else {
                         self::$settings[$ini_block] = array_merge(self::$settings[$ini_block], $ini_keys);

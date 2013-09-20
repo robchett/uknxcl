@@ -1,9 +1,9 @@
 <?php
-
-class igc_supported_view extends view {
+namespace add_flight;
+class igc_supported_view extends \view {
 
     public function get_page_selector() {
-        return get_class($this->module) . '-igc';
+        return \get::__class_name($this->module) . '-igc';
     }
 
     public function get_view() {
@@ -92,9 +92,9 @@ class igc_supported_view extends view {
         $("#igc_form input.submit").removeAttr("disabled");
     });';
         if (ajax) {
-            ajax::add_script($script);
+            \ajax::add_script($script);
         } else {
-            core::$inline_script[] = $script;
+            \core::$inline_script[] = $script;
         };
         return $html;
     }

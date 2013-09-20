@@ -3,7 +3,7 @@
 /**
  * Class cache
  */
-class cache implements cache_interface {
+class cache implements interfaces\cache_interface {
 
     /**
      * @const int Connection error has occurred possible Memcached not installed.
@@ -49,17 +49,17 @@ class cache implements cache_interface {
      */
     private static function load_dependants() {
         self::$dependants = array();
-        if(class_exists('db')) {
-            if(!db::table_exists('_cache_dependants')) {
-                db::create_table('_cache_dependants',
+        if (class_exists('db')) {
+            if (!\db::table_exists('_cache_dependants')) {
+                \db::create_table('_cache_dependants',
                     array(
-                        'key'=>'INT',
-                        'hash'=>'BINARY(16)'
+                        'key' => 'INT',
+                        'hash' => 'BINARY(16)'
                     )
                 );
             }
-            $res = db::query('SELECT * FROM _cache_dependants');
-            while($row = db::fetch($res, false)) {
+            $res = \db::query('SELECT * FROM _cache_dependants');
+            while ($row = \db::fetch($res, false)) {
                 self::$dependants[$row['key']] = $row['hash'];
             }
         }
@@ -73,7 +73,7 @@ class cache implements cache_interface {
      */
     public static function get($key, array $dependencies = array('global')) {
         if (self::$current == null) {
-            self::connect(get::ini('instance','memcached'), get::ini('server', 'memcached'), get::ini('port', 'memcached'));
+            self::connect(get::ini('instance', 'memcached'), get::ini('server', 'memcached'), get::ini('port', 'memcached'));
         }
         $key = self::get_key($key, $dependencies);
         if (!($res = self::$current->get($key))) {
@@ -93,15 +93,15 @@ class cache implements cache_interface {
     public static function set(array $data, array $dependencies = array('global'), $cache_time = null) {
         if (self::$current == null) {
             try {
-                self::connect(get::ini('instance','memcached'), get::ini('server', 'memcached'), get::ini('port', 'memcached'));
+                self::connect(get::ini('instance', 'memcached'), get::ini('server', 'memcached'), get::ini('port', 'memcached'));
             } catch (Exception $e) {
                 return false;
             }
         }
-        if(is_null($cache_time)) {
+        if (is_null($cache_time)) {
             $cache_time = self::DEFAULT_CACHE_TIME;
         }
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $new_key = self::get_key($key, $dependencies);
             self::$current->set($new_key, $value, $cache_time);
         }
@@ -114,11 +114,11 @@ class cache implements cache_interface {
      * @return string
      */
     protected static function get_key($key, array $dependencies) {
-        if(!self::$dependants) {
+        if (!self::$dependants) {
             self::load_dependants();
         }
         $salt = '';
-        foreach($dependencies as $key) {
+        foreach ($dependencies as $key) {
             $salt .= isset(self::$dependants[$key]) ? self::$dependants[$key] : 0;
         }
         $key = md5($salt . $key);

@@ -2087,7 +2087,7 @@ class lessc_parser {
         $this->whitespace();
 
         // parse the entire file
-        $lastCount = $this->count;
+        //$lastCount = $this->count;
         while (false !== $this->parseChunk()) ;
 
         if ($this->count != strlen($this->buffer))
@@ -2488,7 +2488,7 @@ class lessc_parser {
 
     // an import statement
     protected function import(&$out) {
-        $s = $this->seek();
+        $this->seek();
         if (!$this->literal('@import')) return false;
 
         // @import "something.css" media;
@@ -2820,7 +2820,7 @@ class lessc_parser {
     // list of tags of specifying mixin path
     // optionally separated by > (lazy, accepts extra >)
     protected function mixinTags(&$tags) {
-        $s = $this->seek();
+        $this->seek();
         $tags = array();
         while ($this->tag($tt, true)) {
             $tags[] = $tt;

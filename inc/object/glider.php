@@ -47,12 +47,12 @@ class glider extends pilot {
     }
 
     public function do_update_selector() {
-        $field = form::create('field_link', 'gid')
+        $field = form\form::create('field_link', 'gid')
             ->set_attr('link_module', 'glider')
             ->set_attr('link_field', array('manufacturer.title', 'glider.name'))
             ->set_attr('options', array('join' => array('manufacturer' => 'manufacturer.mid = glider.mid'), 'order' => 'manufacturer.title, glider.name'));
         $field->parent_form = $this;
-        ajax::update($field->get_html());
+        \ajax::update($field->get_html());
     }
 }
 

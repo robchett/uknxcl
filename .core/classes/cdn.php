@@ -1,5 +1,5 @@
 <?php
 
-class cdn implements cdn_interface {
+class cdn implements interfaces\cdn_interface {
 
 }

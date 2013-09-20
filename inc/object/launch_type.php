@@ -1,5 +1,5 @@
 <?php
-class launch_type { use table;
+class launch_type extends table { use table_trait;
 
     const WINCH = 3;
     const AERO = 2;
@@ -11,7 +11,6 @@ class launch_type { use table;
     public $title;
     public $fn;
 
-    /* @return launch_type_array */
     public static function get_all(array $fields, array $options = array()) {
         return launch_type_array::get_all($fields, $options);
     }
