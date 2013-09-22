@@ -25,21 +25,15 @@ class module_list_view extends cms_view {
                         node::create('th', [], 'Table Name') .
                         node::create('th', [], 'Primary Key')
                     ) .
-                    node::nest_function(
-                        function () use ($modules) {
-                            $body = '';
-                            $modules->iterate(
-                                function (_cms_modules $module) use (&$body) {
-                                    $body .= node::create('tr', [],
-                                        node::create('td', [], $module->mid) .
-                                        node::create('td', [], $module->_cms_group_title) .
-                                        node::create('td', [], $module->title) .
-                                        node::create('td', [], $module->table_name) .
-                                        node::create('td', [], $module->primary_key)
-                                    );
-                                }
+                    $modules->iterate_return(
+                        function (_cms_modules $module) {
+                            return node::create('tr', [],
+                                node::create('td', [], $module->mid) .
+                                node::create('td', [], $module->_cms_group_title) .
+                                node::create('td', [], $module->title) .
+                                node::create('td', [], $module->table_name) .
+                                node::create('td', [], $module->primary_key)
                             );
-                            return $body;
                         }
                     )
                 )

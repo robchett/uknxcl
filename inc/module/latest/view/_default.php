@@ -30,22 +30,16 @@ class _default_view extends \view {
                     )
                 ) .
                 node::create('tbody', [],
-                    node::nest_function(
-                        function () use ($flights) {
-                            $body = '';
-                            $flights->iterate(function (\flight $flight) use (&$body) {
-                                    $added = substr($flight->added, 0, 10);
-                                    $body .= node::create('tr', [],
-                                        node::create('td', [], $flight->fid) .
-                                        node::create('td', [], $flight->pilot_name) .
-                                        node::create('td', [], $flight->date) .
-                                        node::create('td', [], ($added != '0000-00-00' ? $added : 'Unknown')) .
-                                        $flight->to_print() .
-                                        node::create('td', [], $flight->coords)
-                                    );
-                                }
+                    $flights->iterate_return(function (\flight $flight) use (&$body) {
+                            $added = substr($flight->added, 0, 10);
+                            return node::create('tr', [],
+                                node::create('td', [], $flight->fid) .
+                                node::create('td', [], $flight->pilot_name) .
+                                node::create('td', [], $flight->date) .
+                                node::create('td', [], ($added != '0000-00-00' ? $added : 'Unknown')) .
+                                $flight->to_print() .
+                                node::create('td', [], $flight->coords)
                             );
-                            return $body;
                         }
                     )
                 )

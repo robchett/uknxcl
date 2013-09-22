@@ -113,10 +113,6 @@ class node {
         return $html;
     }
 
-    public static function nest_function($function) {
-        return call_user_func_array($function, []);
-    }
-
     /* @return node */
     public function nest() {
         if (func_num_args() == 1) {
