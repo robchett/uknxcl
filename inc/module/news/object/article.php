@@ -1,6 +1,7 @@
 <?php
 namespace news;
 class article extends \table{
+    use \table_trait;
 
     /* @var string */
     public $date;
