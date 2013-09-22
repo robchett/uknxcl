@@ -1,4 +1,6 @@
 <?php
+use html\node;
+
 /**
  * Class club
  */
@@ -51,12 +53,12 @@ class club extends table {
      * @return string
      */
     function writeClubSemiHead($pos) {
-        return '
-            <div class="table_wrapper inner"><h3>
-            <span class="pos">' . $pos . '</span>
-            <span class="score">' . $this->score . '</span>
-            <span class="name">' . $this->name . '</span>
-            </h3>';
+        return node::create('h3', [],
+            node::create('span.pos', [], $pos) .
+            node::create('span.score', [], $this->score) .
+            node::create('span.name', [], $this->name)
+
+        );
     }
 }
 
