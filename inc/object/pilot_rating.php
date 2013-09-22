@@ -1,5 +1,6 @@
 <?php
-class pilot_rating extends table { use table_trait
+class pilot_rating extends table {
+    use table_trait;
 
     public $table_key = 'prid';
     public static $module_id = 15;

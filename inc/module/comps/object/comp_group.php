@@ -1,6 +1,7 @@
 <?php
 namespace comps;
-class comp_group extends \table{
+class comp_group extends \table {
+    use \table_trait;
 
     public $table_key = 'cgid';
     public static $module_id = 18;
