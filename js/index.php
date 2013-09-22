@@ -11,4 +11,3 @@ foreach ($files as $file) {
 //$output = preg_replace('/\s+/',' ',$output);
 
 echo $output;
-?>
