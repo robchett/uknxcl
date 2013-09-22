@@ -1,8 +1,9 @@
 <?php
 namespace tables;
-class result_records extends \table{
+class result_records extends result {
 
-    function make_table() {
+
+    function make_table(league_table $data) {
         $html = '<div class="table_wrapper"><h3>Results</h3>';
         $html .= '<table class="results main">
     <thead>
