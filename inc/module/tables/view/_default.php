@@ -60,7 +60,7 @@ class _default_view extends \view {
                 node::create('b', [], 'KML prefixes:') .
                 '-is no trace, = shows 2D, &#8801; shows 3D <br/>' .
                 node::create('b', [], 'Launch prefixes:') .
-                '</b> A = Aerotow, W = Winch, else Foot <br/>' .
+                'A = Aerotow, W = Winch, else Foot <br/>' .
                 node::create('b', [], 'Colours:') .
                 node::create('span.od', [], 'Open Dist') .
                 node::create('span.or', [], 'Out & Return') .
