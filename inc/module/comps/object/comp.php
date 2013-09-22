@@ -3,6 +3,7 @@ namespace comps;
 use form\field;
 
 class comp extends \table{
+    use \table_trait;
 
     public static $module_id = 17;
     public $table_key = 'cid';
