@@ -23,7 +23,7 @@ function UKNXCL_Map($container) {
         });
     }
 
-    this.callback = function () {}
+    this.callback = function () {};
 
     this.$container = $container;
     this.$body = $('body');
@@ -226,7 +226,7 @@ function UKNXCL_Map($container) {
                 }, this);
             }
         });
-    }
+    };
 
     this.add_flight = function (id, airspace, reload_flight, temp) {
         this.$tree.find('.track_' + id).remove();
@@ -340,7 +340,7 @@ function Track(id, temp) {
         } else {
 
         }
-    }
+    };
 
     this.add_nxcl_data = function (callback) {
         $.ajax({
@@ -431,7 +431,7 @@ function Track(id, temp) {
         } else {
             this.google_data.gpolylines[id].setMap(null);
         }
-    }
+    };
 
     this.load = function () {
         this.add_google_data();
@@ -452,7 +452,7 @@ function Comp(id) {
 
     this.add_google_data = function () {
         if (map.mode === map.MAP) {
-            map.GeoXMLcomp.parse('?module=comp&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
+            map.GeoXMLcomp.parse('?module=comps\\comp&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
             this.google_data = true;
             this.is_ready();
         } else {
@@ -462,7 +462,7 @@ function Comp(id) {
 
     this.add_nxcl_data = function () {
         $.ajax({
-            url: '?module=comp&act=get_js&id=' + this.id,
+            url: '?module=comps\\comp&act=get_js&id=' + this.id,
             context: this,
             cache: false,
             async: true,
@@ -487,7 +487,7 @@ function Comp(id) {
                 });
             }, this);
         }
-    }
+    };
 
     this.is_ready = function () {
         if (this.nxcl_data.loaded && this.google_data) {
@@ -509,7 +509,7 @@ function Comp(id) {
         } else {
 
         }
-    }
+    };
 
     this.show = function () {
         this.nxcl_data.track.each(function (track) {
@@ -519,10 +519,10 @@ function Comp(id) {
             marker.setMap(map.internal_map);
         });
         if (map.mode == map.MAP) {
-            this.google_data.gpolylines.each(function(element) {
-               element.setMap(map.internal_map);
+            this.google_data.gpolylines.each(function (element) {
+                element.setMap(map.internal_map);
             });
-            this.google_data.gpolygons.each(function(element) {
+            this.google_data.gpolygons.each(function (element) {
                 element.setMap(map.internal_map);
             });
             this.visible = true;
@@ -537,12 +537,12 @@ function Comp(id) {
         this.marker.each(function (marker) {
             marker.setMap(null);
         });
-        for (var i in this.google_data.gpolylines) {
-            this.google_data.gpolylines[i].setMap(null);
-        }
-        for (i in this.google_data.gpolygons) {
-            this.google_data.gpolygons[i].setMap(null);
-        }
+        this.google_data.gpolylines.each(function(polyline) {
+            polyline.setMap(null);
+        });
+        this.google_data.gpolygons.each(function(polygons) {
+            polygons.setMap(null);
+        });
         this.visible = false;
         map.graph.setGraph();
     };
@@ -611,10 +611,10 @@ function Coordinate(lat, lon) {
         };
         this.set_lat = function (lat) {
             this._lat = lat;
-        }
+        };
         this.set_lng = function (lng) {
             this._lng = lng;
-        }
+        };
     }
     this._gridref = null;
 
@@ -807,7 +807,7 @@ function Planner(parent) {
         this.enabled = true;
         $("#waypoint_mode_help").show();
         $("#wp_overlay").hide();
-    }
+    };
 
     this.writeplanner = function () {
         var out = "<table style='width:100%'>";
@@ -864,7 +864,7 @@ function Planner(parent) {
         if (this.count === 4 && this.is_equal(0, 3)) { return 'tr';}
         if (this.is_equal(0, 2)) { return 'or';}
         if ((this.count >= 2 && this.count <= 5)) { return 'od';}
-    }
+    };
 
     this.get_coordinates = function () {
         var str = [];
@@ -880,7 +880,7 @@ function Planner(parent) {
             arr.push(new google.maps.LatLng(c.lat(), c.lng()));
         });
         return arr;
-    }
+    };
 
     this.draw = function () {
         if (!this.triangle_guides) {
@@ -929,7 +929,7 @@ function Planner(parent) {
         } else {
             this.triangle_guides[0].setMap(null);
         }
-    }
+    };
 
     this.draw_triangle_guides = function () {
         var point1 = [this.coordinates[0].lat(), this.coordinates[0].lng()];
@@ -960,7 +960,7 @@ function Planner(parent) {
             t(points, this.triangle_guides[2]);
 
         }
-    }
+    };
 
     this.clear = function () {
 
@@ -970,7 +970,7 @@ function Planner(parent) {
             } else {
                 map.ge.getFeatures().removeChild(point);
             }
-        })
+        });
         this.waypoints = [];
         this.coordinates = [];
         this.count = 0;
@@ -1167,7 +1167,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     this.internal_array = [];
     this.event = event;
 
-    this.root = ''
+    this.root = '';
     this.kml = '';
     this.root_data = ths.parents('div.kmltree').eq(0).data('post');
     this.$li = ths.parent();
@@ -1189,11 +1189,11 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         }
         return false
 
-    }
+    };
 
     this.last = function () {
         return this.internal_array[this.internal_array.length - 1];
-    }
+    };
 
     this.load = function () {
         if (map.mode == map.EARTH) {
@@ -1209,7 +1209,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         } else {
             this._map_toggle();
         }
-    }
+    };
 
     this.recursiveHide = function (earthObject) {
         if (map.mode == map.EARTH) {
@@ -1217,7 +1217,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         } else {
             this._map_recursiveHide(earthObject);
         }
-    }
+    };
 
     this.recursiveShow = function (earthObject) {
         if (map.mode == map.EARTH) {
@@ -1225,7 +1225,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
         } else {
             this._map_recursiveShow(earthObject);
         }
-    }
+    };
 
     this.setVisibility = function (i, bool) {
         if (map.mode == map.EARTH) {
@@ -1237,7 +1237,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 this._map_recursiveShow(this.index(i));
             }
         }
-    }
+    };
 
     this._earth_load = function () {
         if (this.data.type == "comp") {
@@ -1259,7 +1259,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 ths.kml = kml;
             }, this);
         }
-    }
+    };
 
     this._map_load = function () {
         if (this.data.type == "comp") {
@@ -1281,7 +1281,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
 
             }, this);
         }
-    }
+    };
 
     this._earth_toggle = function () {
         if (this.$li.hasClass('visible')) {
@@ -1312,7 +1312,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             }
         }
         this.root.center();
-    }
+    };
 
     this._map_toggle = function () {
         if (this.$li.hasClass('visible')) {
@@ -1343,7 +1343,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             }
         }
         this.root.center();
-    }
+    };
 
     this._earth_recursiveHide = function (earthObject) {
         if (typeof earthObject == 'object' && typeof earthObject.getFeatures == 'function') {
@@ -1354,7 +1354,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             }
             earthObject.setVisibility(false);
         }
-    }
+    };
 
     this._map_recursiveHide = function (relative_placemarks) {
         for (var i = 0; i < relative_placemarks.length; i++) {
@@ -1364,7 +1364,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 this.root.google_data.placemarks[relative_placemarks[i]].polyline.setMap(null);
             }
         }
-    }
+    };
 
     this._earth_recursiveShow = function (earthObject) {
         if (typeof earthObject == 'object' && typeof earthObject.getFeatures == 'function') {
@@ -1375,7 +1375,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             }
             earthObject.setVisibility(true);
         }
-    }
+    };
 
     this._map_recursiveShow = function (relative_placemarks) {
         for (var i = 0; i < relative_placemarks.length; i++) {
@@ -1386,7 +1386,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             }
         }
     }
-}
+};
 
 
 $('body').on('click', '.kmltree .toggler', function (event) {

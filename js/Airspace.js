@@ -50,7 +50,7 @@ function Airspace() {
             case 4:
                 return 'CTRCTA';
         }
-    }
+    };
     this.setHeight = function (val) {
         this.maximum_base = val;
     };
