@@ -1,6 +1,9 @@
 <?php
 namespace news;
-class article extends \table{
+
+use html\node;
+
+class article extends \table {
     use \table_trait;
 
     /* @var string */
@@ -11,6 +14,7 @@ class article extends \table{
     public $post;
     /* @var int */
     public $aid;
+    public $snippet;
     /* @var string */
     public $title;
 
@@ -23,10 +27,10 @@ class article extends \table{
     }
 
     public function get_title() {
-        return '<span class="date">' . date('d/m/Y', strtotime($this->date)) . '</span><span class="name">' .
-        $this->title .
-        '</span>
-        <span class="author">By: ' . $this->poster . '</span>';
+        return
+            node::create('span.date', [], date('d/m/Y', strtotime($this->date))) .
+            node::create('span.name', [], $this->title) .
+            node::create('span.author', [], 'By: ' . $this->poster);
     }
 
     public function get_body() {
@@ -34,16 +38,10 @@ class article extends \table{
     }
 
     public function get_cell() {
-        $html = '';
-        $html .= '<article id="article' . $this->aid . '">';
-        $html .= '<div class="title">';
-        $html .= $this->get_title();
-        $html .= '</div>';
-        $html .= '<div class="content">';
-        $html .= (empty($this->snippet) ? $this->post : $this->snippet . '<a href="' . $this->get_url() . '" class="button">Read more</a>');
-        $html .= '</div>';
-        $html .= '</article>';
-        return $html;
+        return node::create('article#article' . $this->aid, [],
+            node::create('div.title', [], $this->get_title()) .
+            node::create('div.content', [], (!$this->snippet ? $this->post : $this->snippet . node::create('a.button', ['href' => $this->get_url()], 'Read more')))
+        );
     }
 
 
