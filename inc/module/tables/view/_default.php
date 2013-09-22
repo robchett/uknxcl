@@ -23,7 +23,7 @@ class _default_view extends \view {
         $form->set_from_options($table->options);
         $form->post_submit_text = $this->get_key();
         $html .= $form->get_html()->get();
-        $html .= node::create('<div#generated_tables', [], $table->get_table());
+        $html .= node::create('div#generated_tables', [], $table->get_table());
 
         $inline_script = '
         $("body").on("click", ".form_toggle", function () {
