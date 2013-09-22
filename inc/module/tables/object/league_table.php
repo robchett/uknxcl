@@ -367,7 +367,7 @@ class league_table {
                 break;
             case(league_table_options::LAYOUT_RECORDS):
                 $this->result = new result_records();
-                return $this->result->make_table();
+                return $this->result->make_table($this);
             case(5):
                 $this->OrderBy = 'date';
                 $this->result = new result_list();
