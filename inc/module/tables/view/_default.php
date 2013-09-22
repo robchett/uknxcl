@@ -1,5 +1,8 @@
 <?php
 namespace tables;
+
+use html\node;
+
 class _default_view extends \view {
 
     /** @var  \tables\controller $module */
@@ -51,19 +54,20 @@ class _default_view extends \view {
 
 
     protected function get_key() {
-        return '
-        <div class="key_switch">
-            <span class="">Key</span>
-            <div id="key2">
-                <b>KML prefixes:</b>- is no trace, = shows 2D, &#8801; shows 3D <br/>
-                <b>Launch prefixes: </b> A = Aerotow, W = Winch, else Foot <br/>
-                <b>Colours:</b>
-                <a class="od"> Open Dist</a>
-                <a class="or">Out & Return</a>
-                <a class="goal">Goal</a>
-                <a class="tr">Triangle</a>
-                <a class="ft">Flat Triangle</a>
-            </div>
-        </div>';
+        return node::create('div.key_switch', [],
+            node::create('span', [], 'Key') .
+            node::create('div#key2', [],
+                node::create('b', [], 'KML prefixes:') .
+                '-is no trace, = shows 2D, &#8801; shows 3D <br/>' .
+                node::create('b', [], 'Launch prefixes:') .
+                '</b> A = Aerotow, W = Winch, else Foot <br/>' .
+                node::create('b', [], 'Colours:') .
+                node::create('span.od', [], 'Open Dist') .
+                node::create('span.or', [], 'Out & Return') .
+                node::create('span.goal', [], 'Goal') .
+                node::create('span.tr', [], 'Triangle') .
+                node::create('span.ft', [], 'Flat Triangle')
+            )
+        );
     }
 }
