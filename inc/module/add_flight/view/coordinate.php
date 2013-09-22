@@ -1,5 +1,8 @@
 <?php
 namespace add_flight;
+
+use html\node;
+
 class coordinate_view extends \view {
 
     public function get_page_selector() {
@@ -8,11 +11,10 @@ class coordinate_view extends \view {
 
     public function get_view() {
         $form = new coordinates_form();
-        $html = '
-        <div class="add_flight_section coordinate">
-            ' . $form->get_html()->get() . '
-            <a href="/add_flight" class="back button">Back</a>
-        </div>';
+        $html = node::create('div.add_flight_section.coordinate', [],
+            $form->get_html() .
+            node::create('a.back.button', ['href' => '/add_flight'], 'Back')
+        );
         $script = '
     $("body").on("change","input#coords",function () {
         var arr = $(this).val().split(";");
