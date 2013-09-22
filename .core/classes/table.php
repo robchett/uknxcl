@@ -457,6 +457,17 @@ class table_array extends ArrayObject {
         $this->iterator->reset();
     }
 
+    public function iterate_return($function, $cnt = 0) {
+        $res = '';
+        while ($obj = $this->next()) {
+            $cnt++;
+            $res .= call_user_func_array($function, array($obj, $cnt));
+        }
+        $this->iterator->reset();
+        return $res;
+    }
+
+
     /**
      * @return bool|mixed
      */
