@@ -1,5 +1,6 @@
 <?php
 namespace form;
+
 use html\node;
 
 class field_file extends field {
@@ -19,9 +20,9 @@ class field_file extends field {
     public function get_cms_list_wrapper($value, $object_class, $id) {
         if (isset($this->parent_form->{$this->field_name}) && !empty($this->parent_form->{$this->field_name})) {
             $this->attributes['href'] = $this->parent_form->{$this->field_name};
-            return node::create('a.button', 'Download', $this->attributes)->get();
+            return node::create('a.button', $this->attributes, 'Download');
         } else {
-            return node::create('span', 'no file')->get();
+            return node::create('span', [], 'No File');
         }
     }
 

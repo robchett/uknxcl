@@ -222,11 +222,11 @@ class form {
             ), $this->attributes
         );
         if ($this->h2) {
-            $html->nest(node::create('h2.form_title', $this->h2));
+            $html->nest(node::create('h2.form_title', [], $this->h2));
         }
         $html->nest($this->get_html_body());
         if (!$this->use_ajax) {
-            $html->add_child(node::create('iframe#form_target_' . $this->id . '.form_frame', '', array('width' => 1, 'height' => 1, 'frame-border' => 0, 'border' => 0, 'src' => '/inc/module/blank.html', 'name' => 'form_target_' . $this->id)));
+            $html->add_child(node::create('iframe#form_target_' . $this->id . '.form_frame', ['width' => 1, 'height' => 1, 'frame-border' => 0, 'border' => 0, 'src' => '/inc/module/blank.html', 'name' => 'form_target_' . $this->id]));
         }
         return $html;
     }
@@ -235,23 +235,23 @@ class form {
      * @return node
      */
     public function get_html_body() {
-        $form = node::create('form#' . $this->id . '.' . ($this->use_ajax ? 'ajax' : 'noajax'), '', $this->attributes);
+        $form = node::create('form#' . $this->id . '.' . ($this->use_ajax ? 'ajax' : 'noajax'), $this->attributes);
         if (!empty($this->pre_fields_text)) {
-            $form->nest(node::create('div.pre_fields_text', $this->pre_fields_text));
+            $form->nest(node::create('div.pre_fields_text', [], $this->pre_fields_text));
         }
         $form->nest($this->get_fields_html());
         if (!empty($this->post_fields_text)) {
-            $form->nest(node::create('div.post_fields_text', $this->post_fields_text));
+            $form->nest(node::create('div.post_fields_text', [], $this->post_fields_text));
         }
         $form->nest($this->get_hidden_fields());
         if ($this->has_submit) {
             $form->nest($this->get_submit());
         }
         if (!empty($this->post_submit_text)) {
-            $form->nest(node::create('div.post_submit_text', $this->post_submit_text));
+            $form->nest(node::create('div.post_submit_text', [], $this->post_submit_text));
         }
         if (!empty($this->post_text)) {
-            $form->nest(node::create('div.post_text', $this->post_text));
+            $form->nest(node::create('div.post_text', [], $this->post_text));
         }
         return $form;
     }
@@ -260,16 +260,16 @@ class form {
      * @return array
      */
     public function get_fields_html() {
-        $fieldsets = array();
-        $fields = array();
+        $fieldsets = [];
+        $fields = [];
         foreach ($this->fields as $field) {
             if (!$field->hidden) {
                 if (isset($field->fieldset)) {
                     $fieldsets[] = node::create('fieldset.fieldset_' . count($fieldsets) . ' ul')->nest($fields);
-                    $fields = array();
+                    $fields = [];
                 }
                 if ($inner = $field->get_html_wrapper()) {
-                    $fields[] = node::create('li.' . $field->get_wrapper_class(), $inner, array('data-for' => $this->id));
+                    $fields[] = node::create('li.' . $field->get_wrapper_class(), ['data-for' => $this->id], $inner);
                 }
             }
         }
@@ -286,7 +286,7 @@ class form {
         foreach ($this->fields as $field) {
             if ($field->hidden) {
                 $hidden = true;
-                $html->add_child(node::create('li', $field->get_html_wrapper(), array('data-for' => $this->id, 'class' => $field->get_wrapper_class())));
+                $html->add_child(node::create('li', ['data-for' => $this->id, 'class' => $field->get_wrapper_class()], $field->get_html_wrapper()));
             }
 
         }
@@ -298,7 +298,7 @@ class form {
      */
     public function get_submit() {
         if ($this->has_submit) {
-            $field = node::create('input.submit', '', array('type' => 'submit', 'data-for' => $this->id, 'name' => $this->submit));
+            $field = node::create('input.submit', ['type' => 'submit', 'data-for' => $this->id, 'name' => $this->submit]);
             if (!$this->submittable) {
                 $field->add_attribute('disabled', 'disabled');
             }

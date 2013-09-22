@@ -118,7 +118,7 @@ abstract class field extends node {
 
     }
 
-    public function get_cms_list_wrapper($value,$object_class, $id) {
+    public function get_cms_list_wrapper($value, $object_class, $id) {
         return $value;
     }
 
@@ -134,43 +134,41 @@ abstract class field extends node {
 
     public function get_cms_admin_edit() {
         $cols = array();
-        $cols[] = node::create('td', $this->fid);
-        $cols[] = node::create('td')->nest(
-            array(
-                node::create('a.up.reorder', 'Up', array('data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"up"}')),
-                node::create('a.down.reorder', 'Down', array('data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"down"}'))
-            )
+        $cols[] = node::create('td', [], $this->fid);
+        $cols[] = node::create('td', [],
+            node::create('a.up.reorder', ['data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"up"}'], 'Up'),
+            node::create('a.down.reorder', ['data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"down"}'], 'Down')
         );
-        $cols[] = node::create('td', $this->title);
-        $cols[] = node::create('td', $this->field_name);
-        $cols[] = node::create('td', get_class($this));
-        $list_options = array(
+        $cols[] = node::create('td', [], $this->title);
+        $cols[] = node::create('td', [], $this->field_name);
+        $cols[] = node::create('td', [], get_class($this));
+        $list_options = [
             'data-ajax-change' => 'field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"list"}',
             'value' => 1,
-            'type' => 'checkbox');
+            'type' => 'checkbox'];
         if ($this->list) {
             $list_options['checked'] = 'checked';
         }
-        $cols[] = node::create('td')->nest(node::create('input#' . $this->fid . '_list', null, $list_options));
-        $required_options = array(
+        $cols[] = node::create('td input#' . $this->fid . '_list', $list_options);
+        $required_options = [
             'data-ajax-change' => 'field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"required"}',
             'value' => 1,
-            'type' => 'checkbox');
+            'type' => 'checkbox'];
         if ($this->required) {
             $required_options['checked'] = 'checked';
         }
-        $cols[] = node::create('td')->nest(node::create('input#' . $this->fid . '_required', null, $required_options));
-        $filter_options = array(
+        $cols[] = node::create('td input#' . $this->fid . '_required', $required_options);
+        $filter_options = [
             'data-ajax-change' => 'field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"filter"}',
             'value' => 1,
-            'type' => 'checkbox');
+            'type' => 'checkbox'];
         if ($this->filter) {
             $filter_options['checked'] = 'checked';
         }
-        $cols[] = node::create('td')->nest(node::create('input#' . $this->fid . '_filter', null, $filter_options));
+        $cols[] = node::create('td input#' . $this->fid . '_filter', $filter_options);
         return $cols;
     }
 
