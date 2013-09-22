@@ -1,6 +1,7 @@
 <?php
 namespace add_flight;
 use form\form;
+use html\node;
 
 class coordinates_form extends form {
 
@@ -11,30 +12,30 @@ class coordinates_form extends form {
                     ->set_attr('label', 'Pilot:')
                     ->set_attr('required', true)
                     ->set_attr('default', 'Choose A Pilot')
-                    ->set_attr('post_text', '<a data-ajax-click="add_pilot_form:get_form">Not in the list? Click here to add a new pilot</a>')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
                     ->set_attr('link_module', 'pilot')
                     ->set_attr('link_field', 'name')
-                    ->set_attr('options', array('order' => 'name')),
+                    ->set_attr('options', ['order' => 'name']),
                 form::create('field_link', 'gid')
                     ->set_attr('label', 'Glider:')
                     ->set_attr('required', true)
-                    ->set_attr('post_text', '<a data-ajax-click="add_glider_form:get_form">Not in the list? Click here to add a new glider</a>')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
                     ->set_attr('link_module', 'glider')
-                    ->set_attr('link_field', array('manufacturer.title', 'glider.name'))
-                    ->set_attr('options', array('join' => array('manufacturer' => 'manufacturer.mid = glider.mid'), 'order' => 'manufacturer.title, glider.name')),
+                    ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
+                    ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
                 form::create('field_link', 'cid')
                     ->set_attr('label', 'Club:')
                     ->set_attr('required', true)
                     ->set_attr('link_module', 'club')
                     ->set_attr('link_field', 'title')
-                    ->set_attr('options', array('order' => 'title')),
+                    ->set_attr('options', ['order' => 'title']),
                 form::create('field_string', 'coords')
                     ->set_attr('label', 'Flight coordinates')
                     ->set_attr('required_parent', 'defined')
                     ->set_attr('required', true)
-                    ->set_attr('pre_text', '<p>Enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\'</p>')
+                    ->set_attr('pre_text', node::create('p', [], 'Enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\''))
                     ->add_wrapper_class('cf')
-                    ->set_attr('post_text', '<p class="defined_info"></p>'),
+                    ->set_attr('post_text', node::create('p.defined_info')),
                 form::create('field_date', 'date')
                     ->set_attr('label', 'Date:')
                     ->set_attr('required', true),
