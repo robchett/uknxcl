@@ -17,7 +17,7 @@ recreate_checkboxes = function () {
             $input.prop('checked', false);
         }
     });
-}
+};
 $(document).ready(function () {
     recreate_checkboxes();
     $.fn.ajax_factory.defaults.complete.push('recreate_checkboxes')
