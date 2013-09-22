@@ -1,14 +1,17 @@
 <?php
 namespace news;
+
+use html\node;
+
 class _default_view extends \view {
     public function get_view() {
-        $html = '<div id="list_wrapper">';
         $articles = article::get_all(array('aid', 'date', 'title', 'poster', 'post', 'snippet',), array('order' => 'date DESC', 'where' => 'parent_aid=0'));
-        $articles->iterate(function (article $article) use (&$html) {
-                $html .= $article->get_cell();
-            }
+        $html = node::create('div#list_wrapper', [],
+            $articles->iterate_return(function (article $article) {
+                    return $article->get_cell();
+                }
+            ) . node::create('div#article_wrapper', [])
         );
-        $html .= '</div><div id="article_wrapper"></div>';
         return $html;
     }
 }
