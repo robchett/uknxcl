@@ -424,7 +424,6 @@ class league_table {
 
         }
         $html = '
-        <table class="results main flights_' . $flights . '">
             <thead>
                 <tr >
                 <th class="pos">Pos</th>

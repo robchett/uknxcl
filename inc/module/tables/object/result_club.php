@@ -45,11 +45,13 @@ class result_club extends result {
         $html .= '<div class="table_wrapper"><h3>' . $data->Title . '</h3>';
 
         for ($j = 0; $j < count($Clubarray); $j++) {
-            $html .= $Clubarray [$j]->writeClubSemiHead($j + 1);
-            $html .= $data->write_table_header($data->max_flights, $data->class_primary_key);
-            $html .= $Clubarray[$j]->content;
-            $html .= "</table>";
-            $html .= "</div>";
+            $html .= \html\node::create('div.table_wrapper.inner', [],
+                $Clubarray [$j]->writeClubSemiHead($j + 1) .
+                '<table class="results main flights_' . $data->max_flights . '">' .
+                $data->write_table_header($data->max_flights, $data->class_primary_key) .
+                $Clubarray[$j]->content .
+                "</table>"
+            );
         }
 
         $html .= '</div>';
