@@ -2,7 +2,8 @@
 /**
  * Class club
  */
-class club extends table { use table_trait;
+class club extends table {
+    use table_trait;
 
     /**
      * @var int
