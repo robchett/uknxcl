@@ -51,7 +51,7 @@ class node {
             } else {
                 $this->id = $id;
             }
-        } else if (strstr($type, '.')) {
+        } else if (strstr($nodes[0], '.')) {
             list($this->type, $classes) = explode('.', $type, 2);
             $this->class = explode('.', $classes);
         } else {
