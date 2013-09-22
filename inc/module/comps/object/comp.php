@@ -32,6 +32,11 @@ class comp extends \table{
         return '/comps/' . $this->cid;
     }
 
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return comp_array
+     */
     public static function get_all(array $fields, array $options = array()) {
         return comp_array::get_all($fields, $options);
     }
@@ -464,6 +469,9 @@ class comp extends \table{
         }
     }
 
+    /**
+     *
+     */
     public function download() {
         $id = (int) $_REQUEST['id'];
         $this->do_retrieve_from_id(['type','round','task','date', 'cid'], $id);
@@ -500,6 +508,10 @@ class comp extends \table{
     }
 }
 
+/**
+ * Class comp_array
+ * @package comps
+ */
 class comp_array extends \table_array {
 
     /**
@@ -514,15 +526,12 @@ class comp_array extends \table_array {
     public function next() {
         return parent::next();
     }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        parent::set_statics();
-    }
 }
 
+/**
+ * Class comp_iterator
+ * @package comps
+ */
 class comp_iterator extends \table_iterator {
 
     /* @return comp */

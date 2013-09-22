@@ -1,5 +1,6 @@
 <?php
 namespace latest;
+
 use html\node;
 
 class _default_view extends \view {
@@ -20,34 +21,32 @@ class _default_view extends \view {
         $html = new node('table.results.main', '', array('style' => 'width:700px'));
         $html->add_child(
             node::create('thead')->add_child(
-                node::create('tr')->nest(array(
+                node::create('tr')->nest([
                         node::create('th', 'ID'),
                         node::create('th', 'Pilot'),
                         node::create('th', 'Date Flown'),
                         node::create('th', 'Date Added'),
                         node::create('th', 'Score'),
-                        node::create('th', 'Flight Waypoints'))
+                        node::create('th', 'Flight Waypoints')]
                 )
             )
         );
         $body = new node('tbody');
-        //$flights->iterate(function ($flight) use (&$body) {
-        /** @var \flight $flight */
-        foreach ($flights as $flight) {
-            $added = substr($flight->added, 0, 10);
-            $body->add_child(node::create('tr')
-                    ->nest(array(
-                            node::create('td', $flight->fid),
-                            node::create('td', $flight->pilot_name),
-                            node::create('td', $flight->date),
-                            node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
-                            $flight->to_print(),
-                            node::create('td', $flight->coords)
+        $flights->iterate(function (\flight $flight) use (&$body) {
+                $added = substr($flight->added, 0, 10);
+                $body->add_child(node::create('tr')
+                        ->nest([
+                                node::create('td', $flight->fid),
+                                node::create('td', $flight->pilot_name),
+                                node::create('td', $flight->date),
+                                node::create('td', ($added != '0000-00-00' ? $added : 'Unknown')),
+                                $flight->to_print(),
+                                node::create('td', $flight->coords)
+                            ]
                         )
-                    )
-            );
-        }
-        //});
+                );
+            }
+        );
         $html->add_child($body);
         $wrapper->add_child($html);
         return $wrapper->get();

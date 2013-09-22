@@ -39,13 +39,10 @@ abstract class core_module {
     function get_main_nav() {
         $html = '';
         $pages = pages\page::get_all(array(), array('where' => 'nav=1'));
-        //$pages->iterate(function(page $page) use (&$html) {
-        /** @var \pages\page $page */
-        foreach ($pages as $page) {
+        $pages->iterate(function(pages\page $page) use (&$html) {
             $html .= '<li ' . ($page->pid == \core::$singleton->pid ? 'class="sel"' : '') . '>';
             $html .= '<a href="' . $page->get_url() . '">' . $page->nav_title . '</a></li>';
-        }
-        //});
+        });
         return $html;
     }
 

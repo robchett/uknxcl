@@ -1,6 +1,9 @@
 <?php
 namespace html;
 class node {
+    /**
+     * @return string
+     */
     public function get_attributes() {
         $this->set_standard_attributes();
         $html = '';
@@ -10,11 +13,17 @@ class node {
         return $html;
     }
 
+    /**
+     * @return string
+     */
     public function __toString() {
         return $this->get();
     }
 
 
+    /**
+     *
+     */
     public function set_standard_attributes() {
     }
 
@@ -27,6 +36,11 @@ class node {
     protected $children = array();
     protected $pointer;
 
+    /**
+     * @param $type
+     * @param string $content
+     * @param array $attr
+     */
     public function __construct($type, $content = '', $attr = array()) {
         $nodes = explode(' ', $type, 2);
         if (strstr($nodes[0], '#')) {
@@ -54,16 +68,31 @@ class node {
 
     }
 
+    /**
+     * @param $type
+     * @param string $content
+     * @param array $attr
+     * @return node
+     */
     public static function create($type, $content = '', $attr = array()) {
         $node = new node($type, $content, $attr);
         return $node;
     }
 
+    /**
+     * @param $type
+     * @param string $content
+     * @param array $attr
+     * @return string
+     */
     public static function inline($type, $content = '', $attr = array()) {
         $node = new node($type, $content, $attr);
         return $node->get();
     }
 
+    /**
+     * @return string
+     */
     public function get() {
         $html = '<' .
             $this->type .
@@ -105,6 +134,11 @@ class node {
         return $this;
     }
 
+
+    /**
+     * @param node $child
+     * @return node
+     */
     public function add_child(node $child) {
         if ($this->pointer) {
             $this->pointer->add_child($child);
@@ -115,6 +149,10 @@ class node {
         return $this;
     }
 
+    /**
+     * @param $classes
+     * @return $this
+     */
     public function add_class($classes) {
         if (is_array($classes)) {
             foreach ($classes as $class) {
@@ -126,6 +164,11 @@ class node {
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param $val
+     * @return $this
+     */
     public function add_attribute($name, $val) {
         $this->attributes[$name] = $val;
         return $this;

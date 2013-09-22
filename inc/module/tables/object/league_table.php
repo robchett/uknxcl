@@ -315,16 +315,17 @@ class league_table {
         $flights = \flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
         /** @var \pilot_official[] $array \ */
         $array = array();
-        /** @var \flight[] $flights  */
-        foreach ($flights as $t) {
-            if (isset ($array [$t->p_pid]))
-                $array [$t->p_pid]->add_flight($t);
-            else {
-                $array [$t->p_pid] = new \pilot_official();
-                $array [$t->p_pid]->set_from_flight($t, 6, 0);
-                $array [$t->p_pid]->output_function = 'csv';
+        $flights->iterate(
+            function (\flight $flight, $cnt) use (&$array) {
+                if (isset ($array [$flight->p_pid]))
+                    $array [$flight->p_pid]->add_flight($flight);
+                else {
+                    $array [$flight->p_pid] = new \pilot_official();
+                    $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
+                    $array [$flight->p_pid]->output_function = 'csv';
+                }
             }
-        }
+        );
         usort($array, ['tables\league_table', 'cmp']);
         $class1 = $class5 = 1;
         echo '<pre>Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n";
@@ -500,11 +501,10 @@ class league_table {
     }
 
 
-
-public static function cmp($a, $b) {
-    if ($a->score == $b->score) {
-        return 0;
+    public static function cmp($a, $b) {
+        if ($a->score == $b->score) {
+            return 0;
+        }
+        return ($a->score > $b->score) ? -1 : 1;
     }
-    return ($a->score > $b->score) ? -1 : 1;
-}
 }

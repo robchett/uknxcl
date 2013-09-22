@@ -23,7 +23,7 @@ class flight_type extends table { use table_trait;
     /**
      * @param array $fields
      * @param array $options
-     * @return table_array
+     * @return flight_type_array
      */
     public static function get_all(array $fields, array $options = array()) {
         return flight_type_array::get_all($fields, $options);

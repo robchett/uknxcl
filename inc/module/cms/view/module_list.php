@@ -29,7 +29,7 @@ class module_list_view extends cms_view {
                     )
                 )
             );
-            $modules->iterate($t = function ($module) use ($table) {
+            $modules->iterate($t = function (_cms_modules $module) use ($table) {
                     $table->nest(
                         node::create('tr')->nest(
                             array(

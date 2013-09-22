@@ -33,11 +33,10 @@ class controller extends \core_module {
 
     public function do_generate_all() {
         $comps = comp::get_all(array());
-        /** @var $comp comp */
-        foreach ($comps as $comp) {
-            $comp->do_zip_to_comp();
-        }
-        //});
+        $comps->iterate(function (comp $comp) {
+                $comp->do_zip_to_comp();
+            }
+        );
     }
 
 }

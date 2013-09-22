@@ -5,43 +5,19 @@
 class club extends table {
     use table_trait;
 
-    /**
-     * @var int
-     */
     public static $module_id = 12;
-    /**
-     * @var string
-     */
     public $table_key = 'cid';
-    /**
-     * @var
-     */
     public $name;
-    /**
-     * @var int
-     */
     public $score = 0;
-    /**
-     * @var int
-     */
     public $total = 0;
-    /**
-     * @var int
-     */
     public $number = 1;
-    /**
-     * @var
-     */
     public $content;
-    /**
-     * @var
-     */
     public $max_pilots;
 
     /**
      * @param array $fields
      * @param array $options
-     * @return table_array
+     * @return club_array
      */
     public static function get_all(array $fields, array $options = array()) {
         return club_array::get_all($fields, $options);
