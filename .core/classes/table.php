@@ -1,4 +1,6 @@
 <?php
+use html\node;
+
 /** @property string table_key */
 abstract class table {
     /**
@@ -197,7 +199,7 @@ abstract class table {
     }
 
     /**
-     * @return \html\node
+     * @return node
      */
     public function get_cms_edit() {
         $form = $this->get_form();
@@ -239,23 +241,22 @@ abstract class table {
 
     /** @return html\node */
     public function get_cms_edit_module() {
-        $list = \html\node::create('table#module_def');
-        $list->nest(\html\node::create('thead')->nest(array(
-                    \html\node::create('th', 'Field id'),
-                    \html\node::create('th', 'Pos'),
-                    \html\node::create('th', 'Title'),
-                    \html\node::create('th', 'Database Title'),
-                    \html\node::create('th', 'Type'),
-                    \html\node::create('th', 'List'),
-                    \html\node::create('th', 'Required'),
-                    \html\node::create('th', 'Filter'),
-                )
+        $list = node::create('table#module_def', [],
+            node::create('thead', [],
+                node::create('th', [], 'Field id') .
+                node::create('th', [], 'Pos') .
+                node::create('th', [], 'Title') .
+                node::create('th', [], 'Database Title') .
+                node::create('th', [], 'Type') .
+                node::create('th', [], 'List') .
+                node::create('th', [], 'Required') .
+                node::create('th', [], 'Filter')
             )
         );
 
         /** @var \form\field $field */
         foreach ($this->get_fields() as $field) {
-            $list->add_child(\html\node::create('tr')->nest($field->get_cms_admin_edit()));
+            $list->add_child(node::create('tr', [], $field->get_cms_admin_edit()));
         }
         return $list;
     }
@@ -268,7 +269,7 @@ abstract class table {
         /** @var \form\field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->list) {
-                $nodes[] = \html\node::create('td.' . get_class($field), $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->{$this->table_key}));
+                $nodes[] = node::create('td.' . get_class($field), [], $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->{$this->table_key}));
             }
         }
         return $nodes;

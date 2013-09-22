@@ -1,5 +1,6 @@
 <?php
 namespace form;
+
 use html\node;
 
 class field_button extends field {
@@ -18,7 +19,7 @@ class field_button extends field {
         $this->attributes['data-ajax-click'] = $object_class . ':' . $this->field_name;
         $this->attributes['data-ajax-post'] = '{"id":' . $id . '}';
         $this->attributes['data-ajax-shroud'] = '#button' . $this->field_name . $id;
-        return node::create('a#button' . $this->field_name . $id . '.button', $this->title, $this->attributes)->get();
+        return node::create('a#button' . $this->field_name . $id . '.button', $this->attributes, $this->title);
     }
 
     public function get_save_sql(&$sql_array, &$parameters) {

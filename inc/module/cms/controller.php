@@ -1,5 +1,6 @@
 <?php
 namespace cms;
+
 use html\node;
 
 /**
@@ -92,7 +93,7 @@ class controller extends \core_module {
      *
      */
     public function set_view() {
-        require_once (root . '/inc/module/cms/view/cms_view.php');
+        require_once(root . '/inc/module/cms/view/cms_view.php');
         parent::set_view();
     }
 
@@ -165,10 +166,9 @@ class controller extends \core_module {
      * @return node
      */
     public function get_filters() {
-        $wrapper = node::create('div#filter_wrapper ul');
         $filter_form = new cms_filter_form(get_class($this->current));
         $filter_form->npp = $this->npp;
-        $wrapper->nest($this->get_pagi('top'), $filter_form->get_html());
+        $wrapper = node::create('div#filter_wrapper ul', [], $this->get_pagi('top') . $filter_form->get_html());
         return $wrapper;
     }
 
@@ -176,11 +176,11 @@ class controller extends \core_module {
      * @return node
      */
     public function get_inner() {
-        $html = node::create('div#inner');
         /** @var \table_array $class */
         $class = $this->module->namespace . '\\' . $this->module->table_name;
         $sres = $class::get_all([], array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp, 'where_equals' => $this->where));
-        $html->nest($this->get_list($class, $sres));
+
+        $html = node::create('div#inner', [], $this->get_list($class, $sres));
         return $html;
     }
 
@@ -191,11 +191,9 @@ class controller extends \core_module {
      */
     public function get_list($obj, $elements) {
         $this->object = new $obj();
-        $html = node::create('table')->nest(
-            array(
-                $this->get_table_head($this->object),
-                $this->get_table_rows($elements, $obj),
-            )
+        $html = node::create('table', [],
+            $this->get_table_head($this->object) .
+            $this->get_table_rows($elements, $obj)
         );
         $nodes = array(
             $this->get_filters($this->object),
@@ -209,34 +207,29 @@ class controller extends \core_module {
      * @return string
      */
     function get_main_nav() {
-        $html = node::create('ul#nav');
         $res = \db::query('SELECT * FROM _cms_group WHERE live = 1 AND deleted = 0');
+        $html = node::create('ul#nav');
         while ($row = \db::fetch($res)) {
             $sub = node::create('ul');
             $sres = \db::query('SELECT * FROM _cms_modules WHERE live = 1 AND deleted = 0 AND gid = ' . $row->gid);
             while ($srow = \db::fetch($sres)) {
-                $sub->add_child(
-                    node::create('li')->add_child(
-                        node::create('span', node::inline('a', $srow->title, array('href' => '/cms/module/' . $srow->mid)))
-                    )
-                );
+                $sub->add_child(node::create('li span a', ['href' => '/cms/module/' . $srow->mid], $srow->title));
             }
-            $html->add_child(node::create('li')->nest(array(
-                        node::create('span', $row->title),
-                        $sub
-                    )
+            $html->add_child(node::create('li', [],
+                    node::create('span', [], $row->title) .
+                    $sub
                 )
             );
         }
         if (isset($this->mid)) {
-            $html->nest(node::create('li.right', node::inline('a', 'Edit Module', array('href' => '/cms/admin_edit/' . $this->mid, 'title' => 'Edit ' . get_class($this->current)))));
-            $html->nest(node::create('li.right', node::inline('a', 'Add new ' . get_class($this->current), array('href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)))));
+            $html->nest(node::create('li.right a', ['href' => '/cms/admin_edit/' . $this->mid, 'title' => 'Edit ' . get_class($this->current)], 'Edit Module'));
+            $html->nest(node::create('li.right a', ['href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)], 'Add new ' . get_class($this->current)));
         } else if ($this->view === 'module_list') {
-            $html->nest(node::create('li.right', node::inline('a', 'Add new module', array('href' => '/cms/new_module/', 'title' => 'Add new module'))));
-            $html->nest(node::create('li.right', node::inline('a', 'Add new module group', array('href' => "/cms/edit/19", 'title' => 'Add new module group'))));
+            $html->nest(node::create('li.right a', ['href' => '/cms/new_module/', 'title' => 'Add new module'], 'Add new module'));
+            $html->nest(node::create('li.right a', ['href' => "/cms/edit/19", 'title' => 'Add new module group'], 'Add new module group'));
         }
-        $html->nest(node::create('li.right', node::inline('a', 'All Modules', array('href' => '/cms/module_list/', 'title' => 'View all modules'))));
-        return $html->get();
+        $html->nest(node::create('li.right a', ['href' => '/cms/module_list/', 'title' => 'View all modules'], 'All Modules'));
+        return $html;
     }
 
     /**
@@ -252,22 +245,22 @@ class controller extends \core_module {
      * @return node
      */
     public function get_pagi() {
-        $node = node::create('span');
+        $node = node::create('div');
         if ($this->tot > $this->npp) {
             $pages = ceil($this->tot / $this->npp);
             if ($pages > 40) {
-                $node = node::create('select#pagi.cf', '', array('data-ajax-change' => 'cms:do_paginate'));
+                $node = node::create('select#pagi.cf', ['data-ajax-change' => 'cms:do_paginate']);
                 for ($i = 1; $i <= $pages; $i++) {
-                    $attributes = array('value' => $i);
+                    $attributes = ['value' => $i];
                     if ($this->page = $i) {
                         $attributes['selected'] = 'selected';
                     }
-                    $node->add_child(node::create('option', $i, array('value' => $i)));
+                    $node->add_child(node::create('option', ['value' => $i], $i));
                 }
             } else {
                 $node = node::create('ul#pagi.cf');
                 for ($i = 1; $i <= $pages; $i++) {
-                    $node->add_child(node::create('li')->add_child(node::create('a', $i, array('href' => '/cms/module/' . $this->mid . '/page/' . $i))));
+                    $node->add_child(node::create('li a', ['href' => '/cms/module/' . $this->mid . '/page/' . $i], $i));
                 }
             }
         }
@@ -280,13 +273,13 @@ class controller extends \core_module {
      */
     public function get_table_head($obj) {
         $node = node::create('thead');
-        $node->add_child(node::create('th.edit', ''));
+        $node->add_child(node::create('th.edit'));
         foreach ($obj->get_fields() as $field) {
             if ($field->list) {
-                $node->add_child(node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), $field->title));
+                $node->add_child(node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), [], $field->title));
             }
         }
-        $node->add_child(node::create('th.delete', ''));
+        $node->add_child(node::create('th.delete'));
         return $node;
     }
 
@@ -299,9 +292,9 @@ class controller extends \core_module {
         //$objects->iterate(function ($obj) use ($nodes, $class) {
         foreach ($objects as $obj) {
             $node = node::create('tr');
-            $node->add_child(node::create('td.edit', node::inline('a.edit', '', array('href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+            $node->add_child(node::create('td.edit a.edit', ['href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}]));
             $node->nest($obj->get_cms_list());
-            $node->add_child(node::create('td.delete', node::inline('a.delete', '', array('href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}))));
+            $node->add_child(node::create('td.delete a.delete', ['href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}]));
             $nodes->add_child($node);
         }
         //});

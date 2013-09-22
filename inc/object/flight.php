@@ -488,7 +488,7 @@ flight extends table {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return \html\node::create('td.' . $type . $d . $i . ' div.wrap', \html\node::inline('a#fid' . $this->fid . '.click' . $this->fid, $prefix . $lead . $b, array('href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid)));
+        return \html\node::create('td.' . $type . $d . $i . ' div.wrap a#fid' . $this->fid . '.click' . $this->fid, ['href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid], $prefix . $lead . $b);
     }
 
     /**

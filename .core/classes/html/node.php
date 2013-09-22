@@ -41,7 +41,7 @@ class node {
      * @param string $content
      * @param array $attr
      */
-    public function __construct($type, $content = '', $attr = array()) {
+    public function __construct($type, $attr = [], $content = '') {
         $nodes = explode(' ', $type, 2);
         if (strstr($nodes[0], '#')) {
             list($this->type, $id) = explode('#', $nodes[0], 2);
@@ -58,14 +58,14 @@ class node {
             $this->type = $type;
         }
         if (isset($nodes[1])) {
-            $node = node::create($nodes[1], $content);
+            $node = node::create($nodes[1], $attr, $content);
             $this->add_child($node);
             $this->pointer = $node;
+            $attr = [];
         } else {
             $this->content = $content;
         }
         $this->attributes = $attr;
-
     }
 
     /**
@@ -74,8 +74,8 @@ class node {
      * @param array $attr
      * @return node
      */
-    public static function create($type, $content = '', $attr = array()) {
-        $node = new node($type, $content, $attr);
+    public static function create($type, $attr = [], $content = '') {
+        $node = new node($type, $attr, $content);
         return $node;
     }
 
@@ -85,8 +85,8 @@ class node {
      * @param array $attr
      * @return string
      */
-    public static function inline($type, $content = '', $attr = array()) {
-        $node = new node($type, $content, $attr);
+    public static function inline($type, $attr = [], $content = '') {
+        $node = new node($type, $attr, $content);
         return $node->get();
     }
 
@@ -100,13 +100,21 @@ class node {
             (!empty($this->class) ? ' class=" ' . implode(' ', $this->class) . '"' : '') .
             $this->get_attributes() .
             '>';
-        $html .= $this->content;
+        if (is_array($this->content)) {
+            $html .= implode('', $this->content);
+        } else {
+            $html .= $this->content;
+        }
         /** @var node $child */
         foreach ($this->children as $child) {
             $html .= $child->get();
         }
         $html .= '</' . $this->type . '>';
         return $html;
+    }
+
+    public static function nest_function($function) {
+        return call_user_func_array($function, []);
     }
 
     /* @return node */
