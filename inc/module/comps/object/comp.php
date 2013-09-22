@@ -1,8 +1,10 @@
 <?php
 namespace comps;
-use form\field;
 
-class comp extends \table{
+use form\field;
+use html\node;
+
+class comp extends \table {
     use \table_trait;
 
     public static $module_id = 17;
@@ -212,7 +214,6 @@ class comp extends \table{
             $task->distances[0] = 0;
             $task->distances[$i + 1] = $this->distCalc2($task->task_array[$i], $task->task_array[$i + 1]);
         }
-        $json_html = '<div class="kmltree new"><ul class="kmltree"><li data-path=\'{"type":"comp","path":[]}\' class="kmltree-item check KmlFolder visible open"><div class="expander"></div><div class="toggler"></div>' . $this->combined_name . '<ul>';
         $js = new \stdClass();
         $js->StartT = $startT - mktime(0, 0, 0);
         $js->EndT = $endT - mktime(0, 0, 0);
@@ -222,17 +223,35 @@ class comp extends \table{
         $js->bounds = $this->bounds->get_js();
         $js->track = array();
         fwrite($js_file, substr(json_encode($js), 0, -2));
+        $json_html = node::create('div.kmltree.new ul.kmltree li.kmltree-item.check.KmlFolder.visible.open', ['data-path' => '\'{"type":"comp","path":[]}\''],
+            node::create('div.expander') .
+            node::create('div.toggler') .
+            $this->combined_name .
+            node::create('ul', [],
+                $track_array->iterate_return(function (\track $track, $count) {
+                        return node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . ($count) . ']}\''],
+                            node::create('div.expander') .
+                            node::create('div.toggler') .
+                            node::create('span', ['style' => 'color:#' . substr(\get::kml_colour($track->colour), 4, 2) . substr(\get::kml_colour($track->colour), 2, 2) . substr(\get::kml_colour($track->colour), 0, 2)])
+                        );
+                    }
+                )
+            ) .
+            node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . $track_array->count() . ']}\''],
+                node::create('div.expander') .
+                node::create('div.toggler') .
+                'Task'
+            )
+        );
         $count = 0;
-        //$track_array->iterate(function ($track, $count) use (&$json_html, $kml_out, &$html, $task, $startT, $js_file,$timeSteps) {
         foreach ($track_array as $track) {
             /** @var \track $track */
             $track->repair_track();
             $track->get_graph_values();
             $track->get_limits();
-            $json_html .= '<li data-path=\'{"type":"comp","path":[' . ($count) . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div><span style="color:#' . substr(\get::kml_colour($track->colour), 4, 2) . substr(\get::kml_colour($track->colour), 2, 2) . substr(\get::kml_colour($track->colour), 0, 2) . '">' . $track->name . '</span></li>';
             $kml_out->add($track->generate_kml_comp());
             $kml_earth->add($track->generate_kml_comp_earth());
-            $html .= '<h5>' . $track->name . '</h5>';
+            $html .= node::create('h5', [], $track->name);
             $html .= '<div>';
             if (isset($_REQUEST['add'])) {
                 $form = new \comp_convert();
@@ -320,15 +339,13 @@ class comp extends \table{
                     }
                 }
             }
-            $html .= '<pre>' . $track->log_file . '</pre>';
+            $html .= node::create('pre', [], $track->log_file);
             $html .= '</div>';
             fwrite($js_file, ($count ? ',' : '') . json_encode($js_track));
             $track->cleanup();
             $count++;
         }
         //);
-        $json_html .= '<li data-path=\'{"type":"comp","path":[' . $track_array->count() . ']}\' class="kmltree-item check KmlFolder hideChildren visible"><div class="expander"></div><div class="toggler"></div>Task</li>';
-        $json_html .= '</ul></li></ul></div>';
         fwrite($js_file, '], "html":' . json_encode($json_html) . '}');
         $kml_out->add($task->o);
         $kml_out->get_kml_folder_close();
@@ -336,8 +353,6 @@ class comp extends \table{
         $kml_earth->add($task->o);
         $kml_earth->get_kml_folder_close();
         $kml_earth->compile(false, root . '/uploads/comp/' . $this->cid . '/track_earth.kml');
-        $html .= '</div>';
-
         if (ajax) {
             \jquery::colorbox(array('html' => $html));
         }
@@ -474,7 +489,7 @@ class comp extends \table{
      */
     public function download() {
         $id = (int) $_REQUEST['id'];
-        $this->do_retrieve_from_id(['type','round','task','date', 'cid'], $id);
+        $this->do_retrieve_from_id(['type', 'round', 'task', 'date', 'cid'], $id);
         header("Content-type: application/octet-stream");
         header("Cache-control: private");
         $fullPath = '';
@@ -489,7 +504,7 @@ class comp extends \table{
                 $size = zip_entry_filesize($fullPath);
                 $file = zip_entry_read($fullPath, $size);
                 header("Content-length: $size");
-                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . $this->type . '_' . date('Y', $this->date) . '_round' . $this->round . '_task' . $this->task  : '') . '.kml"');
+                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . $this->type . '_' . date('Y', $this->date) . '_round' . $this->round . '_task' . $this->task : '') . '.kml"');
                 echo $file;
                 zip_close($zip);
                 return;

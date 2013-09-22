@@ -1,4 +1,6 @@
 <?php
+use html\node;
+
 /**
  * @property mixed club_title
  * @property mixed invis_info
@@ -12,6 +14,7 @@ flight extends table {
     public $base_score;
     public $cid;
     public $club_name;
+    public $coords;
     public $defined;
     public $did;
     /** @var int Flight ID */
@@ -193,7 +196,7 @@ flight extends table {
                 $track = new track();
                 $track->time = 0;
                 $time = time();
-                echo '<p> Track :' . $flight->fid . '</p>';
+                echo node::create('p', [], 'Track :' . $flight->fid);
                 if ($flight->ftid != 3 && $track->generate($flight)) {
                     $time = time() - $time;
                     $total_time += $time;
@@ -202,32 +205,33 @@ flight extends table {
                     switch ($flight->ftid) {
                         case  1:
                             if ($track->od->get_distance() > $flight->base_score) {
-                                echo '<span style="color:#00ff00">OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#00ff00'], 'OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             } else {
-                                echo '<span style="color:#ff0000">OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#ff0000'], 'OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             }
                             break;
-                        case  2:
+                        case
+                        2:
                             if ($track->or->get_distance() > $flight->base_score) {
-                                echo '<span style="color:#00ff00">OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#00ff00'], 'OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             } else {
-                                echo '<span style="color:#ff0000">OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#ff0000'], 'OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             }
                             break;
                         case  3:
                             break;
                         case  4:
                             if ($track->tr->get_distance() > $flight->base_score) {
-                                echo '<span style="color:#00ff00">TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             } else {
-                                echo '<span style="color:#ff0000">TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             }
                             break;
                         case  5:
                             if ($track->ft->get_distance() > $flight->base_score) {
-                                echo '<span style="color:#00ff00">TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             } else {
-                                echo '<span style="color:#ff0000">TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')' . '</span><br/>';
+                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
                             }
                             break;
                     }
@@ -258,7 +262,7 @@ flight extends table {
                     $flight->do_save();
                 } else {
                     $flight->time = 0;
-                    echo '<p> Track :' . $flight->fid . ' failed to calculate</p>';
+                    echo node::create('p', [], 'Track :' . $flight->fid . ' failed to calculate');
                 }
                 flush();
             }
@@ -270,12 +274,12 @@ flight extends table {
         );
 
         foreach ($flights as $flight) {
-            echo '<p> Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time) . '</p>';
+            echo node::create('p', [], 'Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time));
         }
 
         $average_time = $total_time / count($flights);
 
-        echo '<p> Average Time :' . date('H:i:s', $average_time) . '</p>';
+        echo node::create('p', [], 'Average Time :' . date('H:i:s', $average_time));
     }
 
     /**
@@ -312,35 +316,32 @@ flight extends table {
         if (!isset($this->fid) || !$this->fid) {
             $html .= 'Flight not found, this is a bug...';
         } else {
-            $html = '  <table width="100%">
-            <tr><td>Flight ID </td><td>' . $this->fid . '</td></tr>
-            <tr><td>Pilot </td><td>' . $this->pilot_name . '</td></tr>
-            <tr><td>Date </td><td>' . $this->date . '</td></tr>
-            <tr><td>Glider </td><td>' . $this->manufacturer_title . ' - ' . $this->glider_name . '</td></tr>
-            <tr><td>Club </td><td>' . $this->club_title . '</td></tr>
-            <tr><td>Defined </td><td>' . get::bool($this->defined) . '</td></tr>
-            <tr><td>Launch </td><td>' . get::launch($this->lid) . '</td></tr>
-            <tr><td>Type </td><td>' . get::flight_type($this->ftid) . '</td></tr>
-            <tr><td>Ridge Lift </td><td>' . get::bool($this->ridge) . ' </td></tr>
-            <tr><td>Score </td><td>' . $this->base_score . 'x' . $this->multi . ' =' . $this->score . '</td></tr>
-            <tr><td>Coordinates </td><td>' . str_replace(';', '; ', $this->coords) . '</td></tr>
-            <tr><td>Info</td><td>' . $this->vis_info . '</td></tr>';
+            $html = node::create('table', ['width' => '100%'],
+                node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
+                node::create('tr', [], node::create('td', [], 'Pilot') . node::create('td', [], $this->pilot_name)) .
+                node::create('tr', [], node::create('td', [], 'Date') . node::create('td', [], date('d/m/Y',$this->date))) .
+                node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider_name)) .
+                node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club_title)) .
+                node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
+                node::create('tr', [], node::create('td', [], 'Launch') . node::create('td', [], get::launch($this->lid))) .
+                node::create('tr', [], node::create('td', [], 'Type') . node::create('td', [], get::flight_type($this->ftid))) .
+                node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
+                node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' = ' . $this->score)) .
+                node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], str_replace(';', '; ', $this->coords))) .
+                node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) .
 
-            if (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz')) {
-                $html .= '
-            <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $this->fid . ')">Add trace to Map</a></td></tr>
-            <tr>
-                <td class="center" colspan="2">
-                    <a href="/uploads/track/' . $this->fid . '/track.igc" title="Download IGC" class="download igc" rel="external">Download IGC</a>
-                    <a href="/uploads/track/' . $this->fid . '/track.kmz" title="Download KML" class="download kml" rel="external">Download KML</a>
-                </td>
-            </tr>';
-            } else {
-                $html .= '<tr><td colspan="2"class="center view coords"><a href="#" class="button" onclick="map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;"> Add coordinates to map<a/></td></tr>';
-            }
-            $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
-            $html .= '</table>';
+                (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz') ?
+                    node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .
+                    node::create('tr td.center.view', ['colspan' => 2],
+                        node::create('a.download.igc', ['href' => '/uploads/track/' . $this->fid . '/track.igc', 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => '/uploads/track/' . $this->fid . '/track.kmz', 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
+                    ) :
+                    node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
+                ) .
+                node::create('a.close', ['title' => 'close', 'onclick' => '$(\'#pop\').remove()'], 'Close')
+            );
         }
+
         \ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
         \ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
     }
