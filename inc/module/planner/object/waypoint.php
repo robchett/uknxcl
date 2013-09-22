@@ -1,6 +1,7 @@
 <?php
 namespace planner;
-class waypoint extends \table { use \table_trait
+class waypoint extends \table {
+    use \table_trait;
 
     /** @var float */
     public $lat;
