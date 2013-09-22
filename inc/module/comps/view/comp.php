@@ -1,5 +1,8 @@
 <?php
 namespace comps;
+
+use html\node;
+
 class comp_view extends \view {
 
     /** @return \html\node */
@@ -10,7 +13,7 @@ class comp_view extends \view {
             $data = json_decode($file);
             $html .= $data->html;
         }
-        $html .= '<a href="/comps" class="comp_back button">Back To List</a>';
+        $html .= node::create('a.comp_back.button', ['href' => '/comps'], 'Back To List');
 
         if (!ajax) {
             \core::$inline_script[] = "
