@@ -25,7 +25,7 @@ class result_league extends result {
             // Print the top 4 flights of each type if wanted
             if ($data->show_top_4)
                 $html .= $data->ShowTop4($data->WHERE);
-
+            $html .= '<table class="results main" style="width:700px">';
             // Print the table header with the right number of flights
             $html .= $data->write_table_header($data->max_flights, $data->class_primary_key);
 
