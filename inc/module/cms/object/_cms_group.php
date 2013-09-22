@@ -18,7 +18,7 @@ class _cms_group extends \table { use \table_trait;
     /**
      * @param array $fields
      * @param array $options
-     * @return \table_array
+     * @return _cms_group_array
      */
     public static function get_all(array $fields, array $options = array()) {
         return _cms_group_array::get_all($fields, $options);
@@ -41,13 +41,6 @@ class _cms_group_array extends \table_array {
     /* @return _cms_group */
     public function next() {
         return parent::next();
-    }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        parent::set_statics();
     }
 }
 

@@ -50,7 +50,7 @@ class dashboard_view extends cms_view {
                 )
             )
         );
-        $flights->iterate(function ($flight) use ($table) {
+        $flights->iterate(function (\flight $flight) use ($table) {
                 $table->nest(
                     node::create('tr')->nest(
                         array(
@@ -82,7 +82,7 @@ class dashboard_view extends cms_view {
                 )
             )
         );
-        $pilots->iterate(function ($pilot) use ($table) {
+        $pilots->iterate(function (\pilot $pilot) use ($table) {
                 $table->nest(
                     node::create('tr')->nest(
                         array(
@@ -111,7 +111,7 @@ class dashboard_view extends cms_view {
                 )
             )
         );
-        $gliders->iterate(function ($glider) use ($table) {
+        $gliders->iterate(function (\glider $glider) use ($table) {
                 $table->nest(
                     node::create('tr')->nest(
                         array(

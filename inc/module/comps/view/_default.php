@@ -20,21 +20,20 @@ class _default_view extends \view {
             <th>Date</th>
             <th></th>
         </thead>';
-        //$comps->iterate(function ($comp) use (&$html) {
-        foreach ($comps as $comp) {
-            /** @var comp $comp */
-            $html .= '
-            <tr>
-                <td>' . $comp->type . '</td>
-                <td>Round ' . (int) $comp->round . '</td>
-                <td>Task ' . (int) $comp->task . '</td>
-                <td>' . $comp->class . '</td>
-                <td>' . $comp->title . '</td>
-                <td>' . date('d/m/Y', strtotime($comp->date)) . '</td>
-                <td><a class="button" href="' . $comp->get_url() . '" >View</a></td>
-            </tr>';
-        }
-        //});
+        $comps->iterate(
+            function (comp $comp) use (&$html) {
+                $html .= '
+                <tr>
+                    <td>' . $comp->type . '</td>
+                    <td>Round ' . (int) $comp->round . '</td>
+                    <td>Task ' . (int) $comp->task . '</td>
+                    <td>' . $comp->class . '</td>
+                    <td>' . $comp->title . '</td>
+                    <td>' . date('d/m/Y', strtotime($comp->date)) . '</td>
+                    <td><a class="button" href="' . $comp->get_url() . '" >View</a></td>
+                </tr>';
+            }
+        );
         $html .= "</table>";
         $html .= "</div>";
 

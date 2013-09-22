@@ -1,9 +1,12 @@
 <?php
-class pilot extends table { use table_trait;
+class pilot extends table {
+    use table_trait;
 
     public static $module_id = 3;
+    public $bhpa_no;
     public $class = 1;
     public $club;
+    public $email;
     public $flights = array();
     public $glider;
     public $id;
@@ -11,6 +14,7 @@ class pilot extends table { use table_trait;
     public $name;
     public $number_of_flights = 0;
     public $output_function = 'table';
+    public $pid;
     public $score = 0;
     public $table_key = 'pid';
     public $total = 0;
@@ -23,10 +27,18 @@ class pilot extends table { use table_trait;
             array('field_string', 'email')
         );*/
 
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return pilot_array
+     */
     public static function get_all($fields = array(), $options = array()) {
         return pilot_array::get_all($fields, $options);
     }
 
+    /**
+     * @param flight $flight
+     */
     public function add_flight(flight $flight) {
         if (count($this->flights) < $this->max_flights) {
             $this->score += $flight->score;
@@ -36,6 +48,9 @@ class pilot extends table { use table_trait;
         $this->number_of_flights++;
     }
 
+    /**
+     *
+     */
     public function do_update_selector() {
         $field = form\form::create('field_link', 'pid')
             ->set_attr('link_module', 'pilot')
@@ -45,10 +60,18 @@ class pilot extends table { use table_trait;
         \ajax::update($field->get_html());
     }
 
+    /**
+     * @param $pos
+     * @return mixed
+     */
     public function output($pos) {
         return $this->{'output_' . $this->output_function}($pos);
     }
 
+    /**
+     * @param $pos
+     * @return string
+     */
     public function output_csv($pos) {
         $csv = $pos . ',\'' . $this->name . '\',\'' . $this->glider . '/' . $this->club . '\',' . strip_tags(implode(',', $this->flights));
         for ($i = $this->number_of_flights; $i < $this->max_flights - 1; $i++) {
@@ -58,6 +81,10 @@ class pilot extends table { use table_trait;
         return $csv;
     }
 
+    /**
+     * @param $pos
+     * @return string
+     */
     public function output_table($pos) {
         $flights = implode('', $this->flights);
         for ($i = count($this->flights); $i < $this->max_flights; $i++) {
@@ -73,6 +100,11 @@ class pilot extends table { use table_trait;
 </tr>' . "\n";
     }
 
+    /**
+     * @param flight $flight
+     * @param int $num
+     * @param bool $split
+     */
     public function set_from_flight(flight $flight, $num = 6, $split = false) {
         $this->max_flights = $num;
         $this->club = $flight->c_name;
@@ -90,6 +122,9 @@ class pilot extends table { use table_trait;
     }
 }
 
+/**
+ * Class pilot_array
+ */
 class pilot_array extends table_array {
     /* @return pilot */
     public function next() {
@@ -97,6 +132,9 @@ class pilot_array extends table_array {
     }
 }
 
+/**
+ * Class pilot_iterator
+ */
 class pilot_iterator extends table_iterator {
 
     /* @return pilot */

@@ -16,6 +16,11 @@ class glider extends pilot {
     public $output_function = 'table';
     public $table_key = 'gid';
 
+    /**
+     * @param string $flight
+     * @param int $num
+     * @param int $split
+     */
     function __construct($flight = '', $num = 0, $split = 0) {
         parent::__construct();
         if ($flight != '') {
@@ -27,10 +32,19 @@ class glider extends pilot {
         }
     }
 
+    /**
+     * @param array $fields
+     * @param array $options
+     * @return glider_array
+     */
     public static function get_all($fields = array(), $options = array()) {
         return glider_array::get_all($fields, $options);
     }
 
+    /**
+     * @param $pos
+     * @return string
+     */
     public function output_table($pos) {
         $flights = implode('', $this->flights);
         for ($i = count($this->flights); $i < $this->max_flights; $i++) {
@@ -46,6 +60,9 @@ class glider extends pilot {
 </tr>' . "\n";
     }
 
+    /**
+     *
+     */
     public function do_update_selector() {
         $field = form\form::create('field_link', 'gid')
             ->set_attr('link_module', 'glider')
@@ -56,6 +73,9 @@ class glider extends pilot {
     }
 }
 
+/**
+ * Class glider_array
+ */
 class glider_array extends table_array {
     /* @return pilot */
     public function next() {
@@ -63,6 +83,9 @@ class glider_array extends table_array {
     }
 }
 
+/**
+ * Class glider_iterator
+ */
 class glider_iterator extends table_iterator {
 
     /* @return pilot */

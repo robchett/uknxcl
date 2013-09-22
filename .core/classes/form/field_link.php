@@ -58,20 +58,19 @@ class field_link extends field {
         }
         $title_fields = $this->link_field;
         $selected = isset($this->parent_form->{$this->field_name}) ? $this->parent_form->{$this->field_name} : 0;
-        //$options->iterate(function (table $object) use (&$html, $title_fields, $selected) {
-        foreach ($options as $object) {
-            if (is_array($title_fields)) {
-                $parts = array();
-                foreach ($title_fields as $part) {
-                    $parts[] = $object->{str_replace('.', '_', $part)};
+        $options->iterate(function (\table $object) use (&$html, $title_fields, $selected) {
+                if (is_array($title_fields)) {
+                    $parts = array();
+                    foreach ($title_fields as $part) {
+                        $parts[] = $object->{str_replace('.', '_', $part)};
+                    }
+                    $title = implode(' - ', $parts);
+                } else {
+                    $title = $object->$title_fields;
                 }
-                $title = implode(' - ', $parts);
-            } else {
-                $title = $object->$title_fields;
+                $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($object->{$object->table_key} == $selected ? 'selected="selected"' : '') . '>' . $title . '</option>';
             }
-            $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($object->{$object->table_key} == $selected ? 'selected="selected"' : '') . '>' . $title . '</option>';
-        }
-        //);
+        );
         return $html;
     }
 

@@ -18,7 +18,7 @@ class declaration extends \table { use \table_trait;
     /**
      * @param array $fields
      * @param array $options
-     * @return \table_array
+     * @return declaration_array
      */
     public static function get_all(array $fields, array $options = array()) {
         return declaration_array::get_all($fields, $options);

@@ -9,12 +9,12 @@ class get {
     }
 
     public static function __class_name($object) {
-        if(is_string($object)) {
+        if (is_string($object)) {
             $name = trim($object, '\\');
         } else {
-            $name = trim(get_class($object),'\\');
+            $name = trim(get_class($object), '\\');
         }
-        if(($pos = strrpos($name, '\\')) !== false) {
+        if (($pos = strrpos($name, '\\')) !== false) {
             $pos++;
         }
         return substr($name, $pos);
@@ -58,10 +58,10 @@ class get {
     static function type($int) {
         if (!isset(self::$type_array)) {
             $types = flight_type::get_all(array('ftid', 'fn'));
-            /** @var flight_type $type */
-            foreach ($types as $type) {
-                self::$type_array[$type->ftid] = $type->fn;
-            }
+            $types->iterate(function (flight_type $type) {
+                    self::$type_array[$type->ftid] = $type->fn;
+                }
+            );
         }
         if (isset(self::$type_array[$int])) {
             return self::$type_array[$int];
@@ -74,10 +74,10 @@ class get {
     static function flight_type($int) {
         if (!isset(self::$flight_type)) {
             $types = flight_type::get_all(array('ftid', 'title'));
-            /** @var flight_type $type */
-            foreach ($types as $type) {
-                self::$flight_type[$type->ftid] = $type->title;
-            }
+            $types->iterate(function (flight_type $type) {
+                    self::$flight_type[$type->ftid] = $type->title;
+                }
+            );
         }
         if (isset(self::$flight_type[$int])) {
             return self::$flight_type[$int];
@@ -90,10 +90,10 @@ class get {
     static function  launch_letter($int) {
         if (!isset(self::$launch_letter)) {
             $types = launch_type::get_all(array('lid', 'fn'));
-            /** @var launch_type $type */
-            foreach ($types as $type) {
-                self::$launch_letter[$type->lid] = $type->fn;
-            }
+            $types->iterate(function (launch_type $type) {
+                    self::$launch_letter[$type->lid] = $type->fn;
+                }
+            );
         }
         if (isset(self::$launch_letter[$int])) {
             return self::$launch_letter[$int];
@@ -106,10 +106,10 @@ class get {
     static function  launch($int) {
         if (!isset(self::$launch_title)) {
             $types = launch_type::get_all(array('lid', 'title'));
-            /** @var launch_type $type */
-            foreach ($types as $type) {
-                self::$launch_title[$type->lid] = $type->title;
-            }
+            $types->iterate(function (launch_type $type) {
+                    self::$launch_title[$type->lid] = $type->title;
+                }
+            );
         }
         if (isset(self::$launch_title[$int])) {
             return self::$launch_title[$int];
