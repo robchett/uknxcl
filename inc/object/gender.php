@@ -1,5 +1,5 @@
 <?php
-class gender extends table { use table_trait
+class gender extends table { use table_trait;
 
     public $table_key = 'gid';
     public static $module_id = 14;

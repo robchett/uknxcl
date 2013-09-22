@@ -1,6 +1,7 @@
 <?php
 namespace cms;
-class field_type extends \table { use \table_trait
+class field_type extends \table {
+    use \table_trait;
 
     public $table_key = 'ftid';
     public static $module_id = 16;
