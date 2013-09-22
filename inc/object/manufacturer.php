@@ -14,7 +14,7 @@ class manufacturer extends club {
         return manufacturer_array::get_all($fields, $options);
     }
 
-    public function set_from_pilot(glider $glider, $num = 6, $flights) {
+    public function set_from_pilot($glider, $num = 6) {
         $this->max_pilots = $num;
         $this->name = $glider->club;
         $this->score = $glider->score;
