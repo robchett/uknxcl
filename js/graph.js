@@ -16,15 +16,15 @@ function Graph($container) {
         this.width = width - 5;
         this.a_canvas[0].width = (width);
         this.setGraph();
-    }
+    };
     this.swap = function (obj) {
         this.obj = obj;
         this.setGraph();
-    }
+    };
     this.changeType = function (val) {
         this.type = val;
         this.setGraph();
-    }
+    };
     this.setGraph = function () {
         if (this.obj === null) {
             this.$container.hide();
@@ -60,7 +60,7 @@ function Graph($container) {
             }
         });
         this.drawGraph(max, min, '#' + this.obj.nxcl_data.track[0].colour, index, title);
-    }
+    };
 
     this.drawGraph = function (max, min, colour, index, text) {
         this.a_canvas[0].width = this.a_canvas.width();
@@ -74,7 +74,7 @@ function Graph($container) {
             context.lineTo(x_coord, this.height);
         }
         for (y1 = 0; y1 <= 10; y1++) {
-            var y_coord = y1 * this.height / 10
+            var y_coord = y1 * this.height / 10;
             context.moveTo(0, y_coord);
             context.lineTo(this.width, y_coord);
         }

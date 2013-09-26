@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     function get_form_data($this) {
-        var data = {}
+        var data = {};
         $this.find(':input').each(function () {
             var name = $(this).attr('name');
             if ($(this).attr('type') == 'checkbox') {
@@ -143,7 +143,7 @@ $(document).ready(function () {
             data: post,
             success: handle_json_response
         });
-    }
+    };
     $.fn.ajax_factory.defaults = {
         complete: [],
         load_pages_ajax: false
@@ -178,7 +178,7 @@ function handle_json_response(json) {
                 $(inj.id).after(inj.html);
                 break;
         }
-    })
+    });
     if (typeof json.push_state != "undefined") {
         if (json.push_state.push) {
             window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
@@ -197,10 +197,10 @@ Array.prototype.each = function (callback, context) {
     for (var i = 0; i < this.length; i++) {
         callback(this[i], i, context);
     }
-}
+};
 Array.prototype.count = function () {
     return this.length - 2;
-}
+};
 String.prototype.isNumber = function () {
     return !isNaN(parseFloat(this)) && isFinite(this);
 };
