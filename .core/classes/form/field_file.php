@@ -26,7 +26,8 @@ class field_file extends field {
         }
     }
 
-    public function get_save_sql(&$sql_array, &$parameters) {
+    public function get_save_sql() {
+        throw new \RuntimeException('Can\t save this field type');
     }
 
     public function set_from_request() {
