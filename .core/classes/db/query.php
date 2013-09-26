@@ -48,6 +48,12 @@ abstract class query {
         return $this;
     }
 
+    public function filter_field($field, $value, $operator = '=') {
+        $this->filter('`' . $field . '`' . $operator . ':' . $field);
+        $this->parameters[$field] = $value;
+        return $this;
+    }
+
     protected function add_filter($clause, $parameters = []) {
         $this->filters[] = $clause;
         $this->parameters = array_merge($this->parameters, $parameters);
