@@ -35,7 +35,7 @@ class waypoint_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'waypoint_iterator');
+        parent::__construct($input, 0, '\planner\waypoint_iterator');
         $this->iterator = new waypoint_iterator($input);
     }
 

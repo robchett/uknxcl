@@ -91,7 +91,7 @@ class get {
         if (!isset(self::$launch_letter)) {
             $types = launch_type::get_all(array('lid', 'fn'));
             $types->iterate(function (launch_type $type) {
-                    self::$launch_letter[$type->lid] = $type->fn;
+                    get::$launch_letter[$type->lid] = $type->fn;
                 }
             );
         }
@@ -107,7 +107,7 @@ class get {
         if (!isset(self::$launch_title)) {
             $types = launch_type::get_all(array('lid', 'title'));
             $types->iterate(function (launch_type $type) {
-                    self::$launch_title[$type->lid] = $type->title;
+                    get::$launch_title[$type->lid] = $type->title;
                 }
             );
         }

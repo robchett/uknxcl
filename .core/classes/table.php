@@ -128,9 +128,9 @@ abstract class table {
         if ($ok) {
             $type = (!isset($this->{$this->table_key}) || !$this->{$this->table_key} ? 'Added' : 'Updated');
             $this->do_save();
-            \ajax::inject('#' . $_REQUEST['ajax_origin'], 'before', '<p class="success boxed ' . strtolower($type) . '">' . $type . ' successfully</p>');
+            ajax::inject('#' . $_REQUEST['ajax_origin'], 'before', node::create('p.success.boxed.' . strtolower($type), [], $type . ' successfully'));
         } else {
-            \ajax::update($form->get_html()->get());
+            ajax::update($form->get_html()->get());
         }
         return $ok;
     }
@@ -341,7 +341,8 @@ class table_array extends ArrayObject {
     /**
      *
      */
-    public function __construct() {
+    public function __construct($input = [], $flags = 0, $iterator_class = "table_iterator") {
+        parent::__construct($input, $flags, $iterator_class);
         if (!self::$statics_set) {
             $this->set_statics();
         }
@@ -432,9 +433,8 @@ class table_array extends ArrayObject {
      *
      */
     public function reset_iterator() {
-        $iterator_class = $this->get_class() . '_iterator';
-        $iterator = new $iterator_class($this->subset());
-        $this->iterator = $iterator;
+        $this->iterator = $this->getIterator();
+        //$this->iterator->rewind();
     }
 
     /**
@@ -450,20 +450,20 @@ class table_array extends ArrayObject {
      * @param int $cnt
      */
     public function iterate($function, $cnt = 0) {
+        $this->reset_iterator();
         while ($obj = $this->next()) {
             $cnt++;
-            call_user_func_array($function, array($obj, $cnt));
+            call_user_func($function, $obj, $cnt);
         }
-        $this->iterator->reset();
     }
 
     public function iterate_return($function, $cnt = 0) {
         $res = '';
+        $this->reset_iterator();
         while ($obj = $this->next()) {
             $cnt++;
-            $res .= call_user_func_array($function, array($obj, $cnt));
+            $res .= call_user_func($function, $obj, $cnt);
         }
-        $this->iterator->reset();
         return $res;
     }
 
@@ -474,14 +474,16 @@ class table_array extends ArrayObject {
     public function next() {
         if ($this->iterator->index == -1) {
             $this->iterator->index = 0;
-            if ($this->iterator->valid())
+            if ($this->iterator->valid()) {
                 return $this->iterator->current();
+            }
             else return false;
         } else {
             $this->iterator->next();
             $this->iterator->index++;
-            if ($this->iterator->valid())
+            if ($this->iterator->valid()) {
                 return $this->iterator->current();
+            }
             else return false;
         }
     }

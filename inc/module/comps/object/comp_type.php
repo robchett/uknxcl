@@ -26,7 +26,7 @@ class comp_type_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'comp_type_iterator');
+        parent::__construct($input, 0, '\comps\comp_type_iterator');
         $this->iterator = new comp_type_iterator($input);
     }
 

@@ -1,50 +1,51 @@
 <?php
 namespace tables;
+
+use html\node;
+
 class result_records extends result {
 
 
     function make_table(league_table $data) {
-        $html = '<div class="table_wrapper"><h3>Results</h3>';
-        $html .= '<table class="results main">
-    <thead>
-    <tr>
-        <th>Type</th>
-        <th>Class</th>
-        <th>Gender</th>
-        <th>Name</th>
-        <th>Score</th>
-        <th>Date</th>
-    </tr>
-    </thead>';
-        $html .= $this->get_flights(1, 'Open Distance');
-        $html .= $this->get_flights(3, 'Goal', true);
-        $html .= $this->get_flights(2, 'Out and return (Open)', 0);
-        $html .= $this->get_flights(2, 'Out and return (Defined)', 1);
-        $html .= $this->get_flights(4, 'Triangle (Open)', 0);
-        $html .= $this->get_flights(4, 'Triangle (Defined)', 1);
-        $html .= '</table>';
-        $html .= '</div>';
-
+        $html = node::create('div.table_wrapper', [],
+            node::create('h3', [], 'Results') .
+            node::create('table.results.main', [],
+                node::create('thead tr', [],
+                    node::create('th', [], 'Type') .
+                    node::create('th', [], 'Class') .
+                    node::create('th', [], 'Gender') .
+                    node::create('th', [], 'Name') .
+                    node::create('th', [], 'Score') .
+                    node::create('th', [], 'Date')
+                ) .
+                node::create('tbody', [],
+                    $this->get_flights(1, 'Open Distance') .
+                    $this->get_flights(3, 'Goal', true) .
+                    $this->get_flights(2, 'Out and return (Open)', 0) .
+                    $this->get_flights(2, 'Out and return (Defined)', 1) .
+                    $this->get_flights(4, 'Triangle (Open)', 0) .
+                    $this->get_flights(4, 'Triangle (Defined)', 1)
+                )
+            )
+        );
         return $html;
     }
 
     function get_flights($type, $title, $defined = null) {
-        $html = '<tr><td colspan="6" class="title">' . $title . '</td></tr>';
-        $html .= $this->get_flight($type, 1, 'M');
-        $html .= $this->get_flight($type, 5, 'M');
-        $html .= $this->get_flight($type, 1, 'F');
-        $html .= $this->get_flight($type, 5, 'F');
-        if (isset($defined) && $defined) {
-            $html .= $this->get_flight_defined($type, 1, 'M');
-            $html .= $this->get_flight_defined($type, 5, 'M');
-            $html .= $this->get_flight_defined($type, 1, 'F');
-            $html .= $this->get_flight_defined($type, 5, 'F');
-        }
+        $html = node::create('tr td.title', ['colspan' => '6'], $title) .
+            $this->get_flight($type, 1, 'M') .
+            $this->get_flight($type, 5, 'M') .
+            $this->get_flight($type, 1, 'F') .
+            $this->get_flight($type, 5, 'F') .
+            (isset($defined) && $defined ?
+                $this->get_flight_defined($type, 1, 'M') .
+                $this->get_flight_defined($type, 5, 'M') .
+                $this->get_flight_defined($type, 1, 'F') .
+                $this->get_flight_defined($type, 5, 'F') : '');
         return $html;
     }
 
     protected function get_flight($ftid, $class, $gender) {
-        $html = '';
         $flight = new \flight();
         $flight->do_retrieve(
             array(
@@ -67,14 +68,22 @@ class result_records extends result {
                 'order' => 'base_score DESC'
             )
         );
+
+        $html = '';
         if ($flight->fid) {
-            $html .= '<tr><td>Distance</td><td>' . $class . '</td><td>' . $gender . '</td><td>' . $flight->p_name . '</td><td>' . $flight->base_score . ' km</td><td>' . $flight->date . '</td></tr>';
+            $html .= node::create('tr', [],
+                node::create('td', [], 'Distance') .
+                node::create('td', [], $class) .
+                node::create('td', [], $gender) .
+                node::create('td', [], $flight->p_name) .
+                node::create('td', [], $flight->base_score) .
+                node::create('td', [], $flight->date)
+            );
         }
         return $html;
     }
 
     protected function get_flight_defined($ftid, $class, $gender) {
-        $html = '';
         $flight = new \flight();
         $flight->do_retrieve(
             array(
@@ -98,8 +107,16 @@ class result_records extends result {
                 'order' => 'speed DESC'
             )
         );
+        $html = '';
         if ($flight->fid) {
-            $html .= '<tr><td>Speed</td><td>' . $class . '</td><td>' . $gender . '</td><td>' . $flight->p_name . '</td><td>' . number_format($flight->speed, 2) . ' km/h</td><td>' . $flight->date . '</td></tr>';
+            $html .= node::create('tr', [],
+                node::create('td', [], 'Speed') .
+                node::create('td', [], $class) .
+                node::create('td', [], $gender) .
+                node::create('td', [], $flight->p_name) .
+                node::create('td', [], number_format($flight->speed, 2)) .
+                node::create('td', [], $flight->date)
+            );
         }
         return $html;
     }

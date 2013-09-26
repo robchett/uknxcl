@@ -26,7 +26,7 @@ class waypoint_group_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'waypoint_group_iterator');
+        parent::__construct($input, 0, '\planner\waypoint_group_iterator');
         $this->iterator = new waypoint_group_iterator($input);
     }
 

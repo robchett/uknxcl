@@ -1869,7 +1869,7 @@ class coordinate_bound {
     }
 }
 
-class object_array extends ArrayObject {
+class object_array extends table_array {
 
     private $first_index = 0;
 

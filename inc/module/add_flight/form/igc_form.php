@@ -1,6 +1,7 @@
 <?php
 namespace add_flight;
 use form\form;
+use html\node;
 
 class igc_form extends form {
 
@@ -13,28 +14,28 @@ class igc_form extends form {
     public $force_delay;
 
     public function __construct() {
-        parent::__construct(array(
+        parent::__construct([
                 form::create('field_link', 'pid')
                     ->set_attr('label', 'Pilot:')
                     ->set_attr('required', true)
                     ->set_attr('default', 'Choose A Pilot')
-                    ->set_attr('post_text', '<a data-ajax-click="add_pilot_form:get_form">Not in the list? Click here to add a new pilot</a>')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
                     ->set_attr('link_module', 'pilot')
                     ->set_attr('link_field', 'name')
-                    ->set_attr('options', array('order' => 'name')),
+                    ->set_attr('options', ['order' => 'name']),
                 form::create('field_link', 'gid')
                     ->set_attr('label', 'Glider:')
                     ->set_attr('required', true)
-                    ->set_attr('post_text', '<a data-ajax-click="add_glider_form:get_form">Not in the list? Click here to add a new glider</a>')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
                     ->set_attr('link_module', 'glider')
-                    ->set_attr('link_field', array('manufacturer.title', 'glider.name'))
-                    ->set_attr('options', array('join' => array('manufacturer' => 'manufacturer.mid = glider.mid'), 'order' => 'manufacturer.title, glider.name')),
+                    ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
+                    ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
                 form::create('field_link', 'cid')
                     ->set_attr('label', 'Club:')
                     ->set_attr('required', true)
                     ->set_attr('link_module', 'club')
                     ->set_attr('link_field', 'title')
-                    ->set_attr('options', array('order' => 'title')),
+                    ->set_attr('options', ['order' => 'title']),
                 form::create('field_link', 'lid')
                     ->set_attr('label', 'Launch:')
                     ->set_attr('required', true)
@@ -58,14 +59,13 @@ class igc_form extends form {
                 form::create('field_boolean', 'agree')
                     ->set_attr('label', 'The NXCL is free to publish the flight to the public and to be passed on to skywings for publication. The flight has not broken any airspace laws')
                     ->set_attr('required', true),
-
                 form::create('field_int', 'temp_id')
                     ->set_attr('required', true)
                     ->set_attr('hidden', true),
                 form::create('field_string', 'type')
                     ->set_attr('required', true)
                     ->set_attr('hidden', true),
-            )
+            ]
         );
 
         $this->h2 = 'Additional Details';
