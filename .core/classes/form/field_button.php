@@ -22,7 +22,8 @@ class field_button extends field {
         return node::create('a#button' . $this->field_name . $id . '.button', $this->attributes, $this->title);
     }
 
-    public function get_save_sql(&$sql_array, &$parameters) {
+    public function get_save_sql() {
+        throw new \RuntimeException('Can\t save this field type');
     }
 
     public function get_html_wrapper() {

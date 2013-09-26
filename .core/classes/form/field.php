@@ -183,9 +183,8 @@ abstract class field extends node {
         return 1;
     }
 
-    public function get_save_sql(&$sql_array, &$parameters) {
-        $sql_array[] = '`' . $this->field_name . '`=:' . $this->field_name;
-        $parameters[$this->field_name] = $this->mysql_value($this->parent_form->{$this->field_name});
+    public function get_save_sql() {
+        return $this->mysql_value($this->parent_form->{$this->field_name});
     }
 
     public function mysql_value($value) {
