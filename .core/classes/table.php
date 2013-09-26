@@ -75,11 +75,7 @@ abstract class table {
      */
     public function do_cms_update() {
         if (admin) {
-            \db::query('UPDATE ' . get::__class_name($this) . ' SET ' . $_REQUEST['field'] . '=:value WHERE ' . $this->table_key . '=:id', array(
-                    'value' => $_REQUEST['value'],
-                    'id' => $_REQUEST['id'],
-                )
-            );
+            \db::update(get::__class_name($this))->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field($this->table_key, $_REQUEST['id'])->execute();
         }
         return 1;
     }
@@ -172,7 +168,7 @@ abstract class table {
             }
         }
         if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
-            $query->filter($this->table_key . '=:' . $this->table_key, [$this->table_key => $this->{$this->table_key}]);
+            $query->filter_field($this->table_key, $this->{$this->table_key});
         }
         $query->execute();
         if (!(isset($this->{$this->table_key}) && $this->{$this->table_key})) {
