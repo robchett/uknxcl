@@ -153,23 +153,28 @@ abstract class table {
      */
     public function do_save() {
         $class = get::__class_name($this);
-        $elements = array();
-        $parameters = array();
-        $sql = (isset($this->{$this->table_key}) && $this->{$this->table_key} ? 'UPDATE ' : 'INSERT INTO ') . $class . ' SET ';
+        if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
+            $query = new db\update($class);
+        } else {
+            $query = new db\insert($class);
+        }
         /** @var form\field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->field_name != $this->table_key) {
                 if (isset($this->{$field->field_name})) {
-                    $field->get_save_sql($elements, $parameters);
+                    try {
+                        $data = $field->get_save_sql();
+                        $query->add_value($field->field_name, $data);
+                    } catch (RuntimeException $e) {
+
+                    }
                 }
             }
         }
-        $sql .= implode(', ', $elements);
         if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
-            $sql .= ' WHERE ' . $this->table_key . '=:' . $this->table_key;
-            $parameters[$this->table_key] = $this->{$this->table_key};
+            $query->filter($this->table_key . '=:' . $this->table_key, [$this->table_key => $this->{$this->table_key}]);
         }
-        \db::query($sql, $parameters);
+        $query->execute();
         if (!(isset($this->{$this->table_key}) && $this->{$this->table_key})) {
             $this->{$this->table_key} = \db::insert_id();
         }
@@ -476,15 +481,13 @@ class table_array extends ArrayObject {
             $this->iterator->index = 0;
             if ($this->iterator->valid()) {
                 return $this->iterator->current();
-            }
-            else return false;
+            } else return false;
         } else {
             $this->iterator->next();
             $this->iterator->index++;
             if ($this->iterator->valid()) {
                 return $this->iterator->current();
-            }
-            else return false;
+            } else return false;
         }
     }
 
