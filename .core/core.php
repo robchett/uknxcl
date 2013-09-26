@@ -126,7 +126,7 @@ class core {
     }
 
     public static function get_class_from_mid($mid) {
-        $res = \db::query('SELECT `table_name`, `namespace` FROM _cms_modules WHERE mid=:mid', array('mid' => $mid));
+        $res = \db::select('_cms_modules')->retrieve(['table_name','namespace'])->filter('mid=:mid', ['mid'=>$mid])->execute();
         $row = \db::fetch($res);
         return $row->namespace . '\\' . $row->table_name;
     }
