@@ -16,7 +16,7 @@ class field_date extends field {
     }
 
     public function set_from_request() {
-        $this->parent_form->{$this->field_name} = strtotime($_REQUEST[$this->field_name]);
+        $this->parent_form->{$this->field_name} = isset($_REQUEST[$this->field_name]) ? strtotime($_REQUEST[$this->field_name]) : '';
     }
 
     public function mysql_value($value) {
