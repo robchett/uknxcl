@@ -26,7 +26,7 @@ class db implements interfaces\database_interface {
     );
 
     public static function select($table_name) {
-        return new \query($table_name);
+        return new db\select($table_name);
     }
 
     /**
