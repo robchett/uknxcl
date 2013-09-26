@@ -42,7 +42,7 @@ class page_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'page_iterator');
+        parent::__construct($input, 0, '\pages\page_iterator');
         $this->iterator = new page_iterator($input);
     }
 

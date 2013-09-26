@@ -26,7 +26,7 @@ class field_type_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'field_type_iterator');
+        parent::__construct($input, 0, '\cms\field_type_iterator');
         $this->iterator = new field_type_iterator($input);
     }
 

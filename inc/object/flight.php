@@ -292,7 +292,7 @@ flight extends table {
                 $track = new track();
                 $track->generate($this);
                 $this->do_save();
-                jquery::colorbox(array('html' => 'Flight ' . $this->fid . ' generated successfully.<p><pre>' . print_r($track->log_file, 1) . '</pre></p>'));
+                jquery::colorbox(array('html' => 'Flight ' . $this->fid . ' generated successfully. ' . node::create('p pre', [], print_r($track->log_file, 1))));
             }
         }
     }
@@ -319,7 +319,7 @@ flight extends table {
             $html = node::create('table', ['width' => '100%'],
                 node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
                 node::create('tr', [], node::create('td', [], 'Pilot') . node::create('td', [], $this->pilot_name)) .
-                node::create('tr', [], node::create('td', [], 'Date') . node::create('td', [], date('d/m/Y',$this->date))) .
+                node::create('tr', [], node::create('td', [], 'Date') . node::create('td', [], date('d/m/Y', $this->date))) .
                 node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider_name)) .
                 node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club_title)) .
                 node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
@@ -338,12 +338,19 @@ flight extends table {
                     ) :
                     node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
                 ) .
-                node::create('a.close', ['title' => 'close', 'onclick' => '$(\'#pop\').remove()'], 'Close')
+                node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close')
             );
         }
 
-        \ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
-        \ajax::inject('#' . $_REQUEST['origin'], 'after', '<div id="pop"><span class="arrow">Arrow</span><div class="content">' . $html . '</div><script>if($("#pop").offset().left > 400)$("#pop").addClass("reverse"); </script></div>');
+        ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
+        ajax::inject('#' . $_REQUEST['origin'], 'after',
+            node::create('div#pop', [],
+                node::create('span.arrow', [], 'Arrow') .
+                node::create('div.content', [], $html) .
+                node::create('script', [], 'if($("#pop").offset().left > 400)$("#pop").addClass("reverse");'
+                )
+            )
+        );
     }
 
     /**
@@ -368,37 +375,34 @@ flight extends table {
         $height = $this->track->get_stats('ele');
         $speed = $this->track->get_stats('speed');
         $climb = $this->track->get_stats('climbRate');
-        $html = '
-<table class="stats">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Min</th>
-            <th>Max</th>
-            <th>Average</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Elevation</td>
-            <td>' . $height->min . 'ft <span>@ ' . date('H:i:s', $height->min_point->time) . '</span></td>
-            <td>' . $height->max . 'ft <span>@ ' . date('H:i:s', $height->max_point->time) . '</span></td>
-            <td>' . number_format($height->average, 2) . 'ft</td>
-        </tr>
-        <tr>
-            <td>Speed</td>
-            <td>' . $speed->min . 'km/h <span>@ ' . date('H:i:s', $speed->min_point->time) . '</span></td>
-            <td>' . $speed->max . 'km/h <span>@ ' . date('H:i:s', $speed->max_point->time) . '</span></td>
-            <td>' . number_format($speed->average, 2) . 'km/h</td>
-        </tr>
-        <tr>
-            <td>Climb</td>
-            <td>' . $climb->min . 'ft/s <span>@ ' . date('H:i:s', $climb->min_point->time) . '</span></td>
-            <td>' . $climb->max . 'ft/s <span>@ ' . date('H:i:s', $climb->max_point->time) . '</span></td>
-            <td>' . number_format($climb->average, 2) . 'ft/s</td>
-        </tr>
-    </tbody>
-</table>';
+        $html = node::create('table.stats', [],
+            node::create('thead tr', [],
+                node::create('th', [], '') .
+                node::create('th', [], 'Min') .
+                node::create('th', [], 'Max') .
+                node::create('th', [], 'Average')
+            ) .
+            node::create('tbody', [],
+                node::create('tr', [],
+                    node::create('td', [], 'Elevation') .
+                    node::create('td', [], $height->min . 'ft <span>@ ' . date('H:i:s', $height->min_point->time)) .
+                    node::create('td', [], $height->max . 'ft <span>@ ' . date('H:i:s', $height->max_point->time)) .
+                    node::create('td', [], number_format($height->average, 2) . 'm')
+                ) .
+                node::create('tr', [],
+                    node::create('td', [], 'Speed') .
+                    node::create('td', [], $speed->min . 'km/h <span>@ ' . date('H:i:s', $speed->min_point->time)) .
+                    node::create('td', [], $speed->max . 'km/h <span>@ ' . date('H:i:s', $speed->max_point->time)) .
+                    node::create('td', [], number_format($speed->average, 2) . 'km/h')
+                ) .
+                node::create('tr', [],
+                    node::create('td', [], 'Speed') .
+                    node::create('td', [], $climb->min . 'ft/s <span>@ ' . date('H:i:s', $climb->min_point->time)) .
+                    node::create('td', [], $climb->max . 'ft/s <span>@ ' . date('H:i:s', $climb->max_point->time)) .
+                    node::create('td', [], number_format($climb->average, 2) . 'ft/s')
+                )
+            )
+        );
         return $html;
     }
 
@@ -422,37 +426,34 @@ flight extends table {
         if (!isset($this->track)) {
             $this->set_track();
         }
-        $html = '  <table width="100%">
-            <tr><td>Flight ID </td><td>' . $this->fid . '</td></tr>
-            <tr><td>Glider </td><td>' . $this->manufacturer_title . ' - ' . $this->glider_name . '</td></tr>
-            <tr><td>Club </td><td>' . $this->club_title . '</td></tr>
-            <tr><td>Defined </td><td>' . get::bool($this->defined) . '</td></tr>
-            <tr><td>Launch </td><td>' . get::launch($this->lid) . '</td></tr>
-            <tr><td>Type </td><td>' . get::flight_type($this->ftid) . '</td></tr>
-            <tr><td>Ridge Lift </td><td>' . get::bool($this->ridge) . ' </td></tr>
-            <tr><td>Score </td><td>' . $this->base_score . 'x' . $this->multi . ' =' . $this->score . '</td></tr>
-            <tr><td>Coordinates </td><td>' . $this->coord_info() . '</td></tr>
-            <tr><td>Launch</td><td>' . date('H:i:s', $this->track->track_points->first()->time) . '</td></tr>
-            <tr><td>Landing</td><td>' . date('H:i:s', $this->track->track_points->last()->time) . '</td></tr>
-            <tr><td>Duration</td><td>' . date('H:i:s', $this->track->track_points->last()->time - $this->track->track_points->first()->time) . '</td></tr>
-            ' . ($this->vis_info ? '<tr><td>Info</td><td>' . $this->vis_info . '</td></tr>' : '');
+        $html = node::create('table', ['width' => '100'],
+            node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
+            node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider_name)) .
+            node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club_title)) .
+            node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
+            node::create('tr', [], node::create('td', [], 'Launch') . node::create('td', [], get::launch($this->lid))) .
+            node::create('tr', [], node::create('td', [], 'Type') . node::create('td', [], get::flight_type($this->ftid))) .
+            node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
+            node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' =' . $this->score)) .
+            node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], $this->coord_info())) .
+            node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
+            node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
+            node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->track_points->last()->time - $this->track->track_points->first()->time))) .
+            ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) : '') .
+            (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz') ?
+                node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
+                node::create('tr', [], node::create('td.center', ['colspan' => 2],
+                        node::create('a.download.igc', ['href' => '/uploads/track/' . $this->fid . '/track.igc'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => '/uploads/track/' . $this->fid . '/track.kmz'], 'Download KML')
+                    )
+                ) :
+                node::create('tr', [], node::create('td.center.view.coords', ['colspan' => 2],
+                        node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map')
+                    )
+                )
+            )
+        ) . ajax ? node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close') : '';
 
-        if (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz')) {
-            $html .= '
-            <tr><td colspan="2" class="center view"><a href="#" class="button" onclick="map.add_flight(' . $this->fid . ')">Add trace to Map</a></td></tr>
-            <tr>
-                <td class="center" colspan="2">
-                    <a href="/uploads/track/' . $this->fid . '/track.igc" title="Download IGC" class="download igc" rel="external">Download IGC</a>
-                    <a href="/uploads/track/' . $this->fid . '/track.kmz" title="Download KML" class="download kml" rel="external">Download KML</a>
-                </td>
-            </tr>';
-        } else {
-            $html .= '<tr><td colspan="2"class="center view coords"><a href="#" class="button" onclick="map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;"> Add coordinates to map<a/></td></tr>';
-        }
-        if (ajax) {
-            $html .= '<a class="close" title="close" onclick="$(\'#pop\').remove()">Close</a>';
-        }
-        $html .= '</table>';
         return $html;
     }
 

@@ -1,5 +1,8 @@
 <?php
 namespace tables;
+
+use html\node;
+
 class league_table {
     /** @var \flight_array */
     public $flights = null;
@@ -313,8 +316,7 @@ class league_table {
 
     public function generate_csv() {
         $flights = \flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
-        /** @var \pilot_official[] $array \ */
-        $array = array();
+        $array = new \pilot_array();
         $flights->iterate(
             function (\flight $flight, $cnt) use (&$array) {
                 if (isset ($array [$flight->p_pid]))
@@ -326,18 +328,22 @@ class league_table {
                 }
             }
         );
-        usort($array, ['tables\league_table', 'cmp']);
+        $array->uasort(['tables\league_table', 'cmp']);
         $class1 = $class5 = 1;
-        echo '<pre>Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n";
-        for ($j = 0; $j < sizeof($array); $j++) {
-            if ($array [$j]->Class == 1) {
-                echo $array [$j]->output($class1, 0);
-                $class1++;
-            } else {
-                echo $array [$j]->output($class5, 0);
-                $class5++;
-            }
-        }
+        echo node::create('pre', [], '
+        Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n" .
+            $array->iterate_return(
+                function (\pilot $pilot) use (&$class1, &$class5) {
+                    if ($pilot->class == 1) {
+                        $class1++;
+                        return $pilot->output($class1, 0);
+                    } else {
+                        $class5++;
+                        return $pilot->output($class5, 0);
+                    }
+                }
+            )
+        );
         die();
     }
 
@@ -420,19 +426,19 @@ class league_table {
     function write_table_header($flights, $type = 'pid') {
         $inner_html = '';
         foreach (range(1, $flights) as $pos) {
-            $inner_html .= '<th>' . \get::ordinal($pos) . '</th>';
+            $inner_html .= node::create('th', [], \get::ordinal($pos));
 
         }
-        $html = '
-            <thead>
-                <tr >
-                <th class="pos">Pos</th>
-                <th >Name</th>
-                <th class="club">' . ($type == 'pid' ? 'Club / Glider' : 'Manufacturer') . '</th>
-                ' . $inner_html . '
-                <th class="tot">Total</th>
-            </tr>
-        </thead>';
+        $html =
+            node::create('thead', [],
+                node::create('tr', [],
+                    node::create('th.pos', [], 'Pos') .
+                    node::create('th.name', [], 'Name') .
+                    node::create('th.club', [], ($type == 'pid' ? 'Club / Glider' : 'Manufacturer')) .
+                    $inner_html .
+                    node::create('th.tot', [], 'Total')
+                )
+            );
         return $html;
     }
 
@@ -477,26 +483,23 @@ class league_table {
                     $prefix = $flight->name . ' (' . ($flight->class == 5 ? 'R' : 'F') . ') ';
                     $html .= $flight->to_print($prefix)->get();
                 } else
-                    $html .= "<td>No Flights Fit.</td>";
+                    $html .= node::create('td', [], 'No Flights Fit');
             }
             $html .= '</tr>';
         }
 
-        return '
-<table class="top4 main results">
-    <thead>
-        <tr>
-            <th style="width:52px">Catagory</th>
-            <th style="width:155px;cplor:black" >Open Dist</th>
-            <th style="width:155px;color:green">Out & Return</th>
-            <th style="width:155px;color:red">Goal</th>
-            <th style="width:155px;color:blue">Triangle</th>
-        </tr>
-    </thead>
-        ' . $html . '
-    <tbody>
-    </tbody>
-</table>';
+        return node::create('table.top4.main.results', [],
+            node::create('thead', [],
+                node::create('tr', [],
+                    node::create('th', ['style' => 'width:52px'], 'Category') .
+                    node::create('th', ['style' => 'width:155px;color:black'], 'Open Dist') .
+                    node::create('th', ['style' => 'width:155px;color:green'], 'Out & Return') .
+                    node::create('th', ['style' => 'width:155px;color:red'], 'Goal') .
+                    node::create('th', ['style' => 'width:155px;color:blue'], 'Triangle')
+                )
+            ) .
+            $html
+        );
     }
 
 

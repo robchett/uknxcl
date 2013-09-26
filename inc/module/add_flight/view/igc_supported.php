@@ -1,5 +1,8 @@
 <?php
 namespace add_flight;
+
+use html\node;
+
 class igc_supported_view extends \view {
 
     public function get_page_selector() {
@@ -9,12 +12,11 @@ class igc_supported_view extends \view {
     public function get_view() {
         $form = new igc_form();
         $form2 = new igc_upload_form();
-        $html = '
-        <div class="add_flight_section upload">
-            ' . $form2->get_html()->get() . '
-            ' . $form->get_html()->get() . '
-            <a href="/add_flight" class="back button">Back</a>
-        </div>';
+        $html = node::create('div.add_flight_section.upload', [],
+            $form2->get_html()->get() .
+            $form->get_html()->get() .
+            node::create('a.back.button', ['href' => '/add_flight'], 'Back')
+        );
         $script = '
     $("body").on("change", "input#kml", function () {
         if ($(this).val().slice(-3) == "igc") {

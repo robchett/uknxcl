@@ -1,6 +1,8 @@
 <?php
 namespace tables;
+
 use form\form;
+use html\node;
 
 class table_gen_form extends form {
     public $no_min;
@@ -25,7 +27,7 @@ class table_gen_form extends form {
                 ->set_attr('label', 'Pilot:')
                 ->set_attr('link_module', 'pilot')
                 ->set_attr('link_field', 'name')
-                ->set_attr('order','name ASC')
+                ->set_attr('order', 'name ASC')
                 ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
                 ->add_class('pilot_select')
                 ->set_attr('disabled', true),
@@ -110,7 +112,7 @@ class table_gen_form extends form {
         $this->description = '';
         $this->id = 'advanced_tables';
         $this->submit = 'Generate';
-        $this->post_text = '<a class="form_toggle" data-show="basic_tables_form_wrapper">Basic</a>';
+        $this->post_text = node::create('a.form_toggle', ['data-show' => 'basic_tables_form_wrapper'], 'Basic');
         $this->h2 = 'Advanced Options';
     }
 

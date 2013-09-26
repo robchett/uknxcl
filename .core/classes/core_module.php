@@ -1,5 +1,7 @@
 <?php
 
+use html\node;
+
 abstract class core_module {
     public static $page_fields_to_retrieve = array('pid', 'body', 'title');
     /** @var table */
@@ -37,13 +39,14 @@ abstract class core_module {
     }
 
     function get_main_nav() {
-        $html = '';
         $pages = pages\page::get_all(array(), array('where' => 'nav=1'));
-        $pages->iterate(function(pages\page $page) use (&$html) {
-            $html .= '<li ' . ($page->pid == \core::$singleton->pid ? 'class="sel"' : '') . '>';
-            $html .= '<a href="' . $page->get_url() . '">' . $page->nav_title . '</a></li>';
-        });
-        return $html;
+        return $pages->iterate_return(
+            function (pages\page $page) {
+                return node::create('li' . ($page->pid == \core::$singleton->pid ? '.sel' : ''), [],
+                    node::create('a', ['href' => $page->get_url()], $page->nav_title)
+                );
+            }
+        );
     }
 
     public function set_view() {

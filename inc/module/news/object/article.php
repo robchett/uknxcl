@@ -58,7 +58,7 @@ class article extends \table {
 class article_array extends \table_array {
 
     public function __construct($input = array()) {
-        parent::__construct($input, 0, 'article_iterator');
+        parent::__construct($input, 0, '\news\article_iterator');
         $this->iterator = new article_iterator($input);
     }
 

@@ -67,7 +67,7 @@ class ajax {
         $o = new stdClass();
         $o->id = $id;
         $o->pos = $pos;
-        $o->html = $html;
+        $o->html = (string)$html;
         $o->over = $overwrite;
         self::$inject[] = $o;
     }

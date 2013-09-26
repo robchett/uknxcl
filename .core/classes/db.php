@@ -1,4 +1,6 @@
 <?php
+use html\node;
+
 /**
  * Class db
  */
@@ -22,6 +24,10 @@ class db implements interfaces\database_interface {
         'ENGINE' => 'innoDB',
         'CHARACTER SET' => 'utf8',
     );
+
+    public static function select($table_name) {
+        return new \query($table_name);
+    }
 
     /**
      * @param $host
@@ -214,11 +220,17 @@ class db implements interfaces\database_interface {
         try {
             $prep_sql->execute();
         } catch (PDOException $e) {
-            $error = '<div class="error_message mysql"><p>' . $e->getMessage() . '</p>' . \core::get_backtrace() . print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true) . '</div>';
+            $error = node::create('div.error_message.mysql', [],
+                node::create('p', [],
+                    $e->getMessage() .
+                    core::get_backtrace() .
+                    print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true)
+                )
+            );
             if (ajax) {
-                \ajax::inject('body', 'append', $error);
+                ajax::inject('body', 'append', $error);
                 if (!$throwable) {
-                    \ajax::do_serve();
+                    ajax::do_serve();
                     die();
                 }
             } else {

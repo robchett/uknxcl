@@ -1,6 +1,8 @@
 <?php
 namespace tables;
+
 use form\form;
+use html\node;
 
 class table_gen_form_basic extends form {
 
@@ -48,7 +50,7 @@ class table_gen_form_basic extends form {
                 ->set_attr('label', 'Pilot:')
                 ->set_attr('link_module', 'pilot')
                 ->set_attr('link_field', 'name')
-                ->set_attr('order','name ASC')
+                ->set_attr('order', 'name ASC')
                 ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
                 ->set_attr('required', true)
                 ->set_attr('disabled', true),
@@ -67,7 +69,7 @@ class table_gen_form_basic extends form {
         parent::__construct($fields);
         $this->id = 'basic_tables_form';
         $this->submit = 'Generate';
-        $this->post_text = '<a class="form_toggle" data-show="advanced_tables_wrapper">Advanced View</a>';
+        $this->post_text = node::create('a.form_toggle', ['data-show' => 'advanced_tables_wrapper'], 'Advanced View');
         $this->get_field_from_name('year')->value = date('Y');
         $this->shroud = '';
         $this->h2 = 'Options';

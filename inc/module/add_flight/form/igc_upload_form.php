@@ -1,6 +1,8 @@
 <?php
 namespace add_flight;
+
 use form\form;
+use html\node;
 
 class igc_upload_form extends form {
 
@@ -14,13 +16,13 @@ class igc_upload_form extends form {
                 ->set_attr('label', 'Defined flight coordinates')
                 ->set_attr('required_parent', 'defined')
                 ->set_attr('required', false)
-                ->set_attr('pre_text', '<p>To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\'</p>')
-                ->set_attr('post_text', '<p class="defined_info"></p>')
+                ->set_attr('pre_text', node::create('p', [], 'To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\''))
+                ->set_attr('post_text', node::create('p.defined_info'))
         );
         parent::__construct($fields);
         $this->submit = 'Calculate';
-        $this->pre_text = '<p>Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below</p>';
-        $this->post_text = '<p>Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates.</p><p>On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.</p><div id="kml_calc"><div id="console"><a class="calc">Calculate!</a></div></div>';
+        $this->pre_text = node::create('p', [], 'Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below');
+        $this->post_text = node::create('p', [], 'Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates') . node::create('p', [], 'On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.') . node::create('div#kml_calc div#console a.calc', [], 'Calculate!');
         $this->has_submit = false;
         $this->id = 'igc_upload_form';
         $this->h2 = 'Upload Form';
@@ -40,7 +42,7 @@ class igc_upload_form extends form {
                 $track->id = time();
                 $this->create_track($track);
             } else {
-                \ajax::update('<div id="console">"Your browser has not sent the correct data to the server. Please upgrade your browser!</div>');
+                \ajax::update(node::create('div#console', [], 'Your browser has not sent the correct data to the server. Please upgrade your browser!'));
             }
         }
     }
@@ -57,9 +59,10 @@ class igc_upload_form extends form {
         }
         $track->pre_calc();
         if (!$track->check_date()) {
-            $track->error = "<p class='error'>Your flight is outside of the date range for submitting flights (31 days).<br/>
+            $track->error = node::create('p.error', [], 'Your flight is outside of the date range for submitting flights (31 days).<br/>
                     Please continue to enter the flight. It will not be visible until we clear it.<br/>
-                    Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.</p>";
+                    Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.'
+            );
         }
         $defined = false;
         if (!empty($this->coords)) {
@@ -80,47 +83,67 @@ class igc_upload_form extends form {
     }
 
     private function get_choose_track_html(\track $track) {
-        $html = '<ul>';
-        $i = 0;
-        /** @var \track_part $part */
-        foreach ($track->track_parts as $part) {
-            $i++;
-            $html .= '
-                <li>
-                    <span style="color:#' . \get::colour($i - 1) . '">Track ' . $i . ' : ' . $part->get_time() . '</span>
-                    <a data-ajax-click="igc_upload_form:do_choose_track" data-ajax-post=\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\' class="choose">Choose</a>
-                </li>';
-        }
-        $html .= '</ul>';
+        $html = node::create('ul', [],
+            $track->track_parts->iterate_return(
+                function (\track_point_array $part, $i) use ($track) {
+                    return node::create('li', [],
+                        node::create('span', ['style' => 'color:#' . \get::colour($i - 1)], 'Track ' . $i . ' : ' . $part->get_time()) .
+                        node::create('a.choose', ['data-ajax-click' => 'igc_upload_form:do_choose_track', 'data-ajax-post' => '\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\''], 'Choose')
+                    );
+                }
+            )
+        );
         return $html;
     }
 
     private function get_choose_score_html(\track $track, $start, $end, $defined) {
         $_SESSION['add_flight'][$track->id] = array('duration' => $track->get_duration(), 'start' => $start, 'end' => $end);
-        $html = '<table><thead><tr><th>Type</th><th>Base Score / Multiplier</th><th>Score</th><th></tr></thead><tbody>';
-        $html .= $this->get_task_select_html($track, 'od');
-        $html .= $this->get_task_select_html($track, 'or');
-        $html .= $this->get_task_select_html($track, 'tr');
-        $html .= $this->get_task_select_html($track, 'ft');
-        if ($defined) {
-            $_SESSION['add_flight'][$track->id]['task'] = array('type' => $track->task->type, 'distance' => $track->task->get_distance(), 'coords' => $track->task->get_coordinates(), 'duration' => $track->task->get_duration());
-            $html .= '<tr><td>' . $track->task->title . '</td><td> ' . $track->task->get_distance(3) . ' / ' . \flight_type::get_multiplier($track->task->ftid, date('Y'), true) . '</td><td> ' . $track->task->get_distance(3) * \flight_type::get_multiplier($track->task->ftid, date('Y'), true) . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"task"}\' class="choose">Choose</a></td></tr>';
-        }
-        $html .= '</tbody></table>';
+        $html = node::create('table', [],
+            node::create('thead tr', [],
+                node::create('th', [], 'Type') .
+                node::create('th', [], 'Base Score / Multiplier') .
+                node::create('th', [], 'Score')
+            ) .
+            node::create('tbody', [],
+                $this->get_task_select_html($track, 'od') .
+                $this->get_task_select_html($track, 'or') .
+                $this->get_task_select_html($track, 'tr') .
+                $this->get_task_select_html($track, 'ft') .
+                ($defined ? $this->get_defined_task_select_html($track) : '')
+            )
+        );
         return $html;
+    }
+
+    private function get_defined_task_select_html(\track $track) {
+        $_SESSION['add_flight'][$track->id]['task'] = [
+            'type' => $track->task->type,
+            'distance' => $track->task->get_distance(),
+            'coords' => $track->task->get_coordinates(),
+            'duration' => $track->task->get_duration()
+        ];
+        $multiplier = \flight_type::get_multiplier($track->task->ftid, date('Y'), true);
+        return node::create('tr', [],
+            node::create('td', [], $track->task->title) .
+            node::create('td', [], $track->task->get_distance(3) . ' / ' . number_format($multiplier)) .
+            node::create('td', [], $track->task->get_distance(3) * number_format($multiplier)) .
+            node::create('td a.score_select choose', ['data-post' => '\'{"track":' . $track->id . ',"type":"task"}\''], 'Choose')
+        );
     }
 
     private function get_task_select_html(\track $track, $type) {
         /** @var \task $task */
         $task = $track->$type;
         if (isset($task->waypoints)) {
-            $_SESSION['add_flight'][$track->id][$type] = array('distance' => $task->get_distance(), 'coords' => $task->get_session_coordinates(), 'duration' => $task->get_duration());
+            $_SESSION['add_flight'][$track->id][$type] = ['distance' => $task->get_distance(), 'coords' => $task->get_session_coordinates(), 'duration' => $task->get_duration()];
             $flight_type = new \flight_type();
-            $flight_type->do_retrieve(array('multi'), array('where' => 'fn=:fn', 'parameters' => array('fn' => $type)));
-            return '
-            <tr>
-                <td>' . $task->title . '</td><td> ' . $task->get_distance(3) . ' / ' . number_format($flight_type->multi) . '</td><td> ' . $task->get_distance(3) * $flight_type->multi . '</td><td><a class="score_select" data-post=\'{"track":' . $track->id . ',"type":"' . $type . '"}\' class="choose">Choose</a></td>
-            </tr>';
+            $flight_type->do_retrieve(['multi'], ['where' => 'fn=:fn', 'parameters' => ['fn' => $type]]);
+            return node::create('tr', [],
+                node::create('td', [], $task->title) .
+                node::create('td', [], $task->get_distance(3) . ' / ' . number_format($flight_type->multi)) .
+                node::create('td', [], $task->get_distance(3) * number_format($flight_type->multi)) .
+                node::create('td a.score_select choose', ['data-post' => '\'{"track":' . $track->id . ',"type":"' . $type . '"}\''], 'Choose')
+            );
         }
         return '';
     }
@@ -191,7 +214,7 @@ class igc_upload_form extends form {
         if (!isset($this->kml) || empty($this->kml)) {
             $script .= '$("#kml_calc").hide();';
         }
-        if (!isset($this->kml) || !$this->coords) {
+        if (!isset($this->coords) || !$this->coords) {
             $script .= '$("#add_flight_box .fieldset_1").hide();';
         }
         if (ajax) {

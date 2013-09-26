@@ -2,6 +2,9 @@
 namespace news;
 class controller extends \core_module {
 
+    /** @var  article */
+    public $current;
+
     public function __controller(array $path) {
         if (count($path) > 1) {
             $this->set_current($path[1]);

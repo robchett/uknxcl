@@ -34,7 +34,7 @@ class _cms_group_array extends \table_array {
      * @param array $input
      */
     public function __construct($input = array()) {
-        parent::__construct($input, 0, '_cms_group_iterator');
+        parent::__construct($input, 0, '\cms\_cms_group_iterator');
         $this->iterator = new _cms_group_iterator($input);
     }
 
