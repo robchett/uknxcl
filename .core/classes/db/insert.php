@@ -20,6 +20,7 @@ class insert extends query {
 
     public function add_value($field, $value) {
         $this->values[$field] = $value;
+        return $this;
     }
 
 }
