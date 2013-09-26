@@ -12,7 +12,7 @@ class update extends query {
     protected function get_values() {
         $sql = [];
         foreach ($this->values as $field => $value) {
-            $sql[] = $field . ' = :' . $field;
+            $sql[] = '`' . $field . '`=:' . $field;
             $this->parameters[$field] = $value;
         }
         return implode(', ', $sql);
