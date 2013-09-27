@@ -6,7 +6,8 @@ class insert extends query {
 
     public function execute() {
         $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_values();
-        return \db::query($query, $this->parameters);
+        \db::query($query, $this->parameters);
+        return \db::insert_id();
     }
 
     protected function get_values() {
