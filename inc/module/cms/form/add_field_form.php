@@ -1,10 +1,16 @@
 <?php
 namespace cms;
+
 use form\form;
 
+/**
+ * @property mixed field_name
+ */
 class add_field_form extends form {
 
     public $mid;
+    public $title;
+    public $type;
 
     public function __construct() {
         parent::__construct(array(
@@ -20,27 +26,23 @@ class add_field_form extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $module = \db::result('SELECT * FROM _cms_modules WHERE mid=:mid', array('mid' => $this->mid));
-            $field = new field_type();
-            $field->do_retrieve_from_id(array(), $this->type);
-            $type = 'field_' . $field->title;
+            $module = new _cms_modules([], $this->mid);
+            $field = new field_type([], $this->type);
+            $type = '\form\field_' . $field->title;
             /** @var \form\field $field_type */
             $field_type = new $type('');
             if ($inner = $field_type->get_database_create_query()) {
                 \db::query('ALTER TABLE ' . $module->table_name . ' ADD ' . $this->field_name . ' ' . $field_type->get_database_create_query(), array(), 1);
             }
             $res = \db::result('SELECT MAX(position) AS pos FROM _cms_fields WHERE mid=:mid', array('mid' => $this->mid));
-            \db::query('INSERT INTO _cms_fields SET title=:title, type=:type, field_name=:field_name, mid=:mid, `position`=:pos', array(
-                    'title' => $this->title,
-                    'field_name' => $this->field_name,
-                    'type' => $field->title,
-                    'mid' => $this->mid,
-                    'pos' => $res->pos + 1
-                )
-            );
-            $class = $module->table_name;
-            /** @var \table $obj */
-            $obj = new $class();
+            \db::insert('_cms_fields')
+                ->add_value('title', $this->title)
+                ->add_value('type', $field->title)
+                ->add_value('field_name', $this->field_name)
+                ->add_value('mid', $this->mid)
+                ->add_value('position', $res->pos + 1)
+                ->execute();
+            $obj = $module->get_class();
             $obj->mid = $this->mid;
             \ajax::update($obj->get_cms_edit_module()->get());
         }
