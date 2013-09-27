@@ -142,33 +142,19 @@ abstract class field extends node {
         $cols[] = node::create('td', [], $this->title);
         $cols[] = node::create('td', [], $this->field_name);
         $cols[] = node::create('td', [], get_class($this));
-        $list_options = [
-            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
-            'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"list"}',
-            'value' => 1,
-            'type' => 'checkbox'];
-        if ($this->list) {
-            $list_options['checked'] = 'checked';
+
+        $fields = ['list', 'required', 'filter'];
+        foreach ($fields as $field) {
+            $list_options = [
+                'data-ajax-change' => 'form\field_boolean:update_cms_setting',
+                'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"' . $field . '"}',
+                'value' => 1,
+                'type' => 'checkbox'];
+            if ($this->$field) {
+                $list_options['checked'] = 'checked';
+            }
+            $cols[] = node::create('td input#' . $this->fid . '_list', $list_options);
         }
-        $cols[] = node::create('td input#' . $this->fid . '_list', $list_options);
-        $required_options = [
-            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
-            'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"required"}',
-            'value' => 1,
-            'type' => 'checkbox'];
-        if ($this->required) {
-            $required_options['checked'] = 'checked';
-        }
-        $cols[] = node::create('td input#' . $this->fid . '_required', $required_options);
-        $filter_options = [
-            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
-            'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"filter"}',
-            'value' => 1,
-            'type' => 'checkbox'];
-        if ($this->filter) {
-            $filter_options['checked'] = 'checked';
-        }
-        $cols[] = node::create('td input#' . $this->fid . '_filter', $filter_options);
         return $cols;
     }
 
