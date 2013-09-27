@@ -22,9 +22,9 @@ class controller extends \core_module {
      */
     public $mid;
     /**
-     * @var int
+     * @var _cms_modules
      */
-    public $module = 0;
+    public $module;
     /**
      * @var int
      */
@@ -69,10 +69,7 @@ class controller extends \core_module {
                 $this->set_from_mid($path[2]);
                 $this->npp = isset($_SESSION['cms'][$this->module->table_name]['npp']) && !empty($_SESSION['cms'][$this->module->table_name]['npp']) ? $_SESSION['cms'][$this->module->table_name]['npp'] : 25;
                 $this->page = isset($path[4]) ? $path[4] : 1;
-
-                $class = $this->module->namespace . '\\' . $this->module->table_name;
-                $this->current_class = new $class;
-
+                $this->current_class = $this->module->get_class();
                 $this->where = array();
                 foreach ($this->current_class->get_fields() as $field) {
                     if (isset($_SESSION['cms'][$this->module->table_name][$field->field_name]) && $_SESSION['cms'][$this->module->table_name][$field->field_name]) {
@@ -177,7 +174,7 @@ class controller extends \core_module {
      */
     public function get_inner() {
         /** @var \table_array $class */
-        $class = $this->module->namespace . '\\' . $this->module->table_name;
+        $class = $this->module->get_class_name();
         $sres = $class::get_all([], array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp, 'where_equals' => $this->where));
 
         $html = node::create('div#inner', [], $this->get_list($class, $sres));
@@ -306,10 +303,8 @@ class controller extends \core_module {
      */
     public function set_from_mid($mid) {
         $this->mid = $mid;
-        $this->module = \db::result('SELECT * FROM _cms_modules WHERE mid =:mid', array('mid' => $this->mid));
-        $class = $this->module->namespace . '\\' . $this->module->table_name;
-
-        $this->current = new $class();
+        $this->module = new _cms_modules([], $this->mid);
+        $this->current = $this->module->get_class();
         $this->current->mid = $this->mid;
     }
 
