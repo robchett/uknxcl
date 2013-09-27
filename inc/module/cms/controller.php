@@ -114,33 +114,35 @@ class controller extends \core_module {
     public function do_reorder_fields() {
         if (isset($_REQUEST['mid']) && isset($_REQUEST['fid'])) {
             $this->set_from_mid($_REQUEST['mid']);
-            $res = \db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position`', array('mid' => $_REQUEST['mid']));
-            $fields = \db::fetch_all($res);
+            $fields = _cms_fields::get_all([], ['where_equals' => ['mid' => $_REQUEST['mid']]]);
             $reverse = false;
             if (isset($_REQUEST['dir']) && $_REQUEST['dir'] == 'down') {
                 $reverse = true;
-                $fields = array_reverse($fields);
+                $fields->reverse();
             }
             $cnt = $reverse ? count($fields) + 1 : 0;
-            $previous = null;
-            foreach ($fields as $field) {
-                $cnt += $reverse ? -1 : 1;
-                $field->new_pos = $cnt;
-                if ($field->fid == $_REQUEST['fid']) {
-                    $field->new_pos = $previous->new_pos;
-                    $previous->new_pos = $cnt;
+            /** @var _cms_fields $previous */
+            $previous = $fields[0];
+            $fields->iterate(function (_cms_fields $field) use (&$previous, $reverse, &$cnt) {
+                    $cnt += $reverse ? -1 : 1;
+                    $field->position = $cnt;
+                    if ($field->fid == $_REQUEST['fid']) {
+                        $field->position = $previous->position;
+                        $previous->position = $cnt;
+                    }
+                    $previous = $field;
                 }
-                $previous = $field;
-            }
+            );
             if ($reverse) {
-                $fields = array_reverse($fields);
+                $fields->reverse();
             }
-
-            foreach ($fields as $field) {
-                if ($field->new_pos != $field->position) {
-                    \db::update('_cms_fields')->add_value('position', $field->new_pos)->filter_field('fid', $field->fid)->execute();
+            $fields->uasort(function (_cms_fields $a, _cms_fields $b) {
+                    return $b->position - $a->position;
                 }
-            }
+            );
+            $fields->iterate(function (_cms_fields $field) {
+                \db::update('_cms_fields')->add_value('position', $field->position)->filter_field('fid', $field->fid)->execute();
+            });
             \ajax::update($this->current->get_cms_edit_module()->get());
         }
     }
