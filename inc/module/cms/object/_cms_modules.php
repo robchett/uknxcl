@@ -2,6 +2,7 @@
 namespace cms;
 class _cms_modules extends \table { use \table_trait;
 
+    public $namespace;
     public $primary_key;
     public $table_key = 'mid';
     public static $module_id = 20;
@@ -15,6 +16,16 @@ class _cms_modules extends \table { use \table_trait;
      */
     public static function get_all(array $fields, array $options = array()) {
         return _cms_modules_array::get_all($fields, $options);
+    }
+
+    public function get_class_name() {
+        return $this->namespace . '\\' . $this->table_name;
+    }
+
+    /** @return \table */
+    public function get_class() {
+        $class = $this->get_class_name();
+        return new $class();
     }
 
     /**
