@@ -29,6 +29,10 @@ class db implements interfaces\database_interface {
         return new db\select($table_name);
     }
 
+    public static function insert($table_name) {
+        return new db\insert($table_name);
+    }
+
     public static function update($table_name) {
         return new db\update($table_name);
     }
