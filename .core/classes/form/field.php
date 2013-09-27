@@ -136,7 +136,7 @@ abstract class field extends node {
         $cols = array();
         $cols[] = node::create('td', [], $this->fid);
         $cols[] = node::create('td', [],
-            node::create('a.up.reorder', ['data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"up"}'], 'Up'),
+            node::create('a.up.reorder', ['data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"up"}'], 'Up') .
             node::create('a.down.reorder', ['data-ajax-click' => 'cms:do_reorder_fields', 'data-ajax-post' => '{"mid":' . $this->parent_form->mid . ',"fid":' . $this->fid . ',"dir":"down"}'], 'Down')
         );
         $cols[] = node::create('td', [], $this->title);

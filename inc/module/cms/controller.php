@@ -138,7 +138,7 @@ class controller extends \core_module {
 
             foreach ($fields as $field) {
                 if ($field->new_pos != $field->position) {
-                    \db::query('UPDATE _cms_fields SET `position`=:position WHERE fid=:fid', array('position' => $field->new_pos, 'fid' => $field->fid));
+                    \db::update('_cms_fields')->add_value('position', $field->new_pos)->filter_field('fid', $field->fid)->execute();
                 }
             }
             \ajax::update($this->current->get_cms_edit_module()->get());
