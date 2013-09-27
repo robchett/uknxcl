@@ -143,7 +143,7 @@ abstract class field extends node {
         $cols[] = node::create('td', [], $this->field_name);
         $cols[] = node::create('td', [], get_class($this));
         $list_options = [
-            'data-ajax-change' => 'field_boolean:update_cms_setting',
+            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"list"}',
             'value' => 1,
             'type' => 'checkbox'];
@@ -152,7 +152,7 @@ abstract class field extends node {
         }
         $cols[] = node::create('td input#' . $this->fid . '_list', $list_options);
         $required_options = [
-            'data-ajax-change' => 'field_boolean:update_cms_setting',
+            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"required"}',
             'value' => 1,
             'type' => 'checkbox'];
@@ -161,7 +161,7 @@ abstract class field extends node {
         }
         $cols[] = node::create('td input#' . $this->fid . '_required', $required_options);
         $filter_options = [
-            'data-ajax-change' => 'field_boolean:update_cms_setting',
+            'data-ajax-change' => 'form\field_boolean:update_cms_setting',
             'data-ajax-post' => '{"fid":' . $this->fid . ', "field":"filter"}',
             'value' => 1,
             'type' => 'checkbox'];
@@ -174,11 +174,7 @@ abstract class field extends node {
 
     public function update_cms_setting() {
         if (admin) {
-            \db::query('UPDATE _cms_fields SET ' . $_REQUEST['field'] . '=:value WHERE fid=:fid', array(
-                    'value' => $_REQUEST['value'],
-                    'fid' => $_REQUEST['fid'],
-                )
-            );
+            \db::update('_cms_fields')->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field('fid', $_REQUEST['fid'])->execute();
         }
         return 1;
     }
