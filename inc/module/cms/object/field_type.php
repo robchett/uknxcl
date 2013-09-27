@@ -5,6 +5,7 @@ class field_type extends \table {
 
     public $table_key = 'ftid';
     public static $module_id = 16;
+    public $title;
 
     /**
      * @param array $fields
