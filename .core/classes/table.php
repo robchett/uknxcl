@@ -18,6 +18,7 @@ abstract class table {
      * @var bool
      */
     public $raw = false;
+    public $position;
 
     /**
      * @param array $fields
@@ -428,6 +429,10 @@ class table_array extends ArrayObject {
         }
         $return->reset_iterator();
         return $return;
+    }
+
+    public function reverse() {
+        $this->exchangeArray(array_reverse($this->getArrayCopy()));
     }
 
     /**
