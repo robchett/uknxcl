@@ -1,5 +1,6 @@
 <?php
 namespace cms;
+
 use form\field_string;
 use form\form;
 
@@ -37,24 +38,26 @@ class new_module_form extends form {
             PRIMARY KEY (`' . $this->primary_key . '`)
             ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;'
             );
-            \db::query('INSERT INTO _cms_modules SET gid=:gid, primary_key=:pkey, title=:title, `table_name`=:tname, live=1, deleted=0', array(
-                    'gid' => $this->gid,
-                    'pkey' => $this->primary_key,
-                    'title' => $this->title,
-                    'tname' => $this->table_name,
-                )
-            );
-            $mid = \db::insert_id();
-            \db::query('INSERT INTO _cms_fields SET field_name=:field_name, title=\'ID\', `type`=\'int\', mid=:mid, list=0,required=0', array(
-                    'mid' => $mid,
-                    'field_name' => $this->primary_key
-                )
-            );
-            \db::query('INSERT INTO _cms_fields SET field_name=:field_name, title=\'Parent ID\', `type`=\'int\', mid=:mid, list=0,required=0', array(
-                    'mid' => $mid,
-                    'field_name' => 'parent_' . $this->primary_key
-                )
-            );
+            $mid = \db::insert('_cms_modules')
+                ->add_value('gid', $this->gid)
+                ->add_value('pkey', $this->primary_key)
+                ->add_value('title', $this->title)
+                ->add_value('tname', $this->table_name)
+                ->execute();
+            $id_field = \db::insert('_cms_fields')
+                ->add_value('field_name', $this->primary_key)
+                ->add_value('title', 'ID')
+                ->add_value('type', 'int')
+                ->add_value('mid', $mid)
+                ->execute();
+            \db::insert('_cms_fields')
+                ->add_value('field_name', $this->primary_key)
+                ->add_value('title', 'Parent ID')
+                ->add_value('type', 'link')
+                ->add_value('mid', $mid)
+                ->add_value('link_module', $mid)
+                ->add_value('link_field', $id_field)
+                ->execute();
         }
         \ajax::add_script('window.location = window.location');
     }
