@@ -5,7 +5,7 @@ class insert extends query {
     protected $values = [];
 
     public function execute() {
-        $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_values();
+        $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_values();
         return \db::query($query, $this->parameters);
     }
 
