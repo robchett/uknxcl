@@ -2,6 +2,7 @@
 namespace cms;
 class _cms_fields extends \table {
     public $fid;
+    public $field_name;
     public $table_key = '';
     public static $module_id = '';
 
