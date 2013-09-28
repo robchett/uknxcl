@@ -476,7 +476,10 @@ class comp extends \table {
                         mkdir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key});
                     }
                     move_uploaded_file($tmp_name, root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip');
-                    \db::query('UPDATE comp SET file=:file WHERE cid=:cid', array('file' => '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip', 'cid' => $this->cid));
+                    \db::update('comp')
+                        ->add_value('file', '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip')
+                        ->filter_field('cid', $this->cid)
+                        ->execute();
                 }
             }
         } else {
