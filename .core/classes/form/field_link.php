@@ -15,7 +15,7 @@ class field_link extends field {
 
     public function  get_cms_list_wrapper($value, $object_class, $id) {
         $class = (is_numeric($this->link_module) ? \core::get_class_from_mid($this->link_module) : $this->link_module);
-        $field_name = (is_numeric($this->link_field) ? \core::get_field_from_fid($this->link_field) : $this->link_field);
+        $field_name = (is_numeric($this->link_field) ? \core::get_field_from_fid($this->link_field)->field_name : $this->link_field);
         $object = new $class();
         /** @var \table $object */
         $object->do_retrieve_from_id(array($field_name, $object->table_key), $value);
@@ -44,7 +44,7 @@ class field_link extends field {
         /** @var $object \table */
         $obj = new $class();
         if (is_numeric($this->link_field)) {
-            $this->link_field = \core::get_field_from_fid($this->link_field);
+            $this->link_field = \core::get_field_from_fid($this->link_field)->field_name;
         }
         if (is_array($this->link_field)) {
             $fields = $this->link_field;

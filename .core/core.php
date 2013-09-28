@@ -19,6 +19,9 @@ class core {
     /** @var \pages\page */
     public $page;
 
+    /**
+     *
+     */
     public function __construct() {
         self::$page_config = new page_config();
         self::$singleton = $this;
@@ -62,6 +65,9 @@ class core {
         $this->load_page();
     }
 
+    /**
+     *
+     */
     public function load_page() {
         if (isset($this->path[0])) {
             if (!is_numeric($this->path[0])) {
@@ -93,6 +99,9 @@ class core {
         }
     }
 
+    /**
+     *
+     */
     public function set_page_from_path() {
         $this->page = new \pages\page();
         if (is_numeric($this->path[0])) {
@@ -104,11 +113,17 @@ class core {
 
     }
 
+    /**
+     * @param $uri
+     */
     public function set_path($uri) {
         $uri_no_qs = parse_url($uri, PHP_URL_PATH);
         $this->path = explode('/', trim($uri_no_qs, '/'));
     }
 
+    /**
+     * @return string
+     */
     public static function get_backtrace() {
         $trace = debug_backtrace();
         array_reverse($trace);
@@ -125,18 +140,26 @@ class core {
         return $html;
     }
 
+    /**
+     * @param $mid
+     * @return string
+     */
     public static function get_class_from_mid($mid) {
-        $res = \db::select('_cms_modules')->retrieve(['table_name','namespace'])->filter('mid=:mid', ['mid'=>$mid])->execute();
-        $row = \db::fetch($res);
-        return $row->namespace . '\\' . $row->table_name;
+        $module = new cms\_cms_modules(['namespace', 'table_name'], $mid);
+        return $module->get_class_name();
     }
 
+    /**
+     * @param $fid
+     * @return \cms\_cms_fields
+     */
     public static function get_field_from_fid($fid) {
-        $res = \db::query('SELECT field_name FROM _cms_fields WHERE fid=:fid', array('fid' => $fid));
-        $row = \db::fetch($res);
-        return $row->field_name;
+        return new cms\_cms_fields([], $fid);
     }
 
+    /**
+     * @return string
+     */
     public function get_js() {
         $script = '';
         $inner = '';
@@ -151,6 +174,9 @@ class core {
         return $script;
     }
 
+    /**
+     * @return string
+     */
     public function get_css() {
         $html = '';
 
