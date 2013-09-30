@@ -143,7 +143,7 @@ class get {
             "1F00DF",
             "0F00EF",
             "0000FF");
-        return $colour[$i];
+        return $colour[$i % 16];
     }
 
     static function kml_colour($i) {
