@@ -10,6 +10,8 @@ abstract class query {
     protected $order = [];
     protected $groupings;
     protected $limit;
+    public $retrieve_unlive = false;
+    public $retrieve_deleted = false;
 
     public function __construct($table) {
         $this->table = $table;
@@ -102,6 +104,12 @@ abstract class query {
     }
 
     protected function get_filters() {
+        if(!$this->retrieve_unlive) {
+            $this->filters['live'] = 1;
+        }
+        if(!$this->retrieve_deleted) {
+            $this->filters['deleted'] = 1;
+        }
         if ($this->filters) {
             return ' WHERE ' . implode(' AND ', $this->filters);
         }

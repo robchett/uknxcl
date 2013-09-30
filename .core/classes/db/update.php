@@ -3,6 +3,9 @@ namespace db;
 class update extends query {
 
     protected $values = [];
+    public $retrieve_unlive = true;
+    public $retrieve_deleted = true;
+
 
     public function execute() {
         $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_values() . $this->get_filters();
