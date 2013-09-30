@@ -37,6 +37,12 @@ class db implements interfaces\database_interface {
         return new db\update($table_name);
     }
 
+    public static function count($table_name, $primary_key = '*') {
+        $count = new db\count($table_name);
+        $count->add_field_to_retrieve($primary_key);
+        return $count;
+    }
+
     /**
      * @param $host
      * @param $db
