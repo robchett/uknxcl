@@ -5,6 +5,8 @@
 namespace cms;
 class _cms_group extends \table { use \table_trait;
 
+    public $gid;
+
     /**
      * @var string
      */
@@ -13,6 +15,7 @@ class _cms_group extends \table { use \table_trait;
      * @var int
      */
     public static $module_id = 19;
+    public $title;
 
 
     /**

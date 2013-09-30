@@ -34,7 +34,7 @@ class add_field_form extends form {
             if ($inner = $field_type->get_database_create_query()) {
                 \db::query('ALTER TABLE ' . $module->table_name . ' ADD ' . $this->field_name . ' ' . $field_type->get_database_create_query(), array(), 1);
             }
-            $res = \db::result('SELECT MAX(position) AS pos FROM _cms_fields WHERE mid=:mid', array('mid' => $this->mid));
+            $res = \db::select('_cms_fields')->retrieve('MAX(position) AS pos')->filter_field('mid', $this->mid)->execute()->fetchObject();
             \db::insert('_cms_fields')
                 ->add_value('title', $this->title)
                 ->add_value('type', $field->title)

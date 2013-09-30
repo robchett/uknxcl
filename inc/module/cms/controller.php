@@ -141,8 +141,9 @@ class controller extends \core_module {
                 }
             );
             $fields->iterate(function (_cms_fields $field) {
-                \db::update('_cms_fields')->add_value('position', $field->position)->filter_field('fid', $field->fid)->execute();
-            });
+                    \db::update('_cms_fields')->add_value('position', $field->position)->filter_field('fid', $field->fid)->execute();
+                }
+            );
             \ajax::update($this->current->get_cms_edit_module()->get());
         }
     }
@@ -206,20 +207,24 @@ class controller extends \core_module {
      * @return string
      */
     function get_main_nav() {
-        $res = \db::query('SELECT * FROM _cms_group WHERE live = 1 AND deleted = 0');
-        $html = node::create('ul#nav');
-        while ($row = \db::fetch($res)) {
-            $sub = node::create('ul');
-            $sres = \db::query('SELECT * FROM _cms_modules WHERE live = 1 AND deleted = 0 AND gid = ' . $row->gid);
-            while ($srow = \db::fetch($sres)) {
-                $sub->add_child(node::create('li span a', ['href' => '/cms/module/' . $srow->mid], $srow->title));
-            }
-            $html->add_child(node::create('li', [],
-                    node::create('span', [], $row->title) .
-                    $sub
-                )
-            );
-        }
+        $groups = _cms_group::get_all([]);
+        $html = node::create('ul#nav', [],
+            $groups->iterate_return(
+                function (_cms_group $row) {
+                    $modules = _cms_modules::get_all([], ['where_equals' => ['gid' => $row->gid]]);
+                    return node::create('li', [],
+                        node::create('span', [], $row->title) .
+                        node::create('ul', [],
+                            $modules->iterate_return(
+                                function (_cms_modules $srow) {
+                                    return node::create('li span a', ['href' => '/cms/module/' . $srow->mid], $srow->title);
+                                }
+                            )
+                        )
+                    );
+                }
+            )
+        );
         if (isset($this->mid)) {
             $html->nest(node::create('li.right a', ['href' => '/cms/admin_edit/' . $this->mid, 'title' => 'Edit ' . get_class($this->current)], 'Edit Module'));
             $html->nest(node::create('li.right a', ['href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)], 'Add new ' . get_class($this->current)));

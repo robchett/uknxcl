@@ -47,7 +47,7 @@ abstract class table {
      * @param $id
      */
     public function do_retrieve_from_id(array $fields, $id) {
-        $this->do_retrieve($fields, array('limit' => '1', 'where_equals' => array($this->table_key => $id)));
+        $this->do_retrieve($fields, array('limit' => '1', 'where_equals' => [$this->table_key => $id]));
     }
 
     /**
@@ -66,8 +66,7 @@ abstract class table {
     public static function get_count() {
         $class = get_called_class();
         $return = new $class();
-        $sql = 'SELECT count(' . $return->table_key . ') AS count FROM ' . $class . ' WHERE live = 1 and deleted = 0';
-        $res = \db::result($sql);
+        $res = \db::count($class, $return->table_key)->execute();
         return $res->count;
     }
 
@@ -292,17 +291,18 @@ abstract class table {
      *
      */
     public static function _set_fields() {
-        $fields = array();
-        $res = \db::query('SELECT * FROM _cms_fields WHERE mid=:mid ORDER BY `position` ASC', array('mid' => static::$module_id,));
-        while ($row = \db::fetch($res)) {
-            $class = 'form\field_' . $row->type;
-            /** @var form\field $field */
-            $field = new $class($row->field_name, array());
-            $field->label = $row->title;
-            $field->set_from_row($row);
-            $fields[$row->field_name] = $field;
-        }
-        static::$fields = $fields;
+        $final_fields = [];
+        $fields = cms\_cms_fields::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
+        $fields->iterate(function (cms\_cms_fields $row) use (&$final_fields) {
+                $class = 'form\field_' . $row->type;
+                /** @var form\field $field */
+                $field = new $class($row->field_name, array());
+                $field->label = $row->title;
+                $field->set_from_row($row);
+                $final_fields[$row->field_name] = $field;
+            }
+        );
+        static::$fields = $final_fields;
     }
 
     /**
