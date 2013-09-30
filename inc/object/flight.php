@@ -170,19 +170,38 @@ flight extends table {
     /**
      *
      */
-    public function get_statistics() {
-        $year_stats = array();
+    public static function get_statistics() {
+        $year_stats = [];
         foreach (range(1991, 2013) as $key => $year) {
-            $months = array();
+            $year_object = new stdClass();
+            $year_object->coords = [];
+            $year_object->minEle = $year_object->min_cr = $year_object->maximum_cr = $year_object->maxEle = 0;
+            $year_object->min_cr = 0;
+            $year_object->drawGraph = true;
+            $year_object->colour = get::js_colour($year);
             foreach (range(1, 12) as $key2 => $month) {
-                $score = \db::result('SELECT sum(score) AS score FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->score;
-                $tot = \db::result('SELECT count(fid) AS count FROM flight WHERE YEAR(date) = :year AND MONTH(date) = :month', array('year' => $year, 'month' => $month))->count;
-                $months[$key2] = array($score, $tot);
+                $score = \db::select('flight')
+                    ->retrieve('sum(score) AS score')
+                    ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
+                    ->execute()
+                    ->fetchObject()
+                    ->score;
+                $tot = \db::count('flight', 'fid')
+                    ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
+                    ->execute();
+                $year_object->coords[] = [0, 0, $tot, $month, $score];
+                $year_object->maxEle = max($year_object->maxEle, $tot);
+                $year_object->maximum_cr = max($year_object->maximum_cr, $score);
             }
-            $year_stats[$key] = $months;
+            $year_stats[] = $year_object;
         }
-        echo json_encode($year_stats);
-        die();
+        $wrapper = new stdClass();
+        $inner = new stdClass();
+        $inner->track = $year_stats;
+        $inner->StartT = 1;
+        $inner->EndT = 12;
+        $wrapper->nxcl_data = $inner;
+        return json_encode($wrapper);
     }
 
     /**
