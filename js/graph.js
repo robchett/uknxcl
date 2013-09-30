@@ -1,7 +1,8 @@
-function Graph($container) {
+function Graph($container, height) {
     var ths = this;
+    height = height || 200;
     this.$container = $container;
-    this.$container.html("<a style='position:absolute;left:60px;z-index:1000000'>" + '<input type="radio" name="graph_type" data-type="1" checked>Height</input>' + '<input type="radio" name="graph_type" data-type="2">Climb</input>' + '<input type="radio" name="graph_type" data-type="3">Speed</input></a>' + "<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='200'></canvas>");
+    this.$container.html("<a style='position:absolute;left:60px;z-index:1000000'>" + '<input type="radio" name="graph_type" data-type="1" checked>Height</input>' + '<input type="radio" name="graph_type" data-type="2">Climb</input>' + '<input type="radio" name="graph_type" data-type="3">Speed</input></a>' + "<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + height + "'></canvas>");
     this.a_canvas = $('#graph_a_canvas');
     this.width = this.$container.width();
     this.height = this.$container.height();
@@ -51,11 +52,11 @@ function Graph($container) {
         var min = 10000000;
         this.obj.nxcl_data.track.each(function (track) {
             if (track.drawGraph) {
-                if (track[max_value] > max) {
-                    max = track[max_value];
+                if (parseFloat(track[max_value]) > max) {
+                    max = parseFloat(track[max_value]);
                 }
-                if (track[min_value] < min) {
-                    min = track[min_value];
+                if (parseFloat(track[min_value]) < min) {
+                    min = parseFloat(track[min_value]);
                 }
             }
         });
