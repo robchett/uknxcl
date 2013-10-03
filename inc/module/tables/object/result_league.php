@@ -1,14 +1,17 @@
 <?php
-namespace tables;
+namespace module\tables\object;
 
+use classes\table_array;
 use html\node;
+use object\pilot;
 
 class result_league extends result {
+
     function make_table(league_table $data) {
-        $array = new \pilot_array();
-        /* @var \flight $t */
+        $array = new table_array();
+        /* @var \object\flight $t */
         foreach ($data->flights as $t) {
-            /** @var \pilot $class */
+            /** @var pilot $class */
             if ($data->options->split_classes && $t->class == 5) {
                 $t->ClassID += 8000;
             }
@@ -22,7 +25,7 @@ class result_league extends result {
             }
         }
         if (count($array) > 0) {
-            $array->uasort(['tables\league_table', 'cmp']);
+            $array->uasort(['\module\tables\object\league_table', 'cmp']);
             $class1 = 1;
             $class5 = 1;
             $html = node::create('div.table_wrapper', [],
@@ -31,7 +34,7 @@ class result_league extends result {
                 node::create('table.results.main', ['style' => 'width:700px'],
                     $data->write_table_header($data->max_flights, $data->class_primary_key) .
                     $array->iterate_return(
-                        function (\pilot $pilot) use (&$class1, &$class5) {
+                        function (pilot $pilot) use (&$class1, &$class5) {
                             if ($pilot->class == 1) {
                                 return $pilot->output($class1++, 0);
                             } else {

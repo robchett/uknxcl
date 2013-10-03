@@ -1,9 +1,12 @@
 <?php
-namespace news;
+namespace module\news\view;
 
+use classes\view;
 use html\node;
+use module\news\object\article;
 
-class _default_view extends \view {
+class _default extends view {
+
     public function get_view() {
         $articles = article::get_all(array('aid', 'date', 'title', 'poster', 'post', 'snippet',), array('order' => 'date DESC', 'where' => 'parent_aid=0'));
         $html = node::create('div#list_wrapper', [],

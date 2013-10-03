@@ -1,5 +1,6 @@
 <?php
-namespace tables;
+namespace module\tables\object;
+
 class league_table_options {
 
     /** @var league_table */

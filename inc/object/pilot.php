@@ -1,5 +1,14 @@
 <?php
+
+namespace object;
+
+use classes\ajax;
+use core\classes\table;
+use form\form;
+use traits\table_trait;
+
 class pilot extends table {
+
     use table_trait;
 
     public static $module_id = 3;
@@ -8,6 +17,7 @@ class pilot extends table {
     public $club;
     public $email;
     public $flights = array();
+    public $gender;
     public $glider;
     public $id;
     public $max_flights;
@@ -15,6 +25,7 @@ class pilot extends table {
     public $number_of_flights = 0;
     public $output_function = 'table';
     public $pid;
+    public $rating;
     public $score = 0;
     public $table_key = 'pid';
     public $total = 0;
@@ -27,14 +38,6 @@ class pilot extends table {
             array('field_string', 'email')
         );*/
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return pilot_array
-     */
-    public static function get_all($fields = array(), $options = array()) {
-        return pilot_array::get_all($fields, $options);
-    }
 
     /**
      * @param flight $flight
@@ -52,12 +55,12 @@ class pilot extends table {
      *
      */
     public function do_update_selector() {
-        $field = form\form::create('field_link', 'pid')
-            ->set_attr('link_module', 'pilot')
+        $field = form::create('field_link', 'pid')
+            ->set_attr('link_module', '\\object\\pilot')
             ->set_attr('link_field', 'name')
             ->set_attr('options', array('order' => 'name'));
         $field->parent_form = $this;
-        \ajax::update($field->get_html());
+        ajax::update($field->get_html());
     }
 
     /**
@@ -119,27 +122,6 @@ class pilot extends table {
             $this->class = 1;
         $this->id = $flight->ClassID;
         $this->name = $flight->p_name;
-    }
-}
-
-/**
- * Class pilot_array
- */
-class pilot_array extends table_array {
-    /* @return pilot */
-    public function next() {
-        return parent::next();
-    }
-}
-
-/**
- * Class pilot_iterator
- */
-class pilot_iterator extends table_iterator {
-
-    /* @return pilot */
-    public function key() {
-        return parent::key();
     }
 }
 

@@ -1,17 +1,22 @@
 <?php
-namespace flight_info;
-class controller extends \core_module {
+namespace module\flight_info;
 
-    /** @var \flight current */
+use classes\get;
+use classes\module;
+use object\flight;
+
+class controller extends module {
+
+    /** @var \object\flight current */
     public $current;
 
     public function __controller(array $path) {
         if (isset($path[1])) {
             $this->view = 'flight';
-            $this->current = new \flight();
-            $this->current->do_retrieve(\flight::$default_fields, array('where_equals' => array('fid' => $path[1]), 'join' => \flight::$default_joins));
+            $this->current = new flight();
+            $this->current->do_retrieve(flight::$default_fields, array('where_equals' => array('fid' => $path[1]), 'join' => flight::$default_joins));
             if (!$this->current->fid) {
-                \get::header_redirect('/flight_info');
+                get::header_redirect('/flight_info');
             }
         }
         parent::__controller($path);

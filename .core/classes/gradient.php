@@ -1,4 +1,7 @@
 <?php
+
+namespace core\classes;
+
 class gradient {
 
     /** @var table_array */
@@ -9,7 +12,7 @@ class gradient {
     }
 
     public function create_default_heat_map_gradient() {
-        $this->color = new table_array();
+        $this->color = new \classes\table_array();
         $this->color[] = new ColorPoint(1, 0, 0, 0.0); // blue
         $this->color[] = new ColorPoint(1, 1, 0, 0.25); // cyan
         $this->color[] = new ColorPoint(0, 1, 0, 0.5); // green
@@ -18,7 +21,7 @@ class gradient {
     }
 
     public function get_color_at_value($value) {
-        if (count($this->color) == 0){
+        if (count($this->color) == 0) {
             return '';
         }
 
@@ -47,6 +50,7 @@ class gradient {
 }
 
 class  ColorPoint {
+
     public $r, $g, $b, $val;
 
     public function __construct($red, $green, $blue, $value) {

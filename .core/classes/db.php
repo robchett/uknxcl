@@ -1,11 +1,18 @@
 <?php
+
+namespace core\classes;
+
+use classes\ajax;
+use classes\get;
+use db\count as _count;
+use db\insert as _insert;
+use db\select as _select;
+use db\update as _update;
 use html\node;
 
-/**
- * Class db
- */
-class db implements interfaces\database_interface {
-    /** @var PDO */
+abstract class db implements interfaces\database_interface {
+
+    /** @var \PDO */
     public static $con;
     /**
      * @var
@@ -26,19 +33,19 @@ class db implements interfaces\database_interface {
     );
 
     public static function select($table_name) {
-        return new db\select($table_name);
+        return new _select($table_name);
     }
 
     public static function insert($table_name) {
-        return new db\insert($table_name);
+        return new _insert($table_name);
     }
 
     public static function update($table_name) {
-        return new db\update($table_name);
+        return new _update($table_name);
     }
 
     public static function count($table_name, $primary_key = '*') {
-        $count = new db\count($table_name);
+        $count = new _count($table_name);
         $count->add_field_to_retrieve($primary_key);
         return $count;
     }
@@ -53,8 +60,8 @@ class db implements interfaces\database_interface {
      */
     public static function connect($host, $db, $username, $password, $name = 'default') {
         try {
-            $var = new PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
-        } catch (MemcachedException $e) {
+            $var = new \PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
+        } catch (\MemcachedException $e) {
             die('Could not connect to database, please try again shortly...');
         }
         self::$con_arr[$name] = array(
@@ -69,7 +76,7 @@ class db implements interfaces\database_interface {
         );
         self::$con_name = $name;
         self::$con = self::$con_arr[$name]['connection'];
-        self::$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        self::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     /**
@@ -96,13 +103,13 @@ class db implements interfaces\database_interface {
     }
 
     /**
-     * @param PDOStatement $res
+     * @param \PDOStatement $res
      * @param string $class
      * @return mixed
      */
     public static function fetch_all($res, $class = 'stdClass') {
         if ($class != null) {
-            return $res->fetchAll(PDO::FETCH_OBJ);
+            return $res->fetchAll(\PDO::FETCH_OBJ);
         } else {
             return $res->fetchAll();
         }
@@ -178,7 +185,7 @@ class db implements interfaces\database_interface {
     }
 
     /**
-     * @param PDOStatement $res
+     * @param \PDOStatement $res
      * @return int
      */
     public static function num($res) {
@@ -187,7 +194,7 @@ class db implements interfaces\database_interface {
 
     /**
      * @param $sql
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     private static function prepare($sql) {
         return self::$con->prepare($sql);
@@ -218,7 +225,7 @@ class db implements interfaces\database_interface {
      * @param $sql
      * @param array $params
      * @param bool $throwable
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     static function query($sql, $params = array(), $throwable = false) {
         // Attempt to reconnect if connection has gone away.
@@ -233,11 +240,11 @@ class db implements interfaces\database_interface {
         }
         try {
             $prep_sql->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $error = node::create('div.error_message.mysql', [],
                 node::create('p', [],
                     $e->getMessage() .
-                    core::get_backtrace() .
+                    \core::get_backtrace() .
                     print_r((isset($prep_sql->queryString) ? $prep_sql->queryString : ''), 1) . print_r($params, true)
                 )
             );
@@ -259,7 +266,7 @@ class db implements interfaces\database_interface {
     }
 
     /**
-     * @param PDOStatement $res
+     * @param \PDOStatement $res
      * @param string $class
      * @return mixed
      */
@@ -290,7 +297,7 @@ class db implements interfaces\database_interface {
      */
     public static function table_exists($table) {
         $res = self::query('show tables like "test1"');
-        return \db::num($res);
+        return db::num($res);
     }
 
     /**
@@ -300,7 +307,7 @@ class db implements interfaces\database_interface {
      */
     public static function column_exists($table, $column) {
         $res = self::query("SHOW COLUMNS FROM `table` LIKE 'fieldname'");
-        return \db::num($res);
+        return db::num($res);
     }
 
     public static function create_table($table_name, $fields = array(), $settings = array()) {

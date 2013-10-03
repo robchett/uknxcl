@@ -1,9 +1,14 @@
 <?php
-namespace comps;
+namespace module\comps\view;
 
+use classes\ajax;
+use classes\view;
 use html\node;
 
-class comp_view extends \view {
+class comp extends view {
+
+    /** @vat \module\comps\controller */
+    public $module;
 
     /** @return \html\node */
     public function get_view() {
@@ -21,7 +26,7 @@ class comp_view extends \view {
                 map.add_comp(" . $this->module->current->cid . ");
             }; ";
         } else {
-            \ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
+            ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
         }
         return $html;
     }

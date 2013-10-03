@@ -26,14 +26,17 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
 }
 
 include(root . '/.core/classes/auto_loader.php');
-$auto_loader = new auto_loader();
+include(root . '/.core/dependent/classes/auto_loader.php');
+$auto_loader = new \classes\auto_loader();
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         if (strpos($errfile, 'xdebug') !== 0) {
+            xdebug_break();
+            require_once(root . '/.core/core.php');
             $error = '<div class="error_message mysql"><p>Error #' . $errno . ' "' . $errstr . '" in ' . $errfile . ' on line ' . $errline . '</p>' . \core::get_backtrace() . '</div>';
             if (ajax) {
                 require_once(root . '/.core/classes/ajax.php');
-                ajax::inject('body', 'append', $error);
+                \classes\ajax::inject('body', 'append', $error);
             } else {
                 echo $error;
             }

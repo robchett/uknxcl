@@ -1,8 +1,14 @@
 <?php
-namespace add_flight;
+namespace module\add_flight\form;
 
+use classes\ajax;
+use classes\geometry;
+use classes\get;
 use form\form;
 use html\node;
+use object\flight_type;
+use track\task;
+use track\track;
 
 class igc_upload_form extends form {
 
@@ -30,7 +36,7 @@ class igc_upload_form extends form {
     }
 
     public function do_choose_track() {
-        $track = new \track();
+        $track = new track();
         $track->id = $_REQUEST['track'];
         $this->create_track($track, $_REQUEST['start'], $_REQUEST['end']);
     }
@@ -38,16 +44,16 @@ class igc_upload_form extends form {
     public function do_submit() {
         if (parent::do_submit()) {
             if (isset($_FILES['file'])) {
-                $track = new \track();
+                $track = new track();
                 $track->id = time();
                 $this->create_track($track);
             } else {
-                \ajax::update(node::create('div#console', [], 'Your browser has not sent the correct data to the server. Please upgrade your browser!'));
+                ajax::update(node::create('div#console', [], 'Your browser has not sent the correct data to the server. Please upgrade your browser!'));
             }
         }
     }
 
-    private function create_track(\track $track, $start = 0, $end = 0) {
+    private function create_track(track $track, $start = 0, $end = 0) {
         $track->console("File upload accepted");
         $track->temp = true;
         $track->create_from_upload();
@@ -71,23 +77,23 @@ class igc_upload_form extends form {
         $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
         $html = $track->error;
         if ($track->get_number_of_parts() > 1) {
-            \geometry::time_split_kml_plus_js($track);
+            geometry::time_split_kml_plus_js($track);
             $html .= $this->get_choose_track_html($track, $defined);
         } else {
             $track->calculate();
             $track->generate_output_files();
             $html .= $this->get_choose_score_html($track, $start, $end, $defined);
         }
-        \ajax::update('<div id="console">' . $html . '</div>');
-        \ajax::add_script('map.add_flight(' . $track->id . ',1,1,1);');
+        ajax::update('<div id="console">' . $html . '</div>');
+        ajax::add_script('map.add_flight(' . $track->id . ',1,1,1);');
     }
 
-    private function get_choose_track_html(\track $track) {
+    private function get_choose_track_html(track $track) {
         $html = node::create('ul', [],
             $track->track_parts->iterate_return(
-                function (\track_point_array $part, $i) use ($track) {
+                function (\track\track_part $part, $i) use ($track) {
                     return node::create('li', [],
-                        node::create('span', ['style' => 'color:#' . \get::colour($i - 1)], 'Track ' . $i . ' : ' . $part->get_time()) .
+                        node::create('span', ['style' => 'color:#' . get::colour($i - 1)], 'Track ' . $i . ' : ' . $part->get_time()) .
                         node::create('a.choose', ['data-ajax-click' => 'igc_upload_form:do_choose_track', 'data-ajax-post' => '\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\''], 'Choose')
                     );
                 }
@@ -96,7 +102,7 @@ class igc_upload_form extends form {
         return $html;
     }
 
-    private function get_choose_score_html(\track $track, $start, $end, $defined) {
+    private function get_choose_score_html(track $track, $start, $end, $defined) {
         $_SESSION['add_flight'][$track->id] = array('duration' => $track->get_duration(), 'start' => $start, 'end' => $end);
         $html = node::create('table', [],
             node::create('thead tr', [],
@@ -115,14 +121,14 @@ class igc_upload_form extends form {
         return $html;
     }
 
-    private function get_defined_task_select_html(\track $track) {
+    private function get_defined_task_select_html(track $track) {
         $_SESSION['add_flight'][$track->id]['task'] = [
             'type' => $track->task->type,
             'distance' => $track->task->get_distance(),
             'coords' => $track->task->get_coordinates(),
             'duration' => $track->task->get_duration()
         ];
-        $multiplier = \flight_type::get_multiplier($track->task->ftid, date('Y'), true);
+        $multiplier = flight_type::get_multiplier($track->task->ftid, date('Y'), true);
         return node::create('tr', [],
             node::create('td', [], $track->task->title) .
             node::create('td', [], $track->task->get_distance(3) . ' / ' . number_format($multiplier)) .
@@ -131,12 +137,12 @@ class igc_upload_form extends form {
         );
     }
 
-    private function get_task_select_html(\track $track, $type) {
-        /** @var \task $task */
+    private function get_task_select_html(track $track, $type) {
+        /** @var task $task */
         $task = $track->$type;
         if (isset($task->waypoints)) {
             $_SESSION['add_flight'][$track->id][$type] = ['distance' => $task->get_distance(), 'coords' => $task->get_session_coordinates(), 'duration' => $task->get_duration()];
-            $flight_type = new \flight_type();
+            $flight_type = new flight_type();
             $flight_type->do_retrieve(['multi'], ['where' => 'fn=:fn', 'parameters' => ['fn' => $type]]);
             return node::create('tr', [],
                 node::create('td', [], $task->title) .
@@ -156,7 +162,7 @@ class igc_upload_form extends form {
     }
 
     public function reset() {
-        \ajax::update($this->get_html()->get());
+        ajax::update($this->get_html()->get());
     }
 
     public function get_html() {
@@ -218,7 +224,7 @@ class igc_upload_form extends form {
             $script .= '$("#add_flight_box .fieldset_1").hide();';
         }
         if (ajax) {
-            \ajax::add_script($script);
+            ajax::add_script($script);
         } else {
             \core::$inline_script[] = $script;
         }

@@ -1,4 +1,8 @@
 <?php
-namespace latest;
-class controller extends \core_module {
+namespace module\latest;
+
+use classes\module;
+
+class controller extends module {
+
 }

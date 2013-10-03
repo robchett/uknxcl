@@ -1,5 +1,9 @@
 <?php
+
+namespace object;
+
 class glider_official extends pilot_official {
+
     /** @var string */
     public $g_name;
 

@@ -1,8 +1,10 @@
 <?php
-namespace tables;
+namespace module\tables\form;
 
+use classes\get;
 use form\form;
 use html\node;
+use module\tables\object as _object;
 
 class table_gen_form_basic extends form {
 
@@ -48,7 +50,7 @@ class table_gen_form_basic extends form {
                 ->set_attr('required', true),
             'pilot' => form::create('field_link', 'pilot')
                 ->set_attr('label', 'Pilot:')
-                ->set_attr('link_module', 'pilot')
+                ->set_attr('link_module', '\\object\\pilot')
                 ->set_attr('link_field', 'name')
                 ->set_attr('order', 'name ASC')
                 ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
@@ -86,7 +88,7 @@ class table_gen_form_basic extends form {
         return parent::get_html();
     }
 
-    public function set_from_options(league_table_options $options) {
+    public function set_from_options(_object\league_table_options $options) {
         foreach ($options as $key => $value) {
             if (isset($this->fields[$key])) {
                 $this->$key = $value;
@@ -102,7 +104,7 @@ class table_gen_form_basic extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $table = new league_table();
+            $table = new _object\league_table();
             $table->use_preset($this->type);
             if ($this->type == 10) {
                 $table->options->pilot_id = $this->pilot;
@@ -117,7 +119,7 @@ class table_gen_form_basic extends form {
             if ($this->split_classes) {
                 $table->options->split_classes = true;
             }
-            \get::header_redirect($table->get_url() . '?module=core&act=load_page');
+            get::header_redirect($table->get_url() . '?module=core&act=load_page');
         }
     }
 }

@@ -1,7 +1,12 @@
 <?php
-namespace planner;
-class waypoint extends \table {
-    use \table_trait;
+namespace module\planner\object;
+
+use classes\table;
+use traits\table_trait;
+
+class waypoint extends table {
+
+    use table_trait;
 
     public $lat;
     public $lon;
@@ -22,50 +27,5 @@ class waypoint extends \table {
      */
     public function get_js() {
         return 'map.planner.addWaypoint(' . $this->lat . ',' . $this->lon . ');';
-    }
-}
-
-/**
- * Class waypoint_array
- * @package planner
- */
-class waypoint_array extends \table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, '\planner\waypoint_iterator');
-        $this->iterator = new waypoint_iterator($input);
-    }
-
-    /* @return waypoint */
-    public function next() {
-        return parent::next();
-    }
-
-    /**
-     * @return string
-     */
-    public function get_js() {
-        $js = '';
-        $this->reset_iterator();
-        foreach ($this as $waypoint) {
-            /** @var waypoint $waypoint */
-            $js .= $waypoint->get_js();
-        }
-        return $js;
-    }
-}
-
-/**
- * Class waypoint_iterator
- * @package planner
- */
-class waypoint_iterator extends \table_iterator {
-
-    /* @return waypoint */
-    public function key() {
-        return parent::key();
     }
 }

@@ -1,16 +1,20 @@
 <?php
-namespace tables;
+namespace module\tables\view;
 
+use classes\ajax;
+use classes\view;
 use html\node;
+use module\tables\form\table_gen_form;
+use module\tables\form\table_gen_form_basic;
 
-class _default_view extends \view {
+class _default extends view {
 
-    /** @var  \tables\controller $module */
+    /** @var  \module\tables\controller $module */
     public $module;
 
 
     public function get_view() {
-        /** @var league_table $table */
+        /** @var \module\tables\object\league_table $table */
         $table = $this->module->current;
         //$table->use_preset(0);
         //$table->type = 0;
@@ -45,7 +49,7 @@ class _default_view extends \view {
         });
         $("#basic_tables_form_wrapper form,#advanced_tables_wrapper form").slideUp();';
         if (ajax) {
-            \ajax::add_script($inline_script);
+            ajax::add_script($inline_script);
         } else {
             \core::$inline_script[] = $inline_script;
         }

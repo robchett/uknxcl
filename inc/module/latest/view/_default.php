@@ -1,11 +1,14 @@
 <?php
-namespace latest;
+namespace module\latest\view;
 
+use classes\view;
 use html\node;
+use object\flight;
 
-class _default_view extends \view {
+class _default extends view {
+
     public function get_view() {
-        $flights = \flight_array::get_all(
+        $flights = flight::get_all(
             array('flight.*', 'pilot.name', 'pilot.pid'),
             array(
                 'join' => array(
@@ -30,7 +33,7 @@ class _default_view extends \view {
                     )
                 ) .
                 node::create('tbody', [],
-                    $flights->iterate_return(function (\flight $flight) use (&$body) {
+                    $flights->iterate_return(function (flight $flight) use (&$body) {
                             $added = substr($flight->added, 0, 10);
                             return node::create('tr', [],
                                 node::create('td', [], $flight->fid) .

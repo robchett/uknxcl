@@ -1,10 +1,23 @@
 <?php
-namespace add_flight;
+namespace module\add_flight\form;
+use classes\ajax;
+use classes\jquery;
 use form\form;
 use html\node;
+use object\flight;
+use object\flight_type;
+use track\track;
 
 class coordinates_form extends form {
 
+
+    public $agree;
+    public $coords;
+    public $date;
+    public $defined;
+    public $delay;
+    public $force_delay = false;
+    public $ridge;
 
     public function __construct() {
         parent::__construct(array(
@@ -13,20 +26,20 @@ class coordinates_form extends form {
                     ->set_attr('required', true)
                     ->set_attr('default', 'Choose A Pilot')
                     ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
-                    ->set_attr('link_module', 'pilot')
+                    ->set_attr('link_module', '\\object\\pilot')
                     ->set_attr('link_field', 'name')
                     ->set_attr('options', ['order' => 'name']),
                 form::create('field_link', 'gid')
                     ->set_attr('label', 'Glider:')
                     ->set_attr('required', true)
                     ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
-                    ->set_attr('link_module', 'glider')
+                    ->set_attr('link_module', '\\object\\glider')
                     ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
                     ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
                 form::create('field_link', 'cid')
                     ->set_attr('label', 'Club:')
                     ->set_attr('required', true)
-                    ->set_attr('link_module', 'club')
+                    ->set_attr('link_module', '\\object\\club')
                     ->set_attr('link_field', 'title')
                     ->set_attr('options', ['order' => 'title']),
                 form::create('field_string', 'coords')
@@ -42,7 +55,7 @@ class coordinates_form extends form {
                 form::create('field_link', 'lid')
                     ->set_attr('label', 'Launch:')
                     ->set_attr('required', true)
-                    ->set_attr('link_module', 'launch_type')
+                    ->set_attr('link_module', '\\object\\launch_type')
                     ->set_attr('link_field', 'title'),
                 form::create('field_boolean', 'ridge')
                     ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
@@ -73,7 +86,7 @@ class coordinates_form extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $flight = new \flight();
+            $flight = new flight();
             $flight->set_from_request();
             $flight->dim = 1;
 
@@ -85,9 +98,9 @@ class coordinates_form extends form {
                 $flight->invis_info .= 'delayed as flight is old.';
             }
 
-            $track = new \track();
+            $track = new track();
             $track->set_task($this->coords);
-            $flight_type = new \flight_type();
+            $flight_type = new flight_type();
             $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $track->task->type)));
             $flight->ftid = $flight_type->ftid;
             $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
@@ -97,9 +110,9 @@ class coordinates_form extends form {
             $flight->delayed = $this->force_delay ? true : $this->delay;
             $flight->do_save();
 
-            \jquery::colorbox(array('html' => 'Your flight has been added successfully'));
+            jquery::colorbox(array('html' => 'Your flight has been added successfully'));
             $form = new coordinates_form();
-            \ajax::update($form->get_html()->get());
+            ajax::update($form->get_html()->get());
 
         }
     }

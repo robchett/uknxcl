@@ -1,5 +1,9 @@
 <?php
+
+namespace object;
+
 class manufacturer extends club {
+
     public static $module_id = 5;
     public $table_key = 'mid';
     public $Name;
@@ -10,26 +14,6 @@ class manufacturer extends club {
     public $Num;
     public $title;
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return manufacturer_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return manufacturer_array::get_all($fields, $options);
-    }
-
-    /**
-     * @param pilot|pilot_official $glider
-     * @param int $num
-     */
-    public function set_from_pilot($glider, $num = 6) {
-        $this->max_pilots = $num;
-        $this->name = $glider->club;
-        $this->score = $glider->score;
-        $this->total = $this->score;
-        $this->content = $glider->output(1);
-    }
 
     /**
      * @param $pos
@@ -44,41 +28,4 @@ class manufacturer extends club {
             </h3>';
     }
 
-}
-
-/**
- * Class manufacturer_array
- */
-class manufacturer_array extends table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, 'manufacturer_iterator');
-        $this->iterator = new manufacturer_iterator($input);
-    }
-
-    /* @return manufacturer */
-    public function next() {
-        return parent::next();
-    }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        parent::set_statics();
-    }
-}
-
-/**
- * Class manufacturer_iterator
- */
-class manufacturer_iterator extends table_iterator {
-
-    /* @return manufacturer */
-    public function key() {
-        return parent::key();
-    }
 }

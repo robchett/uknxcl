@@ -1,12 +1,17 @@
 <?php
-namespace add_flight;
+namespace module\add_flight\view;
 
+use classes\ajax;
+use classes\get;
+use classes\view;
 use html\node;
+use module\add_flight\form\igc_form;
+use module\add_flight\form\igc_upload_form;
 
-class igc_supported_view extends \view {
+class igc_supported extends view {
 
     public function get_page_selector() {
-        return \get::__class_name($this->module) . '-igc';
+        return get::__namespace($this->module, 0) . '-igc';
     }
 
     public function get_view() {
@@ -94,7 +99,7 @@ class igc_supported_view extends \view {
         $("#igc_form input.submit").removeAttr("disabled");
     });';
         if (ajax) {
-            \ajax::add_script($script);
+            ajax::add_script($script);
         } else {
             \core::$inline_script[] = $script;
         };

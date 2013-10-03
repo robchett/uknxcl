@@ -1,10 +1,14 @@
 <?php
 
-namespace comps;
-class controller extends \core_module {
+namespace module\comps;
+
+use classes\module;
+use module\comps\object\comp;
+
+class controller extends module {
 
     public $page = 'comp';
-    /** @var comp current */
+    /** @var \module\comps\object current */
     public $current;
 
     public function __controller(array $path) {

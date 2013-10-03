@@ -1,6 +1,10 @@
 <?php
 
-class ajax {
+namespace core\classes;
+
+use classes\push_state;
+
+abstract class ajax {
 
     public static $inject = array();
     public static $inject_script = array();
@@ -10,12 +14,12 @@ class ajax {
     public static $redirect = null;
 
     public static function update($html) {
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
         foreach ($xpath->query('/html/body/*') as $node) {
-            $o = new stdClass();
+            $o = new \stdClass();
             $o->id = $node->nodeName;
             if (isset($node->attributes->getNamedItem('id')->nodeValue)) {
                 $o->id .= '#' . $node->attributes->getNamedItem('id')->nodeValue;
@@ -39,7 +43,7 @@ class ajax {
         if (isset(self::$redirect)) {
             self::inject('body', 'append', '<script>window.location.href = "' . self::$redirect . '";</script>');
         }
-        $o = new stdClass();
+        $o = new \stdClass();
         $o->update = self::$update;
         $o->inject = array_merge(self::$inject, self::$inject_script);
         if (isset(self::$push_state)) {
@@ -64,10 +68,10 @@ class ajax {
     }
 
     public static function inject($id, $pos, $html, $overwrite = '') {
-        $o = new stdClass();
+        $o = new \stdClass();
         $o->id = $id;
         $o->pos = $pos;
-        $o->html = (string)$html;
+        $o->html = (string) $html;
         $o->over = $overwrite;
         self::$inject[] = $o;
     }
@@ -77,7 +81,7 @@ class ajax {
     }
 
     public static function add_script($script) {
-        $o = new stdClass();
+        $o = new \stdClass();
         $o->id = 'body';
         $o->pos = 'append';
         $o->html = '<script>' . $script . '</script>';

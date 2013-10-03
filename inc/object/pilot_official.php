@@ -1,32 +1,31 @@
 <?php
 
+namespace object;
+
 class pilot_official extends pilot {
+
     public $defined = false;
     public $undefined = false;
     public $used_flights = 0;
 
+    private function _add_flight(flight $flight) {
+        $this->score += $flight->score;
+        $this->flights[] = $flight->to_print()->get();
+        $this->used_flights++;
+        if ($flight->defined) {
+            $this->defined = true;
+        }
+        if ($flight->ftid == 1) {
+            $this->undefined = true;
+        }
+    }
+
     public function add_flight(flight $flight) {
         if ($this->used_flights < $this->max_flights - 3) {
-            $this->score += $flight->score;
-            $this->flights[] = $flight->to_print()->get();
-            $this->used_flights++;
-            if ($flight->defined) {
-                $this->defined = true;
-            }
-            if ($flight->ftid == 1) {
-                $this->undefined = true;
-            }
+           $this->_add_flight($flight);
         } else if ($this->used_flights == $this->max_flights - 3) {
             if (($this->defined || $this->undefined) || ($flight->defined && !$this->defined) || ($flight->ftid == 1 && !$this->undefined)) {
-                $this->score += $flight->score;
-                $this->flights[] = $flight->to_print()->get();
-                $this->used_flights++;
-                if ($flight->defined) {
-                    $this->defined = true;
-                }
-                if ($flight->ftid == 1) {
-                    $this->undefined = true;
-                }
+                $this->_add_flight($flight);
             }
         } else if ($this->used_flights == $this->max_flights - 2) {
             if (($this->defined && $this->undefined) || ($flight->defined && !$this->defined) || ($flight->ftid == 1 && !$this->undefined)) {

@@ -1,7 +1,8 @@
 <?php
-namespace tables;
+namespace module\tables\object;
 
 use html\node;
+use object\flight;
 
 class result_records extends result {
 
@@ -46,7 +47,7 @@ class result_records extends result {
     }
 
     protected function get_flight($ftid, $class, $gender) {
-        $flight = new \flight();
+        $flight = new flight();
         $flight->do_retrieve(
             array(
                 'fid',
@@ -84,7 +85,7 @@ class result_records extends result {
     }
 
     protected function get_flight_defined($ftid, $class, $gender) {
-        $flight = new \flight();
+        $flight = new flight();
         $flight->do_retrieve(
             array(
                 'fid',

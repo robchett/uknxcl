@@ -1,12 +1,16 @@
 <?php
-namespace add_flight;
+namespace module\add_flight\view;
 
+use classes\ajax;
+use classes\get;
+use classes\view;
 use html\node;
+use module\add_flight\form\coordinates_form;
 
-class coordinate_view extends \view {
+class coordinate extends view {
 
     public function get_page_selector() {
-        return \get::__class_name($this->module) . '-coordinate';
+        return get::__namespace($this->module, 0) . '-coordinate';
     }
 
     public function get_view() {
@@ -64,7 +68,7 @@ class coordinate_view extends \view {
         $(this).parents("form").find(".defined_info").html(str);
     });';
         if (ajax) {
-            \ajax::add_script($script);
+            ajax::add_script($script);
         } else {
             \core::$inline_script[] = $script;
         };

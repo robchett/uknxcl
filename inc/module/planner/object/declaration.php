@@ -1,10 +1,17 @@
 <?php
-namespace planner;
+namespace module\planner\object;
+
+use classes\ajax;
+use classes\table;
+use traits\table_trait;
+
 /**
  * Class declaration
  * @package planner
  */
-class declaration extends \table { use \table_trait;
+class declaration extends table {
+
+    use table_trait;
 
     /**
      * @var string
@@ -15,21 +22,13 @@ class declaration extends \table { use \table_trait;
      */
     public static $module_id = 13;
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return declaration_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return declaration_array::get_all($fields, $options);
-    }
 
     /**
      * @return \form\form
      */
     public function get_form() {
         $form = parent::get_form();
-        $form->action = 'declaration:do_submit';
+        $form->action = get_class($this) . ':do_submit';
         $form->set_from_request();
         $form->remove_field('parent_did');
         $form->remove_field('did');
@@ -47,39 +46,7 @@ class declaration extends \table { use \table_trait;
      */
     public function do_submit() {
         if (parent::do_submit()) {
-            \ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
+            ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
         }
-    }
-}
-
-/**
- * Class declaration_array
- * @package planner
- */
-class declaration_array extends \table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, '\planner\declaration_iterator');
-        $this->iterator = new declaration_iterator($input);
-    }
-
-    /* @return declaration */
-    public function next() {
-        return parent::next();
-    }
-}
-
-/**
- * Class declaration_iterator
- * @package planner
- */
-class declaration_iterator extends \table_iterator {
-
-    /* @return declaration */
-    public function key() {
-        return parent::key();
     }
 }

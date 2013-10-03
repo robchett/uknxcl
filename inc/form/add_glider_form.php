@@ -6,7 +6,7 @@ class add_glider_form extends form\form {
     public $name;
 
     public function __construct() {
-        $this->glider = new glider();
+        $this->glider = new \object\glider();
         parent::__construct($this->glider->get_fields());
         $this->get_field_from_name('gid')
             ->set_attr('hidden', true)
@@ -23,7 +23,7 @@ class add_glider_form extends form\form {
     }
 
     public function get_form() {
-        \ajax::inject('body', 'after', '<script>$.colorbox({html:' . json_encode($this->get_html()->get()) . '})</script>');
+        \classes\ajax::inject('body', 'after', '<script>$.colorbox({html:' . json_encode($this->get_html()->get()) . '})</script>');
     }
 
     public function do_submit() {
@@ -31,11 +31,11 @@ class add_glider_form extends form\form {
         $this->glider->set_from_request();
         $this->glider->name = ucwords($this->name);
         $this->glider->do_save();
-        $manu = new manufacturer();
+        $manu = new \object\manufacturer();
         $manu->do_retrieve_from_id(array('title'), $this->mid);
         if ($this->glider->gid) {
             $this->glider->do_update_selector();
-            jquery::colorbox(array("html" => $manu->title . ' - ' . $this->glider->name . ' has been added to the database and should now be selectable from the list.'));
+            \classes\jquery::colorbox(array("html" => $manu->title . ' - ' . $this->glider->name . ' has been added to the database and should now be selectable from the list.'));
         }
     }
 }

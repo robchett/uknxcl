@@ -1,9 +1,10 @@
 <?php
 
-/**
- * Class cache
- */
-class cache implements interfaces\cache_interface {
+namespace core\classes;
+
+use classes\get;
+
+abstract class cache implements interfaces\cache_interface {
 
     /**
      * @const int Connection error has occurred possible Memcached not installed.
@@ -15,7 +16,7 @@ class cache implements interfaces\cache_interface {
     const ERROR_RETRIEVE = 2;
 
     /**
-     * @var  memcached
+     * @var  \Memcached
      * */
     public static $current = null;
 
@@ -31,15 +32,15 @@ class cache implements interfaces\cache_interface {
      * @param string $server
      * @param int $port
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public static function connect($instance_id = '', $server = 'localhost', $port = 11211) {
         if (class_exists('Memcached', false)) {
-            $cache = new Memcached($instance_id);
+            $cache = new \Memcached($instance_id);
             $cache->addServer($server, $port);
             self::$current = $cache;
         } else {
-            throw new Exception('Memcached is not enabled on this server.', self::ERROR_CONNECT);
+            throw new \Exception('Memcached is not enabled on this server.', self::ERROR_CONNECT);
         }
         return true;
     }
@@ -50,16 +51,16 @@ class cache implements interfaces\cache_interface {
     private static function load_dependants() {
         self::$dependants = array();
         if (class_exists('db')) {
-            if (!\db::table_exists('_cache_dependants')) {
-                \db::create_table('_cache_dependants',
+            if (!db::table_exists('_cache_dependants')) {
+                db::create_table('_cache_dependants',
                     array(
                         'key' => 'INT',
                         'hash' => 'BINARY(16)'
                     )
                 );
             }
-            $res = \db::query('SELECT * FROM _cache_dependants');
-            while ($row = \db::fetch($res, false)) {
+            $res = db::query('SELECT * FROM _cache_dependants');
+            while ($row = db::fetch($res, false)) {
                 self::$dependants[$row['key']] = $row['hash'];
             }
         }
@@ -68,7 +69,7 @@ class cache implements interfaces\cache_interface {
     /**
      * @param string $key the key to retrieve.
      * @param array $dependencies table dependencies.
-     * @throws exception Throws exceptions if the cache node could not be connected or the key is not set.
+     * @throws \Exception Throws \Exceptions if the cache node could not be connected or the key is not set.
      * @return mixed
      */
     public static function get($key, array $dependencies = array('global')) {
@@ -77,8 +78,8 @@ class cache implements interfaces\cache_interface {
         }
         $key = self::get_key($key, $dependencies);
         if (!($res = self::$current->get($key))) {
-            if (self::$current->getResultCode() == Memcached::RES_NOTFOUND) {
-                throw new Exception('Cache key not set, this is common to distinguish from null values', self::ERROR_RETRIEVE);
+            if (self::$current->getResultCode() == \Memcached::RES_NOTFOUND) {
+                throw new \Exception('Cache key not set, this is common to distinguish from null values', self::ERROR_RETRIEVE);
             }
         }
         return $res;
@@ -94,7 +95,7 @@ class cache implements interfaces\cache_interface {
         if (self::$current == null) {
             try {
                 self::connect(get::ini('instance', 'memcached'), get::ini('server', 'memcached'), get::ini('port', 'memcached'));
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return false;
             }
         }

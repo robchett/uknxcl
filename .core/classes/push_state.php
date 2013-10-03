@@ -1,6 +1,8 @@
 <?php
 
-class push_state {
+namespace core\classes;
+
+abstract class push_state {
 
     const REPLACE = 1;
     const PUSH = 2;
@@ -11,7 +13,7 @@ class push_state {
 
 
     public function __construct() {
-        $this->data = new stdClass();
+        $this->data = new \stdClass();
         $this->type = self::PUSH;
     }
 

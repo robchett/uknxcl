@@ -1,5 +1,6 @@
 <?php
-namespace interfaces;
+namespace core\classes\interfaces;
+
 /**
  * Class database_interface
  */
