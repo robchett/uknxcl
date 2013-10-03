@@ -1,9 +1,10 @@
 <?php
 
-/**
- * Class kml
- */
-class kml {
+namespace core\classes;
+
+use classes\get;
+
+abstract class kml {
 
     /**
      * @var string
@@ -34,7 +35,7 @@ class kml {
 
     /**
      * @param $colour
-     * @param track_point[] $coordinates
+     * @param \track\track_point[] $coordinates
      * @param string $altitude_mode
      * @param bool $extrude
      * @return string
@@ -133,8 +134,8 @@ class kml {
         if (!empty($path)) {
             $path = root . get::trim_root($path);
             file_put_contents($path, $xml);
-            $zip = new ZipArchive();
-            $zip->open(str_replace('.kml', '.kmz', $path), ZIPARCHIVE::OVERWRITE);
+            $zip = new \ZipArchive();
+            $zip->open(str_replace('.kml', '.kmz', $path), \ZIPARCHIVE::OVERWRITE);
             $zip->addFile($path);
             $zip->close();
             unlink($path);

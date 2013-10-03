@@ -1,6 +1,9 @@
 <?php
-namespace add_flight;
-class controller extends \core_module {
+namespace module\add_flight;
+
+use classes\module;
+
+class controller extends module {
 
     public $page = 'add_flight';
 

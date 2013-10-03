@@ -1,11 +1,15 @@
 <?php
-namespace comps;
+namespace module\comps\view;
 
+use classes\ajax;
+use classes\view;
 use html\node;
+use module\comps\object\comp;
 
-class _default_view extends \view {
+class _default extends view {
+
     public function get_view() {
-        $comps = comp_array::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title AS class', 'file'], ['join' => ['comp_group' => 'comp.class = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, class ASC']);
+        $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title AS class', 'file'], ['join' => ['comp_group' => 'comp.class = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, class ASC']);
         $html = node::create('div#comp_wrapper div#comp_inner', [],
             node::create('div#comp_list', [],
                 node::create('h2', [], 'Select a Competition') .
@@ -46,7 +50,7 @@ class _default_view extends \view {
             });";
 
         if (ajax) {
-            \ajax::add_script($script);
+            ajax::add_script($script);
         } else {
             \core::$inline_script[] = $script;
         }

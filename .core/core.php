@@ -1,31 +1,33 @@
 <?php
 
+namespace core;
 
-class core {
+abstract class core {
+
     /** @var core */
     public static $singleton;
     public static $inline_script = array();
     public static $js = array();
     public static $css = array('/css/');
-    /** @var page_config */
+    /** @var \classes\page_config */
     public static $page_config;
     public $body = '';
     public $pid = 0;
     public $pre_content = 'test';
     public $post_content = 'test';
     public $module_name = 'latest';
-    /** @var core_module */
+    /** @var \classes\module */
     public $module;
-    /** @var \pages\page */
+    /** @var \module\pages\object\page */
     public $page;
 
     /**
      *
      */
     public function __construct() {
-        self::$page_config = new page_config();
+        self::$page_config = new \classes\page_config();
         self::$singleton = $this;
-        \db::default_connection();
+        \classes\db::default_connection();
         $this->set_path(uri);
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
@@ -42,24 +44,22 @@ class core {
                 if (class_exists($_REQUEST['module'])) {
                     $module = new $_REQUEST['module']();
                 } else {
-                    $class_name = $_REQUEST['module'] . '\\controller';
+                    $class_name = '\\module\\' . $_REQUEST['module'] . '\\controller';
                     $module = new $class_name();
                 }
             }
             $module->{$_REQUEST['act']}();
-            \ajax::do_serve();
+            \classes\ajax::do_serve();
             exit();
         }
         $this->set_page_from_path();
 
         if (!$this->pid && is_numeric($this->path[0])) {
-            get::header_redirect(host . '/');
+            \classes\get::header_redirect(host . '/');
             die();
         }
         \core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
         \core::$js[] = 'https://www.google.com/jsapi';
-        \core::$js[] = '/js/jquery/jquery.js';
-        \core::$js[] = '/js/jquery/colorbox.js';
         \core::$js[] = '/js/';
 
         $this->load_page();
@@ -79,18 +79,18 @@ class core {
             $this->module_name = 'latest';
         }
 
-        if (class_exists($this->module_name . '\controller')) {
-            $class_name = $this->module_name . '\controller';
+        if (class_exists('module\\' . $this->module_name . '\controller')) {
+            $class_name = 'module\\' . $this->module_name . '\controller';
             $this->module = new $class_name();
             $this->module->__controller($this->path);
             $this->body = $this->module->view_object->get();
             $push_state = $this->module->get_push_state();
             if ($push_state) {
                 if (!ajax) {
-                    $push_state->type = push_state::REPLACE;
+                    $push_state->type = \classes\push_state::REPLACE;
                     $push_state->get();
                 } else {
-                    \ajax::push_state($push_state);
+                    \classes\ajax::push_state($push_state);
                 }
             }
             if (!ajax) {
@@ -103,7 +103,7 @@ class core {
      *
      */
     public function set_page_from_path() {
-        $this->page = new \pages\page();
+        $this->page = new \module\pages\object\page();
         if (is_numeric($this->path[0])) {
             $this->page->do_retrieve_from_id(array(), (int) $this->path[0]);
         } else {
@@ -145,16 +145,16 @@ class core {
      * @return string
      */
     public static function get_class_from_mid($mid) {
-        $module = new cms\_cms_modules(['namespace', 'table_name'], $mid);
+        $module = new \module\cms\object\_cms_modules(['namespace', 'table_name'], $mid);
         return $module->get_class_name();
     }
 
     /**
      * @param $fid
-     * @return \cms\_cms_fields
+     * @return \module\cms\object\_cms_fields
      */
     public static function get_field_from_fid($fid) {
-        return new cms\_cms_fields([], $fid);
+        return new \module\cms\object\_cms_fields([], $fid);
     }
 
     /**

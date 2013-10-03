@@ -1,10 +1,18 @@
 <?php
-namespace tables;
+namespace module\tables\object;
 
+use classes\get;
+use classes\table_array;
 use html\node;
+use object\flight;
+use object\flight_type;
+use object\launch_type;
+use object\pilot;
+use object\pilot_official;
 
 class league_table {
-    /** @var \flight_array */
+
+    /** @var \classes\table_array */
     public $flights = null;
     public $league = null;
     public $where = array();
@@ -14,12 +22,12 @@ class league_table {
     public $ScoreType = 'score';
     public $OrderBy = 'score';
     public $Title = null;
-    public $class = 'pilot';
+    public $class = '\object\pilot';
     public $class_primary_key = 'pid';
     public $year_title = 'All Time';
     public $class_table_alias = 'p';
-    public $official_class = 'pilot_official';
-    public $SClass = 'club';
+    public $official_class = '\object\pilot_official';
+    public $SClass = '\object\club';
     public $S_alias = 'c';
     public $max_flights = 6;
     public $KP_Mod = 1;
@@ -149,30 +157,30 @@ class league_table {
 // Removing launch and flight type from sql.
         if (isset($this->in['launch'])) {
             if (!in_array('w', $this->in['launch'])) {
-                $this->options->remove_launch(\launch_type::WINCH);
+                $this->options->remove_launch(launch_type::WINCH);
             }
             if (!in_array('f', $this->in['launch'])) {
-                $this->options->remove_launch(\launch_type::FOOT);
+                $this->options->remove_launch(launch_type::FOOT);
             }
             if (!in_array('a', $this->in['launch'])) {
-                $this->options->remove_launch(\launch_type::AERO);
+                $this->options->remove_launch(launch_type::AERO);
             }
         }
         if (isset($this->in['flight_type'])) {
             if (!in_array('od', $this->in['flight_type'])) {
-                $this->options->remove_flight_type(\flight_type::OD_ID);
+                $this->options->remove_flight_type(flight_type::OD_ID);
             }
             if (!in_array('or', $this->in['flight_type'])) {
-                $this->options->remove_flight_type(\flight_type::OR_ID);
+                $this->options->remove_flight_type(flight_type::OR_ID);
             }
             if (!in_array('go', $this->in['flight_type'])) {
-                $this->options->remove_flight_type(\flight_type::GO_ID);
+                $this->options->remove_flight_type(flight_type::GO_ID);
             }
             if (!in_array('tr', $this->in['flight_type'])) {
-                $this->options->remove_flight_type(\flight_type::TR_ID);
+                $this->options->remove_flight_type(flight_type::TR_ID);
             }
             if (!in_array('ft', $this->in['flight_type'])) {
-                $this->options->remove_flight_type(\flight_type::FT_ID);
+                $this->options->remove_flight_type(flight_type::FT_ID);
             }
         }
 
@@ -191,10 +199,10 @@ class league_table {
     }
 
     public function set_glider_view() {
-        $this->class = 'glider';
+        $this->class = '\object\glider';
         $this->class_primary_key = 'gid';
         $this->class_table_alias = 'g';
-        $this->official_class = 'glider_official';
+        $this->official_class = '\object\glider_official';
         $this->SClass = 'manufacturer';
         $this->S_alias = 'gm';
     }
@@ -206,18 +214,18 @@ class league_table {
                 break;
 
             case(1):
-                $this->options->remove_launch(\launch_type::AERO);
-                $this->options->remove_launch(\launch_type::WINCH);
+                $this->options->remove_launch(launch_type::AERO);
+                $this->options->remove_launch(launch_type::WINCH);
                 break;
 
             case(2):
-                $this->options->remove_launch(\launch_type::FOOT);
-                $this->options->remove_launch(\launch_type::WINCH);
+                $this->options->remove_launch(launch_type::FOOT);
+                $this->options->remove_launch(launch_type::WINCH);
                 break;
 
             case(3):
-                $this->options->remove_launch(\launch_type::AERO);
-                $this->options->remove_launch(\launch_type::FOOT);
+                $this->options->remove_launch(launch_type::AERO);
+                $this->options->remove_launch(launch_type::FOOT);
                 break;
 
             case(4):
@@ -315,25 +323,25 @@ class league_table {
     }
 
     public function generate_csv() {
-        $flights = \flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
-        $array = new \pilot_array();
+        $flights = flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        $array = new table_array();
         $flights->iterate(
-            function (\flight $flight, $cnt) use (&$array) {
+            function (flight $flight) use (&$array) {
                 if (isset ($array [$flight->p_pid]))
                     $array [$flight->p_pid]->add_flight($flight);
                 else {
-                    $array [$flight->p_pid] = new \pilot_official();
+                    $array [$flight->p_pid] = new pilot_official();
                     $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
                     $array [$flight->p_pid]->output_function = 'csv';
                 }
             }
         );
-        $array->uasort(['tables\league_table', 'cmp']);
+        $array->uasort(['\module\tables\object\league_table', 'cmp']);
         $class1 = $class5 = 1;
         echo node::create('pre', [], '
         Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n" .
             $array->iterate_return(
-                function (\pilot $pilot) use (&$class1, &$class5) {
+                function (pilot $pilot) use (&$class1, &$class5) {
                     if ($pilot->class == 1) {
                         $class1++;
                         return $pilot->output($class1, 0);
@@ -362,7 +370,7 @@ class league_table {
                 break;
             case(league_table_options::LAYOUT_PILOT_LOG):
                 $this->result = new result_pilot();
-                $pilot = new \pilot();
+                $pilot = new pilot();
                 $pilot->do_retrieve_from_id(array('name'), $this->options->pilot_id);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
                 $this->options->minimum_score = 0;
@@ -408,7 +416,7 @@ class league_table {
             $this->where .= " AND personal=0 ";
         }
 
-        $this->flights = \flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
+        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
             array(
                 'join' => array(
                     'glider g' => 'flight.gid=g.gid',
@@ -426,7 +434,7 @@ class league_table {
     function write_table_header($flights, $type = 'pid') {
         $inner_html = '';
         foreach (range(1, $flights) as $pos) {
-            $inner_html .= node::create('th', [], \get::ordinal($pos));
+            $inner_html .= node::create('th', [], get::ordinal($pos));
 
         }
         $html =
@@ -471,9 +479,9 @@ class league_table {
             for ($i = 1; $i < 5; $i++) {
                 $where_extend .= ' AND ftid=:ftid';
                 $params['ftid'] = $i;
-                $flight = new \flight();
+                $flight = new flight();
                 $flight->do_retrieve(array('flight.*', $this->class . '.name AS name', 'glider.class AS class'), array(
-                        'join' => \flight::$default_joins,
+                        'join' => flight::$default_joins,
                         'where' => $where_extend,
                         'order' => 'score DESC',
                         'parameters' => $params

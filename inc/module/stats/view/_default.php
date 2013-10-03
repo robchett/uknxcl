@@ -1,8 +1,15 @@
 <?php
-namespace stats;
-class _default_view extends \view {
+namespace module\stats\view;
 
-    /** @return \html\node */
+use classes\view;
+use html\node;
+
+class _default extends view {
+
+    /** @var \module\stats\controller $module */
+    public $module;
+
+    /** @return node */
     public function get_view() {
         \core::$inline_script[] = '
         var $graph = new Graph($("#graph_contain"), 600);
@@ -12,6 +19,6 @@ class _default_view extends \view {
         }
         $graph.swap(obj);
         ';
-        return $this->module->page_object->body . \html\node::create('div#graph_contain');
+        return $this->module->page_object->body . node::create('div#graph_contain');
     }
 }

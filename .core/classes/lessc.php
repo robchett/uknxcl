@@ -1,10 +1,22 @@
 <?php
 
+namespace core\classes;
+
 class lessc {
+
     static public $debug = false;
     static public $VERSION = "v0.3.9";
     static protected $TRUE = array("keyword", "true");
     static protected $FALSE = array("keyword", "false");
+    public $allParsedFiles;
+    public $env;
+    /** @var  lessc_formatter_classic */
+    public $formatter;
+    public $formatterName;
+    /** @var  lessc_parser */
+    public $parser;
+    public $scope;
+    public $source_file;
 
     protected $libFunctions = array();
     protected $registeredVars = array();
@@ -1523,7 +1535,7 @@ class lessc {
     /* environment functions */
 
     protected function makeOutputBlock($type, $selectors = null) {
-        $b = new stdclass;
+        $b = new \stdclass;
         $b->lines = array();
         $b->children = array();
         $b->selectors = $selectors;
@@ -1539,7 +1551,7 @@ class lessc {
 
     // the state of execution
     protected function pushEnv($block = null) {
-        $e = new stdclass;
+        $e = new \stdclass;
         $e->parent = $this->env;
         $e->store = array();
         $e->block = $block;
@@ -1591,7 +1603,7 @@ class lessc {
             $parser->count = 0;
             $parser->buffer = (string) $strValue;
             if (!$parser->propertyValue($value)) {
-                throw new Exception("failed to parse passed in variable $name: $strValue");
+                throw new \Exception("failed to parse passed in variable $name: $strValue");
             }
 
             $this->set($name, $value);
@@ -1637,7 +1649,7 @@ class lessc {
 
     public function compileFile($fname, $outFname = null) {
         if (!is_readable($fname)) {
-            throw new Exception('load error: failed to find ' . $fname);
+            throw new \Exception('load error: failed to find ' . $fname);
         }
 
         $pi = pathinfo($fname);
@@ -1708,7 +1720,7 @@ class lessc {
                 }
             }
         } else {
-            // TODO: Throw an exception? We got neither a string nor something
+            // TODO: Throw an \Exception? We got neither a string nor something
             // that looks like a compatible lessphp cache structure.
             return null;
         }
@@ -1745,7 +1757,7 @@ class lessc {
 
         if ($str == null) {
             if (empty($this->_parseFile)) {
-                throw new exception("nothing to parse");
+                throw new \Exception("nothing to parse");
             }
 
             $out = $this->compileFile($this->_parseFile);
@@ -1769,11 +1781,11 @@ class lessc {
     }
 
     protected function newFormatter() {
-        $className = "lessc_formatter_lessjs";
+        $className = "\\core\\classes\\lessc_formatter_lessjs";
         if (!empty($this->formatterName)) {
             if (!is_string($this->formatterName))
                 return $this->formatterName;
-            $className = "lessc_formatter_$this->formatterName";
+            $className = "\\core\\classes\\lessc_formatter_$this->formatterName";
         }
 
         return new $className;
@@ -1823,7 +1835,7 @@ class lessc {
         if ($this->sourceLoc >= 0) {
             $this->sourceParser->throwError($msg, $this->sourceLoc);
         }
-        throw new exception($msg);
+        throw new \Exception($msg);
     }
 
     // compile file $in to file $out if $in is newer than $out
@@ -1997,6 +2009,7 @@ class lessc {
 // responsible for taking a string of LESS code and converting it into a
 // syntax tree
 class lessc_parser {
+
     static protected $nextBlockId = 0; // used to uniquely identify blocks
 
     static protected $precedence = array(
@@ -2026,6 +2039,15 @@ class lessc_parser {
     // these properties will supress division unless it's inside parenthases
     static protected $supressDivisionProps =
         array('/border-radius$/i', '/^font$/i');
+    public $buffer;
+    public $commentsSeen;
+    public $count;
+    public $currentProperty;
+    public $env;
+    public $inExp;
+    public $line;
+    public $seenComments;
+    public $source_file;
 
     protected $blockDirectives = array("font-face", "keyframes", "page", "-moz-document");
     protected $lineDirectives = array("charset");
@@ -2054,7 +2076,7 @@ class lessc_parser {
 
         if (!self::$operatorString) {
             self::$operatorString =
-                '(' . implode('|', array_map(array('lessc', 'preg_quote'),
+                '(' . implode('|', array_map(array('\classes\lessc', 'preg_quote'),
                         array_keys(self::$precedence)
                     )
                 ) . ')';
@@ -2095,7 +2117,7 @@ class lessc_parser {
 
         // TODO report where the block was opened
         if (!is_null($this->env->parent))
-            throw new exception('parse error: unclosed block');
+            throw new \Exception('parse error: unclosed block');
 
         return $this->env;
     }
@@ -2224,7 +2246,7 @@ class lessc_parser {
         if ($this->literal('}', false)) {
             try {
                 $block = $this->pop();
-            } catch (exception $e) {
+            } catch (\Exception $e) {
                 $this->seek($s);
                 $this->throwError($e->getMessage());
             }
@@ -2279,7 +2301,7 @@ class lessc_parser {
     protected function isDirective($dirname, $directives) {
         // TODO: cache pattern in parser
         $pattern = implode("|",
-            array_map(array("lessc", "preg_quote"), $directives)
+            array_map(array("\\classes\\lessc", "preg_quote"), $directives)
         );
         $pattern = '/^(-[a-z-]+-)?(' . $pattern . ')$/i';
 
@@ -2568,7 +2590,7 @@ class lessc_parser {
         $this->eatWhiteDefault = false;
 
         $stop = array("'", '"', "@{", $end);
-        $stop = array_map(array("lessc", "preg_quote"), $stop);
+        $stop = array_map(array("\\classes\\lessc", "preg_quote"), $stop);
         // $stop[] = self::$commentMulti;
 
         if (!is_null($rejectStrs)) {
@@ -3212,14 +3234,14 @@ class lessc_parser {
 
         // TODO this depends on $this->count
         if ($this->peek("(.*?)(\n|$)", $m, $count)) {
-            throw new exception("$msg: failed at `$m[1]` $loc");
+            throw new \Exception("$msg: failed at `$m[1]` $loc");
         } else {
-            throw new exception("$msg: $loc");
+            throw new \Exception("$msg: $loc");
         }
     }
 
     protected function pushBlock($selectors = null, $type = null) {
-        $b = new stdclass;
+        $b = new \stdclass;
         $b->parent = $this->env;
 
         $b->type = $type;
@@ -3314,6 +3336,7 @@ class lessc_parser {
 }
 
 class lessc_formatter_classic {
+
     public $indentChar = "  ";
 
     public $break = "\n";
@@ -3411,6 +3434,7 @@ class lessc_formatter_classic {
 }
 
 class lessc_formatter_compressed extends lessc_formatter_classic {
+
     public $disableSingle = true;
     public $open = "{";
     public $selectorSeparator = ",";
@@ -3424,6 +3448,7 @@ class lessc_formatter_compressed extends lessc_formatter_classic {
 }
 
 class lessc_formatter_lessjs extends lessc_formatter_classic {
+
     public $disableSingle = true;
     public $breakSelectors = true;
     public $assignSeparator = ": ";

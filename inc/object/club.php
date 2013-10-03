@@ -1,10 +1,16 @@
 <?php
+
+namespace object;
+
+use core\classes\table;
 use html\node;
+use traits\table_trait;
 
 /**
  * Class club
  */
 class club extends table {
+
     use table_trait;
 
     public static $module_id = 12;
@@ -16,14 +22,6 @@ class club extends table {
     public $content;
     public $max_pilots;
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return club_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return club_array::get_all($fields, $options);
-    }
 
     /**
      * @param pilot|pilot_official $pilot
@@ -59,42 +57,5 @@ class club extends table {
             node::create('span.name', [], $this->name)
 
         );
-    }
-}
-
-/**
- * Class club_array
- */
-class club_array extends table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, 'club_iterator');
-        $this->iterator = new club_iterator($input);
-    }
-
-    /* @return club */
-    public function next() {
-        return parent::next();
-    }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        parent::set_statics();
-    }
-}
-
-/**
- * Class club_iterator
- */
-class club_iterator extends table_iterator {
-
-    /* @return club */
-    public function key() {
-        return parent::key();
     }
 }

@@ -1,7 +1,10 @@
 <?php
-namespace tables;
+namespace module\tables\object;
 
+use classes\table_array;
 use html\node;
+use object\club;
+use object\pilot;
 
 class result_club extends result {
 
@@ -10,13 +13,13 @@ class result_club extends result {
         if ($data->options->official) {
             $pilots = 4;
         }
-        $pilots_array = new \pilot_array();
-        /** @var \flight $flight */
+        $pilots_array = new table_array();
+        /** @var \object\flight $flight */
         foreach ($data->flights as $flight) {
             if (isset ($pilots_array[$flight->ClassID . '.' . $flight->c_name])) {
                 $pilots_array[$flight->ClassID . '.' . $flight->c_name]->add_flight($flight);
             } else {
-                /** @var \pilot $pilot */
+                /** @var pilot $pilot */
                 $pilot = new $data->class();
                 $pilot->set_from_flight($flight, $data->max_flights, false);
                 $pilots_array [$flight->ClassID . '.' . $flight->c_name] = $pilot;
@@ -24,13 +27,13 @@ class result_club extends result {
         }
         // Sort pilots by score.
         if ($pilots_array->count()) {
-            $pilots_array->uasort(['tables\league_table', 'cmp']);
+            $pilots_array->uasort(['\module\tables\object\league_table', 'cmp']);
         } else {
             return node::create('table.main thead tr th.c', ['style' => 'width:663px'], 'No Flights to display');
         }
-        $club_array = new \club_array();
-        $pilots_array->iterate(function (\pilot $pilot) use ($data, $pilots, $club_array) {
-                /** @var \club $club */
+        $club_array = new table_array();
+        $pilots_array->iterate(function (pilot $pilot) use ($data, $pilots, $club_array) {
+                /** @var club $club */
                 if ($pilot->club) {
                     if (isset ($club_array [$pilot->club])) {
                         $club = $club_array [$pilot->club];
@@ -43,12 +46,12 @@ class result_club extends result {
                 }
             }
         );
-        $club_array->uasort(['tables\league_table', 'cmp']);
+        $club_array->uasort(['\module\tables\object\league_table', 'cmp']);
 
         $html = node::create('div.table_wrapper', [],
             node::create('h3', [], $data->Title) .
             $club_array->iterate_return(
-                function (\club $club, $i) use ($data) {
+                function (club $club, $i) use ($data) {
                     return node::create('div.table_wrapper.inner', [],
                         $club->writeClubSemiHead($i + 1) .
                         node::create('table.results.main.flights_' . $data->max_flights, [],

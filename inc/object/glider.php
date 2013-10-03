@@ -1,6 +1,12 @@
 <?php
 
+namespace object;
+
+use classes\ajax;
+use form\form;
+
 class glider extends pilot {
+
     public static $module_id = 4;
     public $gid;
     public $name;
@@ -24,6 +30,7 @@ class glider extends pilot {
     function __construct($flight = '', $num = 0, $split = 0) {
         parent::__construct();
         if ($flight != '') {
+            /** @var \object\flight $flight */
             parent::__construct($flight, $num, $split);
             if ($this->number_of_flights == 1) {
                 $this->club = $flight->gm_title;
@@ -32,14 +39,6 @@ class glider extends pilot {
         }
     }
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return glider_array
-     */
-    public static function get_all($fields = array(), $options = array()) {
-        return glider_array::get_all($fields, $options);
-    }
 
     /**
      * @param $pos
@@ -64,32 +63,12 @@ class glider extends pilot {
      *
      */
     public function do_update_selector() {
-        $field = form\form::create('field_link', 'gid')
-            ->set_attr('link_module', 'glider')
+        $field = form::create('field_link', 'gid')
+            ->set_attr('link_module', '\\object\\glider')
             ->set_attr('link_field', array('manufacturer.title', 'glider.name'))
             ->set_attr('options', array('join' => array('manufacturer' => 'manufacturer.mid = glider.mid'), 'order' => 'manufacturer.title, glider.name'));
         $field->parent_form = $this;
-        \ajax::update($field->get_html());
+        ajax::update($field->get_html());
     }
 }
 
-/**
- * Class glider_array
- */
-class glider_array extends table_array {
-    /* @return pilot */
-    public function next() {
-        return parent::next();
-    }
-}
-
-/**
- * Class glider_iterator
- */
-class glider_iterator extends table_iterator {
-
-    /* @return pilot */
-    public function key() {
-        return parent::key();
-    }
-}

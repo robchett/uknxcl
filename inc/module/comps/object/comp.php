@@ -1,22 +1,36 @@
 <?php
-namespace comps;
+namespace module\comps\object;
 
-use form\field;
+use classes\coordinate_bound;
+use classes\geometry;
+use classes\get;
+use classes\jquery;
+use classes\kml;
+use classes\lat_lng;
+use core\classes\db;
+use core\classes\table;
+use form\field_file;
 use html\node;
+use track\track;
+use traits\table_trait;
 
-class comp extends \table {
-    use \table_trait;
+class comp extends table {
+
+    use table_trait;
 
     public static $module_id = 17;
+    public $class;
+    public $coords;
     public $table_key = 'cid';
     public $cid;
+    public $title;
     public $type;
     public $date;
     public $round;
     public $task;
     public $combined_name;
     public $reverse_pilot_name;
-    /** @var \coordinate_bound */
+    /** @var coordinate_bound */
     public $bounds;
 
     const TASK_POINT_ENTRY = 1;
@@ -35,15 +49,6 @@ class comp extends \table {
     }
 
     /**
-     * @param array $fields
-     * @param array $options
-     * @return comp_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return comp_array::get_all($fields, $options);
-    }
-
-    /**
      * @param $p
      * @param $tp
      * @return int
@@ -53,7 +58,7 @@ class comp extends \table {
         $p_lon = deg2rad($p->lon);
         $tp_lat = deg2rad($tp->lat);
         $tp_lon = deg2rad($tp->lon);
-        $x = (int) (acos(sin($p_lat) * sin($tp_lat) + cos($p_lat) * cos($tp_lat) * cos($p_lon - $tp_lon)) * \geometry::EARTH_RADIUS);
+        $x = (int) (acos(sin($p_lat) * sin($tp_lat) + cos($p_lat) * cos($tp_lat) * cos($p_lon - $tp_lon)) * geometry::EARTH_RADIUS);
         return $x;
     }
 
@@ -62,10 +67,10 @@ class comp extends \table {
      * @param $tp
      * @return int
      */
-    public function distCalc3(\lat_lng $point, $tp) {
+    public function distCalc3(lat_lng $point, $tp) {
         $tp_lat = deg2rad($tp->lat);
         $tp_lon = deg2rad($tp->lon);
-        $x = (int) (acos($point->sin_lat() * sin($tp_lat) + $point->cos_lat() * cos($tp_lat) * cos($point->lng_rad() - $tp_lon)) * \geometry::EARTH_RADIUS);
+        $x = (int) (acos($point->sin_lat() * sin($tp_lat) + $point->cos_lat() * cos($tp_lat) * cos($point->lng_rad() - $tp_lon)) * geometry::EARTH_RADIUS);
         return $x;
     }
 
@@ -138,19 +143,19 @@ class comp extends \table {
         $root = root . '/uploads/comp/' . $this->cid;
         $this->combined_name = $this->type . ' ' . date('Y', strtotime($this->date)) . ' Round ' . $this->round . ' Task ' . $this->task;
 
-        $kml_out = new \kml();
+        $kml_out = new kml();
         $kml_out->set_folder_styles();
         $kml_out->get_kml_folder_open($this->combined_name, 1, '', true);
 
-        $kml_earth = new \kml();
+        $kml_earth = new kml();
         $kml_earth->set_folder_styles();
         $kml_earth->get_kml_folder_open($this->combined_name, 1, '', true);
 
         $js_file = fopen($root . '/points.js', 'w');
 
 
-        if (is_dir($root . '/tracks')) {
-            $tracks = glob($root . '/tracks/*');
+        if (is_dir($root . '/flight')) {
+            $tracks = glob($root . '/flight/*');
             foreach ($tracks as $track) {
                 unlink($track);
             }
@@ -158,15 +163,15 @@ class comp extends \table {
 
         $zip = new \ZipArchive;
         if ($zip->open($root . '/comp.zip') === true) {
-            $zip->extractTo($root . '/tracks/');
+            $zip->extractTo($root . '/flight/');
             $zip->close();
         } else {
             die('zip extraction failed');
         }
 
-        $track_array = new \table_array();
+        $track_array = new \classes\table_array();
         $cnt = 0;
-        foreach (glob($root . '/tracks/*.igc') as $file) {
+        foreach (glob($root . '/flight/*.igc') as $file) {
             $cnt++;
             $name = explode('/', $file);
             $file_name_data = explode('.', $name[count($name) - 1]);
@@ -175,7 +180,7 @@ class comp extends \table {
                 $pilot = explode(' ', $pilot, 4);
                 $pilot = $pilot[1] . ' ' . $pilot[0];
             }
-            $track = new \track();
+            $track = new track();
             $track->source = $file;
             $track->parse_IGC();
             $track->trim();
@@ -183,7 +188,7 @@ class comp extends \table {
             $track->name = ucfirst($pilot);
             $track_array[] = $track;
         }
-        $this->bounds = new \coordinate_bound();
+        $this->bounds = new coordinate_bound();
         $track_array->reset_iterator();
         $track_array->uasort(function ($a, $b) {
                 return ($a->name < $b->name) ? -1 : 1;
@@ -195,7 +200,7 @@ class comp extends \table {
         $cnt = 0;
         //$track_array->iterate(function (track $track, $cnt) use (&$startT, &$endT) {
         foreach ($track_array as $track) {
-            /** @var \track $track */
+            /** @var track $track */
             $track->colour = $cnt;
             if ($track->track_points->last()->time > $endT) {
                 $endT = $track->track_points->last()->time;
@@ -228,11 +233,11 @@ class comp extends \table {
             node::create('div.toggler') .
             $this->combined_name .
             node::create('ul', [],
-                $track_array->iterate_return(function (\track $track, $count) {
+                $track_array->iterate_return(function (track $track, $count) {
                         return node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . ($count) . ']}\''],
                             node::create('div.expander') .
                             node::create('div.toggler') .
-                            node::create('span', ['style' => 'color:#' . substr(\get::kml_colour($track->colour), 4, 2) . substr(\get::kml_colour($track->colour), 2, 2) . substr(\get::kml_colour($track->colour), 0, 2)])
+                            node::create('span', ['style' => 'color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2)])
                         );
                     }
                 )
@@ -245,7 +250,7 @@ class comp extends \table {
         );
         $count = 0;
         foreach ($track_array as $track) {
-            /** @var \track $track */
+            /** @var track $track */
             $track->repair_track();
             $track->get_graph_values();
             $track->get_limits();
@@ -309,7 +314,7 @@ class comp extends \table {
 
             $js_track = new \stdClass();
             $js_track->pilot = $track->name;
-            $js_track->colour = \get::js_colour($track->colour);
+            $js_track->colour = get::js_colour($track->colour);
             $js_track->minEle = $track->min_ele;
             $js_track->maxEle = $track->maximum_ele;
             $js_track->min_cr = $track->min_cr;
@@ -354,7 +359,7 @@ class comp extends \table {
         $kml_earth->get_kml_folder_close();
         $kml_earth->compile(false, root . '/uploads/comp/' . $this->cid . '/track_earth.kml');
         if (ajax) {
-            \jquery::colorbox(array('html' => $html));
+            jquery::colorbox(array('html' => $html));
         }
     }
 
@@ -416,7 +421,7 @@ class comp extends \table {
 
         $out = new \stdClass();
         $out->in = $this->coords;
-        $out->o = new \kml();;
+        $out->o = new kml();;
         $out->o->get_kml_folder_open('Task', 1, 'hideChildren');
         $out->task_array = json_decode($this->coords);
         foreach ($out->task_array as $matches) {
@@ -463,9 +468,9 @@ class comp extends \table {
     }
 
     /**
-     * @param field $field
+     * @param field_file $field
      */
-    protected function do_upload_file(field $field) {
+    protected function do_upload_file(field_file $field) {
         if ($field->field_name == 'file') {
             if (isset($_FILES[$field->field_name]) && !$_FILES[$field->field_name]['error']) {
                 $tmp_name = $_FILES[$field->field_name]['tmp_name'];
@@ -476,7 +481,7 @@ class comp extends \table {
                         mkdir(root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key});
                     }
                     move_uploaded_file($tmp_name, root . '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip');
-                    \db::update('comp')
+                    db::update('comp')
                         ->add_value('file', '/uploads/' . get_class($this) . '/' . $this->{$this->table_key} . '/comp.zip')
                         ->filter_field('cid', $this->cid)
                         ->execute();
@@ -523,37 +528,5 @@ class comp extends \table {
                 fclose($fd);
             }
         }
-    }
-}
-
-/**
- * Class comp_array
- * @package comps
- */
-class comp_array extends \table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, '\comps\comp_iterator');
-        $this->iterator = new comp_iterator($input);
-    }
-
-    /* @return comp */
-    public function next() {
-        return parent::next();
-    }
-}
-
-/**
- * Class comp_iterator
- * @package comps
- */
-class comp_iterator extends \table_iterator {
-
-    /* @return comp */
-    public function key() {
-        return parent::key();
     }
 }

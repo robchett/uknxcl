@@ -1,6 +1,11 @@
 <?php
 
-class get {
+namespace core\classes;
+
+use object\flight_type;
+use object\launch_type;
+
+abstract class get {
 
     private static $settings;
 
@@ -20,9 +25,13 @@ class get {
         return substr($name, $pos);
     }
 
-    public static function __namespace($object) {
+    public static function __namespace($object, $index = null) {
         $name = trim(get_class($object), '\\');
-        return substr($name, 0, strrpos($name, '\\'));
+        if (isset($index)) {
+            return array_reverse(explode('\\', substr($name, 0, strrpos($name, '\\'))))[$index];
+        } else {
+            return substr($name, 0, strrpos($name, '\\'));
+        }
     }
 
     public static function fn($str) {
@@ -91,7 +100,7 @@ class get {
         if (!isset(self::$launch_letter)) {
             $types = launch_type::get_all(array('lid', 'fn'));
             $types->iterate(function (launch_type $type) {
-                    get::$launch_letter[$type->lid] = $type->fn;
+                    \classes\get::$launch_letter[$type->lid] = $type->fn;
                 }
             );
         }
@@ -107,7 +116,7 @@ class get {
         if (!isset(self::$launch_title)) {
             $types = launch_type::get_all(array('lid', 'title'));
             $types->iterate(function (launch_type $type) {
-                    get::$launch_title[$type->lid] = $type->title;
+                    \classes\get::$launch_title[$type->lid] = $type->title;
                 }
             );
         }
@@ -199,7 +208,7 @@ class get {
             if (is_readable(root . '/.conf/config.ini')) {
                 self::$settings = parse_ini_file(root . '/.conf/config.ini', true);
             } else {
-                throw new Exception('Could not find ini file.');
+                throw new \Exception('Could not find ini file.');
             }
             if (defined('host') && is_readable(root . '/.conf/' . host . '.ini')) {
                 $sub_settings = parse_ini_file(root . '/.conf/' . host . '.ini', true);
@@ -219,7 +228,7 @@ class get {
         } else if (isset($default)) {
             return $default;
         } else {
-            throw new Exception('Setting not found and no default provided');
+            throw new \Exception('Setting not found and no default provided');
         }
 
     }

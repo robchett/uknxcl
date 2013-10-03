@@ -1,5 +1,16 @@
 <?php
+
+namespace object;
+
+use classes\ajax;
+use classes\geometry;
+use classes\get;
+use classes\jquery;
+use core\classes\db;
+use core\classes\table;
 use html\node;
+use track\track;
+use traits\table_trait;
 
 /**
  * @property mixed club_title
@@ -9,8 +20,11 @@ use html\node;
  */
 class
 flight extends table {
+
     use table_trait;
 
+    public $added;
+    public $admin_info;
     public $base_score;
     public $cid;
     public $club_name;
@@ -84,14 +98,6 @@ flight extends table {
         'manufacturer.title'
     );
 
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return flight_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return flight_array::get_all($fields, $options);
-    }
 
     /**
      *
@@ -110,11 +116,11 @@ flight extends table {
         $fullPath = '';
         if ((isset($this->fid) && $this->fid) || isset($_REQUEST['temp'])) {
             if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml') {
-                $fullPath = root . '/uploads/track/' . $id . '/track_earth.kml';
+                $fullPath = root . '/uploads/flight/' . $id . '/track_earth.kml';
             } else if ($_REQUEST['type'] == 'igc') {
-                $fullPath = root . '/uploads/track/' . $id . '/track.igc';
+                $fullPath = root . '/uploads/flight/' . $id . '/track.igc';
             } else if ($_REQUEST['type'] == 'kmz') {
-                $zip = zip_open(root . '/uploads/track/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
+                $zip = zip_open(root . '/uploads/flight/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
                 $fullPath = zip_read($zip);
                 $size = zip_entry_filesize($fullPath);
                 $file = zip_entry_read($fullPath, $size);
@@ -172,21 +178,21 @@ flight extends table {
      */
     public static function get_statistics() {
         $year_stats = [];
-        foreach (range(1991, 2013) as $key => $year) {
-            $year_object = new stdClass();
+        foreach (range(1991, 2013) as $year) {
+            $year_object = new \stdClass();
             $year_object->coords = [];
             $year_object->minEle = $year_object->min_cr = $year_object->maximum_cr = $year_object->maxEle = 0;
             $year_object->min_cr = 0;
             $year_object->drawGraph = true;
             $year_object->colour = get::js_colour($year);
-            foreach (range(1, 12) as $key2 => $month) {
-                $score = \db::select('flight')
+            foreach (range(1, 12) as $month) {
+                $score = db::select('flight')
                     ->retrieve('sum(score) AS score')
                     ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
                     ->execute()
                     ->fetchObject()
                     ->score;
-                $tot = \db::count('flight', 'fid')
+                $tot = db::count('flight', 'fid')
                     ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
                     ->execute();
                 $year_object->coords[] = [0, 0, $tot, $month, $score];
@@ -195,8 +201,8 @@ flight extends table {
             }
             $year_stats[] = $year_object;
         }
-        $wrapper = new stdClass();
-        $inner = new stdClass();
+        $wrapper = new \stdClass();
+        $inner = new \stdClass();
         $inner->track = $year_stats;
         $inner->StartT = 1;
         $inner->EndT = 12;
@@ -349,11 +355,11 @@ flight extends table {
                 node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], str_replace(';', '; ', $this->coords))) .
                 node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) .
 
-                (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz') ?
+                (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                     node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .
                     node::create('tr td.center.view', ['colspan' => 2],
-                        node::create('a.download.igc', ['href' => '/uploads/track/' . $this->fid . '/track.igc', 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => '/uploads/track/' . $this->fid . '/track.kmz', 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
+                        node::create('a.download.igc', ['href' => '/uploads/flight/' . $this->fid . '/track.igc', 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => '/uploads/flight/' . $this->fid . '/track.kmz', 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
                     ) :
                     node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
                 ) .
@@ -459,11 +465,11 @@ flight extends table {
             node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
             node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->track_points->last()->time - $this->track->track_points->first()->time))) .
             ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) : '') .
-            (file_exists(root . '/uploads/track/' . $this->fid . '/track.kmz') ?
+            (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                 node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
                 node::create('tr', [], node::create('td.center', ['colspan' => 2],
-                        node::create('a.download.igc', ['href' => '/uploads/track/' . $this->fid . '/track.igc'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => '/uploads/track/' . $this->fid . '/track.kmz'], 'Download KML')
+                        node::create('a.download.igc', ['href' => '/uploads/flight/' . $this->fid . '/track.igc'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => '/uploads/flight/' . $this->fid . '/track.kmz'], 'Download KML')
                     )
                 ) :
                 node::create('tr', [], node::create('td.center.view.coords', ['colspan' => 2],
@@ -483,7 +489,7 @@ flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/track/' . ($id > 100000 ? 'temp/' : '') . $id . '/track.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/flight/' . ($id > 100000 ? 'temp/' : '') . $id . '/track.js')));
         }
     }
 
@@ -509,7 +515,7 @@ flight extends table {
         $b = get::launch_letter($this->lid);
         $b .= round($this->score, 2);
         $type = get::type($this->ftid);
-        return node::create('td.' . $type . $d . $i . ' div.wrap a#fid' . $this->fid . '.click' . $this->fid, ['href' => $this->get_url(), 'data-ajax-click' => 'flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid], $prefix . $lead . $b);
+        return node::create('td.' . $type . $d . $i . ' div.wrap a#fid' . $this->fid . '.click' . $this->fid, ['href' => $this->get_url(), 'data-ajax-click' => '\object\flight:get_info_ajax', 'data-ajax-post' => '{"fid":' . $this->fid . '}', 'title' => 'Flight:' . $this->fid], $prefix . $lead . $b);
     }
 
     /**
@@ -517,34 +523,5 @@ flight extends table {
      */
     public function get_url() {
         return '/flight_info/' . $this->fid;
-    }
-}
-
-/**
- * Class flight_array
- */
-class flight_array extends table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input);
-    }
-
-    /* @return flight */
-    public function next() {
-        return parent::next();
-    }
-}
-
-/**
- * Class flight_iterator
- */
-class flight_iterator extends table_iterator {
-
-    /* @return flight */
-    public function key() {
-        return parent::key();
     }
 }

@@ -1,8 +1,20 @@
 <?php
+
+namespace core\classes;
+
+use classes\ajax;
+use classes\get as _get;
+use db\insert;
+use db\update;
+use form\field;
+use form\field_file;
+use form\form;
 use html\node;
+use module\cms\object\_cms_fields;
 
 /** @property string table_key */
 abstract class table {
+
     /**
      * @var array
      */
@@ -33,6 +45,10 @@ abstract class table {
             /** @var table $class */
             $class::_set_fields();
         }
+    }
+
+    public static function get_all(array $fields, array $options = array()) {
+        return \classes\table_array::get_all(get_called_class(), $fields, $options);
     }
 
     /**
@@ -66,8 +82,7 @@ abstract class table {
     public static function get_count() {
         $class = get_called_class();
         $return = new $class();
-        $res = \db::count($class, $return->table_key)->execute();
-        return $res->count;
+        return db::count($class, $return->table_key)->execute();
     }
 
     /**
@@ -75,7 +90,7 @@ abstract class table {
      */
     public function do_cms_update() {
         if (admin) {
-            \db::update(get::__class_name($this))->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field($this->table_key, $_REQUEST['id'])->execute();
+            db::update(_get::__class_name($this))->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field($this->table_key, $_REQUEST['id'])->execute();
         }
         return 1;
     }
@@ -87,7 +102,7 @@ abstract class table {
         foreach ($row as $key => $val) {
             if (isset(static::$fields[$key])) {
                 $class = get_class(static::$fields[$key]);
-                /** @var \form\field $class */
+                /** @var field $class */
                 $this->$key = $class::sanitise_from_db($val);
             } else {
                 $this->$key = $val;
@@ -102,10 +117,10 @@ abstract class table {
     public function do_retrieve(array $fields, array $options) {
         $options['limit'] = 1;
         $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
-        $sql = \db::get_query(get_class($this), $fields, $options, $parameters);
-        $res = \db::query($sql, $parameters);
-        if (\db::num($res)) {
-            $this->set_from_row(\db::fetch($res));
+        $sql = db::get_query(get_class($this), $fields, $options, $parameters);
+        $res = db::query($sql, $parameters);
+        if (db::num($res)) {
+            $this->set_from_row(db::fetch($res));
         }
     }
 
@@ -135,7 +150,7 @@ abstract class table {
      *
      */
     public function set_from_request() {
-        /** @var \form\field $field */
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($this->raw) {
                 $field->raw = true;
@@ -148,20 +163,20 @@ abstract class table {
      * @return string
      */
     public function do_save() {
-        $class = get::__class_name($this);
+        $class = _get::__class_name($this);
         if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
-            $query = new db\update($class);
+            $query = new update($class);
         } else {
-            $query = new db\insert($class);
+            $query = new insert($class);
         }
-        /** @var form\field $field */
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->field_name != $this->table_key) {
                 if (isset($this->{$field->field_name})) {
                     try {
                         $data = $field->get_save_sql();
                         $query->add_value($field->field_name, $data);
-                    } catch (RuntimeException $e) {
+                    } catch (\RuntimeException $e) {
 
                     }
                 }
@@ -172,7 +187,7 @@ abstract class table {
         }
         $query->execute();
         if (!(isset($this->{$this->table_key}) && $this->{$this->table_key})) {
-            $this->{$this->table_key} = \db::insert_id();
+            $this->{$this->table_key} = db::insert_id();
         }
         if ($this->{$this->table_key}) {
             foreach ($this->get_fields() as $field) {
@@ -185,17 +200,17 @@ abstract class table {
     }
 
     /**
-     * @param \form\field $field
+     * @param field_file $field
      */
-    protected function do_upload_file(\form\field $field) {
+    protected function do_upload_file(field_file $field) {
         if (isset($_FILES[$field->field_name]) && !$_FILES[$field->field_name]['error']) {
             $tmp_name = $_FILES[$field->field_name]['tmp_name'];
             $name = $_FILES[$field->field_name]['name'];
             $ext = pathinfo($name, PATHINFO_EXTENSION);
-            if (!is_dir(root . '/uploads/' . get::__class_name($this) . '/' . $this->{$this->table_key})) {
-                mkdir(root . '/uploads/' . get::__class_name($this) . '/' . $this->{$this->table_key});
+            if (!is_dir(root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key})) {
+                mkdir(root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key});
             }
-            move_uploaded_file($tmp_name, root . '/uploads/' . get::__class_name($this) . '/' . $this->{$this->table_key} . '/' . $field->fid . '.' . $ext);
+            move_uploaded_file($tmp_name, root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key} . '/' . $field->fid . '.' . $ext);
         }
     }
 
@@ -222,11 +237,11 @@ abstract class table {
     }
 
     /**
-     * @return \form\form
+     * @return form
      */
     public function get_form() {
-        $form = new form\form($this->get_fields());
-        $form->id = get_class($this) . '_form';
+        $form = new form($this->get_fields());
+        $form->id = str_replace('\\', '_', get_class($this) . '_form');
         if (isset($form->attributes['target'])) {
             $form->attributes['target'] = 'form_target_' . $form->id;
         }
@@ -240,7 +255,7 @@ abstract class table {
         $this->do_retrieve_from_id($fields, $this->{$this->table_key});
     }
 
-    /** @return html\node */
+    /** @return \html\node */
     public function get_cms_edit_module() {
         $list = node::create('table#module_def', [],
             node::create('thead', [],
@@ -255,7 +270,7 @@ abstract class table {
             )
         );
 
-        /** @var \form\field $field */
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             $list->add_child(node::create('tr', [], $field->get_cms_admin_edit()));
         }
@@ -267,7 +282,7 @@ abstract class table {
      */
     public function get_cms_list() {
         $nodes = array();
-        /** @var \form\field $field */
+        /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->list) {
                 $nodes[] = node::create('td.' . get_class($field), [], $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->{$this->table_key}));
@@ -292,10 +307,10 @@ abstract class table {
      */
     public static function _set_fields() {
         $final_fields = [];
-        $fields = cms\_cms_fields::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
-        $fields->iterate(function (cms\_cms_fields $row) use (&$final_fields) {
+        $fields = _cms_fields::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
+        $fields->iterate(function (_cms_fields $row) use (&$final_fields) {
                 $class = 'form\field_' . $row->type;
-                /** @var form\field $field */
+                /** @var field $field */
                 $field = new $class($row->field_name, array());
                 $field->label = $row->title;
                 $field->set_from_row($row);
@@ -317,254 +332,5 @@ abstract class table {
             $clone[$key] = clone $field;
         }
         return $clone;
-    }
-}
-
-/**
- * Class table_array
- */
-class table_array extends ArrayObject {
-
-    /**
-     * @var bool
-     */
-    protected static $statics_set = false;
-    /* @var table_iterator */
-    public $iterator;
-    /**
-     * @var array
-     */
-    protected $retrieved_fields = array();
-    /**
-     * @var array
-     */
-    protected $original_retrieve_options = array();
-
-    /**
-     *
-     */
-    public function __construct($input = [], $flags = 0, $iterator_class = "table_iterator") {
-        parent::__construct($input, $flags, $iterator_class);
-        if (!self::$statics_set) {
-            $this->set_statics();
-        }
-    }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        self::$statics_set = true;
-    }
-
-    /**
-     * @param int $int
-     */
-    public function remove_first($int = 1) {
-        parent::__construct($this->subset($int));
-    }
-
-    /**
-     * @param int $start
-     * @param null $end
-     * @return array
-     */
-    public function subset($start = 0, $end = null) {
-        $sub = array();
-        if ($end == null || $end < $start)
-            $end = $this->count();
-        for ($i = $start; $i < $end; $i++) {
-            $sub[] = $this[$i];
-        }
-        return $sub;
-    }
-
-    /**
-     * @param array $keys
-     */
-    public function lazy_load(array $keys) {
-        $fields_to_retrieve = array();
-        foreach ($keys as $key) {
-            if (!$this->has_field($key)) {
-                $fields_to_retrieve[] = $key;
-            }
-        }
-        if (!empty($fields_to_retrieve)) {
-            $this->do_retrieve($fields_to_retrieve, $this->original_retrieve_options);
-        }
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function has_field($name) {
-        return (isset($this->retrieved_fields[$name]) ? $this->retrieved_fields[$name] : false);
-    }
-
-    /**
-     * @param $fields
-     * @param $options
-     */
-    public function do_retrieve($fields, $options) {
-        self::get_all($fields, $options);
-    }
-
-    /**
-     * @param array $fields_to_retrieve
-     * @param array $options
-     * @return table_array
-     */
-    static function get_all(array $fields_to_retrieve, $options = array()) {
-        $class = get_called_class();
-        /** @var $return table_array */
-        $return = new $class();
-        $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
-        $sql = \db::get_query($return->get_class(), $fields_to_retrieve, $options, $parameters);
-        $res = \db::query($sql, $parameters);
-        if (\db::num($res)) {
-            while ($row = \db::fetch($res, $return->get_class())) {
-                $return[] = $row;
-            }
-        }
-        $return->reset_iterator();
-        return $return;
-    }
-
-    public function reverse() {
-        $this->exchangeArray(array_reverse($this->getArrayCopy()));
-    }
-
-    /**
-     *
-     */
-    public function reset_iterator() {
-        $this->iterator = $this->getIterator();
-        //$this->iterator->rewind();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function get_class() {
-        return str_replace('_array', '', get_class($this));
-
-    }
-
-    /**
-     * @param $function
-     * @param int $cnt
-     */
-    public function iterate($function, $cnt = 0) {
-        $this->reset_iterator();
-        while ($obj = $this->next()) {
-            $cnt++;
-            call_user_func($function, $obj, $cnt);
-        }
-    }
-
-    public function iterate_return($function, $cnt = 0) {
-        $res = '';
-        $this->reset_iterator();
-        while ($obj = $this->next()) {
-            $cnt++;
-            $res .= call_user_func($function, $obj, $cnt);
-        }
-        return $res;
-    }
-
-
-    /**
-     * @return bool|mixed
-     */
-    public function next() {
-        if ($this->iterator->index == -1) {
-            $this->iterator->index = 0;
-            if ($this->iterator->valid()) {
-                return $this->iterator->current();
-            } else return false;
-        } else {
-            $this->iterator->next();
-            $this->iterator->index++;
-            if ($this->iterator->valid()) {
-                return $this->iterator->current();
-            } else return false;
-        }
-    }
-
-    /**
-     * @param int $int
-     */
-    public function remove_last($int = 0) {
-        if ($int) {
-            for ($i = 0; $i < $int; $i++)
-                $this->remove_last();
-        } else {
-            $this->offsetUnset($this->count() - 1);
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function last() {
-        return $this[$this->count() - 1];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function first() {
-        return $this[0];
-    }
-
-    /**
-     * @param $index
-     * @param $object
-     */
-    public function inject($index, $object) {
-        $start = $this->subset(0, $index - 1);
-        $end = $this->subset($index);
-        $this->exchangeArray(array_merge($start, $object, $end));
-    }
-
-    /**
-     * @return int
-     */
-    public function iterator_cnt() {
-        return $this->iterator->index;
-    }
-
-    /**
-     *
-     */
-    public function rewind() {
-        $this->iterator->rewind();
-    }
-}
-
-/**
- * Class table_iterator
- */
-class table_iterator extends ArrayIterator {
-    /**
-     * @var int
-     */
-    public $index = -1;
-
-    /**
-     *
-     */
-    public function rewind() {
-        $this->index = -1;
-        parent::rewind();
-    }
-
-    /**
-     *
-     */
-    public function reset() {
-        $this->index = -1;
-        parent::rewind();
     }
 }

@@ -1,8 +1,13 @@
 <?php
-namespace news;
-class controller extends \core_module {
 
-    /** @var  article */
+namespace module\news;
+
+use classes\module;
+use module\news\object\article;
+
+class controller extends module {
+
+    /** @var  \module\news\object\article */
     public $current;
 
     public function __controller(array $path) {

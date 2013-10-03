@@ -1,67 +1,33 @@
 <?php
 
-class auto_loader {
+namespace core\classes;
+
+abstract class auto_loader {
 
     public function __construct() {
-        spl_autoload_register(['auto_loader', 'load']);
+        spl_autoload_register(['self', 'load']);
     }
 
     public function load($class) {
-        $namespace = '';
-        if (false !== ($namespace_pos = strripos($class, '\\'))) {
-            $namespace = substr($class, 0, $namespace_pos);
-            $class = substr($class, $namespace_pos + 1);
-        }
-        $class = str_replace(array('_iterator', '_array'), '', $class);
+        $class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
 
-        if ($class == 'controller' && $this->load_module($class, $namespace)) {
-        } else if ($this->load_object($class, $namespace)) {
-        } else if ($this->load_form($class, $namespace)) {
-        } else if ($this->load_class($class, $namespace)) {
+        $path = false;
+        $local_path = root . DIRECTORY_SEPARATOR . 'inc' . DIRECTORY_SEPARATOR . $class . '.php';
+        $dependent_path = root . DIRECTORY_SEPARATOR . '.core' . DIRECTORY_SEPARATOR . 'dependent' . DIRECTORY_SEPARATOR . $class . '.php';
+        $core_path = root . DIRECTORY_SEPARATOR . str_replace('core', '.core', $class) . '.php';
+        if (is_readable($local_path)) {
+            $path = $local_path;
+        } else if (is_readable($dependent_path)) {
+            $path = $dependent_path;
+        } else if (is_readable($core_path)) {
+            $path = $core_path;
+        }
+
+        if ($path) {
+            require_once($path);
+            return true;
         } else {
             return false;
         }
-        return true;
-    }
-
-    public function load_module($class, $namespace) {
-        if (is_readable($filename = root . '/inc/module/' . $namespace . '/' . $class . '.php')) {
-            require($filename);
-            return true;
-        }
-        return false;
-    }
-
-    public function load_object($class, $namespace) {
-        if ($namespace !== '') {
-            $namespace = 'module/' . $namespace . '/';
-        }
-        if (is_readable($filename = root . '/inc/' . $namespace . 'object/' . $class . '.php')) {
-            require($filename);
-            return true;
-        }
-        return false;
-    }
-
-    public function load_form($class, $namespace) {
-        if ($namespace !== '') {
-            $namespace = 'module/' . $namespace . '/';
-        }
-        if (is_readable($filename = root . '/inc/' . $namespace . 'form/' . $class . '.php')) {
-            require($filename);
-            return true;
-        }
-        return false;
-    }
-
-    public function load_class($class, $namespace) {
-        if ($namespace !== '') {
-            $namespace .= '/';
-        }
-        if (is_readable($filename = core_dir . '/classes/' . $namespace . $class . ".php")) {
-            require($filename);
-            return true;
-        }
-        return false;
     }
 }

@@ -1,10 +1,14 @@
 <?php
-namespace converter;
-class controller extends \core_module {
+namespace module\converter;
+
+use classes\module;
+
+class controller extends module {
+
     public function __controller(array $path) {
         \core::$page_config->title_tag = 'Converter';
-        \core::$css = array('/inc/module/cms/css/cms.css');
-        \core::$js = array('/js/jquery/jquery.js', '/js/_ajax.js', '/js/jquery/colorbox.js');
+        \core::$css = array('/.core/module/cms/css/cms.css');
+        \core::$js = array('/.core/js/jquery.js', '/.core/js/_ajax.js', '/.core/js/colorbox.js');
         $this->view = 'dashboard';
         if (isset($path[1]) && !empty($path[1])) {
             $this->view = $path[1];

@@ -1,6 +1,8 @@
 <?php
 
-class page_config {
+namespace core\classes;
+
+abstract class page_config {
 
     public $title_tag = '';
     public $pre_content = '';

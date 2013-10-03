@@ -1,8 +1,13 @@
 <?php
-/**
- * Class flight_type
- */
-class flight_type extends table { use table_trait;
+
+namespace object;
+
+use core\classes\table;
+use traits\table_trait;
+
+class flight_type extends table {
+
+    use table_trait;
 
     const OD_ID = 1;
     const OR_ID = 2;
@@ -19,15 +24,6 @@ class flight_type extends table { use table_trait;
     public $title;
 
     protected static $all_rows;
-
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return flight_type_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return flight_type_array::get_all($fields, $options);
-    }
 
     /**
      * @param $type
@@ -67,41 +63,4 @@ class flight_type extends table { use table_trait;
         return '';
     }
 
-}
-
-/**
- * Class flight_type_array
- */
-class flight_type_array extends table_array {
-
-    /**
-     * @param array $input
-     */
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, 'flight_type_iterator');
-        $this->iterator = new flight_type_iterator($input);
-    }
-
-    /* @return flight_type */
-    public function next() {
-        return parent::next();
-    }
-
-    /**
-     *
-     */
-    protected function set_statics() {
-        parent::set_statics();
-    }
-}
-
-/**
- * Class flight_type_iterator
- */
-class flight_type_iterator extends table_iterator {
-
-    /* @return flight_type */
-    public function key() {
-        return parent::key();
-    }
 }

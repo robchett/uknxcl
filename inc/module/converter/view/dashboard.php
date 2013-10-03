@@ -1,9 +1,11 @@
 <?php
-namespace converter;
+namespace module\converter\view;
 
+use classes\view;
 use html\node;
+use module\converter\form;
 
-class dashboard_view extends \view {
+class dashboard extends view {
 
     public function get_view() {
         $html = node::create('div', [],
@@ -18,7 +20,7 @@ class dashboard_view extends \view {
     }
 
     public function get_coordinate_converter() {
-        $form = new coordinate_conversion_form();
+        $form = new form\coordinate_conversion_form();
         return $form->get_html();
     }
 }

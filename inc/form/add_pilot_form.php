@@ -4,8 +4,14 @@ use html\node;
 
 class add_pilot_form extends form\form {
 
+    public $bhpa_no;
+    public $email;
+    public $name;
+    public $gender;
+    public $rating;
+
     public function __construct() {
-        $this->pilot = new pilot();
+        $this->pilot = new \object\pilot();
         parent::__construct($this->pilot->get_fields());
         $this->get_field_from_name('pid')
             ->set_attr('hidden', true)
@@ -31,7 +37,7 @@ class add_pilot_form extends form\form {
     }
 
     public function get_form() {
-        jquery::colorbox(['html' => $this->get_html()]);
+        \classes\jquery::colorbox(['html' => $this->get_html()]);
     }
 
     public function do_submit() {
@@ -45,7 +51,7 @@ class add_pilot_form extends form\form {
             if ($this->pilot->pid) {
                 $this->pilot->do_update_selector();
             }
-            jquery::colorbox(node::create('strong', [], $this->name) . ' added to the database');
+            \classes\jquery::colorbox(node::create('strong', [], $this->name) . ' added to the database');
         }
     }
 }

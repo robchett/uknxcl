@@ -1,5 +1,6 @@
 <?php
-namespace interfaces;
+namespace core\classes\interfaces;
+
 /**
  * Class cache_interface
  */
@@ -8,7 +9,7 @@ interface cache_interface {
     /**
      * @param string $key the key to retrieve.
      * @param array $dependencies table dependencies.
-     * @throws \exception Throws exceptions if the cache node could not be connected or the key is not set.
+     * @throws \Exception Throws \Exceptions if the cache node could not be connected or the key is not set.
      * @return mixed
      */
     public static function get($key, array $dependencies = array('global'));

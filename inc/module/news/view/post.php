@@ -1,10 +1,13 @@
 <?php
-namespace news;
+namespace module\news\view;
 
+use classes\view;
 use html\node;
+use module\news;
 
-class post_view extends \view {
-    /** @var controller $module */
+class post extends view {
+
+    /** @var \module\news\controller $module */
     public $module;
 
     public function get_view() {

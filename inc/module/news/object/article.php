@@ -1,10 +1,13 @@
 <?php
-namespace news;
+namespace module\news\object;
 
+use core\classes\table;
 use html\node;
+use traits\table_trait;
 
-class article extends \table {
-    use \table_trait;
+class article extends table {
+
+    use table_trait;
 
     /* @var string */
     public $date;
@@ -42,37 +45,5 @@ class article extends \table {
             node::create('div.title', [], $this->get_title()) .
             node::create('div.content', [], (!$this->snippet ? $this->post : $this->snippet . node::create('a.button', ['href' => $this->get_url()], 'Read more')))
         );
-    }
-
-
-    /**
-     * @param array $fields
-     * @param array $options
-     * @return article_array
-     */
-    public static function get_all(array $fields, array $options = array()) {
-        return article_array::get_all($fields, $options);
-    }
-}
-
-class article_array extends \table_array {
-
-    public function __construct($input = array()) {
-        parent::__construct($input, 0, '\news\article_iterator');
-        $this->iterator = new article_iterator($input);
-    }
-
-    /* @return article */
-    public function next() {
-        return parent::next();
-    }
-
-}
-
-class article_iterator extends \table_iterator {
-
-    /* @return article */
-    public function key() {
-        return parent::key();
     }
 }

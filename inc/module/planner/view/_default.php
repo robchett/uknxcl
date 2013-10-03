@@ -1,12 +1,17 @@
 <?php
-namespace planner;
+namespace module\planner\view;
 
+use classes\ajax;
+use classes\view;
 use html\node;
+use module\planner\form;
+use module\planner\object;
+use object\flight_type;
 
-class _default_view extends \view {
+class _default extends view {
 
     public function get_view() {
-        $form = new planner_load_waypoints();
+        $form = new form\planner_load_waypoints();
         $html = node::create('div#waypoints', [],
             node::create('h3', [], 'Flight Planner') .
             node::create('div#wp_overlay a#enter_wp_mode.button', [], 'Enter Planner mode') .
@@ -17,9 +22,9 @@ class _default_view extends \view {
 
             ) .
             node::create('ul#flight_types', [],
-                node::create('li', [], 'An open distance flight of 5 or less points can be saved as a declaration of intent by clicking ' . node::create('a#decOD.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . \flight_type::GO_ID . '}', 'disabled' => 'disabled'], 'here')) .
-                node::create('li', [], 'An out and return of 3 points where the 3rd is also the 1st can be saved as a declaration of intent by clicking ' . node::create('a#decOR.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . \flight_type::OR_ID . '}', 'disabled' => 'disabled'], 'here')) .
-                node::create('li', [], 'A triangle of 4 points where the 4th is also the 1st can be saved as a declaration of intent by clicking ' . node::create('a#decTR.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . \flight_type::TR_ID . '}', 'disabled' => 'disabled'], 'here'))
+                node::create('li', [], 'An open distance flight of 5 or less points can be saved as a declaration of intent by clicking ' . node::create('a#decOD.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . flight_type::GO_ID . '}', 'disabled' => 'disabled'], 'here')) .
+                node::create('li', [], 'An out and return of 3 points where the 3rd is also the 1st can be saved as a declaration of intent by clicking ' . node::create('a#decOR.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . flight_type::OR_ID . '}', 'disabled' => 'disabled'], 'here')) .
+                node::create('li', [], 'A triangle of 4 points where the 4th is also the 1st can be saved as a declaration of intent by clicking ' . node::create('a#decTR.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . flight_type::TR_ID . '}', 'disabled' => 'disabled'], 'here'))
             ) .
             node::create('div#path_wrapper', [],
                 node::create('h4', [], 'Path') .
@@ -31,7 +36,7 @@ class _default_view extends \view {
         $script = '$("a#enter_wp_mode").click(function(){map.planner.enable();});';
         $script .= '$("a#leave_wp_mode").click(function(){map.planner.clear();});';
         if (ajax) {
-            \ajax::add_script($script);
+            ajax::add_script($script);
         } else {
             \core::$inline_script[] = $script;
         }

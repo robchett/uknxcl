@@ -1,8 +1,14 @@
 <?php
-namespace converter;
+namespace module\converter\form;
+
+use classes\ajax;
+use classes\geometry;
+use classes\gps_datums;
+use classes\lat_lng;
 use form\form;
 
 class coordinate_conversion_form extends form {
+
     public $OS6;
     public $OS8;
     public $OSGB36_lat;
@@ -31,7 +37,7 @@ class coordinate_conversion_form extends form {
         ];
         parent::__construct($fields);
         $this->id = 'coordinate_conversion_form';
-        $this->attributes['data-ajax-change'] = 'converter\coordinate_conversion_form:do_submit';
+        $this->attributes['data-ajax-change'] = '\module\converter\form\coordinate_conversion_form:do_submit';
     }
 
     public function set_disabled() {
@@ -77,23 +83,23 @@ class coordinate_conversion_form extends form {
         return parent::get_html();
     }
 
-    /** @return \lat_lng */
+    /** @return lat_lng */
     public function get_source_as_wgs84() {
         switch ($this->source) {
             case 0:
-                $point = \geometry::os_to_lat_long($this->OS6);
+                $point = geometry::os_to_lat_long($this->OS6);
                 break;
             case 1:
-                $point = \geometry::os_to_lat_long($this->OS8);
+                $point = geometry::os_to_lat_long($this->OS8);
                 break;
             case 2:
-                $point = \gps_datums::convert(new \lat_lng($this->OSGB36_lat, $this->OSGB36_lng), 'OSGB36', 'WGS84');
+                $point = gps_datums::convert(new lat_lng($this->OSGB36_lat, $this->OSGB36_lng), 'OSGB36', 'WGS84');
                 break;
             case 3:
-                $point = new \lat_lng($this->WGS84_lat, $this->WGS84_lng);
+                $point = new lat_lng($this->WGS84_lat, $this->WGS84_lng);
                 break;
             default:
-                $point = new \lat_lng(0, 0);
+                $point = new lat_lng(0, 0);
                 break;
 
         }
@@ -135,12 +141,12 @@ class coordinate_conversion_form extends form {
         $this->set_disabled();
     }
 
-    public function set_values_from_point(\lat_lng $point) {
-        $this->OS6 = \geometry::lat_long_to_os($point, 6);
-        $this->OS8 = \geometry::lat_long_to_os($point, 8);
+    public function set_values_from_point(lat_lng $point) {
+        $this->OS6 = geometry::lat_long_to_os($point, 6);
+        $this->OS8 = geometry::lat_long_to_os($point, 8);
         $this->WGS84_lat = $point->lat();
         $this->WGS84_lng = $point->lng();
-        $osgb36 = \gps_datums::convert($point, 'WGS84', 'OSGB36');
+        $osgb36 = gps_datums::convert($point, 'WGS84', 'OSGB36');
         $this->OSGB36_lat = $osgb36->lat();
         $this->OSGB36_lng = $osgb36->lng();
     }
@@ -151,7 +157,7 @@ class coordinate_conversion_form extends form {
             $this->set_values_from_point($point);
         }
 
-        \ajax::update($this->get_html()->get());
+        ajax::update($this->get_html()->get());
 
     }
 
