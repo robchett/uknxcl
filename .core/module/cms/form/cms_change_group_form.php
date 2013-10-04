@@ -3,7 +3,7 @@ namespace core\module\cms\form;
 
 use classes\ajax;
 use form\form;
-use module\cms\object\_cms_modules;
+use module\cms\object\_cms_module;
 
 abstract class cms_change_group_form extends form {
 
@@ -24,7 +24,7 @@ abstract class cms_change_group_form extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $module = new _cms_modules();
+            $module = new _cms_module();
             $module->do_retrieve_from_id(array('mid', 'title'), $this->mid);
             $module->gid = $this->gid;
             $module->do_save();

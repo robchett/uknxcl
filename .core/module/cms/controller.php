@@ -29,7 +29,7 @@ abstract class controller extends module {
      */
     public $mid;
     /**
-     * @var object\_cms_modules
+     * @var object\_cms_module
      */
     public $module;
     /**
@@ -120,16 +120,16 @@ abstract class controller extends module {
     public function do_reorder_fields() {
         if (isset($_REQUEST['mid']) && isset($_REQUEST['fid'])) {
             $this->set_from_mid($_REQUEST['mid']);
-            $fields = object\_cms_fields::get_all([], ['where_equals' => ['mid' => $_REQUEST['mid']]]);
+            $fields = object\_cms_field::get_all([], ['where_equals' => ['mid' => $_REQUEST['mid']]]);
             $reverse = false;
             if (isset($_REQUEST['dir']) && $_REQUEST['dir'] == 'down') {
                 $reverse = true;
                 $fields->reverse();
             }
             $cnt = $reverse ? count($fields) + 1 : 0;
-            /** @var object\_cms_fields $previous */
+            /** @var object\_cms_field $previous */
             $previous = $fields[0];
-            $fields->iterate(function (object\_cms_fields $field) use (&$previous, $reverse, &$cnt) {
+            $fields->iterate(function (object\_cms_field $field) use (&$previous, $reverse, &$cnt) {
                     $cnt += $reverse ? -1 : 1;
                     $field->position = $cnt;
                     if ($field->fid == $_REQUEST['fid']) {
@@ -142,12 +142,12 @@ abstract class controller extends module {
             if ($reverse) {
                 $fields->reverse();
             }
-            $fields->uasort(function (object\_cms_fields $a, object\_cms_fields $b) {
+            $fields->uasort(function (object\_cms_field $a, object\_cms_field $b) {
                     return $b->position - $a->position;
                 }
             );
-            $fields->iterate(function (object\_cms_fields $field) {
-                    db::update('_cms_fields')->add_value('position', $field->position)->filter_field('fid', $field->fid)->execute();
+            $fields->iterate(function (object\_cms_field $field) {
+                    db::update('_cms_field')->add_value('position', $field->position)->filter_field('fid', $field->fid)->execute();
                 }
             );
             ajax::update($this->current->get_cms_edit_module()->get());
@@ -217,12 +217,12 @@ abstract class controller extends module {
         $html = node::create('ul#nav', [],
             $groups->iterate_return(
                 function (object\_cms_group $row) {
-                    $modules = object\_cms_modules::get_all([], ['where_equals' => ['gid' => $row->gid]]);
+                    $modules = object\_cms_module::get_all([], ['where_equals' => ['gid' => $row->gid]]);
                     return node::create('li', [],
                         node::create('span', [], $row->title) .
                         node::create('ul', [],
                             $modules->iterate_return(
-                                function (object\_cms_modules $srow) {
+                                function (object\_cms_module $srow) {
                                     return node::create('li span a', ['href' => '/cms/module/' . $srow->mid], $srow->title);
                                 }
                             )
@@ -316,7 +316,7 @@ abstract class controller extends module {
      */
     public function set_from_mid($mid) {
         $this->mid = $mid;
-        $this->module = new object\_cms_modules([], $this->mid);
+        $this->module = new object\_cms_module([], $this->mid);
         $this->current = $this->module->get_class();
         $this->current->mid = $this->mid;
     }

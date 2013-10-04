@@ -2,7 +2,7 @@
 namespace core\module\cms\view;
 
 use html\node;
-use module\cms\object\_cms_modules;
+use module\cms\object\_cms_module;
 
 abstract class module_list extends cms_view {
 
@@ -16,12 +16,12 @@ abstract class module_list extends cms_view {
     }
 
     public function get_module_list() {
-        $modules = _cms_modules::get_all(array('mid', 'title', 'primary_key', '_cms_group.title', 'table_name'), array('join' => array('_cms_group' => '_cms_group.gid = _cms_modules.gid')));
+        $modules = _cms_module::get_all(array('mid', 'title', 'primary_key', '_cms_group.title', 'table_name'), array('join' => array('_cms_group' => '_cms_group.gid = _cms_module.gid')));
         if ($modules) {
             $html = node::create('div', [],
                 node::create('table.module', [],
                     $modules->iterate_return(
-                        function (_cms_modules $module) {
+                        function (_cms_module $module) {
                             return node::create('tr', [],
                                 node::create('td', [], $module->mid) .
                                 node::create('td', [], $module->_cms_group_title) .

@@ -4,6 +4,7 @@ namespace core\classes;
 
 use classes\ajax;
 use classes\get;
+use classes\db as _db;
 use db\count as _count;
 use db\insert as _insert;
 use db\select as _select;

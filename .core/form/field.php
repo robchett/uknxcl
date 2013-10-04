@@ -163,7 +163,7 @@ abstract class field extends node {
 
     public function update_cms_setting() {
         if (admin) {
-            db::update('_cms_fields')->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field('fid', $_REQUEST['fid'])->execute();
+            db::update('_cms_field')->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field('fid', $_REQUEST['fid'])->execute();
         }
         return 1;
     }

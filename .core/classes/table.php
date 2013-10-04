@@ -10,7 +10,7 @@ use form\field;
 use form\field_file;
 use form\form;
 use html\node;
-use module\cms\object\_cms_fields;
+use module\cms\object\_cms_field;
 
 /** @property string table_key */
 abstract class table {
@@ -307,8 +307,8 @@ abstract class table {
      */
     public static function _set_fields() {
         $final_fields = [];
-        $fields = _cms_fields::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
-        $fields->iterate(function (_cms_fields $row) use (&$final_fields) {
+        $fields = _cms_field::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
+        $fields->iterate(function (_cms_field $row) use (&$final_fields) {
                 $class = 'form\field_' . $row->type;
                 /** @var field $field */
                 $field = new $class($row->field_name, array());

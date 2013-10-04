@@ -6,7 +6,7 @@ use core\classes\table;
 use module\cms\form\cms_change_group_form;
 use traits\table_trait;
 
-abstract class _cms_modules extends table {
+abstract class _cms_module extends table {
 
     use table_trait;
 
