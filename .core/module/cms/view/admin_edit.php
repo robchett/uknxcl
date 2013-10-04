@@ -10,7 +10,7 @@ abstract class admin_edit extends cms_view {
 
     public function get_view() {
         $html = node::create('div', [],
-            node::create('a.button.change_group', ['href' => '#', 'data-ajax-click' => '_cms_modules:get_cms_change_group', 'data-ajax-post' => json_encode(['mid' => $this->module->module->mid])], 'Change Group') .
+            node::create('a.button.change_group', ['href' => '#', 'data-ajax-click' => '_cms_module:get_cms_change_group', 'data-ajax-post' => json_encode(['mid' => $this->module->module->mid])], 'Change Group') .
             $this->module->current->get_cms_edit_module() .
             $this->module->get_new_field_form()
         );

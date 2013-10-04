@@ -3,7 +3,7 @@ namespace core\module\cms\object;
 
 use core\classes\table;
 
-abstract class _cms_fields extends table {
+abstract class _cms_field extends table {
 
     public $fid;
     public $field_name;

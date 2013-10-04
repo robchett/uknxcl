@@ -40,19 +40,19 @@ abstract class new_module_form extends form {
             PRIMARY KEY (`' . $this->primary_key . '`)
             ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;'
             );
-            $mid = db::insert('_cms_modules')
+            $mid = db::insert('_cms_module')
                 ->add_value('gid', $this->gid)
                 ->add_value('pkey', $this->primary_key)
                 ->add_value('title', $this->title)
                 ->add_value('tname', $this->table_name)
                 ->execute();
-            $id_field = db::insert('_cms_fields')
+            $id_field = db::insert('_cms_field')
                 ->add_value('field_name', $this->primary_key)
                 ->add_value('title', 'ID')
                 ->add_value('type', 'int')
                 ->add_value('mid', $mid)
                 ->execute();
-            db::insert('_cms_fields')
+            db::insert('_cms_field')
                 ->add_value('field_name', $this->primary_key)
                 ->add_value('title', 'Parent ID')
                 ->add_value('type', 'link')

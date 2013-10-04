@@ -145,16 +145,16 @@ abstract class core {
      * @return string
      */
     public static function get_class_from_mid($mid) {
-        $module = new \module\cms\object\_cms_modules(['namespace', 'table_name'], $mid);
+        $module = new \module\cms\object\_cms_module(['namespace', 'table_name'], $mid);
         return $module->get_class_name();
     }
 
     /**
      * @param $fid
-     * @return \module\cms\object\_cms_fields
+     * @return \module\cms\object\_cms_field
      */
     public static function get_field_from_fid($fid) {
-        return new \module\cms\object\_cms_fields([], $fid);
+        return new \module\cms\object\_cms_field([], $fid);
     }
 
     /**

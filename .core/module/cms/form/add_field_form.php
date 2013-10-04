@@ -4,7 +4,7 @@ namespace core\module\cms\form;
 use classes\ajax;
 use core\classes\db;
 use form\form;
-use module\cms\object\_cms_modules;
+use module\cms\object\_cms_module;
 use module\cms\object\field_type;
 
 /**
@@ -30,7 +30,7 @@ abstract class add_field_form extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $module = new _cms_modules([], $this->mid);
+            $module = new _cms_module([], $this->mid);
             $field = new field_type([], $this->type);
             $type = '\form\field_' . $field->title;
             /** @var \form\field $field_type */
@@ -38,8 +38,8 @@ abstract class add_field_form extends form {
             if ($inner = $field_type->get_database_create_query()) {
                 db::query('ALTER TABLE ' . $module->table_name . ' ADD ' . $this->field_name . ' ' . $field_type->get_database_create_query(), array(), 1);
             }
-            $res = db::select('_cms_fields')->retrieve('MAX(position) AS pos')->filter_field('mid', $this->mid)->execute()->fetchObject();
-            db::insert('_cms_fields')
+            $res = db::select('_cms_field')->retrieve('MAX(position) AS pos')->filter_field('mid', $this->mid)->execute()->fetchObject();
+            db::insert('_cms_field')
                 ->add_value('title', $this->title)
                 ->add_value('type', $field->title)
                 ->add_value('field_name', $this->field_name)
