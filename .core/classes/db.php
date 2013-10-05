@@ -3,8 +3,8 @@
 namespace core\classes;
 
 use classes\ajax;
-use classes\get;
 use classes\db as _db;
+use classes\get as _get;
 use db\count as _count;
 use db\insert as _insert;
 use db\select as _select;
@@ -51,6 +51,21 @@ abstract class db implements interfaces\database_interface {
         return $count;
     }
 
+    public static function connect_root() {
+        try {
+            $var = new \PDO('mysql:host=localhost', 'root', '');
+        } catch (\MemcachedException $e) {
+            die('Could not connect to database, please try again shortly...');
+        }
+        _db::$con_arr['root'] = array(
+            'connection' => $var,
+            'created' => time()
+        );
+        _db::$con_name = 'root';
+        _db::$con = _db::$con_arr['root']['connection'];
+        _db::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
+
     /**
      * @param $host
      * @param $db
@@ -65,7 +80,7 @@ abstract class db implements interfaces\database_interface {
         } catch (\MemcachedException $e) {
             die('Could not connect to database, please try again shortly...');
         }
-        self::$con_arr[$name] = array(
+        _db::$con_arr[$name] = array(
             'connection' => $var,
             'settings' => array(
                 'host' => $host,
@@ -75,24 +90,35 @@ abstract class db implements interfaces\database_interface {
             ),
             'created' => time()
         );
-        self::$con_name = $name;
-        self::$con = self::$con_arr[$name]['connection'];
-        self::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        _db::$con_name = $name;
+        _db::$con = _db::$con_arr[$name]['connection'];
+        _db::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     /**
      *
      */
     public static function reconnect() {
-        $settings = self::$con_arr[self::$con_name]['settings'];
-        self::connect($settings['host'], $settings['database'], $settings['username'], $settings['password'], self::$con_name);
+        if (isset(_db::$con_name) && isset(_db::$con_arr[_db::$con_name]) && isset(_db::$con_arr[_db::$con_name]['settings'])) {
+            $settings = _db::$con_arr[_db::$con_name]['settings'];
+            _db::connect($settings['host'], $settings['database'], $settings['username'], $settings['password'], _db::$con_name);
+        } else {
+            _db::default_connection();
+        }
+    }
+
+    public static function connected() {
+        if (!isset(_db::$con_name) || _db::has_timed_out()) {
+            return false;
+        }
+        return true;
     }
 
     /**
      *
      */
     public static function default_connection() {
-        self::connect(get::ini('server', 'mysql'), get::ini('database', 'mysql'), get::ini('username', 'mysql'), get::ini('password', 'mysql'));
+        _db::connect(_get::ini('server', 'mysql'), _get::ini('database', 'mysql'), _get::ini('username', 'mysql'), _get::ini('password', 'mysql'));
     }
 
     /**
@@ -100,7 +126,10 @@ abstract class db implements interfaces\database_interface {
      * @return string
      */
     public static function esc($str) {
-        return mysql_real_escape_string($str);
+        if (!_db::connected()) {
+            _db::reconnect();
+        }
+        return _db::$con->quote($str);
     }
 
     /**
@@ -130,7 +159,7 @@ abstract class db implements interfaces\database_interface {
         $limit = '';
         $join = '';
         $group = '';
-        $base_object = get::__class_name($object);
+        $base_object = _get::__class_name($object);
         if (!empty($fields_to_retrieve)) {
             foreach ($fields_to_retrieve as $field) {
                 if (strstr($field, '.') && !strstr($field, '.*') && !strstr($field, ' AS ')) {
@@ -182,7 +211,7 @@ abstract class db implements interfaces\database_interface {
      * @return string
      */
     public static function insert_id() {
-        return self::$con->lastInsertId();
+        return _db::$con->lastInsertId();
     }
 
     /**
@@ -198,7 +227,7 @@ abstract class db implements interfaces\database_interface {
      * @return \PDOStatement
      */
     private static function prepare($sql) {
-        return self::$con->prepare($sql);
+        return _db::$con->prepare($sql);
     }
 
     /**
@@ -208,9 +237,9 @@ abstract class db implements interfaces\database_interface {
      * @return bool|mixed
      */
     public static function result($sql, $params = array(), $class = 'stdClass') {
-        $res = self::query($sql, $params);
+        $res = _db::query($sql, $params);
         if ($res) {
-            return self::fetch($res, $class);
+            return _db::fetch($res, $class);
         }
         return false;
     }
@@ -219,7 +248,7 @@ abstract class db implements interfaces\database_interface {
      * @return bool
      */
     public static function has_timed_out() {
-        return time() - self::$con_arr[self::$con_name]['created'] > self::$timeout;
+        return time() - _db::$con_arr[_db::$con_name]['created'] > _db::$timeout;
     }
 
     /**
@@ -230,10 +259,10 @@ abstract class db implements interfaces\database_interface {
      */
     static function query($sql, $params = array(), $throwable = false) {
         // Attempt to reconnect if connection has gone away.
-        if (self::has_timed_out()) {
-            self::reconnect();
+        if (!_db::connected()) {
+            _db::reconnect();
         }
-        $prep_sql = self::$con->prepare($sql);
+        $prep_sql = _db::$con->prepare($sql);
         if (!empty($params)) {
             foreach ($params as $key => $val) {
                 $prep_sql->bindValue($key, $val);
@@ -284,8 +313,8 @@ abstract class db implements interfaces\database_interface {
      * @return bool
      */
     public static function swap_connection($name) {
-        if (isset(self::$con_arr[$name])) {
-            self::$con = self::$con_arr[$name];
+        if (isset(_db::$con_arr[$name])) {
+            _db::$con = _db::$con_arr[$name];
             return true;
         } else {
             return false;
@@ -297,8 +326,8 @@ abstract class db implements interfaces\database_interface {
      * @return bool
      */
     public static function table_exists($table) {
-        $res = self::query('show tables like "test1"');
-        return db::num($res);
+        $res = _db::query('show tables like ' . _db::esc($table));
+        return _db::num($res);
     }
 
     /**
@@ -307,23 +336,43 @@ abstract class db implements interfaces\database_interface {
      * @return bool
      */
     public static function column_exists($table, $column) {
-        $res = self::query("SHOW COLUMNS FROM `table` LIKE 'fieldname'");
-        return db::num($res);
+        $res = _db::query('SHOW COLUMNS FROM `' . $table . '` LIKE ' . _db::esc($column));
+        return _db::num($res);
     }
 
-    public static function create_table($table_name, $fields = array(), $settings = array()) {
+    public static function column_count($table) {
+        $res = _db::query('SHOW COLUMNS FROM `' . $table . '`');
+        return _db::num($res);
+    }
+
+    public static function add_column($table, $name, $type, $additional_options) {
+        _db::query('ALTER TABLE ' . $table . ' ADD `' . $name . '` ' . $type . ' ' . $additional_options, array(), 1);
+    }
+
+    public static function move_column($table, $name, $type, $additional_options) {
+        _db::query('ALTER TABLE ' . $table . ' MODIFY `' . $name . '` ' . $type . ' ' . $additional_options, array(), 1);
+    }
+
+    public static function create_table($table_name, $fields = [], $keys = [], $settings = []) {
         $sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name;
         $column_strings = array();
         foreach ($fields as $field => $structure) {
             $column_strings[] = '`' . $field . '` ' . $structure;
         }
+        foreach ($keys as $key) {
+            $column_strings[] = $key;
+        }
         $sql .= ' (' . implode(',', $column_strings) . ') ';
         $setting_strings = array();
-        $settings = array_merge(self::$default_table_settings, $settings);
+        $settings = array_merge(_db::$default_table_settings, $settings);
         foreach ($settings as $setting => $value) {
-            $setting_strings[] = $setting . ' = ' . $value;
+            if (is_numeric($setting)) {
+                $setting_strings[] = $value;
+            } else {
+                $setting_strings[] = $setting . ' = ' . $value;
+            }
         }
         $sql .= implode(',', $setting_strings);
-        self::query($sql);
+        _db::query($sql);
     }
 }

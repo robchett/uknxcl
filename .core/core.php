@@ -2,6 +2,8 @@
 
 namespace core;
 
+use \classes\get as _get;
+
 abstract class core {
 
     /** @var core */
@@ -27,7 +29,6 @@ abstract class core {
     public function __construct() {
         self::$page_config = new \classes\page_config();
         self::$singleton = $this;
-        \classes\db::default_connection();
         $this->set_path(uri);
         self::$page_config->title_tag = 'UKNXCL National Cross Country League';
 
@@ -52,10 +53,9 @@ abstract class core {
             \classes\ajax::do_serve();
             exit();
         }
-        $this->set_page_from_path();
 
         if (!$this->pid && is_numeric($this->path[0])) {
-            \classes\get::header_redirect(host . '/');
+            _get::header_redirect(host . '/');
             die();
         }
         \core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';

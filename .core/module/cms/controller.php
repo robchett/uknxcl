@@ -2,6 +2,7 @@
 namespace core\module\cms;
 
 use classes\ajax;
+use classes\collection;
 use classes\db;
 use classes\module;
 use html\node;
@@ -58,6 +59,12 @@ abstract class controller extends module {
         $cms_filter_form->do_submit();
         unset($_SESSION['cms'][$_REQUEST['_class_name']]);
     }
+
+    public static function do_database_repair() {
+        $database_manager = new \module\cms\object\cms_builder();
+        $database_manager->manage();
+    }
+
 
     /**
      * @param array $path
