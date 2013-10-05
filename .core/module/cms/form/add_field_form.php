@@ -20,7 +20,7 @@ abstract class add_field_form extends form {
         parent::__construct(array(
                 form::create('field_string', 'title'),
                 form::create('field_string', 'field_name'),
-                form::create('field_link', 'type')->set_attr('link_module', 16)->set_attr('link_field', 79),
+                form::create('field_link', 'type')->set_attr('link_module', '\module\cms\object\field_type')->set_attr('link_field', 'title'),
                 form::create('field_int', 'mid')
             )
         );

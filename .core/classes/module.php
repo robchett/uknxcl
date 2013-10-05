@@ -2,7 +2,8 @@
 
 namespace core\classes;
 
-use classes\ajax;
+use classes\ajax as _ajax;
+use classes\get as _get;
 use classes\push_state;
 use html\node;
 use module\pages\object\page;
@@ -31,14 +32,20 @@ abstract class module {
             }
         }
         $this->set_view();
-        $this->set_page();
-        \core::$page_config->add_body_class('module_' . get::__namespace($this, 0), $this->view);
+
+        try {
+            _get::ini('database', 'mysql');
+            $this->set_page();
+        } catch (\Exception $e) {
+
+        }
+        \core::$page_config->add_body_class('module_' . _get::__namespace($this, 0), $this->view);
     }
 
     function set_page() {
         $this->page_object = new page();
         if (!isset($this->pid)) {
-            $this->page_object->do_retrieve(self::$page_fields_to_retrieve, array('where_equals' => array('module_name' => get::__namespace($this, 0))));
+            $this->page_object->do_retrieve(self::$page_fields_to_retrieve, array('where_equals' => array('module_name' => _get::__namespace($this, 0))));
         } else {
             $this->page_object->do_retrieve_from_id(self::$page_fields_to_retrieve, $this->pid);
         }
@@ -56,7 +63,7 @@ abstract class module {
     }
 
     public function set_view() {
-        $class = get::__namespace($this) . '\\view\\' . $this->view;
+        $class = _get::__namespace($this) . '\\view\\' . $this->view;
         if (class_exists($class)) {
             $this->view_object = new $class;
             $this->view_object->module = $this;
@@ -74,12 +81,12 @@ abstract class module {
         $this->set_page();
         $this->view_object->get_view_ajax();
         $push_state = $this->get_push_state();
-        ajax::push_state($push_state);
+        _ajax::push_state($push_state);
     }
 
     public function get_push_state() {
         $push_state = new push_state();
-        $push_state->url = isset($this->current) ? $this->current->get_url() : '/' . get::__namespace($this, 0) . ($this->view != '_default' ? '/' . $this->view : '');
+        $push_state->url = isset($this->current) ? $this->current->get_url() : '/' . _get::__namespace($this, 0) . ($this->view != '_default' ? '/' . $this->view : '');
         $push_state->title = $this->page_object->title;
         $push_state->data = (object) array(
             'url' => $push_state->url,

@@ -4,6 +4,8 @@ namespace core\classes;
 abstract class collection extends \ArrayObject {
 
     private $first_index = 0;
+    /** @var  \arrayIterator */
+    public $iterator;
 
     public function first() {
         return $this[0];
@@ -14,21 +16,18 @@ abstract class collection extends \ArrayObject {
     }
 
     /**
+     * @param string $key
      * @return bool|mixed
      */
-    public function next() {
-        if ($this->iterator->index == -1) {
-            $this->iterator->index = 0;
-            if ($this->iterator->valid()) {
-                return $this->iterator->current();
-            } else return false;
+    public function next(&$key = '') {
+        if ($this->iterator->valid()) {
+            $key = $this->iterator->key();
+            $value =  $this->iterator->current();
         } else {
-            $this->iterator->next();
-            $this->iterator->index++;
-            if ($this->iterator->valid()) {
-                return $this->iterator->current();
-            } else return false;
+            return false;
         }
+        $this->iterator->next();
+        return $value;
     }
 
     /**

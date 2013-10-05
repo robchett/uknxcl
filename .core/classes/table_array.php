@@ -7,7 +7,8 @@ use classes\db as _db;
 /**
  * Class table_array
  */
-abstract class table_array extends \classes\collection {
+abstract class
+table_array extends \classes\collection {
 
     /**
      * @var bool
