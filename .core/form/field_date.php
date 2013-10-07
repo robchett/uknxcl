@@ -22,6 +22,9 @@ abstract class field_date extends field {
     }
 
     public function mysql_value($value) {
+        if (!is_numeric($value)) {
+            $value = strtotime($value);
+        }
         return date('Y-m-d', $value);
     }
 
