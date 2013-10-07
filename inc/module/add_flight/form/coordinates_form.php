@@ -25,14 +25,14 @@ class coordinates_form extends form {
                     ->set_attr('label', 'Pilot:')
                     ->set_attr('required', true)
                     ->set_attr('default', 'Choose A Pilot')
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => '\form\add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
                     ->set_attr('link_module', '\\object\\pilot')
                     ->set_attr('link_field', 'name')
                     ->set_attr('options', ['order' => 'name']),
                 form::create('field_link', 'gid')
                     ->set_attr('label', 'Glider:')
                     ->set_attr('required', true)
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => 'add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => '\form\add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
                     ->set_attr('link_module', '\\object\\glider')
                     ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
                     ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
