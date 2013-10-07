@@ -2,7 +2,7 @@
 
 namespace core\classes;
 
-use classes\ajax;
+use classes\ajax as _ajax;
 
 abstract class jquery {
 
@@ -10,6 +10,6 @@ abstract class jquery {
 
     public static function colorbox($options = array()) {
         $options = array_merge($options, self::$colourbox_defaults);
-        ajax::inject('body', 'append', '<script>$.colorbox(' . json_encode($options) . ')</script>');
+        _ajax::inject('body', 'append', '<script>$.colorbox(' . json_encode($options) . ')</script>');
     }
 }
