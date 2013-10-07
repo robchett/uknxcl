@@ -2,7 +2,7 @@
 
 namespace core\classes;
 
-use classes\ajax;
+use classes\ajax as _ajax;
 use classes\db as _db;
 use classes\get as _get;
 use db\count as _count;
@@ -54,7 +54,7 @@ abstract class db implements interfaces\database_interface {
     public static function connect_root() {
         try {
             $var = new \PDO('mysql:host=localhost', 'root', '');
-        } catch (\MemcachedException $e) {
+        } catch (\PDOException $e) {
             die('Could not connect to database, please try again shortly...');
         }
         _db::$con_arr['root'] = array(
@@ -77,8 +77,8 @@ abstract class db implements interfaces\database_interface {
     public static function connect($host, $db, $username, $password, $name = 'default') {
         try {
             $var = new \PDO('mysql:host=' . $host . ';dbname=' . $db, $username, $password);
-        } catch (\MemcachedException $e) {
-            die('Could not connect to database, please try again shortly...');
+        } catch (\PDOException $e) {
+            die('Could not connect to database, please try again shortly...' . $e->getMessage());
         }
         _db::$con_arr[$name] = array(
             'connection' => $var,
@@ -279,9 +279,9 @@ abstract class db implements interfaces\database_interface {
                 )
             );
             if (ajax) {
-                ajax::inject('body', 'append', $error);
+                _ajax::inject('body', 'append', $error);
                 if (!$throwable) {
-                    ajax::do_serve();
+                    _ajax::do_serve();
                     die();
                 }
             } else {
@@ -314,7 +314,7 @@ abstract class db implements interfaces\database_interface {
      */
     public static function swap_connection($name) {
         if (isset(_db::$con_arr[$name])) {
-            _db::$con = _db::$con_arr[$name];
+            _db::$con = _db::$con_arr[$name]['connection'];
             return true;
         } else {
             return false;
