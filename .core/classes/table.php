@@ -2,7 +2,7 @@
 
 namespace core\classes;
 
-use classes\ajax;
+use classes\ajax as _ajax;
 use classes\get as _get;
 use db\insert;
 use db\update;
@@ -11,6 +11,7 @@ use form\field_file;
 use form\form;
 use html\node;
 use module\cms\object\_cms_field;
+use module\cms\object\_cms_module;
 
 /** @property string table_key */
 abstract class table {
@@ -139,9 +140,9 @@ abstract class table {
         if ($ok) {
             $type = (!isset($this->{$this->table_key}) || !$this->{$this->table_key} ? 'Added' : 'Updated');
             $this->do_save();
-            ajax::inject('#' . $_REQUEST['ajax_origin'], 'before', node::create('p.success.boxed.' . strtolower($type), [], $type . ' successfully'));
+            _ajax::inject('#' . $_REQUEST['ajax_origin'], 'before', node::create('p.success.boxed.' . strtolower($type), [], $type . ' successfully'));
         } else {
-            ajax::update($form->get_html()->get());
+            _ajax::update($form->get_html()->get());
         }
         return $ok;
     }
@@ -172,7 +173,7 @@ abstract class table {
         /** @var field $field */
         foreach ($this->get_fields() as $field) {
             if ($field->field_name != $this->table_key) {
-                if (isset($this->{$field->field_name})) {
+                if (isset($this->{$field->field_name}) && get_class($field) != 'form\\field_mlink') {
                     try {
                         $data = $field->get_save_sql();
                         $query->add_value($field->field_name, $data);
@@ -185,7 +186,29 @@ abstract class table {
         if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
             $query->filter_field($this->table_key, $this->{$this->table_key});
         }
-        $query->execute();
+        $res = $query->execute();
+
+        if($res) {
+            $this->{$this->table_key} = $res;
+        }
+
+        foreach ($this->get_fields() as $field) {
+            if ($field->field_name != $this->table_key) {
+                if (isset($this->{$field->field_name}) && get_class($field) == 'form\\field_mlink') {
+                    /** @var \form\field_mlink $field */
+                    $source_module = new _cms_module(['table_name', 'primary_key'], $field->get_link_mid());
+                    $module = new _cms_module(['table_name', 'primary_key'], static::$module_id);
+                    db::query('DELETE FROM ' . $module->table_name . '_link_' . $source_module->table_name . ' WHERE ' . $module->primary_key . '=:key', ['key' => $this->{$this->table_key}]);
+                    foreach ($this->{$field->field_name} as $value) {
+                        db::insert($module->table_name . '_link_' . $source_module->table_name)
+                            ->add_value($module->primary_key, $this->{$this->table_key})
+                            ->add_value('link_' . $source_module->primary_key, $value)
+                            ->add_value('fid', $field->fid)
+                            ->execute();
+                    }
+                }
+            }
+        }
         if (!(isset($this->{$this->table_key}) && $this->{$this->table_key})) {
             $this->{$this->table_key} = db::insert_id();
         }
@@ -202,7 +225,8 @@ abstract class table {
     /**
      * @param field_file $field
      */
-    protected function do_upload_file(field_file $field) {
+    protected
+    function do_upload_file(field_file $field) {
         if (isset($_FILES[$field->field_name]) && !$_FILES[$field->field_name]['error']) {
             $tmp_name = $_FILES[$field->field_name]['tmp_name'];
             $name = $_FILES[$field->field_name]['name'];
@@ -217,7 +241,8 @@ abstract class table {
     /**
      * @return node
      */
-    public function get_cms_edit() {
+    public
+    function get_cms_edit() {
         $form = $this->get_form();
         $form->set_from_object($this);
         foreach ($form->fields as $field) {
@@ -239,7 +264,8 @@ abstract class table {
     /**
      * @return form
      */
-    public function get_form() {
+    public
+    function get_form() {
         $form = new form($this->get_fields());
         $form->id = str_replace('\\', '_', get_class($this) . '_form');
         if (isset($form->attributes['target'])) {
@@ -251,12 +277,14 @@ abstract class table {
     /**
      * @param $fields
      */
-    public function lazy_load($fields) {
+    public
+    function lazy_load($fields) {
         $this->do_retrieve_from_id($fields, $this->{$this->table_key});
     }
 
     /** @return \html\node */
-    public function get_cms_edit_module() {
+    public
+    function get_cms_edit_module() {
         $list = node::create('table#module_def', [],
             node::create('thead', [],
                 node::create('th', [], 'Field id') .
@@ -280,7 +308,8 @@ abstract class table {
     /**
      * @return array
      */
-    public function get_cms_list() {
+    public
+    function get_cms_list() {
         $nodes = array();
         /** @var field $field */
         foreach ($this->get_fields() as $field) {
@@ -294,7 +323,8 @@ abstract class table {
     /**
      * @return array
      */
-    public function get_fields() {
+    public
+    function get_fields() {
         $fields = static::_get_fields();
         foreach ($fields as $field) {
             $field->parent_form = $this;
@@ -305,7 +335,8 @@ abstract class table {
     /**
      *
      */
-    public static function _set_fields() {
+    public
+    static function _set_fields() {
         $final_fields = [];
         $fields = _cms_field::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
         $fields->iterate(function (_cms_field $row) use (&$final_fields) {
