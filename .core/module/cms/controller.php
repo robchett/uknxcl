@@ -2,7 +2,6 @@
 namespace core\module\cms;
 
 use classes\ajax;
-use classes\collection;
 use classes\db;
 use classes\module;
 use html\node;
@@ -243,7 +242,7 @@ abstract class controller extends module {
             $html->nest(node::create('li.right a', ['href' => '/cms/edit/' . $this->mid, 'title' => 'Add new ' . get_class($this->current)], 'Add new ' . get_class($this->current)));
         } else if ($this->view === 'module_list') {
             $html->nest(node::create('li.right a', ['href' => '/cms/new_module/', 'title' => 'Add new module'], 'Add new module'));
-            $html->nest(node::create('li.right a', ['href' => "/cms/edit/19", 'title' => 'Add new module group'], 'Add new module group'));
+            $html->nest(node::create('li.right a', ['href' => "/cms/edit/" . \module\cms\object\_cms_group::$module_id, 'title' => 'Add new module group'], 'Add new module group'));
         }
         $html->nest(node::create('li.right a', ['href' => '/cms/module_list/', 'title' => 'View all modules'], 'All Modules'));
         return $html;
@@ -277,7 +276,7 @@ abstract class controller extends module {
             } else {
                 $node = node::create('ul#pagi.cf');
                 for ($i = 1; $i <= $pages; $i++) {
-                    $node->add_child(node::create('li a', ['href' => '/cms/module/' . $this->mid . '/page/' . $i], $i));
+                    $node->add_child(node::create('li' . ($this->page == $i ? '.sel' : '') . ' a', ['href' => '/cms/module/' . $this->mid . '/page/' . $i], $i));
                 }
             }
         }
