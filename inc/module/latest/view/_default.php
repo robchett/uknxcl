@@ -34,7 +34,7 @@ class _default extends view {
                 ) .
                 node::create('tbody', [],
                     $flights->iterate_return(function (flight $flight) use (&$body) {
-                            $added = substr($flight->added, 0, 10);
+                            $added = substr($flight->created, 0, 10);
                             return node::create('tr', [],
                                 node::create('td', [], $flight->fid) .
                                 node::create('td', [], $flight->pilot_name) .
