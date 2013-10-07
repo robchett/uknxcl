@@ -31,7 +31,9 @@ $auto_loader = new \classes\auto_loader();
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         if (strpos($errfile, 'xdebug') !== 0) {
-            xdebug_break();
+            if(function_exists('xdebug_break')){
+                xdebug_break();
+            }
             require_once(root . '/.core/core.php');
             $error = '<div class="error_message mysql"><p>Error #' . $errno . ' "' . $errstr . '" in ' . $errfile . ' on line ' . $errline . '</p>' . \core::get_backtrace() . '</div>';
             if (ajax) {
