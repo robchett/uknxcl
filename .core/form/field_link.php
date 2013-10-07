@@ -38,44 +38,64 @@ abstract class field_link extends field {
         }
     }
 
-    public function get_options() {
-        $html = '';
-        if (is_numeric($this->link_module)) {
-            $this->link_module = \core::get_class_from_mid($this->link_module);
-        }
-        /** @var $class \classes\table_array */
-        $class = $this->link_module;
-        /** @var $object table */
-        $obj = new $class();
+    public function get_link_fields() {
         if (is_numeric($this->link_field)) {
             $this->link_field = \core::get_field_from_fid($this->link_field)->field_name;
         }
         if (is_array($this->link_field)) {
             $fields = $this->link_field;
-            $fields[] = $obj->table_key;
         } else {
-            $fields = array($obj->table_key, $this->link_field);
+            $fields = [$this->link_field];
         }
-        $options = $class::get_all($fields, $this->options);
+        return $fields;
+    }
+
+    public function get_link_module() {
+        if (is_numeric($this->link_module)) {
+            $this->link_module = \core::get_class_from_mid($this->link_module);
+        }
+        return $this->link_module;
+    }
+
+    public function get_link_mid() {
+        if (is_numeric($this->link_module)) {
+            return $this->link_module;
+        }
+        $class = $this->link_module;
+        return $class::$module_id;
+    }
+
+    public function get_options() {
+        $html = '';
+        /** @var $class \classes\table_array */
+        $class = $this->get_link_module();
+        $fields = $this->get_link_fields();
+
+        /** @var $object table */
+        $obj = new $class();
+
+        $options = $class::get_all(array_merge($fields, [$obj->table_key]), $this->options);
         if (!$this->required) {
             $html .= '<option value="0">- Please Select -</option>';
         }
-        $title_fields = $this->link_field;
-        $selected = isset($this->parent_form->{$this->field_name}) ? $this->parent_form->{$this->field_name} : 0;
-        $options->iterate(function (table $object) use (&$html, $title_fields, $selected) {
-                if (is_array($title_fields)) {
+
+        $options->iterate(function (table $object) use (&$html, $fields) {
+                if (is_array($fields)) {
                     $parts = array();
-                    foreach ($title_fields as $part) {
+                    foreach ($fields as $part) {
                         $parts[] = $object->{str_replace('.', '_', $part)};
                     }
                     $title = implode(' - ', $parts);
                 } else {
                     $title = $object->$title_fields;
                 }
-                $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($object->{$object->table_key} == $selected ? 'selected="selected"' : '') . '>' . $title . '</option>';
+                $html .= '<option value="' . $object->{$object->table_key} . '" ' . ($this->is_selected($object->{$object->table_key}) ? 'selected="selected"' : '') . '>' . $title . '</option>';
             }
         );
         return $html;
     }
 
+    protected function is_selected($id) {
+        return $selected = (isset($this->parent_form->{$this->field_name}) ? $this->parent_form->{$this->field_name} : 0) == $id;
+    }
 }

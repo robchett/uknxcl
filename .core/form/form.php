@@ -271,7 +271,7 @@ abstract class form {
                     $fields = [];
                 }
                 if ($inner = $field->get_html_wrapper()) {
-                    $fields[] = node::create('li.' . $field->get_wrapper_class(), ['data-for' => $this->id], $inner);
+                    $fields[] = node::create('li#' . $this->id . '_field_' . $field->field_name . '.' . $field->get_wrapper_class(), ['data-for' => $this->id], $inner);
                 }
             }
         }

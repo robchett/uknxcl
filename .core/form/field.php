@@ -118,7 +118,6 @@ abstract class field extends node {
 
     public function set_from_request() {
         $this->parent_form->{$this->field_name} = (isset($_REQUEST[$this->field_name]) ? ($this->raw ? $_REQUEST[$this->field_name] : strip_tags($_REQUEST[$this->field_name])) : '');
-
     }
 
     public function get_cms_list_wrapper($value, $object_class, $id) {
@@ -133,6 +132,10 @@ abstract class field extends node {
 
     public function get_database_create_query() {
         return 'varchar(32)';
+    }
+
+    public function get_database_create_extra() {
+        return false;
     }
 
     public function get_cms_admin_edit() {
