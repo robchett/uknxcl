@@ -1,8 +1,8 @@
 <?php
-
+namespace form;
 use html\node;
 
-class add_pilot_form extends form\form {
+class add_pilot_form extends form {
 
     public $bhpa_no;
     public $email;
@@ -37,7 +37,7 @@ class add_pilot_form extends form\form {
     }
 
     public function get_form() {
-        \classes\jquery::colorbox(['html' => $this->get_html()]);
+        \classes\jquery::colorbox(['html' => $this->get_html()->get()]);
     }
 
     public function do_submit() {
