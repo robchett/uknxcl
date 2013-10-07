@@ -1,14 +1,16 @@
 <?php
 
+use classes\db;
+
 define('load_core', false);
 include '../../index.php';
-\db::connect();
-\db::connect('old', 'nxcl2');
+db::default_connection();
+db::connect('localhost', 'nxcl2', 'root','','old');
 
 set_time_limit(0);
 
 $tables = array(
-    'flight' => array(
+   /* 'flight' => array(
         'ID' => 'fid',
         'Pilot_No' => 'pid',
         'Club_No' => 'cid',
@@ -18,7 +20,7 @@ $tables = array(
         'Multi' => 'multi',
         'Date' => 'date',
         'Season' => 'season',
-        'DateAdded' => 'added',
+        'DateAdded' => 'created',
         'Cords' => 'coords',
         'Launch' => 'lid',
         'Type' => 'ftid',
@@ -39,15 +41,15 @@ $tables = array(
         'TRs' => 'tr_score',
         'TRt' => 'tr_time',
         'Speed' => 'speed',
-    ),
-    'pilot' => array(
+    ),*/
+   /* 'pilot' => array(
         'P_ID' => 'pid',
         'P_NAME' => 'name',
         'Gender' => 'gender',
         'BHPA' => 'bhpa_no',
         'Rating' => 'rating',
         'Email' => 'email',
-    ),
+    ),*/
     'glider' => array(
         'G_ID' => 'gid',
         'G_NAME' => 'name',
@@ -67,11 +69,11 @@ $tables = array(
 
 foreach ($tables as $table => $keys) {
 
-    \db::swap_connection('old');
-    $res = \db::query('SELECT * FROM ' . $table . 's');
+    db::swap_connection('old');
+    $res = db::query('SELECT * FROM ' . $table . 's');
 
-    \db::swap_connection('new');
-    \db::query('TRUNCATE ' . $table);
+    db::swap_connection('default');
+    db::query('TRUNCATE ' . $table);
 
     // prepare_statement
     $sql_arr = array();
@@ -84,10 +86,10 @@ foreach ($tables as $table => $keys) {
         }
     }
     $sql .= implode(', ', $sql_arr);
-    $statement = \db::$con->prepare($sql);
+    $statement = db::$con->prepare($sql);
 
 
-    while ($row = \db::fetch($res)) {
+    while ($row = db::fetch($res)) {
         $params = array();
         foreach ($keys as $old => $new) {
             if (is_array($new)) {
@@ -100,8 +102,11 @@ foreach ($tables as $table => $keys) {
         $statement->execute($params);
     }
 }
-\db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
+db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
 
 function get_manu($manu) {
-    return \db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu))->mid;
+    $res = db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu));
+    if($res) {
+        return $res->mid;
+    }
 }
