@@ -2,9 +2,9 @@
 namespace core\db;
 
 use core\classes\db;
-use db\query;
+use db\query as _query;
 
-abstract class insert extends query {
+abstract class insert extends _query {
 
     protected $values = [];
 

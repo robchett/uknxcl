@@ -2,9 +2,9 @@
 namespace core\db;
 
 use core\classes\db;
-use db\query;
+use db\query as _query;
 
-abstract class update extends query {
+abstract class update extends _query {
 
     protected $values = [];
     public $retrieve_unlive = true;
