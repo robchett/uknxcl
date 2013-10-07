@@ -59,7 +59,7 @@ abstract class node {
             list($this->type, $classes) = explode('.', $nodes[0], 2);
             $this->class = explode('.', $classes);
         } else {
-            $this->type = $type;
+            $this->type = $nodes[0];
         }
         if (isset($nodes[1])) {
             $node = _node::create($nodes[1], $attr, $content);
