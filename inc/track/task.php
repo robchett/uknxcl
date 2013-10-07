@@ -144,10 +144,10 @@ class task {
         $this->waypoints = new track_point_collection();
         $coordinates = explode(';', $this->coordinates);
         foreach ($coordinates as $coord) {
-            list($coord, $ele) = explode(':', $coord);
+            //list($coord, $ele) = explode(':', $coord);
             $latlng = geometry::os_to_lat_long($coord);
-            $track_point = new lat_lng($latlng->lat(), $latlng->lng());
-            $track_point->ele = $ele;
+            $track_point = new track_point($latlng->lat(), $latlng->lng());
+            //$track_point->ele = $ele;
             $this->waypoints[] = $track_point;
         }
     }
