@@ -1,6 +1,8 @@
 <?php
 
-class add_glider_form extends form\form {
+namespace form;
+
+class add_glider_form extends form {
 
     public $mid;
     public $name;
