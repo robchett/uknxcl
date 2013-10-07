@@ -21,6 +21,7 @@ abstract class ajax {
         foreach ($xpath->query('/html/body/*') as $node) {
             $o = new \stdClass();
             $o->id = $node->nodeName;
+            $o->html = '';
             if (isset($node->attributes->getNamedItem('id')->nodeValue)) {
                 $o->id .= '#' . $node->attributes->getNamedItem('id')->nodeValue;
             }
