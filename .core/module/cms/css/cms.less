@@ -1,6 +1,6 @@
 @import 'less/elements';
 
-@border: 2px solid #a9a9a9;
+@border: 1px solid #6a6a6a;
 html { height: 100% }
 
 body {
@@ -31,18 +31,32 @@ input, textarea, select {
 
 ul#pagi {
   margin-bottom: 20px;
-  height: 20px;
+  height: 30px;
   width: 100%;
   text-align: center;
   li {
-    float: left;
-    margin-right: 10px;
+    display: inline-block;
+    margin: 0 5px;
+    background-color: #777;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    .border-radius(30px, 30px, 30px, 30px);
+    &:hover, &.sel {
+      background-color: #555;
+    }
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 
 form {
   &#filter_form {
-    border: 1px solid #ffffff;
+    border: @border;
     .border-radius(10px, 0, 0, 10px);
     background-color: #5d5d5d;
     li {
@@ -214,6 +228,11 @@ ul#nav {
       background-color: #535353;
       float: right;
     }
+    &:hover {
+      ul {
+        display: block;
+      }
+    }
   }
 }
 
@@ -229,6 +248,7 @@ ul#nav {
 div#inner table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
 div#inner table th {
@@ -236,9 +256,6 @@ div#inner table th {
   padding: 5px;
   border: @border;
   background-color: #5c5c5c;
-  color: window;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
 }
 
 div#inner {
@@ -316,7 +333,7 @@ div#inner {
     li {
       width: 100%;
       padding: 5px;
-      border-bottom: 1px solid #d0d0d0;
+      border-bottom: @border;
       label {
         span {
           font-size: 16px;
@@ -410,7 +427,7 @@ table#module_def {
   tr {
     td {
       border: @border;
-      padding: 2px;
+      padding: 1px;
     }
   }
 
