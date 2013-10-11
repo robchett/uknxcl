@@ -116,7 +116,7 @@ class pilot extends table {
         $this->total += $flight->score;
         $this->number_of_flights++;
         $this->flights[] = $flight->to_print()->get();
-        if ($split == 1)
+        if ($split)
             $this->class = $flight->class;
         else
             $this->class = 1;
