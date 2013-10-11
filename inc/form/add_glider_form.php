@@ -14,7 +14,9 @@ class add_glider_form extends form {
             ->set_attr('hidden', true)
             ->set_attr('required', false);
         $this->get_field_from_name('name')->set_attr('label', 'Name');
-        $this->get_field_from_name('mid')->set_attr('label', 'Manufacturer');
+        $this->get_field_from_name('mid')
+            ->set_attr('label', 'Manufacturer')
+            ->set_attr('options', ['order' => 'title ASC']);
         $this->get_field_from_name('class')
             ->set_attr('label', 'Class')
             ->set_attr('options', array(1 => 1, 5 => 5));
