@@ -52,7 +52,7 @@ class pilot_official extends pilot {
         } else if ($flight->ftid == 1) {
             $this->undefined = true;
         }
-        if ($split == 1) {
+        if ($split) {
             $this->class = $flight->class;
         } else {
             $this->class = 1;
