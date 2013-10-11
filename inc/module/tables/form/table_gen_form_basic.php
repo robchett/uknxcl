@@ -52,7 +52,7 @@ class table_gen_form_basic extends form {
                 ->set_attr('label', 'Pilot:')
                 ->set_attr('link_module', '\\object\\pilot')
                 ->set_attr('link_field', 'name')
-                ->set_attr('order', 'name ASC')
+                ->set_attr('options', ['order' => 'name ASC'])
                 ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
                 ->set_attr('required', true)
                 ->set_attr('disabled', true),
