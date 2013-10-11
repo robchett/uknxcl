@@ -1,8 +1,25 @@
 <?php
 
-namespace core\classes;
+namespace core\classes\css;
 
-class lessc {
+use classes\css\less_compiler as _less_compiler;
+
+class less_compiler extends \classes\css\compiler {
+
+    public $source = '';
+
+    public function add_file($file_name) {
+        $this->addImportDir(pathinfo($file_name, PATHINFO_DIRNAME));
+        $this->source .= '@import "' . pathinfo($file_name, PATHINFO_FILENAME) . '";' . "\n";
+    }
+
+    public function compile() {
+        $this->importDir = array_unique($this->importDir);
+        return $this->parse($this->source);
+    }
+
+    public $file_extension = 'less';
+
 
     static public $debug = false;
     static public $VERSION = "v0.3.9";
@@ -758,6 +775,7 @@ class lessc {
             default: // assumed to be unit
                 $this->throwError("unknown value type: $value[0]");
         }
+        return '';
     }
 
     protected function lib_isnumber($value) {
@@ -971,6 +989,7 @@ class lessc {
         if (!is_null($color = $this->coerceColor($value))) {
             return isset($color[4]) ? $color[4] : 1;
         }
+        return 1;
     }
 
     // set the alpha of the color
@@ -1069,7 +1088,8 @@ class lessc {
                 $S = ($max - $min) / (2.0 - $max - $min);
 
             if ($r == $max) $H = ($g - $b) / ($max - $min);
-            elseif ($g == $max) $H = 2.0 + ($b - $r) / ($max - $min); elseif ($b == $max) $H = 4.0 + ($r - $g) / ($max - $min);
+            elseif ($g == $max) $H = 2.0 + ($b - $r) / ($max - $min);
+            elseif ($b == $max) $H = 4.0 + ($r - $g) / ($max - $min);
 
         }
 
@@ -1146,7 +1166,8 @@ class lessc {
                 $val = isset($val[1]) ? floatval($val[1]) : 0;
 
                 if ($i == 0) $clamp = 360;
-                elseif ($i < 3) $clamp = 100; else $clamp = 1;
+                elseif ($i < 3) $clamp = 100;
+                else $clamp = 1;
 
                 $hsl[] = $this->clamp($val, $clamp);
                 $i++;
@@ -1621,7 +1642,7 @@ class lessc {
         }
     }
 
-    public function compile($string, $name = null) {
+    public function _compile($string, $name = null) {
         $locale = setlocale(LC_NUMERIC, 0);
         setlocale(LC_NUMERIC, "C");
 
@@ -1662,7 +1683,7 @@ class lessc {
         $this->allParsedFiles = array();
         $this->addParsedFile($fname);
 
-        $out = $this->compile(file_get_contents($fname), $fname);
+        $out = $this->_compile(file_get_contents($fname), $fname);
 
         $this->importDir = $oldImport;
 
@@ -1762,7 +1783,7 @@ class lessc {
 
             $out = $this->compileFile($this->_parseFile);
         } else {
-            $out = $this->compile($str);
+            $out = $this->_compile($str);
         }
 
         $this->registeredVars = $oldVars;
@@ -1781,11 +1802,11 @@ class lessc {
     }
 
     protected function newFormatter() {
-        $className = "\\core\\classes\\lessc_formatter_lessjs";
+        $className = "\\core\\classes\\css\\lessc_formatter_lessjs";
         if (!empty($this->formatterName)) {
             if (!is_string($this->formatterName))
                 return $this->formatterName;
-            $className = "\\core\\classes\\lessc_formatter_$this->formatterName";
+            $className = "\\core\\classes\\css\\lessc_formatter_$this->formatterName";
         }
 
         return new $className;
@@ -2076,14 +2097,14 @@ class lessc_parser {
 
         if (!self::$operatorString) {
             self::$operatorString =
-                '(' . implode('|', array_map(array('\classes\lessc', 'preg_quote'),
+                '(' . implode('|', array_map(array('\classes\css\less_compiler', 'preg_quote'),
                         array_keys(self::$precedence)
                     )
                 ) . ')';
 
-            $commentSingle = lessc::preg_quote(self::$commentSingle);
-            $commentMultiLeft = lessc::preg_quote(self::$commentMultiLeft);
-            $commentMultiRight = lessc::preg_quote(self::$commentMultiRight);
+            $commentSingle = _less_compiler::preg_quote(self::$commentSingle);
+            $commentMultiLeft = _less_compiler::preg_quote(self::$commentMultiLeft);
+            $commentMultiRight = _less_compiler::preg_quote(self::$commentMultiRight);
 
             self::$commentMulti = $commentMultiLeft . '.*?' . $commentMultiRight;
             self::$whitePattern = '/' . $commentSingle . '[^\n]*\s*|(' . self::$commentMulti . ')\s*|\s+/Ais';
@@ -2301,7 +2322,7 @@ class lessc_parser {
     protected function isDirective($dirname, $directives) {
         // TODO: cache pattern in parser
         $pattern = implode("|",
-            array_map(array("\\classes\\lessc", "preg_quote"), $directives)
+            array_map(array('\\classes\\css\\less_compiler', "preg_quote"), $directives)
         );
         $pattern = '/^(-[a-z-]+-)?(' . $pattern . ')$/i';
 
@@ -2327,7 +2348,7 @@ class lessc_parser {
 
         if (count($values) == 0) return false;
 
-        $exps = lessc::compressList($values, ' ');
+        $exps = _less_compiler::compressList($values, ' ');
         return true;
     }
 
@@ -2425,7 +2446,7 @@ class lessc_parser {
 
         if (count($values) == 0) return false;
 
-        $value = lessc::compressList($values, ', ');
+        $value = _less_compiler::compressList($values, ', ');
         return true;
     }
 
@@ -2590,7 +2611,7 @@ class lessc_parser {
         $this->eatWhiteDefault = false;
 
         $stop = array("'", '"', "@{", $end);
-        $stop = array_map(array("\\classes\\lessc", "preg_quote"), $stop);
+        $stop = array_map(array('\\classes\\css\\less_compiler', "preg_quote"), $stop);
         // $stop[] = self::$commentMulti;
 
         if (!is_null($rejectStrs)) {
@@ -2667,7 +2688,7 @@ class lessc_parser {
 
         // look for either ending delim , escape, or string interpolation
         $patt = '([^\n]*?)(@\{|\\\\|' .
-            lessc::preg_quote($delim) . ')';
+            _less_compiler::preg_quote($delim) . ')';
 
         $oldWhite = $this->eatWhiteDefault;
         $this->eatWhiteDefault = false;
@@ -3124,7 +3145,7 @@ class lessc_parser {
         }
 
         if (!isset(self::$literalCache[$what])) {
-            self::$literalCache[$what] = lessc::preg_quote($what);
+            self::$literalCache[$what] = _less_compiler::preg_quote($what);
         }
 
         return $this->match(self::$literalCache[$what], $m, $eatWhitespace);
@@ -3164,7 +3185,7 @@ class lessc_parser {
         } else {
             $validChars = $allowNewline ? "." : "[^\n]";
         }
-        if (!$this->match('(' . $validChars . '*?)' . lessc::preg_quote($what), $m, !$until)) return false;
+        if (!$this->match('(' . $validChars . '*?)' . _less_compiler::preg_quote($what), $m, !$until)) return false;
         if ($until) $this->count -= strlen($what); // give back $what
         $out = $m[1];
         return true;
@@ -3393,7 +3414,7 @@ class lessc_formatter_classic {
                 $selectorSeparator = $this->selectorSeparator;
             }
 
-            if (lessc::$debug && $block->file) {
+            if (_less_compiler::$debug && $block->file) {
                 echo '@media -sass-debug-info{filename{font-family:file\:\/\/\/' . str_replace(array('C:/', '/', '.'), array('', '\/', '\.'), $block->file) . '}line{font-family:\0000336}}' . "\n";
             }
             echo $pre . implode($selectorSeparator, $block->selectors);
