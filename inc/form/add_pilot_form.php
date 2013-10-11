@@ -1,5 +1,6 @@
 <?php
 namespace form;
+
 use html\node;
 
 class add_pilot_form extends form {
@@ -51,7 +52,7 @@ class add_pilot_form extends form {
             if ($this->pilot->pid) {
                 $this->pilot->do_update_selector();
             }
-            \classes\jquery::colorbox(node::create('strong', [], $this->name) . ' added to the database');
+            \classes\jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
         }
     }
 }
