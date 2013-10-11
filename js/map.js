@@ -140,7 +140,7 @@ function UKNXCL_Map($container) {
 
     this.load_airspace = function () {
         if (this.mode == this.MAP) {
-            this.airspace.loadAll();
+            $.fn.ajax_factory('\\object\\airspace', 'load_js');
         } else {
             this.parseKML('/resources/airspace.kmz', this.airspace);
         }
