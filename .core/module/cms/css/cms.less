@@ -1,4 +1,16 @@
-@import 'less/elements';
+@primary: #0c3f6b;
+
+.button() {
+  display: block;
+  padding: 5px;
+  .bw-gradient(200, 240);
+  .border-radius(10px, 10px, 10px, 10px);
+  border: 1px solid #cccccc;
+  text-align: center;
+  font-weight: bold;
+  color: @primary;
+  cursor: pointer;
+}
 
 @border: 1px solid #6a6a6a;
 html { height: 100% }

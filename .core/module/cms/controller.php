@@ -70,7 +70,7 @@ abstract class controller extends module {
      */
     public function __controller(array $path) {
         \core::$page_config->title_tag = 'Admin Login - UKNXCL';
-        \core::$css = array('/.core/module/cms/css/cms.css');
+        \core::$css = array('/inc/module/cms/css/');
         \core::$js = array('/.core/js/jquery.js', '/.core/js/_ajax.js', ' /.core/module/cms/js/cms.js', '/.core/js/colorbox.js', '/.core/plugins/ckeditor/ckeditor.js');
         if (admin && !isset($path[1])) {
             $path[1] = 'dashboard';
