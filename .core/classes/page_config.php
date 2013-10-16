@@ -10,7 +10,7 @@ abstract class page_config {
     public $body_classes = array();
 
     public function get_body_class() {
-        return implode(' ', $this->body_classes);
+        return implode('.', $this->body_classes);
     }
 
     public function add_body_class() {
