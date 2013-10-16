@@ -3,6 +3,8 @@
 namespace core\classes;
 
 use classes\ajax as _ajax;
+use classes\ajax;
+use classes\collection;
 use classes\get as _get;
 use db\insert;
 use db\update;
@@ -37,7 +39,7 @@ abstract class table {
      * @param array $fields
      * @param int $id
      */
-    public function  __construct($fields = array(), $id = 0) {
+    public function  __construct($fields = [], $id = 0) {
         if ($id) {
             $this->do_retrieve_from_id($fields, $id);
         }
@@ -96,6 +98,14 @@ abstract class table {
         return 1;
     }
 
+    public function get_cms_pre_list() {
+        return '';
+    }
+
+    public function get_cms_post_list() {
+        return '';
+    }
+
     /**
      * @param $row
      */
@@ -111,6 +121,18 @@ abstract class table {
         }
     }
 
+    public function set_default_retieve(&$fields, &$options) {
+        if ($fields) {
+            $fields = array_merge($fields, ['live', 'deleted', 'position', 'ts', $this->table_key]);
+        }
+        if (!static::$retrieve_unlive) {
+            $options['where_equals'][_get::__class_name($this) . '.live'] = 1;
+        }
+        if (!static::$retrieve_deleted) {
+            $options['where_equals'][_get::__class_name($this) . '.deleted'] = 0;
+        }
+    }
+
     /**
      * @param array $fields
      * @param array $options
@@ -118,6 +140,7 @@ abstract class table {
     public function do_retrieve(array $fields, array $options) {
         $options['limit'] = 1;
         $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
+        $this->set_default_retieve($fields, $options);
         $sql = db::get_query(get_class($this), $fields, $options, $parameters);
         $res = db::query($sql, $parameters);
         if (db::num($res)) {
@@ -152,12 +175,13 @@ abstract class table {
      */
     public function set_from_request() {
         /** @var field $field */
-        foreach ($this->get_fields() as $field) {
-            if ($this->raw) {
-                $field->raw = true;
+        $this->get_fields()->iterate(function ($field) {
+                if ($this->raw) {
+                    $field->raw = true;
+                }
+                $field->set_from_request();
             }
-            $field->set_from_request();
-        }
+        );
     }
 
     /**
@@ -171,79 +195,103 @@ abstract class table {
             $query = new insert($class);
         }
         /** @var field $field */
-        foreach ($this->get_fields() as $field) {
-            if ($field->field_name != $this->table_key) {
-                if (isset($this->{$field->field_name}) && get_class($field) != 'form\\field_mlink') {
-                    try {
-                        $data = $field->get_save_sql();
-                        $query->add_value($field->field_name, $data);
-                    } catch (\RuntimeException $e) {
+        $this->get_fields()->iterate(function ($field) use ($query) {
+                if ($field->field_name != $this->table_key) {
+                    if (get_class($field) != 'form\\field_file') {
+                        if (!$this->{$field->field_name} && get_class($field) == 'form\\field_fn' && isset($this->title)) {
+                            $this->{$field->field_name} = _get::unique_fn(_get::__class_name($this), $field->field_name, $this->title);
+                        }
+                        if (isset($this->{$field->field_name}) && get_class($field) != 'form\\field_mlink') {
+                            try {
+                                $data = $field->get_save_sql();
+                                $query->add_value($field->field_name, $data);
+                            } catch (\RuntimeException $e) {
 
+                            }
+                        }
                     }
                 }
             }
-        }
+        );
         if (isset($this->{$this->table_key}) && $this->{$this->table_key}) {
             $query->filter_field($this->table_key, $this->{$this->table_key});
         }
         $res = $query->execute();
 
-        if($res) {
+        if (!$this->get_primary_key()) {
             $this->{$this->table_key} = $res;
         }
 
-        foreach ($this->get_fields() as $field) {
-            if ($field->field_name != $this->table_key) {
-                if (isset($this->{$field->field_name}) && get_class($field) == 'form\\field_mlink') {
-                    /** @var \form\field_mlink $field */
-                    $source_module = new _cms_module(['table_name', 'primary_key'], $field->get_link_mid());
-                    $module = new _cms_module(['table_name', 'primary_key'], static::$module_id);
-                    db::query('DELETE FROM ' . $module->table_name . '_link_' . $source_module->table_name . ' WHERE ' . $module->primary_key . '=:key', ['key' => $this->{$this->table_key}]);
-                    foreach ($this->{$field->field_name} as $value) {
-                        db::insert($module->table_name . '_link_' . $source_module->table_name)
-                            ->add_value($module->primary_key, $this->{$this->table_key})
-                            ->add_value('link_' . $source_module->primary_key, $value)
-                            ->add_value('fid', $field->fid)
-                            ->execute();
+        $this->get_fields()->iterate(function ($field) {
+                if ($field->field_name != $this->table_key) {
+                    if (isset($this->{$field->field_name}) && get_class($field) == 'form\\field_mlink') {
+                        /** @var \form\field_mlink $field */
+                        $source_module = new _cms_module(['table_name', 'primary_key'], $field->get_link_mid());
+                        $module = new _cms_module(['table_name', 'primary_key'], static::$module_id);
+                        db::query('DELETE FROM ' . $module->table_name . '_link_' . $source_module->table_name . ' WHERE ' . $module->primary_key . '=:key', ['key' => $this->{$this->table_key}]);
+                        if ($this->{$field->field_name}) {
+                            foreach ($this->{$field->field_name} as $value) {
+                                db::insert($module->table_name . '_link_' . $source_module->table_name)
+                                    ->add_value($module->primary_key, $this->{$this->table_key})
+                                    ->add_value('link_' . $source_module->primary_key, $value)
+                                    ->add_value('fid', $field->fid)
+                                    ->execute();
+                            }
+                        }
                     }
                 }
             }
-        }
+        );
         if (!(isset($this->{$this->table_key}) && $this->{$this->table_key})) {
             $this->{$this->table_key} = db::insert_id();
         }
         if ($this->{$this->table_key}) {
-            foreach ($this->get_fields() as $field) {
-                if (get_class($field) == 'form\field_file') {
-                    $this->do_upload_file($field);
+            $this->get_fields()->iterate(function ($field) {
+                    if (get_class($field) == 'form\field_file') {
+                        $this->do_upload_file($field);
+                    }
                 }
-            }
+            );
         }
         return $this->{$this->table_key};
     }
 
+    public function get_file($fid, $size = '', $extensions = ['png', 'gif', 'jpg', 'jpeg'], $fallback = '/.core/images/no_image.png') {
+        $file = root . '/uploads/' . get::__class_name($this) . '/' . $fid . '/' . $this->get_primary_key() . ($size ? '_' . $size : '') . '.';
+        foreach ($extensions as $extension) {
+            if (file_exists($file . $extension)) {
+                return str_replace(root, '', $file) . $extension;
+            }
+        }
+        return $fallback;;
+    }
+
     /**
      * @param field_file $field
+     * @return string file path
      */
-    protected
-    function do_upload_file(field_file $field) {
+    protected function do_upload_file(field_file $field) {
         if (isset($_FILES[$field->field_name]) && !$_FILES[$field->field_name]['error']) {
             $tmp_name = $_FILES[$field->field_name]['tmp_name'];
             $name = $_FILES[$field->field_name]['name'];
             $ext = pathinfo($name, PATHINFO_EXTENSION);
-            if (!is_dir(root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key})) {
-                mkdir(root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key});
+            if (!is_dir(root . '/uploads/' . _get::__class_name($this))) {
+                mkdir(root . '/uploads/' . _get::__class_name($this));
             }
-            move_uploaded_file($tmp_name, root . '/uploads/' . _get::__class_name($this) . '/' . $this->{$this->table_key} . '/' . $field->fid . '.' . $ext);
+            if (!is_dir(root . '/uploads/' . _get::__class_name($this) . '/' . $field->fid)) {
+                mkdir(root . '/uploads/' . _get::__class_name($this) . '/' . $field->fid);
+            }
+            move_uploaded_file($tmp_name, root . '/uploads/' . _get::__class_name($this) . '/' . $field->fid . '/' . $this->get_primary_key() . '.' . $ext);
         }
+        return root . '/uploads/' . _get::__class_name($this) . '/' . $field->fid . '/' . $this->get_primary_key() . '.' . $ext;
     }
 
     /**
      * @return node
      */
-    public
-    function get_cms_edit() {
+    public function get_cms_edit() {
         $form = $this->get_form();
+        $form->set_from_request();
         $form->set_from_object($this);
         foreach ($form->fields as $field) {
             if (get_class($field) == 'form\field_file') {
@@ -264,9 +312,8 @@ abstract class table {
     /**
      * @return form
      */
-    public
-    function get_form() {
-        $form = new form($this->get_fields());
+    public function get_form() {
+        $form = new form($this->get_fields()->getArrayCopy());
         $form->id = str_replace('\\', '_', get_class($this) . '_form');
         if (isset($form->attributes['target'])) {
             $form->attributes['target'] = 'form_target_' . $form->id;
@@ -277,14 +324,12 @@ abstract class table {
     /**
      * @param $fields
      */
-    public
-    function lazy_load($fields) {
+    public function lazy_load($fields) {
         $this->do_retrieve_from_id($fields, $this->{$this->table_key});
     }
 
     /** @return \html\node */
-    public
-    function get_cms_edit_module() {
+    public function get_cms_edit_module() {
         $list = node::create('table#module_def', [],
             node::create('thead', [],
                 node::create('th', [], 'Field id') .
@@ -295,49 +340,51 @@ abstract class table {
                 node::create('th', [], 'List') .
                 node::create('th', [], 'Required') .
                 node::create('th', [], 'Filter')
+            ) .
+            $this->get_fields()->iterate_return(function ($field) {
+                    return (node::create('tr', [], $field->get_cms_admin_edit()));
+                }
             )
         );
-
-        /** @var field $field */
-        foreach ($this->get_fields() as $field) {
-            $list->add_child(node::create('tr', [], $field->get_cms_admin_edit()));
-        }
         return $list;
     }
 
     /**
      * @return array
      */
-    public
-    function get_cms_list() {
-        $nodes = array();
-        /** @var field $field */
-        foreach ($this->get_fields() as $field) {
-            if ($field->list) {
-                $nodes[] = node::create('td.' . get_class($field), [], $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->{$this->table_key}));
+    public function get_cms_list() {
+        $fields = $this->get_fields();
+        return node::create('td.edit a.edit', ['href' => '/cms/edit/' . static::$module_id . '/' . $this->get_primary_key()]) .
+        node::create('td.position', [],
+            node::create('a.up.reorder', ['data-ajax-click' => get_class($this) . ':do_reorder', 'data-ajax-post' => '{"mid":' . $this::$module_id . ',"id":' . $this->get_primary_key() . ',"dir":"up"}'], 'Up') .
+            node::create('a.down.reorder', ['data-ajax-click' => get_class($this) . ':do_reorder', 'data-ajax-post' => '{"mid":' . $this::$module_id . ',"id":' . $this->get_primary_key() . ',"dir":"down"}'], 'Down')
+        ) .
+        $fields->iterate_return(function ($field) {
+                if ($field->list) {
+                    return node::create('td.' . get_class($field), [], $field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->get_primary_key()));
+                }
             }
-        }
-        return $nodes;
+        ) .
+        node::create('td.delete a.delete', ['href' => '#', 'data-ajax-click' => 'cms:do_delete', 'data-ajax-post' => '{"id":"' . $this->get_primary_key() . '","object":"' . str_replace('\\', '\\\\', get_class($this)) . '"}'], 'delete');
     }
 
     /**
-     * @return array
+     * @return collection
      */
-    public
-    function get_fields() {
+    public function get_fields() {
         $fields = static::_get_fields();
-        foreach ($fields as $field) {
-            $field->parent_form = $this;
-        }
+        $fields->iterate(function ($field) {
+                $field->parent_form = $this;
+            }
+        );
         return $fields;
     }
 
     /**
      *
      */
-    public
-    static function _set_fields() {
-        $final_fields = [];
+    public static function _set_fields() {
+        $final_fields = static::$fields = [];
         $fields = _cms_field::get_all([], ['where_equals' => ['mid' => static::$module_id], 'order' => '`position` ASC']);
         $fields->iterate(function (_cms_field $row) use (&$final_fields) {
                 $class = 'form\field_' . $row->type;
@@ -352,16 +399,34 @@ abstract class table {
     }
 
     /**
-     * @return array
+     * @return collection
      */
     private static function _get_fields() {
         if (!isset(static::$fields)) {
             static::_set_fields();
         }
-        $clone = array();
+        $clone = new collection();
         foreach (static::$fields as $key => $field) {
             $clone[$key] = clone $field;
         }
         return $clone;
+    }
+
+    /**
+     *
+     */
+    public function do_reorder() {
+        if (isset($_REQUEST['id'])) {
+            /** @var table $object */
+            $object = new static(['position'], $_REQUEST['id']);
+            if (isset($_REQUEST['dir']) && $_REQUEST['dir'] == 'down') {
+                db::query('UPDATE ' . _get::__class_name($object) . ' SET position =' . $object->position . ' WHERE position=' . ($object->position + 1));
+                db::query('UPDATE ' . _get::__class_name($object) . ' SET position =' . ($object->position + 1) . ' WHERE ' . $object->table_key . '=' . $object->get_primary_key());
+            } else {
+                db::query('UPDATE ' . _get::__class_name($object) . ' SET position =' . $object->position . ' WHERE position=' . ($object->position - 1));
+                db::query('UPDATE ' . _get::__class_name($object) . ' SET position =' . ($object->position - 1) . ' WHERE ' . $object->table_key . '=' . $object->get_primary_key());
+            }
+            ajax::add_script('document.location = document.location#' . _get::__class_name($object) . ($_REQUEST['id'] - 1));
+        }
     }
 }
