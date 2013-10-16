@@ -56,7 +56,7 @@ abstract class module {
         return $pages->iterate_return(
             function (page $page) {
                 return node::create('li' . ($page->pid == \core::$singleton->pid ? '.sel' : ''), [],
-                    node::create('a', ['href' => $page->get_url()], $page->nav_title)
+                    node::create('a', ['href' => $page->get_url()], ($page->nav_title ? : $page->title))
                 );
             }
         );
