@@ -23,7 +23,9 @@ abstract class page extends table {
      * @return string
      */
     public function get_url() {
-        if (!empty($this->module_name)) {
+        if (isset($this->direct_link) && $this->direct_link) {
+            return $this->direct_link;
+        } else if (!empty($this->module_name)) {
             return '/' . $this->module_name;
         } else {
             return '/' . $this->pid . '/' . get::fn($this->title);
