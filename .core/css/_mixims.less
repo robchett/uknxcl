@@ -26,14 +26,9 @@ input:-webkit-autofill { background-color: inherit }
 .gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
   background: @color;
   background: -webkit-gradient(linear, left bottom, left top, color-stop(0, @start), color-stop(1, @stop));
-  background: -ms-linear-gradient(bottom,
-  @start,
-  @stop);
-  background: -moz-linear-gradient(center bottom,
-  @start 0%,
-  @stop 100%);
-  background: -o-linear-gradient(@stop,
-  @start);
+  background: -ms-linear-gradient(bottom, @start, @stop);
+  background: -moz-linear-gradient(center bottom,@start 0%,  @stop 100%);
+  background: -o-linear-gradient(@stop,  @start);
   filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@stop,@start));
 }
 
@@ -177,4 +172,16 @@ input:-webkit-autofill { background-color: inherit }
   -moz-background-clip: @argument;
   -webkit-background-clip: @argument;
   background-clip: @argument;
+}
+
+.radial(@innerColor: #555, @outerColor: #333) {
+  background-color: @outerColor;
+  background-image: -webkit-gradient(radial, center center, 0, center center, 460, from(@innerColor), to(@outerColor));
+  background-image: -webkit-radial-gradient(circle, @innerColor, @outerColor);
+  background-image: -moz-radial-gradient(circle, @innerColor, @outerColor);
+  background-image: -o-radial-gradient(circle, @innerColor, @outerColor);
+  /* bof added parameter */
+  background-image: radial-gradient(circle, @innerColor, @outerColor);
+  /* eof added parameter */
+  background-repeat: no-repeat;
 }
