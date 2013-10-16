@@ -80,10 +80,12 @@ table_array extends \classes\collection {
      * @param array $options
      * @return table_array
      */
-    static function get_all($class, array $fields_to_retrieve, $options = array()) {
+    static function get_all($class, array $fields_to_retrieve, $options = []) {
         /** @var $return table_array */
         $return = new static();
-        $parameters = (isset($options['parameters']) ? $options['parameters'] : array());
+        $obj = new $class();
+        $obj->set_default_retieve($fields_to_retrieve, $options);
+        $parameters = (isset($options['parameters']) ? $options['parameters'] : []);
         $sql = _db::get_query($class, $fields_to_retrieve, $options, $parameters);
         $res = db::query($sql, $parameters);
         if (_db::num($res)) {
