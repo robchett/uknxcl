@@ -158,8 +158,8 @@ abstract class form {
     public function set_from_request() {
         foreach ($this->fields as $field) {
             if (isset($_REQUEST[$field->field_name])) {
+                $field->set_from_request();
             }
-            $field->set_from_request();
         }
     }
 
