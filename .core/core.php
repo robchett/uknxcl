@@ -2,81 +2,76 @@
 
 namespace core;
 
-use \classes\get as _get;
+use classes\ajax;
+use classes\get;
+use classes\page_config;
+use classes\push_state;
+use module\cms\object\_cms_field;
+use module\cms\object\_cms_module;
+use module\pages\object\page;
+use template\html;
 
 abstract class core {
 
     /** @var core */
     public static $singleton;
-    public static $inline_script = array();
-    public static $js = array();
-    public static $css = array('/css/');
-    /** @var \classes\page_config */
+    public static $inline_script = [];
+    public static $js = ['/js/'];
+    public static $css = ['/css/'];
+    /** @var page_config */
     public static $page_config;
     public $body = '';
     public $pid = 0;
-    public $pre_content = 'test';
-    public $post_content = 'test';
-    public $module_name = 'latest';
+    public $pre_content = '';
+    public $path = [];
+    public $post_content = '';
+    public $module_name = '';
     /** @var \classes\module */
     public $module;
-    /** @var \module\pages\object\page */
+    /** @var page */
     public $page;
 
     /**
      *
      */
     public function __construct() {
-        self::$page_config = new \classes\page_config();
+        self::$page_config = new page_config();
         self::$singleton = $this;
         $this->set_path(uri);
-        self::$page_config->title_tag = 'UKNXCL National Cross Country League';
-
-        if (!(isset($this->path[0])) || empty($this->path[0])) {
-            $this->path[0] = 'latest';
-        }
         define('cms', $this->path[0] == 'cms');
 
         if (isset($_REQUEST['module'])) {
-
-            if ($_REQUEST['module'] == 'core' || $_REQUEST['module'] == 'this') {
-                $module = $this;
-            } else {
-                if (class_exists($_REQUEST['module'])) {
-                    $module = new $_REQUEST['module']();
-                } else {
-                    $class_name = '\\module\\' . $_REQUEST['module'] . '\\controller';
-                    $module = new $class_name();
-                }
-            }
-            $module->{$_REQUEST['act']}();
-            \classes\ajax::do_serve();
-            exit();
+            $this->do_ajax();
         }
 
-        if (!$this->pid && is_numeric($this->path[0])) {
-            _get::header_redirect(host . '/');
-            die();
-        }
-        \core::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false';
-        \core::$js[] = 'https://www.google.com/jsapi';
-        \core::$js[] = '/js/';
-
+        self::$page_config->title_tag = get::ini('title_tag', 'site_settings', 'NO Title tag!!!');
         $this->load_page();
+    }
+
+    public function do_ajax() {
+        if ($_REQUEST['module'] == 'core' || $_REQUEST['module'] == 'this') {
+            $module = $this;
+        } else {
+            if (class_exists($_REQUEST['module'])) {
+                $module = new $_REQUEST['module']();
+            } else {
+                $class_name = '\\module\\' . $_REQUEST['module'] . '\\controller';
+                $module = new $class_name();
+            }
+        }
+        $module->{$_REQUEST['act']}();
+        ajax::do_serve();
+        exit();
     }
 
     /**
      *
      */
     public function load_page() {
-        if (isset($this->path[0])) {
-            if (!is_numeric($this->path[0])) {
-                $this->module_name = $this->path[0];
-            } else {
-                $this->module_name = 'pages';
-            }
+        if (!is_numeric($this->path[0])) {
+            $this->module_name = $this->path[0];
         } else {
-            $this->module_name = 'latest';
+            $this->module_name = 'pages';
         }
 
         if (class_exists('module\\' . $this->module_name . '\controller')) {
@@ -87,14 +82,15 @@ abstract class core {
             $push_state = $this->module->get_push_state();
             if ($push_state) {
                 if (!ajax) {
-                    $push_state->type = \classes\push_state::REPLACE;
+                    $push_state->type = push_state::REPLACE;
                     $push_state->get();
                 } else {
-                    \classes\ajax::push_state($push_state);
+                    ajax::push_state($push_state);
                 }
             }
             if (!ajax) {
-                require_once(root . '/index_screen.php');
+                $template = new html($this->module);
+                echo $template->get();
             }
         }
     }
@@ -103,7 +99,7 @@ abstract class core {
      *
      */
     public function set_page_from_path() {
-        $this->page = new \module\pages\object\page();
+        $this->page = new page();
         if (is_numeric($this->path[0])) {
             $this->page->do_retrieve_from_id(array(), (int) $this->path[0]);
         } else {
@@ -119,6 +115,9 @@ abstract class core {
     public function set_path($uri) {
         $uri_no_qs = parse_url($uri, PHP_URL_PATH);
         $this->path = explode('/', trim($uri_no_qs, '/'));
+        if (!$this->path[0]) {
+            $this->path[0] = get::ini('default_module', 'site_settings', 'pages');
+        }
     }
 
     /**
@@ -145,16 +144,16 @@ abstract class core {
      * @return string
      */
     public static function get_class_from_mid($mid) {
-        $module = new \module\cms\object\_cms_module(['namespace', 'table_name'], $mid);
+        $module = new _cms_module(['namespace', 'table_name'], $mid);
         return $module->get_class_name();
     }
 
     /**
      * @param $fid
-     * @return \module\cms\object\_cms_field
+     * @return _cms_field
      */
     public static function get_field_from_fid($fid) {
-        return new \module\cms\object\_cms_field([], $fid);
+        return new _cms_field([], $fid);
     }
 
     /**
@@ -179,7 +178,6 @@ abstract class core {
      */
     public function get_css() {
         $html = '';
-
         foreach (self::$css as $css) {
             $html .= '<link type="text/css" href="' . $css . '" rel="stylesheet"/>';
         }
