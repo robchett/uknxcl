@@ -2,8 +2,13 @@
 namespace core\module\cms;
 
 use classes\ajax;
+use classes\collection;
 use classes\db;
+use classes\get;
 use classes\module;
+use classes\table;
+use classes\table_array;
+use core\module\cms\object\_cms_module;
 use html\node;
 use module\cms\form\add_field_form;
 use module\cms\form\cms_filter_form;
@@ -39,7 +44,8 @@ abstract class controller extends module {
     /**
      * @var
      */
-    public $object;
+    public $object = false;
+    public $order;
     /**
      * @var
      */
@@ -80,18 +86,17 @@ abstract class controller extends module {
             $this->view = $path[1];
             if (isset($path[2])) {
                 $this->set_from_mid($path[2]);
-                $this->npp = isset($_SESSION['cms'][$this->module->table_name]['npp']) && !empty($_SESSION['cms'][$this->module->table_name]['npp']) ? $_SESSION['cms'][$this->module->table_name]['npp'] : 25;
+                $this->npp = isset($_SESSION['cms'][$this->module->get_class_name()]['npp']) ? $_SESSION['cms'][$this->module->get_class_name()]['npp'] : 25;
                 $this->page = isset($path[4]) ? $path[4] : 1;
                 $this->current_class = $this->module->get_class();
                 $this->where = array();
                 foreach ($this->current_class->get_fields() as $field) {
-                    if (isset($_SESSION['cms'][$this->module->table_name][$field->field_name]) && $_SESSION['cms'][$this->module->table_name][$field->field_name]) {
-                        $this->where[$field->field_name] = $_SESSION['cms'][$this->module->table_name][$field->field_name];
+                    if (isset($_SESSION['cms'][$this->module->get_class_name()][$field->field_name]) && $_SESSION['cms'][$this->module->get_class_name()][$field->field_name]) {
+                        $this->where[$field->field_name] = $_SESSION['cms'][$this->module->get_class_name()][$field->field_name];
                     }
                 }
                 $this->tot = db::result(db::get_query($this->module->table_name, array('count(*) AS count'), array('where_equals' => $this->where), $parameters), $parameters)->count;
             }
-            \core::$page_config->pre_content = $this->get_main_nav();
         }
         if (isset($path[3]) && !empty($path[3]) && admin) {
             $this->current->do_retrieve_from_id(array(), $path[3]);
@@ -138,6 +143,7 @@ abstract class controller extends module {
             $fields->iterate(function (object\_cms_field $field) use (&$previous, $reverse, &$cnt) {
                     $cnt += $reverse ? -1 : 1;
                     $field->position = $cnt;
+                    $field->position = $cnt;
                     if ($field->fid == $_REQUEST['fid']) {
                         $field->position = $previous->position;
                         $previous->position = $cnt;
@@ -178,7 +184,7 @@ abstract class controller extends module {
      * @return node
      */
     public function get_filters() {
-        $filter_form = new cms_filter_form(get_class($this->current));
+        $filter_form = new cms_filter_form($this->module->get_class_name());
         $filter_form->npp = $this->npp;
         $wrapper = node::create('div#filter_wrapper ul', [], $this->get_pagi('top') . $filter_form->get_html());
         return $wrapper;
@@ -188,31 +194,57 @@ abstract class controller extends module {
      * @return node
      */
     public function get_inner() {
-        /** @var \classes\table_array $class */
+        /** @var table_array $class */
         $class = $this->module->get_class_name();
-        $sres = $class::get_all([], array('limit' => ($this->page - 1) * $this->npp . ',' . $this->npp, 'where_equals' => $this->where));
-
+        $options = ['where_equals' => $this->where, 'order' => $this->order ? : 'position'];
+        if ($this->npp) {
+            $options['limit'] = ($this->page - 1) * $this->npp . ',' . $this->npp;
+        }
+        $sres = $class::get_all([], $options);
         $html = node::create('div#inner', [], $this->get_list($class, $sres));
+        return $html;
+    }
+
+    public function get_sub_modules() {
+        $html = '';
+        $collection = object\_cms_module::get_all([], ['where_equals' => ['parent_mid' => $this->module->mid]]);
+        if ($collection->count()) {
+            $html .= $collection->iterate_return(function (_cms_module $module) {
+                    $class = $module->get_class_name();
+                    $object_collection = $class::get_all([], ['where_equals' => [$this->module->primary_key => $this->current->get_primary_key()]]);
+                    return node::create('div.sub_module', [],
+                        node::create('h3', [], $module->title) .
+                        node::create('a', ['href' => '/cms/edit/' . $class::$module_id . '?' . $this->module->primary_key . '=' . $this->current->get_primary_key()], 'Add new ' . $module->title) .
+                        $this->get_list_inner($object_collection, $class)
+                    );
+                }
+            );
+        }
         return $html;
     }
 
     /**
      * @param $obj
-     * @param \classes\table_array $elements
+     * @param table_array $elements
      * @return array
      */
     public function get_list($obj, $elements) {
-        $this->object = new $obj();
-        $html = node::create('table', [],
-            $this->get_table_head($this->object) .
-            $this->get_table_rows($elements, $obj)
-        );
-        $nodes = array(
-            $this->get_filters($this->object),
-            $html,
+        return [
+            $this->get_filters(new $obj()),
+            $this->get_list_inner($elements, $obj),
             $this->get_pagi($elements->count())
-        );
-        return $nodes;
+        ];
+    }
+
+    protected function get_list_inner($elements, $class) {
+        $object = new $class();
+        return
+            $object->get_cms_pre_list() .
+            node::create('table.module_list', [],
+                $this->get_table_head($object) .
+                $this->get_table_rows($elements, $class)
+            ) .
+            $object->get_cms_post_list();
     }
 
     /**
@@ -223,7 +255,7 @@ abstract class controller extends module {
         $html = node::create('ul#nav', [],
             $groups->iterate_return(
                 function (object\_cms_group $row) {
-                    $modules = object\_cms_module::get_all([], ['where_equals' => ['gid' => $row->gid]]);
+                    $modules = object\_cms_module::get_all([], ['where_equals' => ['gid' => $row->gid, 'parent_mid' => 0]]);
                     return node::create('li', [],
                         node::create('span', [], $row->title) .
                         node::create('ul', [],
@@ -262,7 +294,7 @@ abstract class controller extends module {
      */
     public function get_pagi() {
         $node = node::create('div');
-        if ($this->tot > $this->npp) {
+        if ($this->npp && $this->tot > $this->npp) {
             $pages = ceil($this->tot / $this->npp);
             if ($pages > 40) {
                 $node = node::create('select#pagi.cf', ['data-ajax-change' => 'cms:do_paginate']);
@@ -288,33 +320,62 @@ abstract class controller extends module {
      * @return node
      */
     public function get_table_head($obj) {
-        $node = node::create('thead');
-        $node->add_child(node::create('th.edit'));
-        foreach ($obj->get_fields() as $field) {
-            if ($field->list) {
-                $node->add_child(node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), [], $field->title));
-            }
-        }
-        $node->add_child(node::create('th.delete'));
+        $node = node::create('thead', [],
+            node::create('th.edit') .
+            node::create('th.position') .
+            $obj->get_fields()->iterate_return(function ($field) use ($obj) {
+                    if ($field->list) {
+                        return node::create('th.' . get_class($field) . '.' . $field->field_name . ($field->field_name == $obj->table_key ? '.primary' : ''), [], $field->title);
+                    }
+                }
+            ) .
+            node::create('th.delete')
+        );
         return $node;
     }
 
+    public function do_delete() {
+        /** @var \classes\table $object */
+        $object = new $_REQUEST['object'];
+        db::update(get::__class_name($_REQUEST['object']))->add_value('deleted', 1)->filter($object->table_key . '=' . $_REQUEST['id'])->execute();
+        ajax::add_script('document.location = document.location');
+    }
+
     /**
-     * @param \classes\table[] $objects
+     * @param table_array $objects
      * @return node
      */
     public function get_table_rows($objects) {
         $nodes = node::create('tbody');
-        //$objects->iterate(function ($obj) use ($nodes, $class) {
-        foreach ($objects as $obj) {
-            $node = node::create('tr');
-            $node->add_child(node::create('td.edit a.edit', ['href' => '/cms/edit/' . $this->mid . '/' . $obj->{$obj->table_key}]));
-            $node->nest($obj->get_cms_list());
-            $node->add_child(node::create('td.delete a.delete', ['href' => '/cms/delete/' . $this->mid . '/' . $obj->{$obj->table_key}]));
-            $nodes->add_child($node);
-        }
-        //});
-        return $nodes;
+        $new_collection = new table_array();
+        /** @var \classes\table $table */
+        $objects->iterate(function ($table) use ($new_collection) {
+                if ($table->{'parent_' . $table->table_key} == 0) {
+                    $table->children = new collection();
+                    $new_collection[$table->get_primary_key()] = $table;
+                } else {
+                    $new_collection[$table->{'parent_' . $table->table_key}]->children[] = $table;
+                }
+            }
+        );
+        /**
+         * @var \classes\table $obj
+         * @return string
+         */
+        return $new_collection->iterate_return(function ($obj) use ($nodes) {
+                if (isset($obj->children)) {
+                    $obj->children->asort(function ($a, $b) {
+                            return $a->position - $b->position;
+                        }
+                    );
+                }
+                return node::create('tr#' . get::__class_name($obj) . $obj->get_primary_key(), [], $obj->get_cms_list()) .
+                (isset($obj->children) ? $obj->children->iterate_return(function ($child) {
+                        return node::create('tr.child', [], $child->get_cms_list());
+                    }
+                ) : '');
+            }
+        );
     }
 
     /**
