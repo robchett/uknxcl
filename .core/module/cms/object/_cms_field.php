@@ -1,9 +1,12 @@
 <?php
 namespace core\module\cms\object;
 
-use core\classes\table;
+use classes\table;
+use traits\table_trait;
 
 abstract class _cms_field extends table {
+
+    use table_trait;
 
     public $fid;
     public $field_name;
@@ -12,5 +15,4 @@ abstract class _cms_field extends table {
     public $type;
 
     public static $module_id = '';
-    public static $fields = [];
 }

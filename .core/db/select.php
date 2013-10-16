@@ -2,9 +2,9 @@
 namespace core\db;
 
 use core\classes\db;
-use db\query;
+use db\query as _query;
 
-abstract class select extends query {
+abstract class select extends _query {
 
     /**
      * @return \PDOStatement

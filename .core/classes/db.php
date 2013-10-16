@@ -255,7 +255,7 @@ abstract class db implements interfaces\database_interface {
      * @param $sql
      * @param array $params
      * @param bool $throwable
-     * @return \PDOStatement
+     * @return \PDOResult
      */
     static function query($sql, $params = array(), $throwable = false) {
         // Attempt to reconnect if connection has gone away.
