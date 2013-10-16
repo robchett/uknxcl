@@ -14,12 +14,15 @@ abstract class controller extends module {
 
     public function __controller(array $path) {
         if (isset($path[0])) {
-            $this->current->do_retrieve_from_id(array(), $path[0]);
+            $this->current->do_retrieve_from_id([], $path[0]);
         }
         if (!$this->current->pid) {
-            get::header_redirect('/latest');
+            $this->current->do_retrieve([], ['order'=>'position']);
         } else if (uri != $this->current->get_url()) {
             get::header_redirect($this->current->get_url());
+        }
+        if($this->current->pid == 1) {
+            $this->view = 'home';
         }
         parent::__controller($path);
     }
