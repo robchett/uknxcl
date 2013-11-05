@@ -1482,3 +1482,11 @@ function loop(a, b, c) {
     });
     return d
 };
+
+$('body').on('change', 'input[name=flights]', function () {
+    map.swap(map.kmls[$(this).val()]);
+});
+
+window.onresize = function () {
+    if (map)map.resize()
+};

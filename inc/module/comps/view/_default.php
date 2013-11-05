@@ -9,7 +9,7 @@ use module\comps\object\comp;
 class _default extends view {
 
     public function get_view() {
-        $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title AS class', 'file'], ['join' => ['comp_group' => 'comp.class = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, class ASC']);
+        $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title', 'file'], ['join' => ['comp_group' => 'comp.cgid = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, comp.cgid ASC']);
         $html = node::create('div#comp_wrapper div#comp_inner', [],
             node::create('div#comp_list', [],
                 node::create('h2', [], 'Select a Competition') .
@@ -30,9 +30,9 @@ class _default extends view {
                                     node::create('td', [], $comp->type) .
                                     node::create('td', [], (int) $comp->round) .
                                     node::create('td', [], (int) $comp->task) .
-                                    node::create('td', [], $comp->class) .
+                                    node::create('td', [], $comp->comp_group->title) .
                                     node::create('td', [], $comp->title) .
-                                    node::create('td', [], date('d/m/Y', strtotime($comp->date))) .
+                                    node::create('td', [], date('d/m/Y', $comp->date)) .
                                     node::create('td a.button', ['href' => $comp->get_url()], 'View')
                                 );
                             }

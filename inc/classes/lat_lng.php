@@ -21,6 +21,19 @@ class lat_lng {
         }
     }
 
+    /** @return lat_lng_bound */
+    public function get_grid_cell() {
+        /** lat_lng_bound $cell */
+        foreach(\classes\OS::cells() as $cell) {
+            if($cell->contains($this)) {
+                return $cell;
+            }
+        }
+        $bound = new \stdClass();
+        $bound->code = 'N/A';
+        return $bound;
+    }
+
     public function set_lat($float) {
         $this->lat = $float;
         $this->lat_rad = $float * M_PI / 180;

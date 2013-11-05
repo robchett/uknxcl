@@ -4,8 +4,10 @@ namespace object;
 
 use classes\ajax;
 use form\form;
+use traits\table_trait;
 
-class glider extends pilot {
+class glider extends scorable {
+    use table_trait;
 
     public static $module_id = 4;
     public $gid;

@@ -210,19 +210,44 @@ flight extends table {
         return json_encode($wrapper);
     }
 
+    public function get_flights_by_area() {
+        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date < "08-28-2012" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights->iterate(function (flight $flight, $cnt) {
+                $path = $flight->get_igc();
+                copy($path, root . '/temp/pre/' . $cnt . '.kml');
+            }
+        );
+
+        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date >= "08-28-2012" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights->iterate(function (flight $flight, $cnt) {
+                $path = $flight->get_igc();
+                copy($path, root . '/temp/post/' . $cnt . '.kml');
+            }
+        );
+    }
+
     /**
      *
      */
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1 AND season = 2012 AND ftid != 3 AND fid>=8946', 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
         $total_time = 0;
         $flights->iterate(
             function (flight $flight) use (&$total_time) {
                 $track = new track();
                 $track->time = 0;
+                $track->id = $flight->fid;
                 $time = time();
                 echo node::create('p', [], 'Track :' . $flight->fid);
-                if ($flight->ftid != 3 && $track->generate($flight)) {
+                if($track->parse_IGC()) {
+                    $grid_refs = [];
+                    /** @var \classes\lat_lng $point */
+                    foreach($track->track_points as $point) {
+                        $grid_refs = array_merge($grid_refs, [$point->get_grid_cell()->code]);
+                    }
+                    $flight->os_codes = implode(',', array_unique($grid_refs));
+                    $flight->do_save();
+                /*if ($track->generate($flight)) {
                     $time = time() - $time;
                     $total_time += $time;
                     $flight->time = $time;
@@ -284,7 +309,7 @@ flight extends table {
                         $flight->ftid = $best_score[1];
                         $flight->multi = $flight->get_multiplier();
                     }
-                    $flight->do_save();
+                    $flight->do_save();*/
                 } else {
                     $flight->time = 0;
                     echo node::create('p', [], 'Track :' . $flight->fid . ' failed to calculate');
@@ -358,8 +383,8 @@ flight extends table {
                 (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                     node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .
                     node::create('tr td.center.view', ['colspan' => 2],
-                        node::create('a.download.igc', ['href' => '/uploads/flight/' . $this->fid . '/track.igc', 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => '/uploads/flight/' . $this->fid . '/track.kmz', 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
+                        node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
                     ) :
                     node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
                 ) .
@@ -376,6 +401,10 @@ flight extends table {
                 )
             )
         );
+    }
+
+    protected function  get_download_url($type = 'igc') {
+        return '/?module=\object\flight&act=download&id=' . $this->fid . '&type=' . $type;
     }
 
     /**
@@ -468,8 +497,8 @@ flight extends table {
             (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                 node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
                 node::create('tr', [], node::create('td.center', ['colspan' => 2],
-                        node::create('a.download.igc', ['href' => '/uploads/flight/' . $this->fid . '/track.igc'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => '/uploads/flight/' . $this->fid . '/track.kmz'], 'Download KML')
+                        node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'rel' => 'external'], 'Download IGC') .
+                        node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'rel' => 'external'], 'Download KML')
                     )
                 ) :
                 node::create('tr', [], node::create('td.center.view.coords', ['colspan' => 2],
