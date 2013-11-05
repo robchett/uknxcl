@@ -3,12 +3,10 @@
 namespace object;
 
 use classes\ajax;
-use core\classes\table;
 use form\form;
 use traits\table_trait;
 
-class pilot extends table {
-
+class pilot extends scorable {
     use table_trait;
 
     public static $module_id = 3;

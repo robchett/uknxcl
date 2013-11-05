@@ -29,7 +29,7 @@ class article extends table {
         return '/news/' . $this->aid;
     }
 
-    public function get_title() {
+    public function get_type() {
         return
             node::create('span.date', [], date('d/m/Y', strtotime($this->date))) .
             node::create('span.name', [], $this->title) .
@@ -42,7 +42,7 @@ class article extends table {
 
     public function get_cell() {
         return node::create('article#article' . $this->aid, [],
-            node::create('div.title', [], $this->get_title()) .
+            node::create('div.title', [], $this->get_type()) .
             node::create('div.content', [], (!$this->snippet ? $this->post : $this->snippet . node::create('a.button', ['href' => $this->get_url()], 'Read more')))
         );
     }

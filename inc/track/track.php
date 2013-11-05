@@ -172,14 +172,14 @@ class track {
                 $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
             }
         }
-        if ($this->calc_ft) {
+        /*if ($this->calc_ft) {
             $this->track_flat_triangles($use_rough_calculations);
             if (isset($this->ft->waypoints)) {
                 $this->ft->waypoints->spherical = false;
                 unset($this->ft->distance);
                 $this->console("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
             }
-        }
+        }*/
         if ($this->calc_tr) {
             $this->track_triangles($use_rough_calculations);
             if (isset($this->tr->waypoints)) {
@@ -279,9 +279,9 @@ class track {
             $this->parent_flight->tr_time = $this->tr->get_time();
             $this->parent_flight->tr_coordinates = $this->tr->get_coordinates();
 
-            $this->parent_flight->ft_score = $this->ft->get_distance();
-            $this->parent_flight->ft_time = $this->ft->get_time();
-            $this->parent_flight->ft_coordinates = $this->ft->get_coordinates();
+            /*            $this->parent_flight->ft_score = $this->ft->get_distance();
+                        $this->parent_flight->ft_time = $this->ft->get_time();
+                        $this->parent_flight->ft_coordinates = $this->ft->get_coordinates();*/
             return true;
         } else {
             return false;
@@ -896,7 +896,8 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         if ($this->id) {
             $loc = $this->get_file_loc() . '/track.igc';
             if (!file_exists($loc)) {
-                $loc_old = $this->get_file_loc() . '/track_log.igc';
+                $loc_old = $this->get_file_loc() . '/Track_log.igc';
+                echo $loc_old;
                 if (!(file_exists($loc_old) && copy($loc_old, $loc) && unlink($loc_old))) {
                     return false;
                 }
@@ -992,23 +993,28 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->od->get_waypoints_from_os();
             $this->od->waypoints->spherical = false;
 
-            $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
-            $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
-            $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
-            $this->or->get_waypoints_from_os();
-            $this->or->waypoints->spherical = false;
+            if (isset($_SESSION['add_flight'][$id]['or'])) {
+                $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
+                $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
+                $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
+                $this->or->get_waypoints_from_os();
+                $this->or->waypoints->spherical = false;
+            }
 
-            $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
-            $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
-            $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
-            $this->tr->get_waypoints_from_os();
-            $this->tr->waypoints->spherical = false;
-
-            $this->ft->distance = $_SESSION['add_flight'][$id]['ft']['distance'];
-            $this->ft->coordinates = $_SESSION['add_flight'][$id]['ft']['coords'];
-            $this->ft->timestamp = $_SESSION['add_flight'][$id]['ft']['duration'];
-            $this->ft->get_waypoints_from_os();
-            $this->ft->waypoints->spherical = false;
+            if (isset($_SESSION['add_flight'][$id]['tr'])) {
+                $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
+                $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
+                $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
+                $this->tr->get_waypoints_from_os();
+                $this->tr->waypoints->spherical = false;
+            }
+            if (isset($_SESSION['add_flight'][$id]['ft'])) {
+                $this->ft->distance = $_SESSION['add_flight'][$id]['ft']['distance'];
+                $this->ft->coordinates = $_SESSION['add_flight'][$id]['ft']['coords'];
+                $this->ft->timestamp = $_SESSION['add_flight'][$id]['ft']['duration'];
+                $this->ft->get_waypoints_from_os();
+                $this->ft->waypoints->spherical = false;
+            }
 
             if (isset($_SESSION['add_flight'][$id]['task'])) {
                 $this->task = new defined_task();

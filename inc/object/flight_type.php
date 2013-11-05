@@ -51,7 +51,7 @@ class flight_type extends table {
      * @param $type
      * @return mixed
      */
-    public static function get_title($type) {
+    public static function get_type($type) {
         if (!isset(self::$all_rows)) {
             self::$all_rows = flight_type::get_all(array());
         }
