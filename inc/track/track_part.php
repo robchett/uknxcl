@@ -31,7 +31,7 @@ class track_part {
         $this->end_point -= $int;
     }
 
-    public function size() {
+    public function count() {
         return $this->end_point - $this->start_point + 1;
     }
 }
