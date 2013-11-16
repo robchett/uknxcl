@@ -2,6 +2,7 @@
 
 namespace track;
 
+use classes\collection_iterator;
 use classes\coordinate_bound;
 use classes\geometry;
 use classes\get;
@@ -164,14 +165,14 @@ class track {
                 $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
             }
         }
-        if ($this->calc_or) {
-            $this->track_out_and_return($use_rough_calculations);
-            if (isset($this->or->waypoints)) {
-                $this->or->waypoints->spherical = false;
-                unset($this->or->distance);
-                $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
-            }
-        }
+         if ($this->calc_or) {
+             $this->track_out_and_return($use_rough_calculations);
+             if (isset($this->or->waypoints)) {
+                 $this->or->waypoints->spherical = false;
+                 unset($this->or->distance);
+                 $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
+             }
+         }
         /*if ($this->calc_ft) {
             $this->track_flat_triangles($use_rough_calculations);
             if (isset($this->ft->waypoints)) {
@@ -180,15 +181,16 @@ class track {
                 $this->console("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
             }
         }*/
-        if ($this->calc_tr) {
-            $this->track_triangles($use_rough_calculations);
-            if (isset($this->tr->waypoints)) {
-                $this->tr->waypoints->spherical = false;
-                unset($this->tr->distance);
-                $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
-            }
-        }
+         if ($this->calc_tr) {
+             $this->track_triangles($use_rough_calculations);
+             if (isset($this->tr->waypoints)) {
+                 $this->tr->waypoints->spherical = false;
+                 unset($this->tr->distance);
+                 $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
+             }
+         }
         $this->set_info();
+        fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
     }
 
     public function check_date() {
@@ -330,7 +332,23 @@ class track {
         $track->html_earth = '<div class="kmltree" data-post=\'{"id":' . $this->id . '}\'>' . $kml->get_html() . '</div>';
 
         fwrite(fopen($this->get_file_loc() . '/track.js', 'w'), json_encode($track));
-        fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
+    }
+
+    public function generate_kml_raw($external = false) {
+        $kml = new kml();
+        $kml->get_kml_folder_open('Flight ' . $this->id);
+        if (!$external) {
+            $kml->set_gradient_styles();
+        }
+        if (!$external) {
+            $kml->get_kml_folder_open('Track ' . $this->id, 1, '', 1);
+            $kml->add($this->get_meta_linestring());
+            $kml->get_kml_folder_close();
+        }
+        $kml->get_kml_folder_close();
+        if (!$external) {
+            $kml->compile(false, $this->get_file_loc() . '/track_raw.kml');
+        }
     }
 
     public function  generate_kml($external = false) {
@@ -440,12 +458,15 @@ class track {
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_open('Standard', 1, 'hideChildren', 0);
-        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'clampToGround'));
-        $kml->get_kml_folder_close();
+        $subset = $this->track_points->subset();
+        if ($subset->count) {
+            $kml->add(kml::create_linestring('shadow', $subset, 'clampToGround'));
+            $kml->get_kml_folder_close();
 
-        $kml->get_kml_folder_open('Extrude', 0, 'hideChildren', 0);
-        $kml->add(kml::create_linestring('shadow', $this->track_points->subset(), 'absolute', 1));
-        $kml->get_kml_folder_close();
+            $kml->get_kml_folder_open('Extrude', 0, 'hideChildren', 0);
+            $kml->add(kml::create_linestring('shadow', $subset, 'absolute', 1));
+            $kml->get_kml_folder_close();
+        }
 
         $kml->get_kml_folder_close();
 
@@ -479,6 +500,7 @@ class track {
 
     public function generate_output_files() {
         $this->generate_js();
+        $this->generate_kml_raw();
         $this->generate_kml();
         $this->generate_kml_earth();
     }
@@ -520,14 +542,14 @@ class track {
             $coordinates[] = $point;
             $current_level = floor(($point->$value - $min) * 16 / $var);
             if ($current_level != $last_level && $current_level != 16) {
-                $output .= kml::create_linestring('#S' . $last_level, $coordinates);
+                $output .= kml::create_linestring('#S' . $last_level, new collection_iterator($coordinates));
                 $coordinates = array();
                 $coordinates[] = $point;
                 $last_level = $current_level;
             }
         }
         if (!empty($coordinates))
-            $output .= kml::create_linestring('#S' . $current_level, $coordinates);
+            $output .= kml::create_linestring('#S' . $current_level, new collection_iterator($coordinates));
         if ($scale)
             $output .= kml::get_scale($min, $max);
         return $output;
@@ -892,20 +914,40 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         return round($a / 60000, 6);
     }
 
-    public function parse_IGC() {
+    public function get_igc() {
         if ($this->id) {
+            $loc_old = $this->get_file_loc() . '/track_log.igc';
             $loc = $this->get_file_loc() . '/track.igc';
-            if (!file_exists($loc)) {
-                $loc_old = $this->get_file_loc() . '/Track_log.igc';
-                echo $loc_old;
+            if (file_exists($loc_old)) {
                 if (!(file_exists($loc_old) && copy($loc_old, $loc) && unlink($loc_old))) {
                     return false;
                 }
             }
-            $file = file($loc);
+            if (file_exists($loc)) {
+                return $loc;
+            }
+        } elseif ($this->source && file_exists($this->source)) {
+            return $this->source;
+        }
+        return false;
+    }
+
+    public function get_kmz() {
+        return $this->get_file_loc() . '/track.kmz';
+    }
+
+    public function get_kmz_earth() {
+        return $this->get_file_loc() . '/track_earth.kmz';
+    }
+
+    public function get_kmz_raw() {
+        return $this->get_file_loc() . '/track_raw.kmz';
+    }
+
+    public function parse_IGC() {
+        if ($file_path = $this->get_igc()) {
+            $file = file($file_path);
             $this->console("Flight Read", $this, 1, 1);
-        } elseif ($this->source) {
-            $file = file($this->source);
         } else {
             return false;
         }
@@ -969,7 +1011,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
 
 
     public function repair_track() {
-        $previous = $this->track_points->first();
+        $previous = clone $this->track_points->first();
         /** @var track_point $track_point */
         foreach ($this->track_points as $track_point) {
             if ($this->has_height() && $track_point->ele == 0) {
@@ -980,7 +1022,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 //$this->console("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
                 $track_point->ele = $previous->ele;
             }
-            $previous = $track_point;
+            $previous = clone $track_point;
         }
     }
 
@@ -1322,15 +1364,15 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
 
     public function trim() {
         if ($this->track_parts->count() > 1) {
-            while (1) {
-                if ($this->track_parts->first()->size() < 20) {
+            while (1 && $this->track_parts->count() > 1) {
+                if ($this->track_parts->first()->count() < 20) {
                     $this->console("Beginning section ignored, less than 20 points", $this, 1, 1);
-                    $this->track_points->remove_first($this->track_parts->first()->size());
-                    $this->track_parts->reduce_index($this->track_parts->first()->size());
-                    $this->track_parts->remove_first();
+                    $this->track_points->unshift($this->track_parts->first()->count());
+                    $this->track_parts->reduce_index($this->track_parts->first()->count());
+                    $this->track_parts->unshift();
                     continue;
                 }
-                $midPoint = round(($this->track_parts->first()->size()) / 2);
+                $midPoint = round(($this->track_parts->first()->count()) / 2);
                 /** @var track_point $coord1 */
                 $coord1 = $this->track_points[$this->track_parts->first()->start_point];
                 /** @var track_point $coord2 */
@@ -1339,25 +1381,25 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 $coord3 = $this->track_points[$this->track_parts->first()->end_point];
                 if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
                     $this->console("Beginning section ignored, less than 100m", $this, 1, 1);
-                    $this->track_points->remove_first($this->track_parts->first()->size());
-                    $this->track_parts->reduce_index($this->track_parts->first()->size());
-                    $this->track_parts->remove_first();
+                    $this->track_points->unshift($this->track_parts->first()->count());
+                    $this->track_parts->reduce_index($this->track_parts->first()->count());
+                    $this->track_parts->unshift();
                 } else break;
             }
-            while (1) {
-                if ($this->track_parts->last()->size() < 20) {
+            while (1 && $this->track_parts->count() > 1) {
+                if ($this->track_parts->last()->count() < 20) {
                     $this->console("End section ignored, less than 20 points", $this, 1, 1);
-                    $this->track_points->remove_last($this->track_parts->last()->size());
+                    $this->track_points->remove_last($this->track_parts->last()->count());
                     $this->track_parts->remove_last();
                     continue;
                 }
-                $midPoint = round(($this->track_parts->last()->size()) / 2);
+                $midPoint = round(($this->track_parts->last()->count()) / 2);
                 $coord1 = $this->track_points[$this->track_parts->last()->start_point];
                 $coord2 = $this->track_points[$this->track_parts->last()->start_point + $midPoint];
                 $coord3 = $this->track_points[$this->track_parts->last()->end_point];
                 if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
                     $this->console("End section ignored, less than 100m", $this, 1, 1);
-                    $this->track_points->remove_last($this->track_parts->last()->size());
+                    $this->track_points->remove_last($this->track_parts->last()->count());
                     $this->track_parts->remove_last();
                 } else break;
             }
