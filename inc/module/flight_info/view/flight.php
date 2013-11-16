@@ -11,7 +11,7 @@ class flight extends view {
 
     public function get_view() {
         $html = node::create('div.flight_wrapper', [],
-            node::create('h1', [], $this->module->current->pilot_name . ' ' . node::create('span', [], $this->module->current->date)) .
+            node::create('h1', [], $this->module->current->pilot->name . ' ' . node::create('span', [], $this->module->current->date)) .
             $this->module->current->get_info() .
             ($this->module->current->did > 1 ?
                 $this->module->current->get_stats() . node::create('div#graph-' . $this->module->current->fid . '.graph') : '')

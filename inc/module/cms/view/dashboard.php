@@ -46,9 +46,9 @@ class dashboard extends \core\module\cms\view\dashboard {
                     return node::create('tr', [],
                         node::create('td a', ['href' => '/cms/module/2/' . $flight->fid, 'title' => 'Flight: ' . $flight->fid], $flight->fid) .
                         node::create('td a', ['href' => '/cms/module/2/' . $flight->fid, 'title' => 'Flight: ' . $flight->fid], $flight->date) .
-                        node::create('td a', ['href' => '/cms/module/3/' . $flight->pilot->pid, 'title' => 'Pilot: ' . $flight->pilot_name], $flight->pilot->name) .
-                        node::create('td a', ['href' => '/cms/module/4/' . $flight->glider->gid, 'title' => 'Glider: ' . $flight->glider_name], $flight->glider->name) .
-                        node::create('td a', ['href' => '/cms/module/12/' . $flight->club->cid, 'title' => 'Club: ' . $flight->club_name], $flight->club->name) .
+                        node::create('td a', ['href' => '/cms/module/3/' . $flight->pilot->pid, 'title' => 'Pilot: ' . $flight->pilot->name], $flight->pilot->name) .
+                        node::create('td a', ['href' => '/cms/module/4/' . $flight->glider->gid, 'title' => 'Glider: ' . $flight->glider->name], $flight->glider->name) .
+                        node::create('td a', ['href' => '/cms/module/12/' . $flight->club->cid, 'title' => 'Club: ' . $flight->club->name], $flight->club->name) .
                         node::create('td', [], $flight->admin_info) .
                         node::create('td', [], $flight->delayed ? 'Yes' : 'No')
                     );
