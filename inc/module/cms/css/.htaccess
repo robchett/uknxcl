@@ -1,4 +1,0 @@
-allow from all
-
-RewriteEngine On
-RewriteRule !(ico|js|css|jpg|jpeg|gif|png|swf|flv|pdf|htc|mp3|html|kml|php|kmz|igc|xml|txt|zip)$ index.php
