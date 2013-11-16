@@ -59,8 +59,8 @@ class track_point_collection extends collection {
         return implode(';', $coordinates);
     }
 
-    public function remove_first($int = 1) {
-        parent::remove_first($int);
+    public function unshift($int = 1) {
+        parent::unshift($int);
     }
 
     /**
