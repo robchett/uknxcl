@@ -58,10 +58,10 @@ class get extends \core\classes\get {
     protected static $launch_title;
 
     static function  launch($int) {
-        if (!isset(self::$launch_title)) {
-            $types = launch_type::get_all(array('lid', 'title'));
+        if (!self::$launch_title) {
+            $types = launch_type::get_all(['lid', 'title']);
             $types->iterate(function (launch_type $type) {
-                    \classes\get::$launch_title[$type->lid] = $type->title;
+                    self::$launch_title[$type->lid] = $type->title;
                 }
             );
         }
