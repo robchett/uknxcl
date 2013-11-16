@@ -323,7 +323,7 @@ class league_table {
     }
 
     public function generate_csv() {
-        $flights = flight::get_all(array('p.pid', 'p.name', 'c.title', 'g.class', 'g.name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        $flights = flight::get_all(array('p.pid AS p_pid', 'p.name AS p_name', 'c.title AS c_title', 'g.class AS g_class', 'g.name AS g_name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
         $array = new table_array();
         $flights->iterate(
             function (flight $flight) use (&$array) {
@@ -416,7 +416,7 @@ class league_table {
             $this->where .= " AND personal=0 ";
         }
 
-        $this->flights = flight::get_all(array('fid', 'p.pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name', 'gm.title', 'g.kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
+        $this->flights = flight::get_all(array('fid', 'p.pid AS p_pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name AS p_name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name AS g_name', 'gm.title AS gm_title', 'g.kingpost AS g_kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
             array(
                 'join' => array(
                     'glider g' => 'flight.gid=g.gid',

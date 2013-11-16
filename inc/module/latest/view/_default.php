@@ -37,8 +37,8 @@ class _default extends view {
                             $added = substr($flight->created, 0, 10);
                             return node::create('tr', [],
                                 node::create('td', [], $flight->fid) .
-                                node::create('td', [], $flight->pilot_name) .
-                                node::create('td', [], $flight->date) .
+                                node::create('td', [], $flight->pilot->name) .
+                                node::create('td', [], date('Y-m-d', $flight->date)) .
                                 node::create('td', [], ($added != '0000-00-00' ? $added : 'Unknown')) .
                                 $flight->to_print() .
                                 node::create('td', [], $flight->coords)

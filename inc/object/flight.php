@@ -95,7 +95,7 @@ flight extends table {
         'pilot.name',
         'club.title',
         'glider.name',
-        'manufacturer.title'
+        'manufacturer.title AS manufacturer_title'
     );
 
 
@@ -125,14 +125,14 @@ flight extends table {
                 $size = zip_entry_filesize($fullPath);
                 $file = zip_entry_read($fullPath, $size);
                 header("Content-length: $size");
-                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date : '') . '.kml"');
+                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date : '') . '.kml"');
                 echo $file;
                 zip_close($zip);
                 return;
             }
             if ($fullPath && $fd = fopen($fullPath, "r")) {
                 $fsize = filesize($fullPath);
-                header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot_name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
+                header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
                 header("Content-length: $fsize");
                 while (!feof($fd)) {
                     $buffer = fread($fd, 2048);
@@ -211,17 +211,21 @@ flight extends table {
     }
 
     public function get_flights_by_area() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date < "08-28-2012" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date < "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
         $flights->iterate(function (flight $flight, $cnt) {
-                $path = $flight->get_igc();
-                copy($path, root . '/temp/pre/' . $cnt . '.kml');
+                $track = new track();
+                $track->id = $flight->fid;
+                $path = $track->get_kmz_raw();
+                copy($path, root . '/temp/pre/' . $cnt . '.kmz');
             }
         );
 
-        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date >= "08-28-2012" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date >= "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
         $flights->iterate(function (flight $flight, $cnt) {
-                $path = $flight->get_igc();
-                copy($path, root . '/temp/post/' . $cnt . '.kml');
+                $track = new track();
+                $track->id = $flight->fid;
+                $path = $track->get_kmz_raw();
+                copy($path, root . '/temp/post/' . $cnt . '.kmz');
             }
         );
     }
@@ -231,90 +235,100 @@ flight extends table {
      */
     public function generate_benchmark() {
         $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
+        set_time_limit(0);
         $total_time = 0;
+        $log = fopen(root . '/tmp/track_generation.log', 'w');
+        echo 'Processing in background...';
+        //fastcgi_finish_request();
+        //session_write_close();
         $flights->iterate(
-            function (flight $flight) use (&$total_time) {
+            function (flight $flight) use (&$total_time, &$log) {
                 $track = new track();
                 $track->time = 0;
                 $track->id = $flight->fid;
                 $time = time();
-                echo node::create('p', [], 'Track :' . $flight->fid);
-                if($track->parse_IGC()) {
-                    $grid_refs = [];
-                    /** @var \classes\lat_lng $point */
-                    foreach($track->track_points as $point) {
-                        $grid_refs = array_merge($grid_refs, [$point->get_grid_cell()->code]);
-                    }
-                    $flight->os_codes = implode(',', array_unique($grid_refs));
-                    $flight->do_save();
-                /*if ($track->generate($flight)) {
-                    $time = time() - $time;
+                fwrite($log, 'Track: ' . $flight->fid . "\r\n");
+                if ($track->parse_IGC()) {
+//                    $codes = [];
+//                    /** @var lat_lng $point */
+//                    foreach($track->track_points as $point) {
+//                        $codes[] = $point->get_grid_cell()->code;
+//                        $codes = array_unique($codes);
+//                    }
+//                    $flight->os_codes = implode(',', $codes);
+//                    $flight->do_save();
+//                    $track->generate_kml_raw();
+                    fwrite($log, '---- Read' . "\r\n");
+                    $track->calculate();
+                    fwrite($log, '---- Scored' . "\r\n");
+                    $track->generate_output_files();
+                    fwrite($log, '---- Generated' . "\r\n");
+//                    $best_score = $flight->get_best_score();
+//                    switch ($flight->ftid) {
+//                        case  1:
+//                            if ($track->od->get_distance() > $flight->base_score) {
+//                                echo node::create('span', ['style' => 'color:#00ff00'], 'OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            } else {
+//                                echo node::create('span', ['style' => 'color:#ff0000'], 'OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            }
+//                            break;
+//                        case
+//                        2:
+//                            if ($track->or->get_distance() > $flight->base_score) {
+//                                echo node::create('span', ['style' => 'color:#00ff00'], 'OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            } else {
+//                                echo node::create('span', ['style' => 'color:#ff0000'], 'OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            }
+//                            break;
+//                        case  3:
+//                            break;
+//                        case  4:
+//                            if ($track->tr->get_distance() > $flight->base_score) {
+//                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            } else {
+//                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            }
+//                            break;
+//                        case  5:
+//                            if ($track->ft->get_distance() > $flight->base_score) {
+//                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            } else {
+//                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
+//                            }
+//                            break;
+//                    }
+//                    if ($flight->ftid != $best_score[1]) {
+//                        echo 'Flight Scored better as a' . $best_score[1];
+//                        switch ($best_score[0]) {
+//                            case  flight_type::OD_ID:
+//                                $flight->coords = $track->od->get_coordinates();
+//                                $flight->base_score = $track->od->get_distance();
+//                                break;
+//                            case  flight_type::OR_ID:
+//                                $flight->coords = $track->or->get_coordinates();
+//                                $flight->base_score = $track->or->get_distance();
+//                                break;
+//                            case  flight_type::TR_ID:
+//                                $flight->coords = $track->tr->get_coordinates();
+//                                $flight->base_score = $track->tr->get_distance();
+//                                break;
+//                            case  flight_type::FT_ID:
+//                                $flight->coords = $track->ft->get_coordinates();
+//                                $flight->base_score = $track->ft->get_distance();
+//                                break;
+//                        }
+//                        $flight->score = $best_score[0];
+//                        $flight->ftid = $best_score[1];
+//                        $flight->multi = $flight->get_multiplier();
+//                    }
+//                    $flight->do_save();
+                    $time = time() - $time - 60 * 60;
                     $total_time += $time;
                     $flight->time = $time;
-                    $best_score = $flight->get_best_score();
-                    switch ($flight->ftid) {
-                        case  1:
-                            if ($track->od->get_distance() > $flight->base_score) {
-                                echo node::create('span', ['style' => 'color:#00ff00'], 'OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            } else {
-                                echo node::create('span', ['style' => 'color:#ff0000'], 'OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            }
-                            break;
-                        case
-                        2:
-                            if ($track->or->get_distance() > $flight->base_score) {
-                                echo node::create('span', ['style' => 'color:#00ff00'], 'OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            } else {
-                                echo node::create('span', ['style' => 'color:#ff0000'], 'OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            }
-                            break;
-                        case  3:
-                            break;
-                        case  4:
-                            if ($track->tr->get_distance() > $flight->base_score) {
-                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            } else {
-                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            }
-                            break;
-                        case  5:
-                            if ($track->ft->get_distance() > $flight->base_score) {
-                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            } else {
-                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-                            }
-                            break;
-                    }
-                    if ($flight->ftid != $best_score[1]) {
-                        echo 'Flight Scored better as a' . $best_score[1];
-                        switch ($best_score[0]) {
-                            case  flight_type::OD_ID:
-                                $flight->coords = $track->od->get_coordinates();
-                                $flight->base_score = $track->od->get_distance();
-                                break;
-                            case  flight_type::OR_ID:
-                                $flight->coords = $track->or->get_coordinates();
-                                $flight->base_score = $track->or->get_distance();
-                                break;
-                            case  flight_type::TR_ID:
-                                $flight->coords = $track->tr->get_coordinates();
-                                $flight->base_score = $track->tr->get_distance();
-                                break;
-                            case  flight_type::FT_ID:
-                                $flight->coords = $track->ft->get_coordinates();
-                                $flight->base_score = $track->ft->get_distance();
-                                break;
-                        }
-                        $flight->score = $best_score[0];
-                        $flight->ftid = $best_score[1];
-                        $flight->multi = $flight->get_multiplier();
-                    }
-                    $flight->do_save();*/
                 } else {
                     $flight->time = 0;
-                    echo node::create('p', [], 'Track :' . $flight->fid . ' failed to calculate');
+                    fwrite($log, '---- Could not be read' . "\r\n");
                 }
-                flush();
             }
         );
 
@@ -324,12 +338,12 @@ flight extends table {
         );
 
         foreach ($flights as $flight) {
-            echo node::create('p', [], 'Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time));
+            fwrite($log, 'Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time) . "\r\n");
         }
 
         $average_time = $total_time / count($flights);
 
-        echo node::create('p', [], 'Average Time :' . date('H:i:s', $average_time));
+        fwrite($log, 'Average Time :' . date('H:i:s', $average_time) . "\r\n");
     }
 
     /**
@@ -368,10 +382,10 @@ flight extends table {
         } else {
             $html = node::create('table', ['width' => '100%'],
                 node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
-                node::create('tr', [], node::create('td', [], 'Pilot') . node::create('td', [], $this->pilot_name)) .
+                node::create('tr', [], node::create('td', [], 'Pilot') . node::create('td', [], $this->pilot->name)) .
                 node::create('tr', [], node::create('td', [], 'Date') . node::create('td', [], date('d/m/Y', $this->date))) .
-                node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider_name)) .
-                node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club_title)) .
+                node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider->name)) .
+                node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club->title)) .
                 node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
                 node::create('tr', [], node::create('td', [], 'Launch') . node::create('td', [], get::launch($this->lid))) .
                 node::create('tr', [], node::create('td', [], 'Type') . node::create('td', [], get::flight_type($this->ftid))) .
@@ -482,8 +496,8 @@ flight extends table {
         }
         $html = node::create('table', ['width' => '100'],
             node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
-            node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider_name)) .
-            node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club_title)) .
+            node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider->name)) .
+            node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club->title)) .
             node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
             node::create('tr', [], node::create('td', [], 'Launch') . node::create('td', [], get::launch($this->lid))) .
             node::create('tr', [], node::create('td', [], 'Type') . node::create('td', [], get::flight_type($this->ftid))) .
