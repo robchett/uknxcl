@@ -9,7 +9,8 @@ use classes\get;
 use classes\kml;
 use core\classes\db;
 use object\club;
-use object\flight;
+use
+    object\flight;
 use object\flight_type;
 use object\glider;
 use object\pilot;
@@ -650,12 +651,14 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
                 $next_point = (isset($this->track_points[$key + 1]) ? $this->track_points[$key + 1] : $track_point);
                 if ($this->has_height() && $next_point->time - $previous->time) {
                     $track_point->climbRate = ($next_point->ele - $previous->ele) / ($next_point->time - $previous->time);
-                } else
+                } else {
                     $track_point->climbRate = 0;
+                }
+                $x = $previous->get_dist_to($track_point);
+                $this->total_dist += $x;
                 if ($previous->time !== $next_point->time) {
                     $x = $next_point->get_dist_to($previous);
                     $track_point->speed = round(($x * 1000) / ($next_point->time - $previous->time), 2);
-                    $this->total_dist += $x;
                 } else
                     $track_point->speed = 0;
                 if ($previous->time !== $next_point->time) {
