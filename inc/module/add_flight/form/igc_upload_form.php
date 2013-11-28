@@ -9,11 +9,12 @@ use html\node;
 use object\flight_type;
 use track\task;
 use track\track;
+use track\track_part;
 
 class igc_upload_form extends form {
 
     public function __construct() {
-        $fields = array(
+        $fields = [
             form::create('field_file', 'kml')
                 ->set_attr('label', '')
                 ->set_attr('required', true)
@@ -24,7 +25,7 @@ class igc_upload_form extends form {
                 ->set_attr('required', false)
                 ->set_attr('pre_text', node::create('p', [], 'To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\''))
                 ->set_attr('post_text', node::create('p.defined_info'))
-        );
+        ];
         parent::__construct($fields);
         $this->submit = 'Calculate';
         $this->pre_text = node::create('p', [], 'Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below');
@@ -91,7 +92,7 @@ class igc_upload_form extends form {
     private function get_choose_track_html(track $track) {
         $html = node::create('ul', [],
             $track->track_parts->iterate_return(
-                function (\track\track_part $part, $i) use ($track) {
+                function (track_part $part, $i) use ($track) {
                     return node::create('li', [],
                         node::create('span', ['style' => 'color:#' . get::colour($i - 1)], 'Track ' . $i . ' : ' . $part->get_time()) .
                         node::create('a.choose', ['data-ajax-click' => 'igc_upload_form:do_choose_track', 'data-ajax-post' => '\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\''], 'Choose')
@@ -103,7 +104,7 @@ class igc_upload_form extends form {
     }
 
     private function get_choose_score_html(track $track, $start, $end, $defined) {
-        $_SESSION['add_flight'][$track->id] = array('duration' => $track->get_duration(), 'start' => $start, 'end' => $end);
+        $_SESSION['add_flight'][$track->id] = ['duration' => $track->get_duration(), 'start' => $start, 'end' => $end];
         $html = node::create('table', [],
             node::create('thead tr', [],
                 node::create('th', [], 'Type') .

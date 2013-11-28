@@ -20,7 +20,7 @@ class coordinates_form extends form {
     public $ridge;
 
     public function __construct() {
-        parent::__construct(array(
+        parent::__construct([
                 form::create('field_link', 'pid')
                     ->set_attr('label', 'Pilot:')
                     ->set_attr('required', true)
@@ -75,7 +75,7 @@ class coordinates_form extends form {
                 form::create('field_boolean', 'agree')
                     ->set_attr('label', 'The NXCL is free to publish the flight to the public and to be passed on to skywings for publication. The flight has not broken any airspace laws')
                     ->set_attr('required', true),
-            )
+            ]
         );
 
         $this->h2 = 'Coordinate Flight';
@@ -101,7 +101,7 @@ class coordinates_form extends form {
             $track = new track();
             $track->set_task($this->coords);
             $flight_type = new flight_type();
-            $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $track->task->type)));
+            $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $track->task->type]]);
             $flight->ftid = $flight_type->ftid;
             $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
             $flight->base_score = $track->task->get_distance();
@@ -110,7 +110,7 @@ class coordinates_form extends form {
             $flight->delayed = $this->force_delay ? true : $this->delay;
             $flight->do_save();
 
-            jquery::colorbox(array('html' => 'Your flight has been added successfully'));
+            jquery::colorbox(['html' => 'Your flight has been added successfully']);
             $form = new coordinates_form();
             ajax::update($form->get_html()->get());
 

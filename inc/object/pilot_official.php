@@ -22,7 +22,7 @@ class pilot_official extends pilot {
 
     public function add_flight(flight $flight) {
         if ($this->used_flights < $this->max_flights - 3) {
-           $this->_add_flight($flight);
+            $this->_add_flight($flight);
         } else if ($this->used_flights == $this->max_flights - 3) {
             if (($this->defined || $this->undefined) || ($flight->defined && !$this->defined) || ($flight->ftid == 1 && !$this->undefined)) {
                 $this->_add_flight($flight);

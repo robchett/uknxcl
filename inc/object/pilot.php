@@ -7,6 +7,7 @@ use form\form;
 use traits\table_trait;
 
 class pilot extends scorable {
+
     use table_trait;
 
     public static $module_id = 3;
@@ -14,7 +15,7 @@ class pilot extends scorable {
     public $class = 1;
     public $club;
     public $email;
-    public $flights = array();
+    public $flights = [];
     public $gender;
     public $glider;
     public $id;
@@ -56,7 +57,7 @@ class pilot extends scorable {
         $field = form::create('field_link', 'pid')
             ->set_attr('link_module', '\\object\\pilot')
             ->set_attr('link_field', 'name')
-            ->set_attr('options', array('order' => 'name'));
+            ->set_attr('options', ['order' => 'name']);
         $field->parent_form = $this;
         ajax::update($field->get_html());
     }

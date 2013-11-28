@@ -7,6 +7,7 @@ use classes\get;
 use classes\jquery;
 use classes\kml;
 use classes\lat_lng;
+use classes\table_array;
 use core\classes\db;
 use core\classes\table;
 use form\field_file;
@@ -92,8 +93,8 @@ class comp extends table {
      *
      */
     private function set_task_from_fs_comp() {
-        $task = array();
-        $matches = array();
+        $task = [];
+        $matches = [];
         preg_match_all('/.*?m\s(.*?)\s.*?\s(\d*)m.*?lat:(.*?)\s+lon:(.*?)\)/', $this->coords, $matches);
         foreach ($matches[0] as $key => $match) {
             $coord = new \stdClass();
@@ -121,7 +122,7 @@ class comp extends table {
         foreach ($out as &$a) {
             $a = explode(',', $a);
         }
-        $task = array();
+        $task = [];
 
         foreach ($out as &$a) {
             $coord = new \stdClass();
@@ -169,7 +170,7 @@ class comp extends table {
             die('zip extraction failed');
         }
 
-        $track_array = new \classes\table_array();
+        $track_array = new table_array();
         $cnt = 0;
         foreach (glob($root . '/flight/*.igc') as $file) {
             $cnt++;
@@ -226,7 +227,7 @@ class comp extends table {
         $js->CName = $this->type;
         $js->turnpoints = $turnpoints;
         $js->bounds = $this->bounds->get_js();
-        $js->track = array();
+        $js->track = [];
         fwrite($js_file, substr(json_encode($js), 0, -2));
         $json_html = node::create('div.kmltree.new ul.kmltree li.kmltree-item.check.KmlFolder.visible.open', ['data-path' => '\'{"type":"comp","path":[]}\''],
             node::create('div.expander') .
@@ -324,7 +325,7 @@ class comp extends table {
             $js_track->drawGraph = 1;
             $js_track->turnpoint = $madeTp;
             $js_track->score = $dist / 1000;
-            $js_track->coords = array();
+            $js_track->coords = [];
             $js_track->bounds = $track->bounds->get_js();
 
             $tp = 0;
@@ -359,7 +360,7 @@ class comp extends table {
         $kml_earth->get_kml_folder_close();
         $kml_earth->compile(false, root . '/uploads/comp/' . $this->cid . '/track_earth.kml');
         if (ajax) {
-            jquery::colorbox(array('html' => $html));
+            jquery::colorbox(['html' => $html]);
         }
     }
 
@@ -368,7 +369,7 @@ class comp extends table {
      */
     public function generate_kml() {
         if (isset($_POST['id'])) {
-            $this->do_retrieve_from_id(array(), $_POST['id']);
+            $this->do_retrieve_from_id([], $_POST['id']);
             if ($this->cid) {
                 $this->do_zip_to_comp();
             }
@@ -469,6 +470,7 @@ class comp extends table {
 
     /**
      * @param field_file $field
+     * @return string
      */
     protected function do_upload_file(field_file $field) {
         if ($field->field_name == 'file') {

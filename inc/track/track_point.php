@@ -17,7 +17,7 @@ class track_point extends lat_lng {
     public $val = 0;
 
     public function get_js_coordinate($time = 0) {
-        $coord = array($this->lat(), $this->lng(), $this->ele, $time, $this->climbRate, $this->speed, $this->bearing);
+        $coord = [$this->lat(), $this->lng(), $this->ele, $time, $this->climbRate, $this->speed, $this->bearing];
         return $coord;
     }
 

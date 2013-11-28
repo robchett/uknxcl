@@ -20,7 +20,7 @@ class track_point_collection extends collection {
      * @return string
      */
     public function get_coordinates(array $indexes) {
-        $coordinates = array();
+        $coordinates = [];
         foreach ($indexes as $index) {
             $coordinates[] = $this->offsetGet($index)->get_coordinate();
         }
@@ -42,7 +42,7 @@ class track_point_collection extends collection {
     }
 
     public function get_kml_coordinates() {
-        $coordinates = array();
+        $coordinates = [];
         if ($this->count()) {
             foreach (range(0, $this->count() - 1) as $index) {
                 $coordinates[] = $this->offsetGet($index)->get_kml_coordinate();
@@ -52,7 +52,7 @@ class track_point_collection extends collection {
     }
 
     public function get_session_coordinates($indexes) {
-        $coordinates = array();
+        $coordinates = [];
         foreach ($indexes as $index) {
             $coordinates[] = $this->offsetGet($index)->get_coordinate() . ':' . $this->ele;
         }

@@ -20,9 +20,9 @@ class triangle extends task {
 
     public function get_coordinates() {
         $html = '';
-        if (isset( $this->waypoints) && $this->waypoints->count() == 5) {
+        if (isset($this->waypoints) && $this->waypoints->count() == 5) {
             $waypoints = $this->waypoints;
-            $this->waypoints = new track_point_collection(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $this->waypoints = new track_point_collection([$waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]]);
             $html .= parent::get_coordinates();
             $this->waypoints = $waypoints;
         } else {
@@ -33,9 +33,9 @@ class triangle extends task {
 
     protected function get_kml_table() {
         $html = '';
-        if (isset( $this->waypoints) && $this->waypoints->count() == 5) {
+        if (isset($this->waypoints) && $this->waypoints->count() == 5) {
             $waypoints = $this->waypoints;
-            $this->waypoints = new track_point_collection(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $this->waypoints = new track_point_collection([$waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]]);
             $html = parent::get_kml_table();
             $this->waypoints = $waypoints;
         }
@@ -44,9 +44,9 @@ class triangle extends task {
 
     public function get_kml_coordinates() {
         $html = '';
-        if (isset( $this->waypoints) && $this->waypoints->count() == 5) {
+        if (isset($this->waypoints) && $this->waypoints->count() == 5) {
             $waypoints = $this->waypoints;
-            $this->waypoints = new track_point_collection(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $this->waypoints = new track_point_collection([$waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]]);
             $html = parent::get_kml_coordinates();
             $this->waypoints = $waypoints;
         }

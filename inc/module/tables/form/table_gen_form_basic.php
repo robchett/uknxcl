@@ -16,53 +16,53 @@ class table_gen_form_basic extends form {
     public $year;
 
     public function __construct() {
-        $years = array('all_time' => 'All Time');
+        $years = ['all_time' => 'All Time'];
         foreach (range(date('Y'), 1991) as $year) {
             $years[$year] = $year;
         }
-        $fields = array(
+        $fields = [
             'type' => form::create('field_select', 'type')
-                ->set_attr('options', array(
-                        0 => 'Main',
-                        14 => 'Class1',
-                        13 => 'Class5',
-                        1 => 'Foot',
-                        2 => 'Aero',
-                        3 => 'Winch',
-                        5 => 'Defined',
-                        4 => 'Winter',
-                        6 => 'Female',
-                        8 => 'Club',
-                        7 => 'Club (Official)',
-                        9 => 'Top Tens',
-                        15 => 'Top Tens (1x)',
-                        10 => 'Pilot',
-                        11 => 'Main (3d)',
-                        12 => 'Hangies',
-                        16 => 'Records',
+                    ->set_attr('options', [
+                            0 => 'Main',
+                            14 => 'Class1',
+                            13 => 'Class5',
+                            1 => 'Foot',
+                            2 => 'Aero',
+                            3 => 'Winch',
+                            5 => 'Defined',
+                            4 => 'Winter',
+                            6 => 'Female',
+                            8 => 'Club',
+                            7 => 'Club (Official)',
+                            9 => 'Top Tens',
+                            15 => 'Top Tens (1x)',
+                            10 => 'Pilot',
+                            11 => 'Main (3d)',
+                            12 => 'Hangies',
+                            16 => 'Records',
+                        ]
                     )
-                )
-                ->set_attr('label', 'League Type'),
+                    ->set_attr('label', 'League Type'),
             'year' => form::create('field_select', 'year')
-                ->set_attr('options', $years)
-                ->set_attr('label', 'Year')
-                ->set_attr('value', date('Y'))
-                ->set_attr('required', true),
+                    ->set_attr('options', $years)
+                    ->set_attr('label', 'Year')
+                    ->set_attr('value', date('Y'))
+                    ->set_attr('required', true),
             'pilot' => form::create('field_link', 'pilot')
-                ->set_attr('label', 'Pilot:')
-                ->set_attr('link_module', '\\object\\pilot')
-                ->set_attr('link_field', 'name')
-                ->set_attr('options', ['order' => 'name ASC'])
-                ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
-                ->set_attr('required', true)
-                ->set_attr('disabled', true),
+                    ->set_attr('label', 'Pilot:')
+                    ->set_attr('link_module', '\\object\\pilot')
+                    ->set_attr('link_field', 'name')
+                    ->set_attr('options', ['order' => 'name ASC'])
+                    ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
+                    ->set_attr('required', true)
+                    ->set_attr('disabled', true),
             'no_min' => form::create('field_boolean', 'no_min')
-                ->set_attr('label', 'No Minimum Distance'),
+                    ->set_attr('label', 'No Minimum Distance'),
             'split_classes' => form::create('field_boolean', 'split_classes')
-                ->set_attr('label', 'Split Class 1 & 5'),
+                    ->set_attr('label', 'Split Class 1 & 5'),
             'glider_mode' => form::create('field_boolean', 'glider_mode')
-                ->set_attr('label', 'Score gliders not pilots'),
-        );
+                    ->set_attr('label', 'Score gliders not pilots'),
+        ];
         /** @var \form\field $field */
         foreach ($fields as $field) {
             $field->set_attr('required', false);

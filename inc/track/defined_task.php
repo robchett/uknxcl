@@ -13,7 +13,7 @@ class defined_task extends task {
             $xml .= geometry::get_task_output($this);
         } else {
             $waypoints = $this->waypoints;
-            $this->waypoints = new track_point_collection(array($waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]));
+            $this->waypoints = new track_point_collection([$waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]]);
             $xml .= geometry::get_task_output($this);
             $this->waypoints = $waypoints;
         }

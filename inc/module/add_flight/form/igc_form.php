@@ -112,7 +112,7 @@ class igc_form extends form {
                     $this->defined = true;
                 }
                 $flight_type = new flight_type();
-                $flight_type->do_retrieve(array('ftid', 'multi', 'multi_defined'), array('where_equals' => array('fn' => $this->type)));
+                $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $this->type]]);
                 $flight->ftid = $flight_type->ftid;
                 $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
 
@@ -132,11 +132,11 @@ class igc_form extends form {
                 $track->generate_output_files();
                 $flight->do_save();
 
-                jquery::colorbox(array('html' => 'Your flight has been added successfully'));
+                jquery::colorbox(['html' => 'Your flight has been added successfully']);
                 $form = new igc_form();
                 ajax::update($form->get_html()->get());
             } else {
-                jquery::colorbox(array('html' => 'Your flight has failed to save'));
+                jquery::colorbox(['html' => 'Your flight has failed to save']);
             }
         }
     }

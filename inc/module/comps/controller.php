@@ -14,7 +14,7 @@ class controller extends module {
     public function __controller(array $path) {
         $this->current = new comp();
         if (isset($path[1])) {
-            $this->current->do_retrieve_from_id(array(), $path[1]);
+            $this->current->do_retrieve_from_id([], $path[1]);
         }
         if ($this->current->cid) {
             $this->view = 'comp';
@@ -26,7 +26,7 @@ class controller extends module {
         if (isset($_REQUEST['cid'])) {
             $this->current = new comp();
             if (isset($_REQUEST['cid'])) {
-                $this->current->do_retrieve_from_id(array(), $_REQUEST['cid']);
+                $this->current->do_retrieve_from_id([], $_REQUEST['cid']);
             }
             if ($this->current->cid) {
                 $this->view = 'comp';
@@ -36,7 +36,7 @@ class controller extends module {
     }
 
     public function do_generate_all() {
-        $comps = comp::get_all(array());
+        $comps = comp::get_all([]);
         $comps->iterate(function (comp $comp) {
                 $comp->do_zip_to_comp();
             }
