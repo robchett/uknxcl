@@ -1054,7 +1054,7 @@ function Planner(parent) {
         if (!this.enabled) {
             return;
         }
-        if (this.parent.mode === this.parent.EARTH) {
+        if (this.parent.isEarth()) {
             var placemark = this.parent.ge.createPlacemark('');
             placemark.setName('');
             var point = this.parent.ge.createPoint('');
