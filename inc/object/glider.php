@@ -68,7 +68,7 @@ class glider extends scorable {
     public function do_update_selector() {
         $field = form::create('field_link', 'gid')
             ->set_attr('link_module', '\\object\\glider')
-            ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
+            ->set_attr('link_field', ['manufacturer.title', 'name'])
             ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']);
         $field->parent_form = $this;
         ajax::update($field->get_html());

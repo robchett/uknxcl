@@ -34,7 +34,7 @@ class igc_form extends form {
                     ->set_attr('required', true)
                     ->set_attr('post_text', node::create('a', ['data-ajax-click' => '\\form\\add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
                     ->set_attr('link_module', '\\object\\glider')
-                    ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
+                    ->set_attr('link_field', ['manufacturer.title', 'name'])
                     ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
                 form::create('field_link', 'cid')
                     ->set_attr('label', 'Club:')
