@@ -23,7 +23,7 @@ class planner_load_waypoints extends form {
 
     public function do_submit() {
         if (parent::do_submit()) {
-            $points = object\waypoint_array::get_all('\module\planner\object\waypoint', array('lat', 'lon'), array('where_equals' => array('wgid' => $this->wgid)));
+            $points = object\waypoint::get_all(['lat', 'lon'], ['where_equals' => ['wgid' => $this->wgid]]);
             $js = '';
             $points->iterate(function (object\waypoint $point) use (&$js) {
                     $js .= $point->get_js();

@@ -22,7 +22,7 @@ class coordinate_conversion_form extends form {
         $fields = [
             form::create('field_select', 'source')
                 ->set_attr('default', '')
-                ->set_attr('options', array('OS6', 'OS8', 'OSGB36', 'WGS84')),
+                ->set_attr('options', ['OS6', 'OS8', 'OSGB36', 'WGS84']),
             form::create('field_float', 'OSGB36_lat')
                 ->set_attr('required', false),
             form::create('field_float', 'OSGB36_lng')

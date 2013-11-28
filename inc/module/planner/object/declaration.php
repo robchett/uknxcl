@@ -35,7 +35,7 @@ class declaration extends table {
         $form->get_field_from_name('ftid')->hidden = true;
         $form->get_field_from_name('coordinates')->hidden = true;
         $form->get_field_from_name('pid')->label = 'Pilot';
-        $form->get_field_from_name('pid')->options = array('order' => 'pilot.name');
+        $form->get_field_from_name('pid')->options = ['order' => 'pilot.name'];
         $form->h2 = 'Declare a flight';
         $form->date = time();;
         return $form;

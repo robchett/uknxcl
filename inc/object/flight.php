@@ -18,8 +18,7 @@ use traits\table_trait;
  * @property mixed winter
  * @property mixed delayed
  */
-class
-flight extends table {
+class flight extends table {
 
     use table_trait;
 
@@ -61,7 +60,7 @@ flight extends table {
     /** @var track */
     public $track = null;
 
-    public static $launch_types = array(0 => 'Foot', 1 => 'Aerotow', 2 => 'Winch');
+    public static $launch_types = [0 => 'Foot', 1 => 'Aerotow', 2 => 'Winch'];
     public static $module_id = 2;
     public $pilot_name;
     public $ridge;
@@ -84,19 +83,19 @@ flight extends table {
     public $ft_time;
     public $ft_coordinates;
 
-    public static $default_joins = array(
+    public static $default_joins = [
         'pilot' => 'flight.pid = pilot.pid',
         'glider' => 'flight.gid = glider.gid',
         'club' => 'flight.cid = club.cid',
         'manufacturer' => 'glider.mid = manufacturer.mid'
-    );
-    public static $default_fields = array(
+    ];
+    public static $default_fields = [
         'flight.*',
         'pilot.name',
         'club.title',
         'glider.name',
         'manufacturer.title AS manufacturer_title'
-    );
+    ];
 
 
     /**
@@ -105,11 +104,11 @@ flight extends table {
     public function download() {
         $id = (int) $_REQUEST['id'];
         $this->do_retrieve(
-            array('flight.*', 'pilot.name'),
-            array(
-                'join' => array('pilot' => 'flight.pid=pilot.pid'),
-                'where_equals' => array('flight.fid' => $id)
-            )
+            ['flight.*', 'pilot.name'],
+            [
+                'join' => ['pilot' => 'flight.pid=pilot.pid'],
+                'where_equals' => ['flight.fid' => $id]
+            ]
         );
         header("Content-type: application/octet-stream");
         header("Cache-control: private");
@@ -147,12 +146,12 @@ flight extends table {
      * @return mixed
      */
     public function get_best_score() {
-        $scores = array(
-            array($this->od_score * $this->get_multiplier(flight_type::OD_ID, $this->season), flight_type::OD_ID),
-            array($this->or_score * $this->get_multiplier(flight_type::OR_ID, $this->season), flight_type::OR_ID),
-            array($this->tr_score * $this->get_multiplier(flight_type::TR_ID, $this->season), flight_type::TR_ID),
-            array($this->ft_score * $this->get_multiplier(flight_type::FT_ID, $this->season), flight_type::FT_ID),
-        );
+        $scores = [
+            [$this->od_score * $this->get_multiplier(flight_type::OD_ID, $this->season), flight_type::OD_ID],
+            [$this->or_score * $this->get_multiplier(flight_type::OR_ID, $this->season), flight_type::OR_ID],
+            [$this->tr_score * $this->get_multiplier(flight_type::TR_ID, $this->season), flight_type::TR_ID],
+            [$this->ft_score * $this->get_multiplier(flight_type::FT_ID, $this->season), flight_type::FT_ID],
+        ];
         usort($scores, function ($a, $b) {
                 return $a[0] - $b[0];
             }
@@ -211,7 +210,7 @@ flight extends table {
     }
 
     public function get_flights_by_area() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date < "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights = flight::get_all([], ['where' => 'did > 1 AND date < "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC']);
         $flights->iterate(function (flight $flight, $cnt) {
                 $track = new track();
                 $track->id = $flight->fid;
@@ -220,7 +219,7 @@ flight extends table {
             }
         );
 
-        $flights = flight::get_all(array(), array('where' => 'did > 1 AND date >= "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC'));
+        $flights = flight::get_all([], ['where' => 'did > 1 AND date >= "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC']);
         $flights->iterate(function (flight $flight, $cnt) {
                 $track = new track();
                 $track->id = $flight->fid;
@@ -234,7 +233,7 @@ flight extends table {
      *
      */
     public function generate_benchmark() {
-        $flights = flight::get_all(array(), array('where' => 'did > 1', 'order' => 'fid DESC'));
+        $flights = flight::get_all([], ['where' => 'did > 1', 'order' => 'fid DESC']);
         set_time_limit(0);
         $total_time = 0;
         $log = fopen(root . '/tmp/track_generation.log', 'w');
@@ -351,12 +350,12 @@ flight extends table {
      */
     public function generate_files() {
         if (isset($_REQUEST['id'])) {
-            $this->do_retrieve_from_id(array(), $_REQUEST['id']);
+            $this->do_retrieve_from_id([], $_REQUEST['id']);
             if ($this->fid) {
                 $track = new track();
                 $track->generate($this);
                 $this->do_save();
-                jquery::colorbox(array('html' => 'Flight ' . $this->fid . ' generated successfully. ' . node::create('p pre', [], print_r($track->log_file, 1))));
+                jquery::colorbox(['html' => 'Flight ' . $this->fid . ' generated successfully. ' . node::create('p pre', [], print_r($track->log_file, 1))]);
             }
         }
     }
@@ -369,13 +368,13 @@ flight extends table {
         $id = (int) $_REQUEST['fid'];
         $this->do_retrieve(
             self::$default_fields,
-            array(
+            [
                 'join' => array_merge(
                     self::$default_joins,
-                    array('manufacturer' => 'glider.mid=manufacturer.mid')
+                    ['manufacturer' => 'glider.mid=manufacturer.mid']
                 ),
-                'where_equals' => array('flight.fid' => $id)
-            )
+                'where_equals' => ['flight.fid' => $id]
+            ]
         );
         if (!isset($this->fid) || !$this->fid) {
             $html .= 'Flight not found, this is a bug...';
@@ -400,7 +399,7 @@ flight extends table {
                         node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
                         node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
                     ) :
-                    node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
+                    node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
                 ) .
                 node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close')
             );
@@ -516,7 +515,7 @@ flight extends table {
                     )
                 ) :
                 node::create('tr', [], node::create('td.center.view.coords', ['colspan' => 2],
-                        node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flightC(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map')
+                        node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map')
                     )
                 )
             )

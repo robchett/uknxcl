@@ -24,7 +24,7 @@ class geometry {
         $EPS = 0.00000000005;
         $iter = 1;
         $MAXITER = 100;
-        $arOut = array(0, 0.0, M_PI);
+        $arOut = [0, 0.0, M_PI];
         if (abs($obj1->lat_rad() - $obj2->lat_rad()) < $EPS && (abs($obj1->lng_rad() - $obj2->lng_rad()) < $EPS || abs(abs($obj1->lng_rad() - $obj2->lng_rad()) - 2 * M_PI) < $EPS)) {
             return $arOut;
         }
@@ -228,7 +228,7 @@ class geometry {
         $e .= $factor;
         $n .= $factor;
 
-        return Array($e, $n);
+        return [$e, $n];
     }
 
     static function gridref_number_to_letter($e, $n, $digits) {

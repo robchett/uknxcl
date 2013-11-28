@@ -7,6 +7,7 @@ use form\form;
 use traits\table_trait;
 
 class glider extends scorable {
+
     use table_trait;
 
     public static $module_id = 4;
@@ -67,8 +68,8 @@ class glider extends scorable {
     public function do_update_selector() {
         $field = form::create('field_link', 'gid')
             ->set_attr('link_module', '\\object\\glider')
-            ->set_attr('link_field', array('manufacturer.title', 'glider.name'))
-            ->set_attr('options', array('join' => array('manufacturer' => 'manufacturer.mid = glider.mid'), 'order' => 'manufacturer.title, glider.name'));
+            ->set_attr('link_field', ['manufacturer.title', 'glider.name'])
+            ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']);
         $field->parent_form = $this;
         ajax::update($field->get_html());
     }

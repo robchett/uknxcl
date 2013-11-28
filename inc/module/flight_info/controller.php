@@ -14,7 +14,7 @@ class controller extends module {
         if (isset($path[1])) {
             $this->view = 'flight';
             $this->current = new flight();
-            $this->current->do_retrieve(flight::$default_fields, array('where_equals' => array('fid' => $path[1]), 'join' => flight::$default_joins));
+            $this->current->do_retrieve(flight::$default_fields, ['where_equals' => ['fid' => $path[1]], 'join' => flight::$default_joins]);
             if (!$this->current->fid) {
                 get::header_redirect('/flight_info');
             }

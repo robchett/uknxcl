@@ -13,7 +13,7 @@ class scorable extends table {
     public $class = 1;
     public $club;
     public $email;
-    public $flights = array();
+    public $flights = [];
     public $gender;
     public $glider;
     public $id;
@@ -45,7 +45,7 @@ class scorable extends table {
         $field = form::create('field_link', 'pid')
             ->set_attr('link_module', '\\object\\pilot')
             ->set_attr('link_field', 'name')
-            ->set_attr('options', array('order' => 'name'));
+            ->set_attr('options', ['order' => 'name']);
         $field->parent_form = $this;
         ajax::update($field->get_html());
     }

@@ -11,7 +11,7 @@ class get extends \core\classes\get {
 
     static function type($int) {
         if (!isset(self::$type_array)) {
-            $types = flight_type::get_all(array('ftid', 'fn'));
+            $types = flight_type::get_all(['ftid', 'fn']);
             $types->iterate(function (flight_type $type) {
                     self::$type_array[$type->ftid] = $type->fn;
                 }
@@ -27,7 +27,7 @@ class get extends \core\classes\get {
 
     static function flight_type($int) {
         if (!isset(self::$flight_type)) {
-            $types = flight_type::get_all(array('ftid', 'title'));
+            $types = flight_type::get_all(['ftid', 'title']);
             $types->iterate(function (flight_type $type) {
                     self::$flight_type[$type->ftid] = $type->title;
                 }
@@ -43,9 +43,9 @@ class get extends \core\classes\get {
 
     static function  launch_letter($int) {
         if (!isset(self::$launch_letter)) {
-            $types = launch_type::get_all(array('lid', 'fn'));
+            $types = launch_type::get_all(['lid', 'fn']);
             $types->iterate(function (launch_type $type) {
-                    \classes\get::$launch_letter[$type->lid] = $type->fn;
+                    self::$launch_letter[$type->lid] = $type->fn;
                 }
             );
         }
@@ -72,7 +72,7 @@ class get extends \core\classes\get {
     }
 
     static function colour($i) {
-        $colour = array(
+        $colour = [
             "FF0000",
             "EF000F",
             "DF001F",
@@ -89,7 +89,7 @@ class get extends \core\classes\get {
             "2F00CF",
             "1F00DF",
             "0F00EF",
-            "0000FF");
+            "0000FF"];
         return $colour[$i % 16];
     }
 

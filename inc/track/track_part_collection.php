@@ -1,7 +1,9 @@
 <?php
 namespace track;
 
-class track_part_collection extends \classes\collection {
+use classes\collection;
+
+class track_part_collection extends collection {
 
     /**
      * @return track_part

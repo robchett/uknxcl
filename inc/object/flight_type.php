@@ -33,7 +33,7 @@ class flight_type extends table {
      */
     public static function get_multiplier($type, $season, $defined = false) {
         if (!isset(self::$all_rows)) {
-            self::$all_rows = flight_type::get_all(array());
+            self::$all_rows = flight_type::get_all([]);
         }
         foreach (self::$all_rows as $flight_type) {
             if ($flight_type->ftid == $type) {
@@ -53,7 +53,7 @@ class flight_type extends table {
      */
     public static function get_type($type) {
         if (!isset(self::$all_rows)) {
-            self::$all_rows = flight_type::get_all(array());
+            self::$all_rows = flight_type::get_all([]);
         }
         foreach (self::$all_rows as $flight_type) {
             if ($flight_type->ftid == $type) {

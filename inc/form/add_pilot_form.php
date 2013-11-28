@@ -1,7 +1,9 @@
 <?php
 namespace form;
 
+use classes\jquery;
 use html\node;
+use object\pilot;
 
 class add_pilot_form extends form {
 
@@ -12,7 +14,7 @@ class add_pilot_form extends form {
     public $rating;
 
     public function __construct() {
-        $this->pilot = new \object\pilot();
+        $this->pilot = new pilot();
         parent::__construct($this->pilot->get_fields());
         $this->get_field_from_name('pid')
             ->set_attr('hidden', true)
@@ -26,11 +28,11 @@ class add_pilot_form extends form {
         $this->get_field_from_name('email')->set_attr('label', 'Email');
         $this->get_field_from_name('gender')
             ->set_attr('label', 'Gender')
-            ->set_attr('options', array('M' => 'Male', 'F' => 'Female'))
+            ->set_attr('options', ['M' => 'Male', 'F' => 'Female'])
             ->set_attr('required', true);
         $this->get_field_from_name('rating')
             ->set_attr('label', 'Rating')
-            ->set_attr('options', array(1 => 'Club', 2 => 'Advanced'))
+            ->set_attr('options', [1 => 'Club', 2 => 'Advanced'])
             ->set_attr('required', true);
 
         $this->id = 'new_pilot_form';
@@ -38,7 +40,7 @@ class add_pilot_form extends form {
     }
 
     public function get_form() {
-        \classes\jquery::colorbox(['html' => $this->get_html()->get()]);
+        jquery::colorbox(['html' => $this->get_html()->get()]);
     }
 
     public function do_submit() {
@@ -52,7 +54,7 @@ class add_pilot_form extends form {
             if ($this->pilot->pid) {
                 $this->pilot->do_update_selector();
             }
-            \classes\jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
+            jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
         }
     }
 }

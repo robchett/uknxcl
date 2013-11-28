@@ -9,8 +9,7 @@ use classes\get;
 use classes\kml;
 use core\classes\db;
 use object\club;
-use
-    object\flight;
+use object\flight;
 use object\flight_type;
 use object\glider;
 use object\pilot;
@@ -166,14 +165,14 @@ class track {
                 $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
             }
         }
-         if ($this->calc_or) {
-             $this->track_out_and_return($use_rough_calculations);
-             if (isset($this->or->waypoints)) {
-                 $this->or->waypoints->spherical = false;
-                 unset($this->or->distance);
-                 $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
-             }
-         }
+        if ($this->calc_or) {
+            $this->track_out_and_return($use_rough_calculations);
+            if (isset($this->or->waypoints)) {
+                $this->or->waypoints->spherical = false;
+                unset($this->or->distance);
+                $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
+            }
+        }
         /*if ($this->calc_ft) {
             $this->track_flat_triangles($use_rough_calculations);
             if (isset($this->ft->waypoints)) {
@@ -182,14 +181,14 @@ class track {
                 $this->console("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
             }
         }*/
-         if ($this->calc_tr) {
-             $this->track_triangles($use_rough_calculations);
-             if (isset($this->tr->waypoints)) {
-                 $this->tr->waypoints->spherical = false;
-                 unset($this->tr->distance);
-                 $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
-             }
-         }
+        if ($this->calc_tr) {
+            $this->track_triangles($use_rough_calculations);
+            if (isset($this->tr->waypoints)) {
+                $this->tr->waypoints->spherical = false;
+                unset($this->tr->distance);
+                $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
+            }
+        }
         $this->set_info();
         fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
     }
@@ -319,13 +318,13 @@ class track {
         $track_inner->min_speed = 0;
         $track_inner->total_dist = $this->total_dist;
         $track_inner->av_speed = (isset($this->average_speed_over_track) ? $this->average_speed_over_track : 0);
-        $track_inner->coords = array();
+        $track_inner->coords = [];
         /** @var track_point $a */
         foreach ($this->track_points as $a) {
             $time = $a->time - $this->track_points->first()->time;
-            $track_inner->coords[] = array($a->lat(), $a->lng(), $a->ele, $time, $a->climbRate, $a->speed, $a->bearing);
+            $track_inner->coords[] = [$a->lat(), $a->lng(), $a->ele, $time, $a->climbRate, $a->speed, $a->bearing];
         }
-        $track->track = array($track_inner);
+        $track->track = [$track_inner];
         $track->bounds = $this->bounds->get_js();
         $kml = $this->generate_kml();
         $track->html = '<div class="kmltree" data-post=\'{"id":' . $this->id . '}\'>' . $kml->get_html() . '</div>';
@@ -536,7 +535,7 @@ class track {
         $var = ($max - $min ? $max - $min : 1);
         $last_level = floor(($this->track_points[0]->$value - $min) * 16 / $var);
 
-        $coordinates = array();
+        $coordinates = [];
         $current_level = 0;
         /** @var track_point $point */
         foreach ($this->track_points as $point) {
@@ -544,7 +543,7 @@ class track {
             $current_level = floor(($point->$value - $min) * 16 / $var);
             if ($current_level != $last_level && $current_level != 16) {
                 $output .= kml::create_linestring('#S' . $last_level, new collection_iterator($coordinates));
-                $coordinates = array();
+                $coordinates = [];
                 $coordinates[] = $point;
                 $last_level = $current_level;
             }
@@ -581,7 +580,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
     }
 
     public function get_dist_map() {
-        $this->distance_map = array();
+        $this->distance_map = [];
         /** @var track_point $point */
         foreach ($this->calculation_subset as $key => $point) {
             if (is_null($point)) {
@@ -601,7 +600,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
     }
 
     public function get_dist_remap($indexes) {
-        $this->calculation_subset = array();
+        $this->calculation_subset = [];
         foreach ($indexes as $index) {
             $index = $this->c_backup[$index];
             $start = isset($index->before) ? $index->before : $index->id;
@@ -794,7 +793,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     public function get_list($indexes) {
-        $list = array();
+        $list = [];
         foreach ($indexes as $index) {
             $list[] = $this->calculation_subset[$index];
         }
@@ -910,7 +909,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             }
 
         }
-        return array($array[$index], $index);
+        return [$array[$index], $index];
     }
 
     public function mod60000($a) {
@@ -979,7 +978,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $this->repair_track();
         $this->get_graph_values();
         $this->get_limits();
-        $this->calculation_subset = array();
+        $this->calculation_subset = [];
         if ($this->track_points->count() < self::$number_of_points_to_use) {
             $this->calculation_subset = $this->track_points;
         } else {
@@ -1092,10 +1091,10 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
 
     public function set_info() {
         if (isset($this->parent_flight->fid) && $this->parent_flight->fid) {
-            $this->parent_flight->lazy_load(array('pid', 'gid', 'cid'));
-            $this->pilot->do_retrieve_from_id(array('name'), $this->parent_flight->pid);
-            $this->club->do_retrieve_from_id(array('title'), $this->parent_flight->cid);
-            $this->glider->do_retrieve_from_id(array('name'), $this->parent_flight->gid);
+            $this->parent_flight->lazy_load(['pid', 'gid', 'cid']);
+            $this->pilot->do_retrieve_from_id(['name'], $this->parent_flight->pid);
+            $this->club->do_retrieve_from_id(['title'], $this->parent_flight->cid);
+            $this->glider->do_retrieve_from_id(['name'], $this->parent_flight->gid);
         }
     }
 
@@ -1153,7 +1152,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
 
     public function track_open_distance_3tp($sub = false) {
 
-        $best_results = array();
+        $best_results = [];
 
         for ($key1 = 0; $key1 < $this->calculation_subset_size; $key1++) {
             $this->calculation_subset[$key1]->bestBack = $this->maximum_bound_index($this->distance_map[$key1], 0, $key1);
@@ -1191,7 +1190,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             }
             if ($maxF + $maxB > $maximum_distance_between_two_points) {
                 $maximum_distance_between_two_points = $maxF + $maxB;
-                $best_results[] = array($endB, $midB, $row, $midF, $endF);
+                $best_results[] = [$endB, $midB, $row, $midF, $endF];
             }
         }
         if (!$sub) {
@@ -1220,7 +1219,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     function track_out_and_return($sub = false) {
-        $best_results = array();
+        $best_results = [];
         $maximum_distance_between_two_points = 0;
         $indexes[0] = 0;
         $indexes[1] = 0;
@@ -1236,7 +1235,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 $x = $this->furthest_between($row, $col);
                 if (($this->distance_map[$row][$x] * 2 - $this->distance_map[$row][$col]) > $maximum_distance_between_two_points) {
                     $maximum_distance_between_two_points = $this->distance_map[$row][$x] * 2 - $this->distance_map[$row][$col];
-                    $best_results[] = array($row, $x, $col);
+                    $best_results[] = [$row, $x, $col];
                     $minLeg = $this->distance_map[$row][$col];
                 }
             }
@@ -1271,7 +1270,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     function track_triangles($sub = false, $min_ratio = 0.28, $type = 'tr') {
-        $best_results = array();
+        $best_results = [];
         $closest_end = 0;
 
         $maximum_distance_between_two_points = 0;
@@ -1467,7 +1466,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $min = min($this->distance_map[$x][$y], $this->distance_map[$y][$z], $this->distance_map[$z][$x]);
         if ($d > $maximum_distance_between_two_points && $min > ($min_ratio * $d)) {
             $maximum_distance_between_two_points = $d;
-            $best_results[] = array($row, $x, $y, $z, $col);
+            $best_results[] = [$row, $x, $y, $z, $col];
             $minimum_leg = max(1200, $d * $min_ratio);
         }
     }

@@ -49,25 +49,25 @@ class result_records extends result {
     protected function get_flight($ftid, $class, $gender) {
         $flight = new flight();
         $flight->do_retrieve(
-            array(
+            [
                 'fid',
                 'p.name AS p_name',
                 'base_score',
                 'date'
-            ),
-            array(
-                'join' => array(
+            ],
+            [
+                'join' => [
                     'pilot p' => 'p.pid = flight.pid',
                     'glider g' => 'g.gid = flight.gid',
-                ),
-                'where_equals' => array(
+                ],
+                'where_equals' => [
                     'ftid' => $ftid,
                     'g.class' => $class,
                     'p.gender' => $gender
 
-                ),
+                ],
                 'order' => 'base_score DESC'
-            )
+            ]
         );
 
         $html = '';
@@ -87,26 +87,26 @@ class result_records extends result {
     protected function get_flight_defined($ftid, $class, $gender) {
         $flight = new flight();
         $flight->do_retrieve(
-            array(
+            [
                 'fid',
                 'p.name AS p_name',
                 'base_score',
                 'date',
                 'speed'
-            ),
-            array(
-                'join' => array(
+            ],
+            [
+                'join' => [
                     'pilot p' => 'p.pid = flight.pid',
                     'glider g' => 'g.gid = flight.gid',
-                ),
-                'where_equals' => array(
+                ],
+                'where_equals' => [
                     'ftid' => $ftid,
                     'g.class' => $class,
                     'p.gender' => $gender
 
-                ),
+                ],
                 'order' => 'speed DESC'
-            )
+            ]
         );
         $html = '';
         if ($flight->fid) {

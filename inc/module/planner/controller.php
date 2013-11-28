@@ -12,7 +12,7 @@ class controller extends module {
         if (isset($_REQUEST['ftid']) && isset($_REQUEST['coordinates'])) {
             $dec = new object\declaration();
             $form = $dec->get_form();
-            jquery::colorbox(array('html' => $form->get_html()->get()));
+            jquery::colorbox(['html' => $form->get_html()->get()]);
         }
     }
 }

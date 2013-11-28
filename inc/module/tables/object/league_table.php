@@ -15,7 +15,7 @@ class league_table {
     /** @var \classes\table_array */
     public $flights = null;
     public $league = null;
-    public $where = array();
+    public $where = [];
     public $show_top_4 = false;
     public $handicap = false;
     public $show_multipliers = false;
@@ -34,8 +34,8 @@ class league_table {
     public $C5_Mod = 1;
     public $WHERE = '';
     public $date = null;
-    public $in = array();
-    public $parameters = array();
+    public $in = [];
+    public $parameters = [];
     /** @var league_table_options */
     public $options;
     private $modifier_string = '';
@@ -64,15 +64,15 @@ class league_table {
     }
 
     public static function encode_url($parts) {
-        $json = str_replace(array(':', '"'), array('-', ''), trim(json_encode($parts), '{}'));
+        $json = str_replace([':', '"'], ['-', ''], trim(json_encode($parts), '{}'));
         return urlencode($json);
     }
 
     public function get_url() {
-        $ignore_fields = array(
+        $ignore_fields = [
             'parent',
             'layout'
-        );
+        ];
         $url_parts = new \stdClass();
         $default = new league_table_options(null, $this);
         foreach ($this->options as $option => $value) {
@@ -323,7 +323,7 @@ class league_table {
     }
 
     public function generate_csv() {
-        $flights = flight::get_all(array('p.pid AS p_pid', 'p.name AS p_name', 'c.title AS c_title', 'g.class AS g_class', 'g.name AS g_name', 'score', 'defined', 'lid'), array('join' => array('glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'), 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        $flights = flight::get_all(['p.pid AS p_pid', 'p.name AS p_name', 'c.title AS c_title', 'g.class AS g_class', 'g.name AS g_name', 'score', 'defined', 'lid'], ['join' => ['glider g' => 'flight.gid=g.gid', 'pilot p' => 'p.pid = flight.pid', 'club c' => 'c.cid=flight.cid'], 'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012']);
         $array = new table_array();
         $flights->iterate(
             function (flight $flight) use (&$array) {
@@ -371,7 +371,7 @@ class league_table {
             case(league_table_options::LAYOUT_PILOT_LOG):
                 $this->result = new result_pilot();
                 $pilot = new pilot();
-                $pilot->do_retrieve_from_id(array('name'), $this->options->pilot_id);
+                $pilot->do_retrieve_from_id(['name'], $this->options->pilot_id);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
                 $this->options->minimum_score = 0;
                 break;
@@ -416,18 +416,18 @@ class league_table {
             $this->where .= " AND personal=0 ";
         }
 
-        $this->flights = flight::get_all(array('fid', 'p.pid AS p_pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name AS p_name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name AS g_name', 'gm.title AS gm_title', 'g.kingpost AS g_kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'),
-            array(
-                'join' => array(
+        $this->flights = flight::get_all(['fid', 'p.pid AS p_pid', 'g.gid', $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID', 'p.name AS p_name', $this->S_alias . '.title AS c_name', 'g.class AS class', 'g.name AS g_name', 'gm.title AS gm_title', 'g.kingpost AS g_kingpost', 'did', 'defined', 'lid', 'multi', 'ftid', $this->modifier_string . ' AS score', 'date', 'coords'],
+            [
+                'join' => [
                     'glider g' => 'flight.gid=g.gid',
                     'club c' => 'flight.cid=c.cid',
                     'pilot p' => 'flight.pid=p.pid',
                     'manufacturer gm' => 'g.mid = gm.mid'
-                ),
+                ],
                 'where' => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
                 'order' => $this->OrderBy . ' DESC',
                 'parameters' => $this->parameters,
-            )
+            ]
         );
     }
 
@@ -463,9 +463,9 @@ class league_table {
      * @param array $params
      * @return string
      */
-    function ShowTop4($where, $params = array()) {
+    function ShowTop4($where, $params = []) {
         $html = '';
-        $launch_by_number = Array(1 => 'Foot', 2 => 'Aerotow', 3 => 'Winch');
+        $launch_by_number = [1 => 'Foot', 2 => 'Aerotow', 3 => 'Winch'];
         $where['delayed'] = '`delayed`=:delayed';
         $params['delayed'] = 0;
         $where['personal'] = 'personal=:personal';
@@ -480,12 +480,12 @@ class league_table {
                 $where_extend .= ' AND ftid=:ftid';
                 $params['ftid'] = $i;
                 $flight = new flight();
-                $flight->do_retrieve(array('flight.*', $this->class . '.name AS name', 'glider.class AS class'), array(
+                $flight->do_retrieve(['flight.*', $this->class . '.name AS name', 'glider.class AS class'], [
                         'join' => flight::$default_joins,
                         'where' => $where_extend,
                         'order' => 'score DESC',
                         'parameters' => $params
-                    )
+                    ]
                 );
                 if (isset($flight->fid) && $flight->fid) {
                     $prefix = $flight->name . ' (' . ($flight->class == 5 ? 'R' : 'F') . ') ';

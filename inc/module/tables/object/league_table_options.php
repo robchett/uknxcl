@@ -7,8 +7,8 @@ class league_table_options {
     public $parent;
     public $official = 1;
     public $pilot_id = null;
-    public $launches = array(1, 2, 3);
-    public $types = array(1, 2, 3, 4, 5);
+    public $launches = [1, 2, 3];
+    public $types = [1, 2, 3, 4, 5];
     public $winter = null;
     public $defined = null;
     public $gender = null;
@@ -186,8 +186,8 @@ class league_table_options {
     public function get_year() {
         if ($this->year != 'all_time') {
             $param_count = 0;
-            $parts = array();
-            $str_parts = array();
+            $parts = [];
+            $str_parts = [];
 
             $groups = explode(',', $this->year);
             foreach ($groups as $group) {

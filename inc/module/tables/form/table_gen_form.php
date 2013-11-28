@@ -11,20 +11,20 @@ class table_gen_form extends form {
     public $no_min;
 
     public function __construct() {
-        $fields = array(
+        $fields = [
             form::create('field_select', 't')
                 ->set_attr('label', 'Table Type:')
                 ->set_attr('default', '')
                 ->set_attr('link', 'table_type')
                 ->set_attr('help', '')
-                ->set_attr('options', array(
+                ->set_attr('options', [
                         0 => 'Standard',
                         1 => 'Club',
                         2 => 'Pilot',
                         3 => 'Top Tens',
                         4 => 'Plain List',
                         5 => 'Records',
-                    )
+                    ]
                 ),
             form::create('field_link', 'pilot')
                 ->set_attr('label', 'Pilot:')
@@ -40,32 +40,32 @@ class table_gen_form extends form {
                 ->set_attr('value', '1991-' . date('Y')),
             form::create('field_select', 'gen')
                 ->set_attr('label', 'Gender:')
-                ->set_attr('options', array(0 => 'Both', 1 => 'Male', 2 => 'Female'))
+                ->set_attr('options', [0 => 'Both', 1 => 'Male', 2 => 'Female'])
                 ->set_attr('help', 'Shows only flights of one gender.'),
             form::create('field_select', 'def')
                 ->set_attr('label', 'Declared:')
-                ->set_attr('options', array(0 => 'Don\'t Sort', 1 => 'Yes', 2 => 'No'))
+                ->set_attr('options', [0 => 'Don\'t Sort', 1 => 'Yes', 2 => 'No'])
                 ->set_attr('help', 'Shows only declared or not.'),
             form::create('field_select', 'rgd')
                 ->set_attr('label', 'Ridge:')
-                ->set_attr('options', array(0 => 'Don\'t Sort', 1 => 'Yes', 2 => 'No'))
+                ->set_attr('options', [0 => 'Don\'t Sort', 1 => 'Yes', 2 => 'No'])
                 ->set_attr('help', 'Shows only flights which were under ridge lift or not |not all ridge lift flights have been marked as so...'),
             form::create('field_select', 'win')
                 ->set_attr('label', 'Winter:')
-                ->set_attr('options', array(0 => 'Don\'t Sort', 1 => 'Winter Only', 2 => 'Summer Only'))
+                ->set_attr('options', [0 => 'Don\'t Sort', 1 => 'Winter Only', 2 => 'Summer Only'])
                 ->set_attr('help', 'Show only flights in the winter (start of november-end of February) | or the summer season'),
             form::create('field_select', 'c3d')
                 ->set_attr('label', 'KML Submitted:')
-                ->set_attr('options', array(0 => 'Don\'t Sort', 3 => 'Yes (3D)', 2 => 'Yes (2D)', 1 => 'Yes (Both)', 4 => 'No'))
+                ->set_attr('options', [0 => 'Don\'t Sort', 3 => 'Yes (3D)', 2 => 'Yes (2D)', 1 => 'Yes (Both)', 4 => 'No'])
                 ->set_attr('help', 'Choose what type of track confirmation you want.'),
             form::create('field_select', 'cls')
                 ->set_attr('label', 'Glider Class:')
-                ->set_attr('options', array(0 => 'Don\'t Sort', 1 => 'Class 1', 5 => 'Class 5'))
+                ->set_attr('options', [0 => 'Don\'t Sort', 1 => 'Class 1', 5 => 'Class 5'])
                 ->set_attr('help', 'Show Class 1 (flexwing) or class 5 (rigid)'),
             form::create('field_select', 'Flights')
                 ->set_attr('label', '# of Flights')
                 ->set_attr('default', '')
-                ->set_attr('options', array(6 => '6 Flights', 5 => '5 Flights', 4 => '4 Flights'))
+                ->set_attr('options', [6 => '6 Flights', 5 => '5 Flights', 4 => '4 Flights'])
                 ->set_attr('help', 'Maximum number fo flights which count. Before 2001 only 5 counted. now it is 6'),
             form::create('field_string', 'Min')
                 ->set_attr('label', 'Minimum Distance')
@@ -98,15 +98,15 @@ class table_gen_form extends form {
                 ->set_attr('label', 'Launch Type')
                 ->set_attr('help', 'Include certain launch methods')
                 ->set_attr('default', '')
-                ->set_attr('value', array('w', 'f', 'a'))
-                ->set_attr('options', array('w' => 'Winch', 'f' => 'Foot', 'a' => 'Aerotow')),
+                ->set_attr('value', ['w', 'f', 'a'])
+                ->set_attr('options', ['w' => 'Winch', 'f' => 'Foot', 'a' => 'Aerotow']),
             form::create('field_multi_select', 'flight_type')
                 ->set_attr('label', 'Launch Type')
                 ->set_attr('help', 'Include flight types')
                 ->set_attr('default', '')
-                ->set_attr('value', array('od', 'or', 'tr', 'go'))
-                ->set_attr('options', array('od' => 'Open Distance', 'go' => 'Goal', 'or' => 'Out and Return', 'tr' => 'Triangle'))
-        );
+                ->set_attr('value', ['od', 'or', 'tr', 'go'])
+                ->set_attr('options', ['od' => 'Open Distance', 'go' => 'Goal', 'or' => 'Out and Return', 'tr' => 'Triangle'])
+        ];
 
         parent::__construct($fields);
 

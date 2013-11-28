@@ -8,7 +8,7 @@ use module\news\object\article;
 class _default extends view {
 
     public function get_view() {
-        $articles = article::get_all(array('aid', 'date', 'title', 'poster', 'post', 'snippet',), array('order' => 'date DESC', 'where' => 'parent_aid=0'));
+        $articles = article::get_all(['aid', 'date', 'title', 'poster', 'post', 'snippet',], ['order' => 'date DESC', 'where' => 'parent_aid=0']);
         $html = node::create('div#list_wrapper', [],
             $articles->iterate_return(function (article $article) {
                     return $article->get_cell();

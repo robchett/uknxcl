@@ -31,7 +31,7 @@ class controller extends module {
 
     public function set_current($aid) {
         $this->current = new article();
-        $this->current->do_retrieve_from_id(array(), $aid);
+        $this->current->do_retrieve_from_id([], $aid);
     }
 
 }

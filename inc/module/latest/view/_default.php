@@ -9,15 +9,15 @@ class _default extends view {
 
     public function get_view() {
         $flights = flight::get_all(
-            array('flight.*', 'pilot.name', 'pilot.pid'),
-            array(
-                'join' => array(
+            ['flight.*', 'pilot.name', 'pilot.pid'],
+            [
+                'join' => [
                     'pilot' => 'flight.pid = pilot.pid'
-                ),
+                ],
                 'where' => '`delayed` = 0 AND personal = 0',
                 'limit' => 39,
                 'order' => 'fid DESC'
-            )
+            ]
         );
         $wrapper = node::create('div.table_wrapper', [],
             node::create('h3', [], 'Latest') .
