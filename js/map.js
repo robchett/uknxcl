@@ -40,7 +40,6 @@ function UKNXCL_Map($container) {
     this.playCycles = 10;
     this.playCount = 0;
     this.comp = null;
-    this.coordinate_tracks = [];
 
     var $interface = $('#map_interface_3d');
     $interface.find('span.show').click(function () {
@@ -121,7 +120,7 @@ function UKNXCL_Map($container) {
         obj.show();
         obj.center();
 
-        if (obj.type === 0 && map.mode === map.MAP) {
+        if (obj.type === 0 && map.isMap()) {
             //this.internal_map.fitBounds(obj.get_bounds());
         }
         //this.$slider.slider({max: obj.size()});
@@ -150,13 +149,13 @@ function UKNXCL_Map($container) {
         });
     };
 
-    this.center = function(object) {
-        if(typeof object.center == 'function') {
+    this.center = function (object) {
+        if (typeof object.center == 'function') {
             object.center();
         } else {
-            if(this.isMap()) {
+            if (this.isMap()) {
                 var bound = new google.maps.LatLngBounds();
-                object.each(function(latLng) {
+                object.each(function (latLng) {
                     bound.union(new google.maps.LatLngBounds(latLng, latLng));
                 });
                 this.internal_map.fitBounds(bound);
@@ -164,8 +163,12 @@ function UKNXCL_Map($container) {
         }
     }
 
-    this.isMap = function() {
+    this.isMap = function () {
         return this.mode == this.MAP;
+    }
+
+    this.isEarth = function () {
+        return this.mode == this.EARTH;
     }
 
     this.load_airspace = function () {
@@ -228,7 +231,7 @@ function UKNXCL_Map($container) {
     };
 
     this.draw_coordinates = function (coordinates, id) {
-        if (this.mode === map.MAP) {
+        if (this.isMap()) {
             if (this.mapObject) {
                 this.mapObject.setMap(null);
             }
@@ -342,7 +345,7 @@ function Track(id, temp) {
     this.temp = temp ? '&temp=true' : '';
 
     this.add_google_data = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             map.GeoXMLsingle.parse('?module=\\object\\flight&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
         } else {
             map.parseKML('/uploads/flight/' + this.temp + this.id + '/track_earth.kmz', this);
@@ -350,7 +353,7 @@ function Track(id, temp) {
     };
 
     this.center = function () {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             var lookAt = map.ge.createLookAt('');
             lookAt.setLatitude(this.nxcl_data.bounds.center.lat);
             lookAt.setLongitude(this.nxcl_data.bounds.center.lon);
@@ -376,7 +379,7 @@ function Track(id, temp) {
     };
 
     this.add_marker = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             this.marker = new google.maps.Marker({
                 position: new google.maps.LatLng(this.nxcl_data.track[0].coords[0][0], this.nxcl_data.track[0].coords[0][1]),
                 map: map.internal_map,
@@ -391,13 +394,13 @@ function Track(id, temp) {
         if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            $('#tree_content .track_' + this.id).html(map.mode == map.MAP ? this.nxcl_data.html : this.nxcl_data.html_earth);
+            $('#tree_content .track_' + this.id).html(map.isMap() ? this.nxcl_data.html : this.nxcl_data.html_earth);
             map.swap(this);
         }
     };
 
     this.show = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             this.marker.setMap(map.internal_map);
             this.google_data.gpolylines.each(function (polyline) {
                 polyline.setMap(map.internal_map);
@@ -409,7 +412,7 @@ function Track(id, temp) {
     };
 
     this.hide = function () {
-        if (map.mode == map.MAP) {
+        if (map.isMap()) {
             this.marker.setMap(null);
             this.google_data.gpolylines.each(function (polyline) {
                 polyline.setMap(null);
@@ -470,7 +473,7 @@ function Comp(id) {
     this.temp = '';
 
     this.add_google_data = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             map.GeoXMLcomp.parse('?module=\\module\\comps\\object\\comp&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
             this.google_data = true;
             this.is_ready();
@@ -495,7 +498,7 @@ function Comp(id) {
     };
 
     this.add_marker = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             this.nxcl_data.track.each(function (track, a, root) {
                 root.marker[a] = new google.maps.Marker({
                     position: new google.maps.LatLng(track.coords[0][0], track.coords[0][1]),
@@ -512,14 +515,14 @@ function Comp(id) {
         if (this.nxcl_data.loaded && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            $('#WriteHereComp').html(map.mode == map.MAP ? this.nxcl_data.html : this.nxcl_data.html);
+            $('#WriteHereComp').html(map.isMap() ? this.nxcl_data.html : this.nxcl_data.html);
             $('#comp_list .loading_shroud').remove();
             map.swap(this);
         }
     };
 
     this.center = function () {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             var lookAt = map.ge.createLookAt('');
             lookAt.setLatitude(this.nxcl_data.bounds.center.lat);
             lookAt.setLongitude(this.nxcl_data.bounds.center.lon);
@@ -537,7 +540,7 @@ function Comp(id) {
         this.marker.each(function (marker) {
             marker.setMap(map.internal_map);
         });
-        if (map.mode == map.MAP) {
+        if (map.isMap()) {
             this.google_data.gpolylines.each(function (element) {
                 element.setMap(map.internal_map);
             });
@@ -849,7 +852,7 @@ function Planner(parent) {
     };
 
     this.set_triangle_guides = function () {
-        if (map.mode === map.MAP) {
+        if (map.isMap()) {
             this.triangle_guides = [
                 new google.maps.Polygon({clickable: false, fillColor: '#FF0000', fillOpacity: 0.25, strokeColor: '#FF0000', strokeWeight: 0.8}), new google.maps.Polygon({clickable: false, fillColor: '#FF0000', fillOpacity: 0.25, strokeColor: '#FF0000', strokeWeight: 0.8}), new google.maps.Polygon({clickable: false, fillColor: '#FF0000', fillOpacity: 0.25, strokeColor: '#FF0000', strokeWeight: 0.8})
             ];
@@ -905,7 +908,7 @@ function Planner(parent) {
         if (!this.triangle_guides) {
             this.set_triangle_guides();
         }
-        if (this.parent.mode === map.MAP) {
+        if (this.parent.isMap()) {
             if (this.mapObject) {
                 this.mapObject.setMap(null);
             }
@@ -941,7 +944,7 @@ function Planner(parent) {
     };
 
     this.hide_triangle_guides = function () {
-        if (this.parent.mode === map.MAP) {
+        if (this.parent.isMap()) {
             this.triangle_guides[0].setMap(null);
             this.triangle_guides[1].setMap(null);
             this.triangle_guides[2].setMap(null);
@@ -954,7 +957,7 @@ function Planner(parent) {
         var point1 = [this.coordinates[0].lat(), this.coordinates[0].lng()];
         var point2 = [this.coordinates[1].lat(), this.coordinates[1].lng()];
         var point3 = [this.coordinates[2].lat(), this.coordinates[2].lng()];
-        if (this.parent.mode === map.MAP) {
+        if (this.parent.isMap()) {
             this.triangle_guides[0].setPath(yessan([point1, point2, point3]));
             this.triangle_guides[1].setPath(yessan([point2, point3, point1]));
             this.triangle_guides[2].setPath(yessan([point3, point1, point2]));
@@ -984,7 +987,7 @@ function Planner(parent) {
     this.clear = function () {
 
         this.waypoints.each(function (point) {
-            if (map.mode === map.MAP) {
+            if (map.isMap()) {
                 point.setMap(null);
             } else {
                 map.ge.getFeatures().removeChild(point);
@@ -1207,7 +1210,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this.load = function () {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             this._earth_load();
         } else {
             this._map_load()
@@ -1215,7 +1218,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this.toggle = function () {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             this._earth_toggle();
         } else {
             this._map_toggle();
@@ -1223,7 +1226,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this.recursiveHide = function (earthObject) {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             this._earth_recursiveHide(earthObject);
         } else {
             this._map_recursiveHide(earthObject);
@@ -1231,7 +1234,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this.recursiveShow = function (earthObject) {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             this._earth_recursiveShow(earthObject);
         } else {
             this._map_recursiveShow(earthObject);
@@ -1239,7 +1242,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this.setVisibility = function (i, bool) {
-        if (map.mode == map.EARTH) {
+        if (map.isEarth()) {
             this.index(i).setVisibility(bool);
         } else {
             if (bool) {
