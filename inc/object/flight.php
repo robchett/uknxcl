@@ -61,11 +61,9 @@ class flight extends table {
     public $track = null;
 
     public static $launch_types = [0 => 'Foot', 1 => 'Aerotow', 2 => 'Winch'];
-    public static $module_id = 2;
     public $pilot_name;
     public $ridge;
     public $score;
-    public $table_key = 'fid';
     public $time;
     public $vis_info;
     public $season;
@@ -405,15 +403,14 @@ class flight extends table {
             );
         }
 
-        ajax::inject('#' . $_REQUEST['origin'], 'after', '<script>$("#pop").remove();</script>');
+        ajax::add_script('$("#pop").remove();', true);
         ajax::inject('#' . $_REQUEST['origin'], 'after',
             node::create('div#pop', [],
                 node::create('span.arrow', [], 'Arrow') .
-                node::create('div.content', [], $html) .
-                node::create('script', [], 'if($("#pop").offset().left > 400)$("#pop").addClass("reverse");'
-                )
+                node::create('div.content', [], $html)
             )
         );
+        ajax::add_script('if($("#pop").offset().left > 400)$("#pop").addClass("reverse");');
     }
 
     protected function  get_download_url($type = 'igc') {
