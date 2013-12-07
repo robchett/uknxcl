@@ -178,7 +178,13 @@ function UKNXCL_Map($container) {
             this.parseKML('/resources/airspace.kmz', this.airspace);
         }
         $(".load_airspace").remove();
-        $("#tree_content").prepend('<div class=\'kmltree new\'><ul class=\'kmltree\'>' + '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' + '<li data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' + '<li data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' + '<li data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' + '<li data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' + '<li data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' + '</ul></li></ul></div>');
+        $("#tree_content").prepend('<div id="airspace_tree" class=\'kmltree new\'><ul class=\'kmltree\'>' + '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open all\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' +
+            '<li id="PROHIBITED" data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' +
+            '<li id="RESTRICTED" data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' +
+            '<li id="DANGER" data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' +
+            '<li id="OTHER" data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' +
+            '<li id="CTRCTA" data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' +
+            '</ul></li></ul></div>');
         return false;
     };
 
@@ -1211,9 +1217,9 @@ UKNXCL_Map.KmlPath = function (event, ths) {
 
     this.load = function () {
         if (map.isEarth()) {
-            this._earth_load();
+            return this._earth_load();
         } else {
-            this._map_load()
+            return this._map_load()
         }
     };
 
@@ -1273,6 +1279,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 ths.kml = kml;
             }, this);
         }
+        return true;
     };
 
     this._map_load = function () {
@@ -1286,7 +1293,8 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             this.path = this.root.google_data.structure[0][0];
         } else {
             this.root = map.airspace;
-            this.kml = map.airspace.google_data.root;
+            this.root.toggle(this.data.path[0]);
+            return false;
         }
         if (this.data.path !== null) {
             this.data.path.each(function (index, i, ths) {
@@ -1295,6 +1303,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
 
             }, this);
         }
+        return true;
     };
 
     this._earth_toggle = function () {
@@ -1376,8 +1385,8 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 this.recursiveHide(relative_placemarks[i]);
             } else {
                 var object = this.root.google_data.placemarks[relative_placemarks[i]];
-                if(typeof object.polyline != 'undefined') object.polyline.setMap(null);
-                if(typeof object.polygon != 'undefined') object.polygon.setMap(null);
+                if (typeof object.polyline != 'undefined') object.polyline.setMap(null);
+                if (typeof object.polygon != 'undefined') object.polygon.setMap(null);
             }
         }
     };
@@ -1399,8 +1408,8 @@ UKNXCL_Map.KmlPath = function (event, ths) {
                 this.recursiveShow(relative_placemarks[i]);
             } else {
                 var object = this.root.google_data.placemarks[relative_placemarks[i]];
-                if(typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
-                if(typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
+                if (typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
+                if (typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
             }
         }
     }
@@ -1409,8 +1418,9 @@ UKNXCL_Map.KmlPath = function (event, ths) {
 
 $('body').on('click', '.kmltree .toggler', function (event) {
     kmlPath = new UKNXCL_Map.KmlPath(event, $(this));
-    kmlPath.load();
-    kmlPath.toggle();
+    if (kmlPath.load()) {
+        kmlPath.toggle();
+    }
 });
 
 $('body').on('click', '.kmltree .expander', function () {
