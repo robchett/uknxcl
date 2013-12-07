@@ -7,8 +7,9 @@ use classes\module;
 abstract class html extends \core\template\html {
 
     public function __construct(module $module) {
-        \core::$global_script[] = 'var map';
-        \core::$inline_script[] = '
+        if (!ajax) {
+            \core::$global_script[] = 'var map';
+            \core::$inline_script[] = '
 map = new UKNXCL_Map($("#map_wrapper"));
 if (typeof google != \'undefined\') {
     map.load_map();
@@ -16,6 +17,7 @@ if (typeof google != \'undefined\') {
     $(\'#map\').children(\'p.loading\').html(\'Failed to load Google resources\');
 }
 ';
+        }
         parent::__construct($module);
     }
 
