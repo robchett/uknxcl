@@ -17,8 +17,6 @@ class flight_type extends table {
     public $multi;
     public $multi_defined;
 
-    public $table_key = 'ftid';
-    public static $module_id = 10;
     public $ftid;
     public $fn;
     public $title;
