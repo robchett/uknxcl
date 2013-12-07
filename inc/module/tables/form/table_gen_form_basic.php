@@ -103,23 +103,21 @@ class table_gen_form_basic extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            $table = new _object\league_table();
-            $table->use_preset($this->type);
-            if ($this->type == 10) {
-                $table->options->pilot_id = $this->pilot;
-            }
-            $table->set_year($this->year);
-            if ($this->no_min) {
-                $table->options->minimum_score = 0;
-            }
-            if ($this->glider_mode) {
-                $table->options->glider_mode = true;
-            }
-            if ($this->split_classes) {
-                $table->options->split_classes = true;
-            }
-            get::header_redirect($table->get_url() . '?module=core&act=load_page');
+        $table = new _object\league_table();
+        $table->use_preset($this->type);
+        if ($this->type == 10) {
+            $table->options->pilot_id = $this->pilot;
         }
+        $table->set_year($this->year);
+        if ($this->no_min) {
+            $table->options->minimum_score = 0;
+        }
+        if ($this->glider_mode) {
+            $table->options->glider_mode = true;
+        }
+        if ($this->split_classes) {
+            $table->options->split_classes = true;
+        }
+        get::header_redirect($table->get_url() . '?module=core&act=load_page');
     }
 }

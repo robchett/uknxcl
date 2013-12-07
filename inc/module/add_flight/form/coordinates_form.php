@@ -85,36 +85,33 @@ class coordinates_form extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            $flight = new flight();
-            $flight->set_from_request();
-            $flight->dim = 1;
+        $flight = new flight();
+        $flight->set_from_request();
+        $flight->dim = 1;
 
-            $month = date('m', strtotime($this->date));
-            $flight->winter = ($month == 1 || $month == 2 || $month == 12);
+        $month = date('m', strtotime($this->date));
+        $flight->winter = ($month == 1 || $month == 2 || $month == 12);
 
-            if (strtotime($this->date) + (30 * 24 * 60 * 60) < time()) {
-                $this->force_delay = true;
-                $flight->invis_info .= 'delayed as flight is old.';
-            }
-
-            $track = new track();
-            $track->set_task($this->coords);
-            $flight_type = new flight_type();
-            $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $track->task->type]]);
-            $flight->ftid = $flight_type->ftid;
-            $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
-            $flight->base_score = $track->task->get_distance();
-            $flight->coords = $track->task->get_coordinates();
-            $flight->score = $flight->base_score * $flight->multi;
-            $flight->delayed = $this->force_delay ? true : $this->delay;
-            $flight->do_save();
-
-            jquery::colorbox(['html' => 'Your flight has been added successfully']);
-            $form = new coordinates_form();
-            ajax::update($form->get_html()->get());
-
+        if (strtotime($this->date) + (30 * 24 * 60 * 60) < time()) {
+            $this->force_delay = true;
+            $flight->invis_info .= 'delayed as flight is old.';
         }
+
+        $track = new track();
+        $track->set_task($this->coords);
+        $flight_type = new flight_type();
+        $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $track->task->type]]);
+        $flight->ftid = $flight_type->ftid;
+        $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
+        $flight->base_score = $track->task->get_distance();
+        $flight->coords = $track->task->get_coordinates();
+        $flight->score = $flight->base_score * $flight->multi;
+        $flight->delayed = $this->force_delay ? true : $this->delay;
+        $flight->do_save();
+
+        jquery::colorbox(['html' => 'Your flight has been added successfully']);
+        $form = new coordinates_form();
+        ajax::update($form->get_html()->get());
     }
 
     public function do_validate() {

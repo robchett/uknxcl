@@ -44,17 +44,15 @@ class add_pilot_form extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            $this->pilot->name = ucwords($this->name);
-            $this->pilot->gender = $this->gender;
-            $this->pilot->bhpa_no = $this->bhpa_no;
-            $this->pilot->email = $this->email;
-            $this->pilot->rating = $this->rating;
-            $this->pilot->do_save();
-            if ($this->pilot->pid) {
-                $this->pilot->do_update_selector();
-            }
-            jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
+        $this->pilot->name = ucwords($this->name);
+        $this->pilot->gender = $this->gender;
+        $this->pilot->bhpa_no = $this->bhpa_no;
+        $this->pilot->email = $this->email;
+        $this->pilot->rating = $this->rating;
+        $this->pilot->do_save();
+        if ($this->pilot->pid) {
+            $this->pilot->do_update_selector();
         }
+        jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
     }
 }

@@ -32,11 +32,10 @@ class add_glider_form extends form {
     }
 
     public function get_form() {
-        ajax::inject('body', 'after', '<script>$.colorbox({html:' . json_encode($this->get_html()->get()) . '})</script>');
+        jquery::colorbox(['html'=>$this->get_html()->get()]);
     }
 
     public function do_submit() {
-        parent::do_submit();
         $this->glider->set_from_request();
         $this->glider->name = ucwords($this->name);
         $this->glider->do_save();
