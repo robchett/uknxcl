@@ -6,7 +6,7 @@ use classes\view;
 use html\node;
 use module\comps\object\comp;
 
-class _default extends view {
+class _default extends \template\html {
 
     public function get_view() {
         $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title', 'file'], ['join' => ['comp_group' => 'comp.cgid = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, comp.cgid ASC']);

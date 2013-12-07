@@ -5,7 +5,7 @@ use classes\ajax;
 use classes\view;
 use html\node;
 
-class comp extends view {
+class comp extends \template\html {
 
     /** @vat \module\comps\controller */
     public $module;

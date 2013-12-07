@@ -4,7 +4,7 @@ namespace module\flight_info\view;
 use classes\view;
 use html\node;
 
-class flight extends view {
+class flight extends \template\html {
 
     /** @var  \module\flight_info\controller */
     public $module;

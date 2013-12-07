@@ -5,7 +5,7 @@ use classes\view;
 use html\node;
 use module\news;
 
-class post extends view {
+class post extends \template\html {
 
     /** @var \module\news\controller $module */
     public $module;

@@ -7,7 +7,7 @@ use html\node;
 use module\tables\form\table_gen_form;
 use module\tables\form\table_gen_form_basic;
 
-class _default extends view {
+class _default extends \template\html {
 
     /** @var  \module\tables\controller $module */
     public $module;

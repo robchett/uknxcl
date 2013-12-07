@@ -5,7 +5,7 @@ use classes\view;
 use html\node;
 use module\converter\form;
 
-class dashboard extends view {
+class dashboard extends \template\html {
 
     public function get_view() {
         $html = node::create('div', [],

@@ -5,7 +5,7 @@ use classes\view;
 use html\node;
 use module\news\object\article;
 
-class _default extends view {
+class _default extends \template\html {
 
     public function get_view() {
         $articles = article::get_all(['aid', 'date', 'title', 'poster', 'post', 'snippet',], ['order' => 'date DESC', 'where' => 'parent_aid=0']);
