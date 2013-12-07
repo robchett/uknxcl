@@ -1375,7 +1375,9 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             if (typeof relative_placemarks[i] == 'object') {
                 this.recursiveHide(relative_placemarks[i]);
             } else {
-                this.root.google_data.placemarks[relative_placemarks[i]].polyline.setMap(null);
+                var object = this.root.google_data.placemarks[relative_placemarks[i]];
+                if(typeof object.polyline != 'undefined') object.polyline.setMap(null);
+                if(typeof object.polygon != 'undefined') object.polygon.setMap(null);
             }
         }
     };
@@ -1396,7 +1398,9 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             if (typeof relative_placemarks[i] == 'object') {
                 this.recursiveShow(relative_placemarks[i]);
             } else {
-                this.root.google_data.placemarks[relative_placemarks[i]].polyline.setMap(map.internal_map);
+                var object = this.root.google_data.placemarks[relative_placemarks[i]];
+                if(typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
+                if(typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
             }
         }
     }
