@@ -37,7 +37,7 @@ class coordinate_conversion_form extends form {
         ];
         parent::__construct($fields);
         $this->id = 'coordinate_conversion_form';
-        $this->attributes['data-ajax-change'] = '\module\converter\form\coordinate_conversion_form:do_submit';
+        $this->attributes['data-ajax-change'] = '\module\converter\form\coordinate_conversion_form:do_form_submit';
     }
 
     public function set_disabled() {
@@ -107,7 +107,6 @@ class coordinate_conversion_form extends form {
     }
 
     public function set_from_request() {
-        parent::set_from_request();
         switch ($this->source) {
             case 0:
                 unset($this->OS8);
@@ -152,11 +151,8 @@ class coordinate_conversion_form extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            $point = $this->get_source_as_wgs84();
-            $this->set_values_from_point($point);
-        }
-
+        $point = $this->get_source_as_wgs84();
+        $this->set_values_from_point($point);
         ajax::update($this->get_html()->get());
 
     }

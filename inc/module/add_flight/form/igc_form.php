@@ -84,60 +84,58 @@ class igc_form extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            $flight = new flight();
-            $flight->set_from_request();
+        $flight = new flight();
+        $flight->set_from_request();
+        $flight->do_save();
+
+        if ($flight->fid) {
+            track::move_temp_files($this->temp_id, $flight->fid);
+            $track = new track();
+            $track->id = $flight->fid;
+            $track->parse_IGC();
+            $track->pre_calc();
+            $track->set_from_session($flight, $this->temp_id);
+
+            $flight->date = $track->date;
+            $flight->did = $track->get_dim();
+            $flight->winter = $track->is_winter();
+
+            $this->force_delay = false;
+            if (!$track->check_date()) {
+                $this->force_delay = true;
+                $flight->invis_info .= 'delayed as flight is old.';
+            }
+            $this->defined = false;
+            if ($this->type == 'task') {
+                $this->type = $track->task->type;
+                $this->defined = true;
+            }
+            $flight_type = new flight_type();
+            $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $this->type]]);
+            $flight->ftid = $flight_type->ftid;
+            $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
+
+            if (!$this->defined) {
+                $flight->base_score = $track->{$this->type}->get_distance();
+                $flight->coords = $track->{$this->type}->get_coordinates();
+                $flight->score = $flight->base_score * $flight->multi;
+            } else {
+                $flight->coords = $track->task->get_coordinates();
+                $flight->base_score = $track->task->get_distance();
+                $flight->score = $flight->base_score * $flight->multi;
+            }
+            $flight->delayed = $this->force_delay ? true : $this->delay;
+
+
+            $flight->file = '/uploads/flight/' . $track->id . '/track.igc';
+            $track->generate_output_files();
             $flight->do_save();
 
-            if ($flight->fid) {
-                track::move_temp_files($this->temp_id, $flight->fid);
-                $track = new track();
-                $track->id = $flight->fid;
-                $track->parse_IGC();
-                $track->pre_calc();
-                $track->set_from_session($flight, $this->temp_id);
-
-                $flight->date = $track->date;
-                $flight->did = $track->get_dim();
-                $flight->winter = $track->is_winter();
-
-                $this->force_delay = false;
-                if (!$track->check_date()) {
-                    $this->force_delay = true;
-                    $flight->invis_info .= 'delayed as flight is old.';
-                }
-                $this->defined = false;
-                if ($this->type == 'task') {
-                    $this->type = $track->task->type;
-                    $this->defined = true;
-                }
-                $flight_type = new flight_type();
-                $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $this->type]]);
-                $flight->ftid = $flight_type->ftid;
-                $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
-
-                if (!$this->defined) {
-                    $flight->base_score = $track->{$this->type}->get_distance();
-                    $flight->coords = $track->{$this->type}->get_coordinates();
-                    $flight->score = $flight->base_score * $flight->multi;
-                } else {
-                    $flight->coords = $track->task->get_coordinates();
-                    $flight->base_score = $track->task->get_distance();
-                    $flight->score = $flight->base_score * $flight->multi;
-                }
-                $flight->delayed = $this->force_delay ? true : $this->delay;
-
-
-                $flight->file = '/uploads/flight/' . $track->id . '/track.igc';
-                $track->generate_output_files();
-                $flight->do_save();
-
-                jquery::colorbox(['html' => 'Your flight has been added successfully']);
-                $form = new igc_form();
-                ajax::update($form->get_html()->get());
-            } else {
-                jquery::colorbox(['html' => 'Your flight has failed to save']);
-            }
+            jquery::colorbox(['html' => 'Your flight has been added successfully']);
+            $form = new igc_form();
+            ajax::update($form->get_html()->get());
+        } else {
+            jquery::colorbox(['html' => 'Your flight has failed to save']);
         }
     }
 

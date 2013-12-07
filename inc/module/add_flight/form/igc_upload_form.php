@@ -43,14 +43,12 @@ class igc_upload_form extends form {
     }
 
     public function do_submit() {
-        if (parent::do_submit()) {
-            if (isset($_FILES['file'])) {
-                $track = new track();
-                $track->id = time();
-                $this->create_track($track);
-            } else {
-                ajax::update(node::create('div#console', [], 'Your browser has not sent the correct data to the server. Please upgrade your browser!'));
-            }
+        if (isset($_FILES['file'])) {
+            $track = new track();
+            $track->id = time();
+            $this->create_track($track);
+        } else {
+            ajax::update(node::create('div#console', [], 'Your browser has not sent the correct data to the server. Please upgrade your browser!'));
         }
     }
 
