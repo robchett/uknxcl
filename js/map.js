@@ -469,7 +469,7 @@ function Comp(id) {
     this.nxcl_data = new trackData();
     this.loaded = false;
     this.visible = true;
-    this.marker = new [];
+    this.marker = [];
     this.temp = '';
 
     this.add_google_data = function () {
