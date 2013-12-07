@@ -7,7 +7,7 @@ use classes\view;
 use html\node;
 use module\add_flight\form\coordinates_form;
 
-class coordinate extends view {
+class coordinate extends \template\html {
 
     public function get_page_selector() {
         return get::__namespace($this->module, 0) . '-coordinate';

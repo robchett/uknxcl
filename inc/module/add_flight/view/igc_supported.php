@@ -8,7 +8,7 @@ use html\node;
 use module\add_flight\form\igc_form;
 use module\add_flight\form\igc_upload_form;
 
-class igc_supported extends view {
+class igc_supported extends \template\html {
 
     public function get_page_selector() {
         return get::__namespace($this->module, 0) . '-igc';
@@ -29,7 +29,7 @@ class igc_supported extends view {
             $("#kml_calc").html("<div id=\'console\'><a class=\'calc\'>Calculate</a></div>");
             $("#kml_calc a").show();
             $("#kml_wrapper").addClass("pass").removeClass("hoverFail");
-            $("#kml_wrapper p.text").html("Click calculate to contiune or choose another file");
+            $("#kml_wrapper p.text").html("Click calculate to continue or choose another file");
         } else {
             $("#kml_wrapper p.text").html("Please us an IGC file");
             $("#kml_wrapper").addClass("hoverFail");

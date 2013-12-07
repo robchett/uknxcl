@@ -8,7 +8,7 @@ use module\planner\form;
 use module\planner\object;
 use object\flight_type;
 
-class _default extends view {
+class _default extends \template\html {
 
     public function get_view() {
         $form = new form\planner_load_waypoints();

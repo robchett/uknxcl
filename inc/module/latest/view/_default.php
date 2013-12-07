@@ -5,7 +5,7 @@ use classes\view;
 use html\node;
 use object\flight;
 
-class _default extends view {
+class _default extends \template\html {
 
     public function get_view() {
         $flights = flight::get_all(

@@ -4,7 +4,7 @@ namespace module\stats\view;
 use classes\view;
 use html\node;
 
-class _default extends view {
+class _default extends \template\html {
 
     /** @var \module\stats\controller $module */
     public $module;
