@@ -10,8 +10,6 @@ class waypoint extends table {
 
     public $lat;
     public $lon;
-    public $table_key = 'wid';
-    public static $module_id = 22;
 
     /**
      * @param array $fields

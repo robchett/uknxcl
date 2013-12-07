@@ -16,11 +16,9 @@ class declaration extends table {
     /**
      * @var string
      */
-    public $table_key = 'did';
     /**
      * @var int
      */
-    public static $module_id = 13;
 
 
     /**
@@ -28,7 +26,7 @@ class declaration extends table {
      */
     public function get_form() {
         $form = parent::get_form();
-        $form->action = get_class($this) . ':do_submit';
+        $form->action = get_class($this) . ':do_form_submit';
         $form->set_from_request();
         $form->remove_field('parent_did');
         $form->remove_field('did');
@@ -45,8 +43,6 @@ class declaration extends table {
      *
      */
     public function do_submit() {
-        if (parent::do_submit()) {
-            ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
-        }
+        ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
     }
 }
