@@ -29,7 +29,7 @@ class article extends table {
 
     public function get_type() {
         return
-            node::create('span.date', [], date('d/m/Y', strtotime($this->date))) .
+            node::create('span.date', [], date('d/m/Y', $this->date)) .
             node::create('span.name', [], $this->title) .
             node::create('span.author', [], 'By: ' . $this->poster);
     }
