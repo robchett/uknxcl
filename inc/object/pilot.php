@@ -10,7 +10,6 @@ class pilot extends scorable {
 
     use table_trait;
 
-    public static $module_id = 3;
     public $bhpa_no;
     public $class = 1;
     public $club;
@@ -26,7 +25,6 @@ class pilot extends scorable {
     public $pid;
     public $rating;
     public $score = 0;
-    public $table_key = 'pid';
     public $total = 0;
 
     /*    public static $fields = array(

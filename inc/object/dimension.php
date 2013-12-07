@@ -9,8 +9,6 @@ class dimension extends table {
 
     use table_trait;
 
-    public $table_key = 'did';
-    public static $module_id = 11;
 
 }
 

@@ -8,7 +8,5 @@ class waypoint_group extends table {
 
     use table_trait;
 
-    public $table_key = 'wgid';
-    public static $module_id = 21;
 
 }

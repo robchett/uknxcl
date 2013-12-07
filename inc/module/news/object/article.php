@@ -21,8 +21,6 @@ class article extends table {
     /* @var string */
     public $title;
 
-    public $table_key = 'aid';
-    public static $module_id = 8;
 
 
     public function get_url() {

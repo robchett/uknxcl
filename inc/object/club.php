@@ -13,8 +13,6 @@ class club extends table {
 
     use table_trait;
 
-    public static $module_id = 12;
-    public $table_key = 'cid';
     public $name;
     public $score = 0;
     public $total = 0;

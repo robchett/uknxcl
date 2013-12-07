@@ -19,10 +19,8 @@ class comp extends table {
 
     use table_trait;
 
-    public static $module_id = 17;
     public $class;
     public $coords;
-    public $table_key = 'cid';
     public $cid;
     public $title;
     public $type;

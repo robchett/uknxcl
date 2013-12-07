@@ -10,7 +10,6 @@ class glider extends scorable {
 
     use table_trait;
 
-    public static $module_id = 4;
     public $gid;
     public $name;
     public $id;
@@ -23,7 +22,6 @@ class glider extends scorable {
     public $max_flights;
     public $class = 1;
     public $output_function = 'table';
-    public $table_key = 'gid';
 
     /**
      * @param string $flight

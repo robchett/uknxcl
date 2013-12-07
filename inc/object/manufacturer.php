@@ -4,8 +4,6 @@ namespace object;
 
 class manufacturer extends club {
 
-    public static $module_id = 5;
-    public $table_key = 'mid';
     public $Name;
     public $Score = 0;
     public $Total = 0;
