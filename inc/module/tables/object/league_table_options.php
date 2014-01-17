@@ -48,6 +48,7 @@ class league_table_options {
         $this->get_launch_string();
         $this->get_flight_type_string();
         $this->get_year();
+        $this->get_class();
         $this->get_pilot_id();
         $this->get_glider_mode();
     }
@@ -221,7 +222,7 @@ class league_table_options {
 
     public function get_class() {
         if (!is_null($this->glider_class)) {
-            $this->parent->where[] = 'class = :class';
+            $this->parent->where[] = 'class = :glider_class';
             $this->parent->parameters['glider_class'] = $this->glider_class;
         }
     }
