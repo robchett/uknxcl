@@ -57,6 +57,9 @@ class league_table {
         foreach ($decode_parts as $part) {
             $key_val = explode('-', $part, 2);
             if (count($key_val) == 2) {
+                if(strpos($key_val[1], '[') === 0) {
+                    $key_val[1] = explode(',', substr($key_val[1],1, strlen($key_val[1]) - 2));
+                }
                 $object->{$key_val[0]} = $key_val[1];
             }
         }
