@@ -1,30 +1,24 @@
 h2.form_title {
-  .gradient(#75b7fd, #0c3f6b, #0a4dad);
+  .heading();
   text-align: center;
   color: #ffffff;
   font-weight: bold;
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 0;
-  .border-radius(10px, 0, 0, 10px);
 }
 
 #advanced_tables_wrapper { display: none; }
 
 #advanced_tables_wrapper, #basic_tables_form_wrapper {
   margin-bottom: 20px;
-  .border-radius(10px, 10px, 10px, 10px);
   overflow: hidden;;
-  &.visible {
-    .border-radius(0, 0, 0, 0)
-  }
 }
 
 form {
   border: @blue_border;
   padding: 10px;
   margin-top: 0;
-  .border-radius(0, 10px, 10px, 0);
 
   fieldset {
     border: none;
@@ -80,7 +74,6 @@ form {
           width: 630px;
           font-size: 50px;
           line-height: 66px;
-          border-radius: 10px;
           border: 2px dashed #cccccc;
           color: #cccccc;
           cursor: pointer;
@@ -237,7 +230,6 @@ form {
 #form_wrapper {
   p.success {
     border: @default_border;
-    .border-radius(0, 10px, 10px, 0);
     margin: 0;
     padding: 20px 0;
     text-align: center;
