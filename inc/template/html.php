@@ -7,16 +7,6 @@ use html\node;
 
 abstract class html extends \core\template\html {
 
-    public function __construct(module $module) {
-        if (!ajax) {
-            \core::$inline_script[] =
-                <<<js
-                map = new UKNXCL_Map($("#map_wrapper"));
-js;
-        }
-        parent::__construct($module);
-    }
-
     public function get() {
         if (!ajax) {
             \core::$inline_script[] = 'loaded_modules = {"' . uri . '":true};';
@@ -58,7 +48,8 @@ js;
 js;
             \core::$inline_script[] =
                 <<<js
-                if (typeof google != 'undefined') {
+if (typeof google != 'undefined') {
+    map = new UKNXCL_Map($("#map_wrapper"));
     map.load_map();
 } else {
     $('#map').children('p.loading').html('Failed to load Google resources');
