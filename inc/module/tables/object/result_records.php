@@ -78,7 +78,7 @@ class result_records extends result {
                 node::create('td', [], $gender) .
                 node::create('td', [], $flight->p_name) .
                 node::create('td', [], $flight->base_score) .
-                node::create('td', [], $flight->date)
+                node::create('td', [], date('d/m/Y', $flight->date))
             );
         }
         return $html;
@@ -116,7 +116,7 @@ class result_records extends result {
                 node::create('td', [], $gender) .
                 node::create('td', [], $flight->p_name) .
                 node::create('td', [], number_format($flight->speed, 2)) .
-                node::create('td', [], $flight->date)
+                node::create('td', [], date('d/m/Y', $flight->date))
             );
         }
         return $html;
