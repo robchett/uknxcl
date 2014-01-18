@@ -15,7 +15,7 @@ class _default extends \template\html {
                     'pilot' => 'flight.pid = pilot.pid'
                 ],
                 'where' => '`delayed` = 0 AND personal = 0',
-                'limit' => 39,
+                'limit' => 40,
                 'order' => 'fid DESC'
             ]
         );

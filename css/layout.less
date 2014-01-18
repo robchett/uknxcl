@@ -1,30 +1,36 @@
-#main {
-  padding: 10px;
-  position: relative;
+#main_wrapper {
   overflow-x: hidden;
   height: 100%;
-  perspective: 1000;
-  transition: 0.6s;
-  transform-style: preserve-3d;
-  @animation: rotateY(90deg);
-  &.flipped {
-    -webkit-transform: @animation;
-    -moz-transform: @animation;;
-    -o-transform: @animation;
-    -ms-transform: @animation;
-    transform: @animation;
+  position: absolute;
+  padding: 10px;
+  width: 705px;
+  .jspPane {
+    width: 705px !important;
+    margin-left: 0 !important;
   }
+  #main {
+    overflow: visible;
+    position: relative;
+    transition: 0.6s;
+    transform-style: preserve-3d;
+    @animation: rotateY(90deg);
+    &.flipped {
+      -webkit-transform: @animation;
+      -moz-transform: @animation;;
+      -o-transform: @animation;
+      -ms-transform: @animation;
+      transform: @animation;
+    }
 
-  > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 95%;
-    width: 684px;
-    margin: 10px;
-    background-color: white;
+    > div {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 700px;
+      height: 100%;
+      background-color: white;
+    }
   }
-
 }
 
 #left_col {

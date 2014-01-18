@@ -1,0 +1,31 @@
+#main {
+  #pages-12 {
+    .content {
+      padding: 0 10px;
+    }
+    #page_list {
+      div {
+        display: inline-block;
+        width: 25%;
+        vertical-align: bottom;
+        background-color: @primary;
+        &:nth-child(3n+1) {
+          background-color: @secondary;
+        }
+        &:nth-child(3n+2) {
+          background-color: @tertiary;
+        }
+        &:hover {
+          .opacity(0.8);
+        }
+        a {
+          display: block;
+          padding: 20px;
+          height: 100px;
+          text-align: center;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
