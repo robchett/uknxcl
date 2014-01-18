@@ -364,7 +364,7 @@ class track {
             $kml->get_kml_folder_close();
             $kml->get_kml_folder_open('Task', 1, '', 0);
             $kml->get_kml_folder_open('Open Distance', 1, 'hideChildren', 0);
-            $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
+            $kml->add($this->od->get_kml_track('00D7FF', 'Open Distance'));
             $kml->get_kml_folder_close();
             if ($this->or->distance) {
                 $kml->get_kml_folder_open('Out And Return', 1, 'hideChildren', 0);
@@ -476,7 +476,7 @@ class track {
 
         $kml->get_kml_folder_open('Task', 0, '', 0);
         $kml->get_kml_folder_open('Open Distance', 0, 'hideChildren', 0);
-        $kml->add($this->od->get_kml_track('FF0000', 'Open Distance'));
+        $kml->add($this->od->get_kml_track('00D7FF', 'Open Distance'));
         $kml->get_kml_folder_close();
         $kml->get_kml_folder_open('Out And Return', 0, 'hideChildren', 0);
         $kml->add($this->or->get_kml_track('00FF00', 'Out And Return'));

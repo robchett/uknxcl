@@ -1,22 +1,59 @@
-function Graph($container, height) {
-    var ths = this;
-    height = height || 200;
+function Graph($container) {
     this.$container = $container;
-    this.$container.html("<a style='position:absolute;left:60px;z-index:1000000'>" + '<input type="radio" name="graph_type" data-type="1" checked>Height</input>' + '<input type="radio" name="graph_type" data-type="2">Climb</input>' + '<input type="radio" name="graph_type" data-type="3">Speed</input></a>' + "<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + height + "'></canvas>");
-    this.a_canvas = $('#graph_a_canvas');
+    this.$a_canvas = null;
     this.width = this.$container.width();
     this.height = this.$container.height();
     this.obj = null;
-    this.type = 1;
+    this.type = 0;
+    this.options = {
+        toggles: [
+            {"name": "Height", "index": 2, "xAxis": "Height (m)", "min_value": "minEle", "max_value": "maxEle"},
+            {"name": "Climb Rate", "index": 4, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "maximum_cr"},
+            {"name": "Speed", "index": 5, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "maximum_speed"}
+        ]
+    };
 
-    this.$container.find("[name=graph_type]").change(function () {
-        ths.changeType($(this).data('type'));
-    });
+    var ths = this;
+
+    this.initiated = false;
+
+
+    this.init = function () {
+        this.$container.css({position: "relative"});
+        this.$container.html("<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
+        this.$a_canvas = $('#graph_a_canvas');
+        this.add_radios();
+        this.initiated = true;
+    };
+
+    this.add_radios = function () {
+        this.$container.find('.graph_toggles').remove();
+        if (this.options.toggles) {
+            var html = '<span class="graph_toggles">';
+            this.options.toggles.each(function (toggle, count, ths) {
+                html += '<label><input type="radio" name="graph_type" data-type="' + count + '" ' + (count == 0 ? 'checked' : '' ) + '/>' + toggle.name + '</label>';
+            });
+            html += '</span>';
+            this.$container.prepend(html);
+        }
+        this.$container.find("[name=graph_type]").change(function () {
+            ths.changeType($(this).data('type'));
+        });
+    };
+
+    this.set_subsets = function (options) {
+        this.options.toggles = options;
+        if (this.initiated) {
+            this.add_radios();
+        }
+    };
 
     this.resize = function (width) {
-        this.width = width - 5;
-        this.a_canvas[0].width = (width);
-        this.setGraph();
+        if (this.initiated) {
+            this.width = width - 5;
+            this.$a_canvas[0].width = (width);
+            this.setGraph();
+        }
     };
     this.swap = function (obj) {
         this.obj = obj;
@@ -32,22 +69,10 @@ function Graph($container, height) {
             return;
         }
         this.$container.show();
-        if (this.type === 1) {
-            var title = 'Height (m)';
-            var min_value = 'minEle';
-            var max_value = 'maxEle';
-            var index = 2;
-        } else if (this.type == 2) {
-            title = 'Clime Rate (m/s)';
-            min_value = 'min_cr';
-            max_value = 'maximum_cr';
-            index = 4;
-        } else {
-            title = 'Speed (m/s)';
-            min_value = 'min_speed';
-            max_value = 'maximum_speed';
-            index = 5;
-        }
+        var title = this.options.toggles[this.type].xAxis;
+        var index = this.options.toggles[this.type].index;
+        var min_value = this.options.toggles[this.type].min_value;
+        var max_value = this.options.toggles[this.type].max_value;
         var max = -1000000;
         var min = 10000000;
         this.obj.nxcl_data.track.each(function (track) {
@@ -64,8 +89,8 @@ function Graph($container, height) {
     };
 
     this.drawGraph = function (max, min, colour, index, text) {
-        this.a_canvas[0].width = this.a_canvas.width();
-        var context = this.a_canvas[0].getContext('2d');
+        this.$a_canvas[0].width = this.$a_canvas.width();
+        var context = this.$a_canvas[0].getContext('2d');
         context.fillStyle = "rgba(255, 255, 255, 0.7)";
         context.fillRect(0, 0, this.width, this.height);
 
