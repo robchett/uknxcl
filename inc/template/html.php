@@ -13,7 +13,7 @@ abstract class html extends \core\template\html {
             $html =
                 node::create('div#left_col', [],
                     node::create('div#nav ul', [], \core::$singleton->module->get_main_nav()) .
-                    node::create('div#main', [],
+                    node::create('div#main_wrapper div#main', [],
                         node::create('div#' . $this->get_page_selector(), ['data-uri' => (isset($_POST['url']) ? $_POST['url'] : uri)],
                             $this->get_view()
                         )
@@ -42,19 +42,6 @@ abstract class html extends \core\template\html {
                     node::create('div#map p.loading', [], 'Google Maps are loading...') .
                     node::create('div#map3d p.loading', [], 'Google Earth is loading...')
                 );
-            \core::$global_script[] =
-                <<<js
-                var map;
-js;
-            \core::$inline_script[] =
-                <<<js
-if (typeof google != 'undefined') {
-    map = new UKNXCL_Map($("#map_wrapper"));
-    map.load_map();
-} else {
-    $('#map').children('p.loading').html('Failed to load Google resources');
-}
-js;
             return $html;
         } else {
             $content = $this->get_view();
