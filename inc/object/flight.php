@@ -192,7 +192,7 @@ class flight extends table {
                 $tot = db::count('flight', 'fid')
                     ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
                     ->execute();
-                $year_object->coords[] = [0, 0, $tot, $month, $score];
+                $year_object->coords[] = [0, 0, $tot, $month - 1, $score];
                 $year_object->maxEle = max($year_object->maxEle, $tot);
                 $year_object->maximum_cr = max($year_object->maximum_cr, $score);
             }
