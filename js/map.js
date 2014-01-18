@@ -63,7 +63,7 @@ function UKNXCL_Map($container) {
         }
         this.$container.css({width: pageWidth - 727});
         this.graph.resize(pageWidth - 745);
-        $('#main').css({'height': pageHeight - 50});
+        $('#main_wrapper').css({'height': pageHeight - 35});
         if ($('#colorbox').width()) {
             colorbox_recenter();
         }
@@ -178,13 +178,7 @@ function UKNXCL_Map($container) {
             this.parseKML('/resources/airspace.kmz', this.airspace);
         }
         $(".load_airspace").remove();
-        $("#tree_content").prepend('<div id="airspace_tree" class=\'kmltree new\'><ul class=\'kmltree\'>' + '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open all\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' +
-            '<li id="PROHIBITED" data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' +
-            '<li id="RESTRICTED" data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' +
-            '<li id="DANGER" data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' +
-            '<li id="OTHER" data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' +
-            '<li id="CTRCTA" data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' +
-            '</ul></li></ul></div>');
+        $("#tree_content").prepend('<div id="airspace_tree" class=\'kmltree new\'><ul class=\'kmltree\'>' + '<li data-path=\'{"type":"airspace","path":[]}\' class=\'kmltree-item check KmlFolder visible open all\'><div class=\'expander\'></div><div class=\'toggler\'></div>Airspace<ul>' + '<li id="PROHIBITED" data-path=\'{"type":"airspace","path":[0]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Prohibited</li>' + '<li id="RESTRICTED" data-path=\'{"type":"airspace","path":[1]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Restricted</li>' + '<li id="DANGER" data-path=\'{"type":"airspace","path":[2]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Danger</li>' + '<li id="OTHER" data-path=\'{"type":"airspace","path":[3]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>Other</li>' + '<li id="CTRCTA" data-path=\'{"type":"airspace","path":[4]}\' class=\'kmltree-item check KmlFolder hideChildren visible\'><div class=\'expander\'></div><div class=\'toggler\'></div>CTR/CTA</li>' + '</ul></li></ul></div>');
         return false;
     };
 
@@ -1415,34 +1409,6 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     }
 };
 
-
-$('body').on('click', '.kmltree .toggler', function (event) {
-    kmlPath = new UKNXCL_Map.KmlPath(event, $(this));
-    if (kmlPath.load()) {
-        kmlPath.toggle();
-    }
-});
-
-$('body').on('click', '.kmltree .expander', function () {
-    var $li = $(this).parent();
-    if ($li.hasClass('open')) {
-        $li.removeClass('open');
-        $li.find('li').removeClass('open');
-    } else {
-        $li.addClass('open');
-        $li.find('li').addClass('open');
-    }
-});
-
-$(document).bind('cbox_complete', function () {
-    var width = $('#colorbox').width();
-    if (width < 725) {
-        $('#colorbox').animate({left: (725 - width) / 2});
-    } else {
-        $('#colorbox').animate({left: 0});
-    }
-});
-
 function yessan(coordinates) {
     var projection = map.internal_map.getProjection();
     coordinates.each(function (point, i) {
@@ -1509,12 +1475,4 @@ function loop(a, b, c) {
         d = b.call(k, d, c, f, a)
     });
     return d
-};
-
-$('body').on('change', 'input[name=flights]', function () {
-    map.swap(map.kmls[$(this).val()]);
-});
-
-window.onresize = function () {
-    if (map)map.resize()
 };
