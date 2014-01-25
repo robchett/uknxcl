@@ -227,13 +227,13 @@ class comp extends table {
         $js->bounds = $this->bounds->get_js();
         $js->track = [];
         fwrite($js_file, substr(json_encode($js), 0, -2));
-        $json_html = node::create('div.kmltree.new ul.kmltree li.kmltree-item.check.KmlFolder.visible.open', ['data-path' => '\'{"type":"comp","path":[]}\''],
+        $json_html = node::create('div.kmltree.new ul.kmltree li.kmltree-item.check.KmlFolder.visible.open', ['data-path' => '{"type":"comp","path":[]}'],
             node::create('div.expander') .
             node::create('div.toggler') .
             $this->combined_name .
             node::create('ul', [],
                 $track_array->iterate_return(function (track $track, $count) {
-                        return node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . ($count) . ']}\''],
+                        return node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '{"type":"comp","path":[' . ($count) . ']}'],
                             node::create('div.expander') .
                             node::create('div.toggler') .
                             node::create('span', ['style' => 'color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2)],  $track->name)
@@ -241,7 +241,7 @@ class comp extends table {
                     }
                 )
             ) .
-            node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . $track_array->count() . ']}\''],
+            node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '{"type":"comp","path":[' . $track_array->count() . ']}'],
                 node::create('div.expander') .
                 node::create('div.toggler') .
                 'Task'
