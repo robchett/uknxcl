@@ -14,6 +14,12 @@ function UKNXCL_Map($container) {
     this.planner = new Planner(this);
     this.airspace = new Airspace();
     this.graph = new Graph($('#graph_wrapper'));
+    this.graph.options.toggles = [
+        {"name": "Height", "index": 2, "xAxis": "Height (m)", "min_value": "minEle", "max_value": "maxEle"},
+        {"name": "Climb Rate", "index": 4, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "maximum_cr"},
+        {"name": "Speed", "index": 5, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "maximum_speed"}
+    ];
+    this.graph.init();
     if (typeof google != 'undefined') {
         this.internal_map = new google.maps.Map(document.getElementById('map'), {
             zoom: 7,
@@ -64,9 +70,6 @@ function UKNXCL_Map($container) {
         this.$container.css({width: pageWidth - 727});
         this.graph.resize(pageWidth - 745);
         $('#main_wrapper').css({'height': pageHeight - 35});
-        if ($('#colorbox').width()) {
-            colorbox_recenter();
-        }
     };
 
     this.load_map = function () {
@@ -843,7 +846,7 @@ function Planner(parent) {
         if (ft == 'or') { $('#decOR').removeAttr('disabled'); } else { $('#decOR').attr('disabled', 'disabled');}
         if (ft == 'tr') { $('#decTR').removeAttr('disabled'); } else { $('#decTR').attr('disabled', 'disabled');}
 
-        coordinates = this.get_coordinates();
+        var coordinates = this.get_coordinates();
         $('#decOR, #decOD, #decTR').each(function (count) {
             var obj = $(this).data('ajax-post');
             obj.coordinates = coordinates;
@@ -883,9 +886,25 @@ function Planner(parent) {
     };
 
     this.get_flight_type = function () {
-        if (this.count === 4 && this.is_equal(0, 3)) { return 'tr';}
+        if (this.count === 4 && this.is_equal(0, 3)) {
+            if (this.min_leg() > 0.28 * this.get_total_distance()) {
+                return 'tr';
+            } else {
+                return 'ftr';
+            }
+        }
         if (this.is_equal(0, 2)) { return 'or';}
         if ((this.count >= 2 && this.count <= 5)) { return 'od';}
+    };
+
+    this.min_leg = function () {
+        var min = this.distance_array[1];
+        this.distance_array.each(function (distance) {
+            if (distance < min && distance) {
+                min = distance;
+            }
+        });
+        return min;
     };
 
     this.get_coordinates = function () {
@@ -936,7 +955,8 @@ function Planner(parent) {
                 context.mapObject.getCoordinates().pushLatLngAlt(coordinate.lat(), coordinate.lng(), 0);
             }, this);
         }
-        if (this.get_flight_type() == 'tr') {
+        var type = this.get_flight_type();
+        if (type == 'tr' || type == 'ftr') {
             this.draw_triangle_guides();
         } else {
             this.hide_triangle_guides();
@@ -1475,4 +1495,21 @@ function loop(a, b, c) {
         d = b.call(k, d, c, f, a)
     });
     return d
+}
+
+
+Number.prototype.toRad = function () {  // convert degrees to radians
+    return this * Math.PI / 180;
+};
+Number.prototype.toDeg = function () {  // convert radians to degrees (signed)
+    return this * 180 / Math.PI;
+};
+Number.prototype.padLz = function (w) {
+    var n = this.toString();
+    var l = n.length;
+    for (var i = 0; i < w - l; i++) n = '0' + n;
+    return n;
+};
+Number.prototype.round = function (dp) {
+    return Math.floor(this * Math.pow(10, dp)) / Math.pow(10, dp);
 };
