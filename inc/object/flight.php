@@ -22,6 +22,7 @@ class flight extends table {
 
     use table_trait;
 
+    public $title;
     public $added;
     public $admin_info;
     public $base_score;
@@ -179,23 +180,23 @@ class flight extends table {
         $flights = new \stdClass();
         $flights->min = 0;
         $flights->max = 0;
-        $flights->drawGraph = true;
+        $flights->draw_graph = true;
         $flights->colour = get::js_colour(0);
         $flights->name = 'Total Flights';
 
         $scores = new \stdClass();
         $scores->min = 0;
         $scores->max = 0;
-        $scores->drawGraph = true;
+        $scores->draw_graph = true;
         $scores->colour = get::js_colour(1);
         $scores->name = 'Total Score';
 
         foreach (range(1991, date('Y')) as $year) {
             $year_object = new \stdClass();
-            $year_object->coords = [];
+            $year_object->data = [];
             $year_object->min_flights = $year_object->min_score = $year_object->max_score = $year_object->max_flights = 0;
             $year_object->min_score = 0;
-            $year_object->drawGraph = true;
+            $year_object->draw_graph = true;
             $year_object->colour = get::js_colour($year);
             $year_object->name = $year;
 
@@ -228,8 +229,8 @@ class flight extends table {
         $wrapper = new \stdClass();
         $inner = new \stdClass();
         $inner->track = $year_stats;
-        $inner->StartT = 1;
-        $inner->EndT = 12;
+        $inner->xMin= 1;
+        $inner->xMax = 12;
         $wrapper->nxcl_data = $inner;
 
         $return['month'] = $wrapper;
@@ -237,8 +238,8 @@ class flight extends table {
         $wrapper = new \stdClass();
         $inner = new \stdClass();
         $inner->track = [$flights, $scores];
-        $inner->StartT = 1991;
-        $inner->EndT = date('Y');
+        $inner->xMin= 1991;
+        $inner->xMax = date('Y');
         $wrapper->nxcl_data = $inner;
 
         $return['year'] = $wrapper;

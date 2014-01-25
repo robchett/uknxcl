@@ -15,9 +15,9 @@ function UKNXCL_Map($container) {
     this.airspace = new Airspace();
     this.graph = new Graph($('#graph_wrapper'));
     this.graph.options.toggles = [
-        {"name": "Height", "index": 2, "xAxis": "Height (m)", "min_value": "minEle", "max_value": "maxEle"},
-        {"name": "Climb Rate", "index": 4, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "maximum_cr"},
-        {"name": "Speed", "index": 5, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "maximum_speed"}
+        {"name": "Height", "index": 1, "xAxis": "Height (m)", "min_value": "min_ele", "max_value": "max_ele"},
+        {"name": "Climb Rate", "index": 2, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "max_cr"},
+        {"name": "Speed", "index": 3, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "max_speed"}
     ];
     this.graph.init();
     if (typeof google != 'undefined') {
@@ -186,7 +186,7 @@ function UKNXCL_Map($container) {
     };
 
     this.setTime = function (index) {
-        var timeInSecs = index * (this.obj.nxcl_data.EndT - this.obj.nxcl_data.StartT) / this.obj.size();
+        var timeInSecs = index * (this.obj.nxcl_data.xMax - this.obj.nxcl_data.xMin) / this.obj.size();
         var hours = Math.floor(timeInSecs / 3600);
         var min = Math.floor((timeInSecs - hours * 3600) / 60);
         var sec = Math.floor(timeInSecs - hours * 3600 - min * 60);
@@ -384,7 +384,7 @@ function Track(id, temp) {
     this.add_marker = function () {
         if (map.isMap()) {
             this.marker = new google.maps.Marker({
-                position: new google.maps.LatLng(this.nxcl_data.track[0].coords[0][0], this.nxcl_data.track[0].coords[0][1]),
+                position: new google.maps.LatLng(this.nxcl_data.track[0].coords[0].lat, this.nxcl_data.track[0].coords[0].lng),
                 map: map.internal_map,
                 cursor: this.nxcl_data.track[0].pilot,
                 title: this.nxcl_data.track[0].pilot,
@@ -437,15 +437,15 @@ function Track(id, temp) {
     };
 
     this.move_marker = function (pos) {
-        this.marker.setPosition(new google.maps.LatLng(this.nxcl_data.track[0].coords[pos][0], this.nxcl_data.track[0].coords[pos][1]));
+        this.marker.setPosition(new google.maps.LatLng(this.nxcl_data.track[0].coords[pos].lat, this.nxcl_data.track[0].coords[pos].lng));
         if (map.drawRadius) {
-            map.radiusCircle.setCenter(new google.maps.LatLng(this.nxcl_data.track[0].coords[pos][0], this.nxcl_data.track[0].coords[pos][1]));
+            map.radiusCircle.setCenter(new google.maps.LatLng(this.nxcl_data.track[0].coords[pos].lat, this.nxcl_data.track[0].coords[pos].lng));
             map.radiusCircle.setRadius(400);
         } else {
             map.radiusCircle.setRadius(0);
         }
         if (map.airspace.varyWithTrack) {
-            this.airspace.reload(this.nxcl_data.track[0].coords[pos][2]);
+            this.airspace.reload(this.nxcl_data.track[0].coords[pos].ele);
         }
     };
 
@@ -504,7 +504,7 @@ function Comp(id) {
         if (map.isMap()) {
             this.nxcl_data.track.each(function (track, a, root) {
                 root.marker[a] = new google.maps.Marker({
-                    position: new google.maps.LatLng(track.coords[0][0], track.coords[0][1]),
+                    position: new google.maps.LatLng(track.coords[0].lat, track.coords[0].lng),
                     map: map.internal_map,
                     cursor: track.pilot,
                     title: track.pilot,
@@ -538,7 +538,7 @@ function Comp(id) {
 
     this.show = function () {
         this.nxcl_data.track.each(function (track) {
-            track.drawGraph = true;
+            track.draw_graph = true;
         });
         this.marker.each(function (marker) {
             marker.setMap(map.internal_map);
@@ -557,7 +557,7 @@ function Comp(id) {
 
     this.hide = function () {
         this.nxcl_data.track.each(function (track) {
-            track.drawGraph = false;
+            track.draw_graph = false;
         });
         this.marker.each(function (marker) {
             marker.setMap(null);
@@ -588,18 +588,18 @@ function Comp(id) {
         if (!bool) {
             this.marker[id].setMap(null);
             this.google_data.gpolylines[id].setMap(null);
-            this.nxcl_data.track[id].drawGraph = bool;
+            this.nxcl_data.track[id].draw_graph = bool;
         } else {
             this.marker[id].setMap(map.internal_map);
             this.google_data.gpolylines[id].setMap(map.internal_map);
-            this.nxcl_data.track[id].drawGraph = bool;
+            this.nxcl_data.track[id].draw_graph = bool;
         }
         map.graph.setGraph();
     };
 
     this.move_marker = function (pos) {
         this.marker.each(function (marker, a, root) {
-            marker.setPosition(new google.maps.LatLng(root.nxcl_data.track[a].coords[pos][0], root.nxcl_data.track[a].coords[pos][1]));
+            marker.setPosition(new google.maps.LatLng(root.nxcl_data.track[a].coords[pos].lat, root.nxcl_data.track[a].coords[pos].lng));
         }, this);
     };
 
@@ -609,6 +609,7 @@ function Comp(id) {
 }
 
 function Coordinate(lat, lon) {
+    this.ele = 0;
     if (typeof lat == 'object') {
         this.placemark = lat;
         this.lat = function () {
@@ -1153,8 +1154,8 @@ function Planner(parent) {
 function trackData() {
     this.loaded = false;
     this.id = 0;
-    this.StartT = 0;
-    this.EndT = 0;
+    this.xMin= 0;
+    this.xMax = 0;
     this.od_score = 0;
     this.or_score = 0;
     this.tr_score = 0;
@@ -1174,18 +1175,19 @@ function trackData() {
 
 function trackData() {
     this.loaded = false;
-    this.drawGraph = 1;
+    this.draw_graph = 1;
     this.pilot = 0;
     this.colour = 0;
-    this.maxEle = 0;
-    this.minEle = 0;
-    this.maximum_cr = 0;
+    this.max_ele = 0;
+    this.min_ele = 0;
+    this.max_cr = 0;
     this.min_cr = 0;
-    this.maximum_speed = 0;
+    this.max_speed = 0;
     this.total_dist = 0;
     this.av_speed = 0;
     this.coords = [];
-    this.StartT = 0;
+    this.data = [];
+    this.xMin= 0;
     this.EndT = 0;
     this.loadFromAjax = function (json) {
         for (var i in json) {

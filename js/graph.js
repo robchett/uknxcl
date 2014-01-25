@@ -93,7 +93,7 @@ function Graph($container) {
         var max = -1000000;
         var min = 10000000;
         this.obj.nxcl_data.track.each(function (track) {
-            if (track.drawGraph) {
+            if (track.draw_graph) {
                 if (parseFloat(track[max_value]) > max) {
                     max = parseFloat(track[max_value]);
                 }
@@ -102,7 +102,7 @@ function Graph($container) {
                 }
             }
         });
-        this.drawGraph(max.roundUp(), min.roundDown(), '#' + this.obj.nxcl_data.track[0].colour, index, title);
+        this.draw_graph(max.roundUp(), min.roundDown(), '#' + this.obj.nxcl_data.track[0].colour, index, title);
     };
 
     this.addLegend = function (colour, obj) {
@@ -121,7 +121,7 @@ function Graph($container) {
         }
     };
 
-    this.drawGraph = function (max, min, colour, index, text) {
+    this.draw_graph = function (max, min, colour, index, text) {
         this.$a_canvas[0].width = this.$a_canvas.width();
         var context = this.$a_canvas[0].getContext('2d');
         context.fillStyle = "rgba(255, 255, 255, 0.7)";
@@ -151,14 +151,14 @@ function Graph($container) {
             return;
         }
         this.addLegend(colour, obj);
-        var Xscale = this.width / (obj.EndT - obj.StartT);
+        var Xscale = this.width / (obj.xMax - obj.xMin);
         var Yscale = this.height / (max - min);
         obj.track.each(function (track) {
-            if (track.drawGraph) {
+            if (track.draw_graph) {
                 context.beginPath();
                 context.strokeStyle = track.colour || colour;
-                for (j in track.coords) {
-                    var coord = track.coords[j];
+                for (j in track.data) {
+                    var coord = track.data[j];
                     context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
                 }
                 context.stroke();

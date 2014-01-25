@@ -16,9 +16,17 @@ class track_point extends lat_lng {
     public $time = 0;
     public $val = 0;
 
-    public function get_js_coordinate($time = 0) {
-        $coord = [$this->lat(), $this->lng(), $this->ele, $time, $this->climbRate, $this->speed, $this->bearing];
-        return $coord;
+    public function get_graph_point($time = 0) {
+        $coordinate = [$time, $this->ele, $this->climbRate, $this->speed, $this->bearing];
+        return $coordinate;
+    }
+
+    public function get_js_coordinate() {
+        $coordinate = new \stdClass();
+        $coordinate->ele = $this->ele;
+        $coordinate->lat = $this->lat();
+        $coordinate->lng = $this->lng();
+        return $coordinate;
     }
 
     public function get_kml_point() {
