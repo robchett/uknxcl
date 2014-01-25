@@ -49,11 +49,11 @@ class track {
     public $log_file = "";
     public $maximum_alt = -1000000;
     public $maximum_alt_t;
-    public $maximum_cr = 0;
+    public $max_cr = 0;
     public $maximum_distance_between_two_points;
     public $maximum_ele = -1000000;
     public $maximum_ele_t = 0;
-    public $maximum_speed = 0;
+    public $max_speed = 0;
     public $min_alt = 1000000;
     public $min_alt_t;
     public $min_cr = 0;
@@ -293,8 +293,8 @@ class track {
     public function generate_js() {
         $track = new \stdClass();
         $track->id = $this->id;
-        $track->StartT = 0;
-        $track->EndT = ($this->get_duration() ? $this->get_duration() : 0);
+        $track->xMin= 0;
+        $track->xMax = ($this->get_duration() ? $this->get_duration() : 0);
         if ($this->od->waypoints) {
             $track->od_score = $this->od->get_distance();
             $track->od_time = $this->od->get_time();
@@ -307,22 +307,24 @@ class track {
         }
 
         $track_inner = new \stdClass();
-        $track_inner->drawGraph = 1;
+        $track_inner->draw_graph = 1;
         $track_inner->pilot = isset($this->pilot->name) ? $this->pilot->name : 'Unknown';
         $track_inner->colour = "FF0000";
-        $track_inner->maxEle = $this->maximum_ele;
-        $track_inner->minEle = $this->min_ele;
-        $track_inner->maximum_cr = $this->maximum_cr;
+        $track_inner->max_ele = $this->maximum_ele;
+        $track_inner->min_ele = $this->min_ele;
+        $track_inner->max_cr = $this->max_cr;
         $track_inner->min_cr = $this->min_cr;
-        $track_inner->maximum_speed = $this->maximum_speed;
+        $track_inner->max_speed = $this->max_speed;
         $track_inner->min_speed = 0;
         $track_inner->total_dist = $this->total_dist;
         $track_inner->av_speed = (isset($this->average_speed_over_track) ? $this->average_speed_over_track : 0);
+        $track_inner->data = [];
         $track_inner->coords = [];
         /** @var track_point $a */
         foreach ($this->track_points as $a) {
             $time = $a->time - $this->track_points->first()->time;
-            $track_inner->coords[] = [$a->lat(), $a->lng(), $a->ele, $time, $a->climbRate, $a->speed, $a->bearing];
+            $track_inner->coords[] = $a->get_js_coordinate();
+            $track_inner->data[] = $a->get_graph_point($time);
         }
         $track->track = [$track_inner];
         $track->bounds = $this->bounds->get_js();
@@ -440,11 +442,11 @@ class track {
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_open('Colour By Ground Speed', 0, 'hideChildren', 0);
-        $kml->add($this->get_colour_by(0, $this->maximum_speed, 'speed'));
+        $kml->add($this->get_colour_by(0, $this->max_speed, 'speed'));
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_open('Colour By Climb', 0, 'hideChildren', 0);
-        $kml->add($this->get_colour_by($this->min_cr, $this->maximum_cr, 'climbRate'));
+        $kml->add($this->get_colour_by($this->min_cr, $this->max_cr, 'climbRate'));
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_open('Colour By Time', 0, 'hideChildren', 0);
@@ -781,11 +783,11 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             if ($track_point->climbRate < $this->min_cr) {
                 $this->min_cr = $track_point->climbRate;
             }
-            if ($track_point->climbRate > $this->maximum_cr) {
-                $this->maximum_cr = $track_point->climbRate;
+            if ($track_point->climbRate > $this->max_cr) {
+                $this->max_cr = $track_point->climbRate;
             }
-            if ($track_point->speed > $this->maximum_speed) {
-                $this->maximum_speed = $track_point->speed;
+            if ($track_point->speed > $this->max_speed) {
+                $this->max_speed = $track_point->speed;
             }
             $this->bounds->add_coordinate_to_bounds($track_point->lat(), $track_point->lng());
 

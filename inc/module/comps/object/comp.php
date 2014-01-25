@@ -194,24 +194,24 @@ class comp extends table {
             }
         );
 
-        $startT = 100000000000000000000;
-        $endT = 0;
+        $xMin= 100000000000000000000;
+        $xMax = 0;
         $cnt = 0;
-        //$track_array->iterate(function (track $track, $cnt) use (&$startT, &$endT) {
+        //$track_array->iterate(function (track $track, $cnt) use (&$xMin, &$xMax) {
         foreach ($track_array as $track) {
             /** @var track $track */
             $track->colour = $cnt;
-            if ($track->track_points->last()->time > $endT) {
-                $endT = $track->track_points->last()->time;
+            if ($track->track_points->last()->time > $xMax) {
+                $xMax = $track->track_points->last()->time;
             }
-            if ($track->track_points->first()->time < $startT) {
-                $startT = $track->track_points->first()->time;
+            if ($track->track_points->first()->time < $xMin) {
+                $xMin= $track->track_points->first()->time;
             }
             $this->bounds->add_bounds_to_bound($track->bounds);
             $cnt++;
         } //-1
         //);
-        $timeSteps = ($endT - $startT) / 1000;
+        $timeSteps = ($xMax - $xMin) / 1000;
         $task = $this->output_task();
         $turnpoints = count($task->task_array);
         for ($i = 0; $i < $turnpoints - 1; $i++) {
@@ -219,8 +219,8 @@ class comp extends table {
             $task->distances[$i + 1] = $this->distCalc2($task->task_array[$i], $task->task_array[$i + 1]);
         }
         $js = new \stdClass();
-        $js->StartT = $startT - mktime(0, 0, 0);
-        $js->EndT = $endT - mktime(0, 0, 0);
+        $js->xMin= $xMin- mktime(0, 0, 0);
+        $js->xMax = $xMax - mktime(0, 0, 0);
         $js->Name = $this->title;
         $js->CName = $this->type;
         $js->turnpoints = $turnpoints;
@@ -236,7 +236,7 @@ class comp extends table {
                         return node::create('li.kmltree-item.check.KmlFolder.hideChildren.visible', ['data-path' => '\'{"type":"comp","path":[' . ($count) . ']}\''],
                             node::create('div.expander') .
                             node::create('div.toggler') .
-                            node::create('span', ['style' => 'color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2)])
+                            node::create('span', ['style' => 'color:#' . substr(get::kml_colour($track->colour), 4, 2) . substr(get::kml_colour($track->colour), 2, 2) . substr(get::kml_colour($track->colour), 0, 2)],  $track->name)
                         );
                     }
                 )
@@ -246,7 +246,7 @@ class comp extends table {
                 node::create('div.toggler') .
                 'Task'
             )
-        );
+        )->get();
         $count = 0;
         foreach ($track_array as $track) {
             /** @var track $track */
@@ -266,7 +266,7 @@ class comp extends table {
 
             }
             $tp = 0;
-            $madeTp = 0;
+            $made_turnpoint = 0;
             $dist = 0;
             $distToTP = 120000000000000;
             $cnt = 0;
@@ -277,9 +277,9 @@ class comp extends table {
                     if ($turnpoint->type) {
                         $x = ($turnpoint->radius - $this->distCalc3($track->track_points[$tp], $turnpoint));
                         if ($x > 0) {
-                            $html .= 'made turnpoint ' . $madeTp . '<br/>';
-                            $dist += $task->distances[$madeTp];
-                            $madeTp++;
+                            $html .= 'made turnpoint ' . $made_turnpoint . '<br/>';
+                            $dist += $task->distances[$made_turnpoint];
+                            $made_turnpoint++;
                             $distToTP = 120000000000000000;
                             continue 2;
                         } else if (-$x < $distToTP) {
@@ -288,11 +288,11 @@ class comp extends table {
                     } else {
                         $y = ($this->distCalc3($track->track_points[$tp], $turnpoint) - $turnpoint->radius);
                         if ($y > 0) {
-                            $html .= 'made turnpoint ' . $madeTp . '<br/>';
-                            $madeTp++;
+                            $html .= 'made turnpoint ' . $made_turnpoint . '<br/>';
+                            $made_turnpoint++;
                             continue 2;
-                        } else if (isset($task->task_array[$madeTp + 1])) {
-                            $x = ($this->distCalc3($track->track_points[$tp], $task->task_array[$madeTp + 1]) - $task->task_array[$madeTp + 1][2]);
+                        } else if (isset($task->task_array[$made_turnpoint + 1])) {
+                            $x = ($this->distCalc3($track->track_points[$tp], $task->task_array[$made_turnpoint + 1]) - $task->task_array[$made_turnpoint + 1][2]);
                             if ($x < $distToTP) {
                                 $distToTP = $x;
                             }
@@ -302,11 +302,11 @@ class comp extends table {
                     }
                 }
                 if ($turnpoint->type) {
-                    $dist += $task->distances[$madeTp] - $distToTP;
-                } else if (!isset($task->task_array[$madeTp + 1])) {
+                    $dist += $task->distances[$made_turnpoint] - $distToTP;
+                } else if (!isset($task->task_array[$made_turnpoint + 1])) {
                     $dist += $turnpoint[2] - $distToTP;
                 } else {
-                    $dist += $task->distances[$madeTp + 1] - $distToTP;
+                    $dist += $task->distances[$made_turnpoint + 1] - $distToTP;
                 }
                 break;
             }
@@ -314,29 +314,33 @@ class comp extends table {
             $js_track = new \stdClass();
             $js_track->pilot = $track->name;
             $js_track->colour = get::js_colour($track->colour);
-            $js_track->minEle = $track->min_ele;
-            $js_track->maxEle = $track->maximum_ele;
+            $js_track->min_ele = $track->min_ele;
+            $js_track->max_ele = $track->maximum_ele;
             $js_track->min_cr = $track->min_cr;
-            $js_track->maximum_cr = $track->maximum_cr;
+            $js_track->max_cr = $track->max_cr;
             $js_track->min_speed = 0;
-            $js_track->maximum_speed = $track->maximum_speed;
-            $js_track->drawGraph = 1;
-            $js_track->turnpoint = $madeTp;
+            $js_track->max_speed = $track->max_speed;
+            $js_track->draw_graph = 1;
+            $js_track->turnpoint = $made_turnpoint;
             $js_track->score = $dist / 1000;
             $js_track->coords = [];
+            $js_track->data = [];
             $js_track->bounds = $track->bounds->get_js();
 
             $tp = 0;
             for ($i = 0; $i < 1000; $i++) {
-                $time = $startT + ($i * $timeSteps);
+                $time = $xMin+ ($i * $timeSteps);
                 if ($time < $track->track_points->first()->time) {
-                    $js_track->coords[] = $track->track_points->first()->get_js_coordinate($track->track_points->first()->time - $startT);
+                    $js_track->coords[] = $track->track_points->first()->get_js_coordinate();
+                    $js_track->data[] = $track->track_points->first()->get_graph_point($track->track_points->first()->time - $xMin);
                 } else if ($time > $track->track_points->last()->time) {
-                    $js_track->coords[] = $track->track_points->last()->get_js_coordinate($track->track_points->last()->time - $startT);
+                    $js_track->coords[] = $track->track_points->last()->get_js_coordinate();
+                    $js_track->data[] = $track->track_points->last()->get_graph_point($track->track_points->last()->time - $xMin);
                 } else {
                     for ($p = $tp; $p < $track->track_points->count(); $p++) {
-                        if (($startT + ($i * $timeSteps)) < $track->track_points[$p]->time) {
-                            $js_track->coords[] = $track->track_points[$p]->get_js_coordinate($track->track_points[$p]->time - $startT);
+                        if (($xMin+ ($i * $timeSteps)) < $track->track_points[$p]->time) {
+                            $js_track->coords[] = $track->track_points[$p]->get_js_coordinate();
+                            $js_track->data[] = $track->track_points[$p]->get_graph_point($track->track_points[$p]->time - $xMin);
                             $tp = $p;
                             break;
                         }
