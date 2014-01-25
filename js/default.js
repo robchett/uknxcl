@@ -13,6 +13,7 @@ $(document).ready(function () {
 
     main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
     page_handeler.defaults.complete.push('reload_scrollpane')
+    $.fn.ajax_factory.defaults.complete.push('center_colorbox');
 
     $body = $("body");
 
@@ -39,16 +40,19 @@ $(document).ready(function () {
         }
     });
 
-    $(document).bind('cbox_complete', function () {
-        var $cb = $('#colorbox');
-        var width = $cb.width();
-        if (width < 725) {
-            $cb.animate({left: (725 - width) / 2});
-        } else {
-            $cb.animate({left: 0});
-        }
-    });
+    $(document).bind('cbox_complete', 'center_colorbox');
 });
+
+function center_colorbox() {
+    $.fn.colorbox.resize();
+    var $cb = $('#colorbox');
+    var width = $cb.width();
+    if (width < 725) {
+        $cb.animate({left: (725 - width) / 2});
+    } else {
+        $cb.animate({left: 0});
+    }
+}
 
 function reload_scrollpane() {
     if (main_scrollpane) {
@@ -62,24 +66,11 @@ window.onresize = function () {
             if (map) {
                 map.resize();
             }
+            if ($('#colorbox').width()) {
+                center_colorbox();
+            }
             reload_scrollpane();
             throttleTimeout = null;
         }, 50);
     }
-};
-
-Number.prototype.toRad = function () {  // convert degrees to radians
-    return this * Math.PI / 180;
-};
-Number.prototype.toDeg = function () {  // convert radians to degrees (signed)
-    return this * 180 / Math.PI;
-};
-Number.prototype.padLz = function (w) {
-    var n = this.toString();
-    var l = n.length;
-    for (var i = 0; i < w - l; i++) n = '0' + n;
-    return n;
-};
-Number.prototype.round = function (dp) {
-    return Math.floor(this * Math.pow(10, dp)) / Math.pow(10, dp);
 };
