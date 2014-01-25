@@ -16,9 +16,11 @@ class declaration extends table {
     /**
      * @var string
      */
+    public $title;
     /**
      * @var int
      */
+    public $did;
 
 
     /**
@@ -43,6 +45,6 @@ class declaration extends table {
      *
      */
     public function do_submit() {
-        ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").remove(); $.colorbox.resize();colorbox_recenter();');
+        ajax::add_script('$("#' . $_REQUEST['ajax_origin'] . '").html("<p>Your declaration has been accepted, have a good flight!</p>"); ');
     }
 }

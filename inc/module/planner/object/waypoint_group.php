@@ -8,5 +8,7 @@ class waypoint_group extends table {
 
     use table_trait;
 
+    public $title;
+
 
 }

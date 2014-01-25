@@ -10,6 +10,7 @@ class waypoint extends table {
 
     public $lat;
     public $lon;
+    public $title;
 
     /**
      * @param array $fields
