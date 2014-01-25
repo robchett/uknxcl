@@ -13,7 +13,7 @@ class planner_load_waypoints extends form {
         parent::__construct([
                 form::create('field_link', 'wgid')
                     ->set_attr('label', 'Waypoint Set')
-                    ->set_attr('link_field', 132)
+                    ->set_attr('link_field', 'title')
                     ->set_attr('link_module', '\\module\\planner\\object\\waypoint_group')
             ]
         );
