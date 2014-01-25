@@ -175,13 +175,33 @@ class flight extends table {
      */
     public static function get_statistics() {
         $year_stats = [];
-        foreach (range(1991, 2013) as $year) {
+
+        $flights = new \stdClass();
+        $flights->min = 0;
+        $flights->max = 0;
+        $flights->drawGraph = true;
+        $flights->colour = get::js_colour(0);
+        $flights->name = 'Total Flights';
+
+        $scores = new \stdClass();
+        $scores->min = 0;
+        $scores->max = 0;
+        $scores->drawGraph = true;
+        $scores->colour = get::js_colour(1);
+        $scores->name = 'Total Score';
+
+        foreach (range(1991, date('Y')) as $year) {
             $year_object = new \stdClass();
             $year_object->coords = [];
-            $year_object->minEle = $year_object->min_cr = $year_object->maximum_cr = $year_object->maxEle = 0;
-            $year_object->min_cr = 0;
+            $year_object->min_flights = $year_object->min_score = $year_object->max_score = $year_object->max_flights = 0;
+            $year_object->min_score = 0;
             $year_object->drawGraph = true;
             $year_object->colour = get::js_colour($year);
+            $year_object->name = $year;
+
+            $total_score = 0;
+            $total_flights = 0;
+
             foreach (range(1, 12) as $month) {
                 $score = db::select('flight')
                     ->retrieve('sum(score) AS score')
@@ -192,19 +212,38 @@ class flight extends table {
                 $tot = db::count('flight', 'fid')
                     ->filter(['YEAR(date)=:year', 'MONTH(date)=:month'], ['year' => $year, 'month' => $month])
                     ->execute();
-                $year_object->coords[] = [0, 0, $tot, $month - 1, $score];
-                $year_object->maxEle = max($year_object->maxEle, $tot);
-                $year_object->maximum_cr = max($year_object->maximum_cr, $score);
+                $year_object->coords[] = [$month - 1, $tot, $score];
+                $year_object->max_flights = max($year_object->max_flights, $tot);
+                $year_object->max_score = max($year_object->max_score, $score);
+                $total_score += $score;
+                $total_flights += $tot;
             }
+            $flights->coords[] = [$year - 1991, $total_flights * 40];
+            $flights->max = max($flights->max, $total_flights);
+            $scores->coords[] = [$year - 1991, $total_score];
+            $scores->max = max($scores->max, $total_score);
             $year_stats[] = $year_object;
         }
+
         $wrapper = new \stdClass();
         $inner = new \stdClass();
         $inner->track = $year_stats;
         $inner->StartT = 1;
         $inner->EndT = 12;
         $wrapper->nxcl_data = $inner;
-        return json_encode($wrapper);
+
+        $return['month'] = $wrapper;
+
+        $wrapper = new \stdClass();
+        $inner = new \stdClass();
+        $inner->track = [$flights, $scores];
+        $inner->StartT = 1991;
+        $inner->EndT = date('Y');
+        $wrapper->nxcl_data = $inner;
+
+        $return['year'] = $wrapper;
+
+        return $return;
     }
 
     public function get_flights_by_area() {
