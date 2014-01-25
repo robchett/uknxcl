@@ -5,12 +5,26 @@ function Graph($container) {
     this.height = this.$container.height();
     this.obj = null;
     this.type = 0;
+    this.title = '';
     this.options = {
-        toggles: [
-            {"name": "Height", "index": 2, "xAxis": "Height (m)", "min_value": "minEle", "max_value": "maxEle"},
-            {"name": "Climb Rate", "index": 4, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "maximum_cr"},
-            {"name": "Speed", "index": 5, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "maximum_speed"}
-        ]
+        toggles: []
+    };
+    this.legend = {
+        show: false,
+        position: {
+            x: "right",
+            y: "top"
+        }
+    };
+    this.grid = {
+        x: {
+            show: true,
+            count: 20
+        },
+        y: {
+            show: true,
+            count: 10
+        }
     };
 
     var ths = this;
@@ -20,8 +34,11 @@ function Graph($container) {
 
     this.init = function () {
         this.$container.css({position: "relative"});
-        this.$container.html("<canvas id='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
-        this.$a_canvas = $('#graph_a_canvas');
+        this.$container.html("<canvas class='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
+        this.$a_canvas = this.$container.find('.graph_a_canvas');
+        if(this.title) {
+            this.$container.prepend('<strong style="position: absolute; top: 10px; width: 100%; left: 0; text-align: center">' + this.title + '</strong>');
+        }
         this.add_radios();
         this.initiated = true;
     };
@@ -85,7 +102,23 @@ function Graph($container) {
                 }
             }
         });
-        this.drawGraph(max, min, '#' + this.obj.nxcl_data.track[0].colour, index, title);
+        this.drawGraph(max.roundUp(), min.roundDown(), '#' + this.obj.nxcl_data.track[0].colour, index, title);
+    };
+
+    this.addLegend = function (colour, obj) {
+        this.$container.find('.legend').remove();
+        if (this.legend.show) {
+            var html = '';
+            obj.track.each(function (track) {
+                colour = track.colour || colour;
+                if (!track.name) {
+                    console.log(track);
+                    return;
+                }
+                html += '<span class="legend_entry" style="display: block">' + track.name + '<span class="line" style="display:inline-block; margin-left:10px; width:7px; height:2px; margin-bottom: 5px; background:#' + colour + ';text-indent:-999px;overflow:hidden">' + colour + '</span></span>';
+            });
+            this.$container.prepend('<div class="legend" style="background-color:#ffffff; padding: 4px; border: 1px solid #EEEEEE; position: absolute;' + this.legend.position.x + ':10px;' + this.legend.position.y + ':10px;">' + html + '</div>');
+        }
     };
 
     this.drawGraph = function (max, min, colour, index, text) {
@@ -94,15 +127,19 @@ function Graph($container) {
         context.fillStyle = "rgba(255, 255, 255, 0.7)";
         context.fillRect(0, 0, this.width, this.height);
 
-        for (x1 = 0; x1 <= 20; x1++) {
-            var x_coord = x1 * this.width / 20;
-            context.moveTo(x_coord, 0);
-            context.lineTo(x_coord, this.height);
+        if (this.grid.x.show) {
+            for (var x1 = 0; x1 <= (this.grid.x.count - 1); x1++) {
+                var x_coord = x1 * this.width / (this.grid.x.count - 1);
+                context.moveTo(x_coord, 0);
+                context.lineTo(x_coord, this.height);
+            }
         }
-        for (y1 = 0; y1 <= 10; y1++) {
-            var y_coord = y1 * this.height / 10;
-            context.moveTo(0, y_coord);
-            context.lineTo(this.width, y_coord);
+        if (this.grid.y.show) {
+            for (var y1 = 0; y1 <= (this.grid.y.count - 1); y1++) {
+                var y_coord = y1 * this.height / (this.grid.y.count - 1);
+                context.moveTo(0, y_coord);
+                context.lineTo(this.width, y_coord);
+            }
         }
         context.strokeStyle = '#DBDBDB';
         context.stroke();
@@ -113,21 +150,20 @@ function Graph($container) {
         } else {
             return;
         }
-        var size = this.obj.size();
+        this.addLegend(colour, obj);
         var Xscale = this.width / (obj.EndT - obj.StartT);
         var Yscale = this.height / (max - min);
-        for (i in obj.track) {
-            var track = obj.track[i];
+        obj.track.each(function (track) {
             if (track.drawGraph) {
                 context.beginPath();
                 context.strokeStyle = track.colour || colour;
                 for (j in track.coords) {
                     var coord = track.coords[j];
-                    context.lineTo(coord[3] * Xscale, this.height - ((coord[index] - min) * Yscale));
+                    context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
                 }
                 context.stroke();
             }
-        }
+        });
         context.font = '12px sans-serif';
         context.fillStyle = '#444';
         context.fillText(max, 10, 15);
