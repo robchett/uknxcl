@@ -11,6 +11,8 @@ function UKNXCL_Map($container) {
     this.MAP = 1;
     this.EARTH = 2;
 
+    this.initialised = false;
+
     this.planner = new Planner(this);
     this.airspace = new Airspace();
     this.graph = new Graph($('#graph_wrapper'));
@@ -29,7 +31,18 @@ function UKNXCL_Map($container) {
         });
     }
 
-    this.callback = function () {};
+    this._callbacks = [];
+    this.callback = function (callable) {
+        if(!this.initialised) {
+            this._callbacks = callable;
+            return true;
+        }
+        if(typeof callable == 'function') {
+            callable(this)
+        } else {
+            window[callable](this);
+        }
+    };
 
     this.$container = $container;
     this.$body = $('body');
@@ -115,7 +128,14 @@ function UKNXCL_Map($container) {
                 map.comp.is_ready();
             }
         });
-        map.callback();
+        this.initialised = true;
+        this._callbacks.each(function(callable) {
+            if(typeof callable == 'function') {
+                callable(this);
+            } else {
+                window[callable](this);
+            }
+        });
     };
 
     this.swap = function (obj) {

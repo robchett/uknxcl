@@ -22,9 +22,9 @@ class comp extends \template\html {
 
         if (!ajax) {
             \core::$inline_script[] = "
-            map.callback = function() {
+            map.callback(function(map) {
                 map.add_comp(" . $this->module->current->cid . ");
-            }; ";
+            }); ";
         } else {
             ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
         }
