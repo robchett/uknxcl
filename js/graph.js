@@ -173,3 +173,23 @@ function Graph($container) {
 }
 
 
+
+Number.prototype.roundDown = function (significant) {
+    significant = significant || 2;
+    var power = Math.floor(Math.log(this) / Math.LN10) ;
+    if (power > significant) {
+        var new_number = (this / Math.pow(10, power - significant));
+        return (this < 0 ? Math.ceil(new_number) : Math.floor(new_number)) * Math.pow(10, power - significant);
+    }
+    return Math.floor(this);
+};
+
+Number.prototype.roundUp = function (significant) {
+    significant = significant || 2;
+    var power = Math.floor(Math.log(this) / Math.LN10);
+    if (power > significant) {
+        var new_number = (this / Math.pow(10, power - significant)) ;
+        return (this > 0 ? Math.ceil(new_number) : Math.floor(new_number)) * Math.pow(10, power - significant);
+    }
+    return Math.ceil(this);
+};
