@@ -7,11 +7,12 @@ use classes\coordinate_bound;
 use classes\geometry;
 use classes\get;
 use classes\kml;
-use core\classes\db;
+use classes\db;
 use object\club;
 use object\flight;
 use object\flight_type;
 use object\glider;
+use object\log;
 use object\pilot;
 
 /**
@@ -44,9 +45,9 @@ class track {
     public $day = false;
     public $distance_map;
     public $error = '';
-    public $id;
-    public $log = 0;
-    public $log_file = "";
+    /** @var  log $log */
+    protected $log;
+    public  $id;
     public $maximum_alt = -1000000;
     public $maximum_alt_t;
     public $max_cr = 0;
@@ -162,7 +163,7 @@ class track {
             if (isset($this->od->waypoints)) {
                 $this->od->waypoints->spherical = false;
                 unset($this->od->distance);
-                $this->console("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
+                $this->log->info("Open Distance Calculated, Dist:{$this->od->get_distance()} Cords={$this->od->get_coordinates()}", $this);
             }
         }
         if ($this->calc_or) {
@@ -170,7 +171,7 @@ class track {
             if (isset($this->or->waypoints)) {
                 $this->or->waypoints->spherical = false;
                 unset($this->or->distance);
-                $this->console("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
+                $this->log->info("Out and Return Calculated, Dist:{$this->or->get_distance()} Cords={$this->or->get_coordinates()}");
             }
         }
         /*if ($this->calc_ft) {
@@ -178,44 +179,40 @@ class track {
             if (isset($this->ft->waypoints)) {
                 $this->ft->waypoints->spherical = false;
                 unset($this->ft->distance);
-                $this->console("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
+                $this->log->info("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_coordinates()}", $this);
             }
         }*/
         if ($this->calc_tr) {
-            $this->track_triangles($use_rough_calculations);
+            $this->track_triangles(true);
             if (isset($this->tr->waypoints)) {
                 $this->tr->waypoints->spherical = false;
                 unset($this->tr->distance);
-                $this->console("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
+                $this->log->info("Triangle Calculated, Dist:{$this->tr->get_distance()} Cords={$this->tr->get_coordinates()}", $this);
             }
         }
         $this->set_info();
-        fwrite(fopen($this->get_file_loc() . '/info.txt', 'w'), $this->log_file);
     }
 
     public function check_date() {
         $current_time = time();
         $closure_time = $current_time - (31 * 24 * 60 * 60);
         if ($this->date >= $closure_time && $this->date <= $current_time) {
-            $this->console("Date is within 1 month");
+            $this->log->info("Date is within 1 month");
             return true;
         } else {
-            $this->console("Date is outside of 1 month");
+            $this->log->error("Date is outside of 1 month");
             return false;
         }
     }
 
     public function cleanup() {
+        unset($this->parent_flight);
         unset($this->track_points);
         unset($this->track_parts);
         unset($this->or);
         unset($this->od);
         unset($this->tr);
         unset($this->c);
-    }
-
-    public function console($str) {
-        $this->log_file .= "$str\r\n";
     }
 
     public function create_from_upload() {
@@ -232,14 +229,6 @@ class track {
             move_uploaded_file($_FILES ["file"] ["tmp_name"], $dir . '/track.igc');
             copy($dir . '/track.igc', $dir . '/track_backup.igc');
         }
-    }
-
-    public function enable_logging($bool) {
-        $this->log = $bool;
-    }
-
-    public function enable_raw($bool) {
-        $this->raw = $bool;
     }
 
     public function end_time($formatted = false) {
@@ -262,6 +251,7 @@ class track {
 
     public function generate(flight $flight) {
         $this->id = $flight->fid;
+        $this->log = new log(log::DEBUG, '/uploads/flight/' . $this->id . '/info.txt');
         $this->parent_flight = $flight;
         if ($this->parse_IGC()) {
             $this->calculate();
@@ -293,7 +283,7 @@ class track {
     public function generate_js() {
         $track = new \stdClass();
         $track->id = $this->id;
-        $track->xMin= 0;
+        $track->xMin = 0;
         $track->xMax = ($this->get_duration() ? $this->get_duration() : 0);
         if ($this->od->waypoints) {
             $track->od_score = $this->od->get_distance();
@@ -504,7 +494,7 @@ class track {
         $this->generate_js();
         $this->generate_kml_raw();
         $this->generate_kml();
-        $this->generate_kml_earth();
+        //$this->generate_kml_earth();
     }
 
     public function getTime($time) {
@@ -582,6 +572,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
     }
 
     public function get_dist_map() {
+        $this->maximum_distance_between_two_points = 0;
         $this->distance_map = [];
         /** @var track_point $point */
         foreach ($this->calculation_subset as $key => $point) {
@@ -591,14 +582,14 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
             for ($key2 = $key; $key2 < $this->calculation_subset_size; $key2++) {
                 $y = (int) ($point->get_dist_to($this->calculation_subset[$key2]) * 1000);
                 $this->distance_map[$key][$key2] = $y;
-                $this->distance_map[$key2][$key] = $y;
-                if ($y > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $y;
+                $this->distance_map[$key2][$key] = $this->distance_map[$key][$key2];
             }
         }
         for ($i = 0; $i < $this->calculation_subset_size - 1; $i++) {
-            if ($this->distance_map[$i][$i + 1] > $this->maximum_distance_between_two_points) $this->maximum_distance_between_two_points = $this->distance_map[$i][$i + 1];
+            if ($this->distance_map[$i][$i + 1] > $this->maximum_distance_between_two_points) {
+                $this->maximum_distance_between_two_points = $this->distance_map[$i][$i + 1];
+            }
         }
-        $this->console("Distances between points calculated");
     }
 
     public function get_dist_remap($indexes) {
@@ -622,6 +613,7 @@ Max./min. height     ' . $this->maximum_ele . '/' . $this->maximum_ele . 'm
         }
         $this->calculation_subset_size = count($this->calculation_subset);
         $this->get_dist_map();
+        $this->log->debug('Subset size:' . $this->calculation_subset_size);
         return count($this->calculation_subset);
     }
 
@@ -897,7 +889,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->mon = substr($p, 7, 2);
             $this->year = "20" . substr($p, 9, 2);
             $this->date = strtotime($this->year . '/' . $this->mon . '/' . $this->day);
-            $this->console("Date recorded as : " . $this->get_date('d/m/Y'), $this, 1, 1);
+            $this->log->info("Date recorded as : " . $this->get_date('d/m/Y'), $this, 1, 1);
         }
     }
 
@@ -951,7 +943,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     public function parse_IGC() {
         if ($file_path = $this->get_igc()) {
             $file = file($file_path);
-            $this->console("Flight Read", $this, 1, 1);
+            $this->log->info("Flight Read", $this, 1, 1);
         } else {
             return false;
         }
@@ -975,7 +967,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     public function pre_calc() {
-        $this->console('Pre Calculation Setup:');
+        $this->log->info('Pre Calculation Setup:');
         $this->trim();
         $this->repair_track();
         $this->get_graph_values();
@@ -986,6 +978,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         } else {
             $no = ($this->track_points->count() > self::$number_of_points_to_use) ? self::$number_of_points_to_use : $this->track_points->count();
             $average_distance = $this->total_dist / $no;
+            $this->log->debug('Average distance:' . $average_distance);
             $dist = 0;
             $cnt = 0;
             $this->calculation_subset[] = $this->track_points->first();
@@ -1010,24 +1003,26 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             }
         }
         $this->calculation_subset_size = count($this->calculation_subset);
-        $this->console('-> Using ' . $this->calculation_subset_size . ' Track Points');
+        $this->log->info('-> Using ' . $this->calculation_subset_size . ' Track Points out of ' . $this->track_points->count());
     }
 
 
     public function repair_track() {
         $previous = clone $this->track_points->first();
         /** @var track_point $track_point */
-        foreach ($this->track_points as $track_point) {
-            if ($this->has_height() && $track_point->ele == 0) {
-                //$this->console("Filled in trough  : 0 ele", $this);
-                $track_point->ele = $previous->ele;
+        $this->track_points->iterate(
+            function (track_point $track_point) use (&$previous) {
+                if ($this->has_height() && $track_point->ele == 0) {
+                    $this->log_fine("Filled in trough  : 0 ele", $this);
+                    $track_point->ele = $previous->ele;
+                }
+                if ($this->has_height() && $track_point->ele > $previous->ele + 500) {
+                    $this->log_fine("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
+                    $track_point->ele = $previous->ele;
+                }
+                $previous = clone $track_point;
             }
-            if ($this->has_height() && $track_point->ele > $previous->ele + 500) {
-                //$this->console("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
-                $track_point->ele = $previous->ele;
-            }
-            $previous = clone $track_point;
-        }
+        );
     }
 
     public function set_from_session(flight $flight, $id) {
@@ -1160,7 +1155,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->calculation_subset[$key1]->bestBack = $this->maximum_bound_index($this->distance_map[$key1], 0, $key1);
             $this->calculation_subset[$key1]->bestFwrd = $this->maximum_bound_index($this->distance_map[$key1], $key1, $this->calculation_subset_size);
         }
-        $this->console("Max legs calculated");
+        $this->log->info("Max legs calculated");
         $maximum_distance_between_two_points = 0;
         $indexes[0] = 0;
         $indexes[1] = 0;
@@ -1275,45 +1270,46 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $best_results = [];
         $closest_end = 0;
 
-        $maximum_distance_between_two_points = 0;
-        $minleg = max(800, $this->or->_temp_distance * 2 / 9);
+        $best_score = 0;
+        $minleg = max(1200, $this->or->_temp_distance * 2 / 9);
         // for each entry in the dist table (moving forward)
         for ($row = 0; $row < $this->calculation_subset_size; ++$row) {
             for ($col = $this->calculation_subset_size - 1; $col > $row && $col > $closest_end; --$col) {
                 // if the distance between the points is < 800m
-                if ($this->distance_map[$row][$col] > 800) {
-                    $col -= (int) (($this->distance_map[$row][$col] - 800) / $this->maximum_distance_between_two_points);
+                if (($gap = $this->distance_map[$row][$col] - 800) > 0) {
+                    $col -= (int) ($gap / $this->maximum_distance_between_two_points);
                     continue;
                 }
                 for ($x = $row; $x <= $col - 2; ++$x) {
                     $x_plus = $x + 1;
                     for ($z = $col; $z > $x_plus; --$z) {
-                        if ($this->distance_map[$x][$z] < $minleg) {
-                            $z -= (int) (($minleg - $this->distance_map[$x][$z]) / $this->maximum_distance_between_two_points);
+                        if (($gap = $minleg - $this->distance_map[$x][$z]) > 0) {
+                            $z -= (int) ($gap / $this->maximum_distance_between_two_points);
                             continue;
                         }
+                        $_min_leg = max($minleg, $this->distance_map[$x][$z] * 0.8);
                         $z_minus = $z - 1;
                         for ($y = (int) floor(($x + $z) / 2); $y <= $z_minus; ++$y) {
-                            if ($this->distance_map[$x][$y] < $minleg) {
-                                $y += (int) (($minleg - $this->distance_map[$x][$y]) / $this->maximum_distance_between_two_points);
+                            if (($gap = $_min_leg - $this->distance_map[$x][$y]) > 0) {
+                                $y += (int) ($gap / $this->maximum_distance_between_two_points);
                                 continue;
                             }
-                            if ($this->distance_map[$y][$z] < $minleg) {
-                                $y += (int) (($minleg - $this->distance_map[$y][$z]) / $this->maximum_distance_between_two_points);
+                            if (($gap = $_min_leg - $this->distance_map[$y][$z]) > 0) {
+                                $y += (int) ($gap / $this->maximum_distance_between_two_points);
                                 continue;
                             }
-                            $this->set_better_score($min_ratio, $x, $y, $z, $row, $col, $maximum_distance_between_two_points, $best_results, $minleg);
+                            $this->set_better_score($min_ratio, $x, $y, $z, $row, $col, $best_score, $best_results, $minleg);
                         }
                         for ($y = (int) floor(($x + $z) / 2); $y >= $x_plus; --$y) {
-                            if ($this->distance_map[$x][$y] < $minleg) {
-                                $y -= (int) (($minleg - $this->distance_map[$x][$y]) / $this->maximum_distance_between_two_points);
+                            if (($gap = $_min_leg - $this->distance_map[$x][$y]) > 0) {
+                                $y -= (int) ($gap / $this->maximum_distance_between_two_points);
                                 continue;
                             }
-                            if ($this->distance_map[$y][$z] < $minleg) {
-                                $y -= (int) (($minleg - $this->distance_map[$y][$z]) / $this->maximum_distance_between_two_points);
+                            if (($gap = $_min_leg - $this->distance_map[$y][$z]) > 0) {
+                                $y -= (int) ($gap / $this->maximum_distance_between_two_points);
                                 continue;
                             }
-                            $this->set_better_score($min_ratio, $x, $y, $z, $row, $col, $maximum_distance_between_two_points, $best_results, $minleg);
+                            $this->set_better_score($min_ratio, $x, $y, $z, $row, $col, $best_score, $best_results, $minleg);
                         }
                     }
                 }
@@ -1327,11 +1323,12 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->c_backup = $this->calculation_subset;
             $skip_backup = $this->maximum_distance_between_two_points;
             $cnt = 0;
+            $this->log->info('Calculating sub groups.');
             foreach (array_reverse($best_results) as $result) {
                 $cnt++;
                 $this->get_dist_remap($result);
                 $this->track_triangles(true, $min_ratio, $type);
-                if ($cnt == 10) {
+                if ($cnt == 5) {
                     break;
                 }
             }
@@ -1340,8 +1337,9 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $this->calculation_subset_size = count($this->calculation_subset);
             $this->distance_map = $dist_map_backup;
         } else {
-            if ($maximum_distance_between_two_points > $this->$type->_temp_distance) {
-                $this->$type->_temp_distance = $maximum_distance_between_two_points;
+            echo $best_score;
+            if ($best_score > $this->$type->_temp_distance) {
+                $this->$type->_temp_distance = $best_score;
                 $res = end($best_results);
                 $gap = $this->distance_map[$res[0]][$res[4]];
                 $this->filter_triangle($sres, $sgap, $gap);
@@ -1349,10 +1347,10 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 while (count($best_results)) {
                     $sres = end($best_results);
                     $sgap = $this->distance_map[$sres[0]][$sres[4]];
-                    if (($d = ($this->distance_map[$sres[1]][$sres[2]] + $this->distance_map[$sres[2]][$sres[3]] + $this->distance_map[$sres[2]][$sres[3]])) > $maximum_distance_between_two_points - $gap) {
+                    if (($d = ($this->distance_map[$sres[1]][$sres[2]] + $this->distance_map[$sres[2]][$sres[3]] + $this->distance_map[$sres[2]][$sres[3]])) > $best_score - $gap) {
                         $this->filter_triangle($sres, $sgap, $gap);
-                        if ($d - $sgap > $maximum_distance_between_two_points - $gap) {
-                            $maximum_distance_between_two_points = $d;
+                        if ($d - $sgap > $best_score - $gap) {
+                            $best_score = $d;
                             $gap = $sgap;
                             $res = $sres;
                         }
@@ -1370,7 +1368,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         if ($this->track_parts->count() > 1) {
             while (1 && $this->track_parts->count() > 1) {
                 if ($this->track_parts->first()->count() < 20) {
-                    $this->console("Beginning section ignored, less than 20 points", $this, 1, 1);
+                    $this->log->debug("Beginning section ignored, less than 20 points", $this, 1, 1);
                     $this->track_points->unshift($this->track_parts->first()->count());
                     $this->track_parts->reduce_index($this->track_parts->first()->count());
                     $this->track_parts->unshift();
@@ -1384,7 +1382,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 /** @var track_point $coord3 */
                 $coord3 = $this->track_points[$this->track_parts->first()->end_point];
                 if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
-                    $this->console("Beginning section ignored, less than 100m", $this, 1, 1);
+                    $this->log->debug("Beginning section ignored, less than 100m", $this, 1, 1);
                     $this->track_points->unshift($this->track_parts->first()->count());
                     $this->track_parts->reduce_index($this->track_parts->first()->count());
                     $this->track_parts->unshift();
@@ -1392,7 +1390,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             }
             while (1 && $this->track_parts->count() > 1) {
                 if ($this->track_parts->last()->count() < 20) {
-                    $this->console("End section ignored, less than 20 points", $this, 1, 1);
+                    $this->log->debug("End section ignored, less than 20 points", $this, 1, 1);
                     $this->track_points->remove_last($this->track_parts->last()->count());
                     $this->track_parts->remove_last();
                     continue;
@@ -1402,13 +1400,13 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                 $coord2 = $this->track_points[$this->track_parts->last()->start_point + $midPoint];
                 $coord3 = $this->track_points[$this->track_parts->last()->end_point];
                 if ($coord1->get_dist_to($coord2) + $coord2->get_dist_to($coord3) < .200) {
-                    $this->console("End section ignored, less than 100m", $this, 1, 1);
+                    $this->log->debug("End section ignored, less than 100m", $this, 1, 1);
                     $this->track_points->remove_last($this->track_parts->last()->count());
                     $this->track_parts->remove_last();
                 } else break;
             }
         } else {
-            $this->console('1 Part');
+            $this->log->debug('1 Part');
         }
         /** @var track_point $index */
         foreach ($this->track_points as $key => $index) {
@@ -1459,15 +1457,16 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
      * @param $z
      * @param $row
      * @param $col
-     * @param $maximum_distance_between_two_points
+     * @param $best_score
      * @param $best_results
      * @param $minimum_leg
      */
-    private function set_better_score($min_ratio, $x, $y, $z, $row, $col, &$maximum_distance_between_two_points, &$best_results, &$minimum_leg) {
+    private function set_better_score($min_ratio, $x, $y, $z, $row, $col, &$best_score, &$best_results, &$minimum_leg) {
         $d = ($this->distance_map[$x][$y] + $this->distance_map[$y][$z] + $this->distance_map[$z][$x]);
         $min = min($this->distance_map[$x][$y], $this->distance_map[$y][$z], $this->distance_map[$z][$x]);
-        if ($d > $maximum_distance_between_two_points && $min > ($min_ratio * $d)) {
-            $maximum_distance_between_two_points = $d;
+        if ($d > $best_score && $min > ($min_ratio * $d)) {
+            $this->log->debug('Better score found: ' . $d);
+            $best_score = $d;
             $best_results[] = [$row, $x, $y, $z, $col];
             $minimum_leg = max(1200, $d * $min_ratio);
         }

@@ -2,7 +2,7 @@
 
 namespace object;
 
-use core\classes\table;
+use classes\table;
 use traits\table_trait;
 
 class dimension extends table {

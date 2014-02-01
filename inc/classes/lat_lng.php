@@ -23,7 +23,7 @@ class lat_lng {
 
     /** @return lat_lng_bound */
     public function get_grid_cell() {
-        /** lat_lng_bound $cell */
+        /** @var lat_lng_bound $cell */
         foreach (OS::cells() as $cell) {
             if ($cell->contains($this)) {
                 return $cell;

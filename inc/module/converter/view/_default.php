@@ -5,7 +5,7 @@ use classes\view;
 use html\node;
 use module\converter\form;
 
-class dashboard extends \template\html {
+class _default extends \template\html {
 
     public function get_view() {
         $html = node::create('div', [],
@@ -13,10 +13,6 @@ class dashboard extends \template\html {
             $this->get_coordinate_converter()
         );
         return $html;
-    }
-
-    public function get() {
-        return $this->get_view()->get();
     }
 
     public function get_coordinate_converter() {

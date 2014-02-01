@@ -3,7 +3,7 @@
 namespace object;
 
 use classes\ajax;
-use core\classes\table;
+use classes\table;
 use form\form;
 use traits\table_trait;
 

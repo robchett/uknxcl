@@ -2,7 +2,7 @@
 
 namespace object;
 
-use core\classes\table;
+use classes\table;
 use html\node;
 use traits\table_trait;
 
