@@ -6,8 +6,8 @@ use classes\ajax;
 use classes\geometry;
 use classes\get;
 use classes\jquery;
-use core\classes\db;
-use core\classes\table;
+use classes\db;
+use classes\table;
 use html\node;
 use track\track;
 use traits\table_trait;
@@ -229,7 +229,7 @@ class flight extends table {
         $wrapper = new \stdClass();
         $inner = new \stdClass();
         $inner->track = $year_stats;
-        $inner->xMin= 1;
+        $inner->xMin = 1;
         $inner->xMax = 12;
         $wrapper->nxcl_data = $inner;
 
@@ -238,7 +238,7 @@ class flight extends table {
         $wrapper = new \stdClass();
         $inner = new \stdClass();
         $inner->track = [$flights, $scores];
-        $inner->xMin= 1991;
+        $inner->xMin = 1991;
         $inner->xMax = date('Y');
         $wrapper->nxcl_data = $inner;
 
@@ -271,35 +271,36 @@ class flight extends table {
      *
      */
     public function generate_benchmark() {
-        $flights = flight::get_all([], ['where' => 'did > 1', 'order' => 'fid DESC']);
+        die();
+        $log = new log(log::DEBUG, '/tmp/track_generation.log');
+        $options = ['where' => 'did > 1', 'order' => 'fid ASC'];
+        if (isset($_REQUEST['fid'])) {
+            $options['where'] .= ' AND fid >=' . $_REQUEST['fid'];
+        }
+        $flights = flight::get_all([], $options);
         set_time_limit(0);
         $total_time = 0;
-        $log = fopen(root . '/tmp/track_generation.log', 'w');
-        echo 'Processing in background...';
-        //fastcgi_finish_request();
-        //session_write_close();
         $flights->iterate(
             function (flight $flight) use (&$total_time, &$log) {
                 $track = new track();
                 $track->time = 0;
                 $track->id = $flight->fid;
                 $time = time();
-                fwrite($log, 'Track: ' . $flight->fid . "\r\n");
+                $log->info('Track: ' . $flight->fid);
+                $log->debug('---- Reading');
                 if ($track->parse_IGC()) {
-//                    $codes = [];
-//                    /** @var lat_lng $point */
-//                    foreach($track->track_points as $point) {
-//                        $codes[] = $point->get_grid_cell()->code;
-//                        $codes = array_unique($codes);
-//                    }
-//                    $flight->os_codes = implode(',', $codes);
-//                    $flight->do_save();
-//                    $track->generate_kml_raw();
-                    fwrite($log, '---- Read' . "\r\n");
-                    $track->calculate();
-                    fwrite($log, '---- Scored' . "\r\n");
-                    $track->generate_output_files();
-                    fwrite($log, '---- Generated' . "\r\n");
+                    $log->debug('---- Read');
+                    $codes = [];
+                    /** @var \classes\lat_lng $point */
+                    foreach ($track->track_points as $point) {
+                        $codes[] = $point->get_grid_cell()->code;
+                        $codes = array_unique($codes);
+                    }
+                    $flight->os_codes = implode(',', $codes);
+                    $log->debug('---- OS Areas');
+                    $track->generate($flight);
+                    $flight->do_save();
+                    $log->debug('---- Generated');
 //                    $best_score = $flight->get_best_score();
 //                    switch ($flight->ftid) {
 //                        case  1:
@@ -364,7 +365,7 @@ class flight extends table {
                     $flight->time = $time;
                 } else {
                     $flight->time = 0;
-                    fwrite($log, '---- Could not be read' . "\r\n");
+                    $log->warning('---- Could not be read');
                 }
             }
         );
@@ -375,12 +376,12 @@ class flight extends table {
         );
 
         foreach ($flights as $flight) {
-            fwrite($log, 'Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time) . "\r\n");
+            $log->info('Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time));
         }
 
         $average_time = $total_time / count($flights);
 
-        fwrite($log, 'Average Time :' . date('H:i:s', $average_time) . "\r\n");
+        $log->info('Average Time :' . date('H:i:s', $average_time));
     }
 
     /**

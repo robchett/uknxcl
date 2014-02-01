@@ -1,7 +1,7 @@
 <?php
 namespace module\comps\object;
 
-use core\classes\table;
+use classes\table;
 use traits\table_trait;
 
 class comp_group extends table {

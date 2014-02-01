@@ -107,6 +107,7 @@ class coordinate_conversion_form extends form {
     }
 
     public function set_from_request() {
+        parent::set_from_request();
         switch ($this->source) {
             case 0:
                 unset($this->OS8);
