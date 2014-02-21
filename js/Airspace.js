@@ -23,18 +23,47 @@ function Airspace() {
     this.isLoaded = function (type) {
         return this.loaded[type];
     };
+
     this.setLoaded = function (type, bool) {
         this.loaded[type] = bool;
     };
+
     this.isVisible = function (type) {
+        if (!type) {
+            var no_visibles = true;
+            for (type in this.visible) {
+                if (this.visible.hasOwnProperty(type) && this.isVisible(type)) {
+                    no_visibles = false;
+                }
+            }
+            return !no_visibles;
+        }
         return this.visible[type];
     };
-    this.setVisible = function (type, bool) {
-        if (bool && !this.isLoaded(type)) {
-            this.load(type);
-        }
-        this.visible[type] = bool;
 
+    this.setVisible = function (type, bool) {
+        if (!type) {
+            for (type in this.visible) {
+                if (this.visible.hasOwnProperty(type)) {
+                    this.setVisible(type, bool);
+                }
+            }
+            if (bool) {
+                $('#airspace_tree .all').addClass('visible');
+            } else {
+                $('#airspace_tree .all').removeClass('visible');
+            }
+        } else {
+            if (bool && !this.isLoaded(type)) {
+                this.load(type);
+            }
+            this.visible[type] = bool;
+            if (bool) {
+                $('#airspace_tree #' + type).addClass('visible');
+            } else {
+                $('#airspace_tree #' + type).removeClass('visible');
+            }
+        }
     };
 
     this.getType = function (int) {
@@ -52,6 +81,7 @@ function Airspace() {
         }
         return false;
     };
+
     this.setHeight = function (val) {
         this.maximum_base = val;
     };
@@ -62,7 +92,7 @@ function Airspace() {
         this.load('OTHER');
         this.load('DANGER');
         this.load('CTACTR');
-        map.visible = {
+        this.visible = {
             'PROHIBITED': bool,
             'RESTRICTED': bool,
             'DANGER': bool,
@@ -70,19 +100,6 @@ function Airspace() {
             'CTRCTA': bool,
             'ALL': bool
         };
-        if (bool) {
-            $('#airspace_PROHIBITED').removeClass('hidden');
-            $('#airspace_RESTRICTED').removeClass('hidden');
-            $('#airspace_OTHER').removeClass('hidden');
-            $('#airspace_DANGER').removeClass('hidden');
-            $('#airspace_CTACTR').removeClass('hidden');
-        } else {
-            $('#airspace_PROHIBITED').addClass('hidden');
-            $('#airspace_RESTRICTED').addClass('hidden');
-            $('#airspace_OTHER').addClass('hidden');
-            $('#airspace_DANGER').addClass('hidden');
-            $('#airspace_CTACTR').addClass('hidden');
-        }
     };
 
     var as = [];
@@ -98,8 +115,8 @@ function Airspace() {
                 }
                 return;
             }
-            var c = airspace._classs;
-            if (!this.isVisible(c)) {
+            var c = airspace._class;
+            if (!ths.isVisible(c)) {
                 airspace.poly.setMap(null);
                 airspace.visible = false;
             } else if (!airspace.visible) {
@@ -108,6 +125,12 @@ function Airspace() {
             }
         }, this);
     };
+
+    this.toggle = function (type) {
+        type = this.getType(type);
+        this.setVisible(type, !this.isVisible(type));
+        this.reload();
+    }
 
     this.add = function (airClass, flightLevel, top, points, strokeWeight, strokeColour, strokeOpacity, fillColour, fillOpacity, name) {
         var polygon = new google.maps.Polygon({
