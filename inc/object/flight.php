@@ -3,10 +3,10 @@
 namespace object;
 
 use classes\ajax;
+use classes\db;
 use classes\geometry;
 use classes\get;
 use classes\jquery;
-use classes\db;
 use classes\table;
 use html\node;
 use track\track;
@@ -248,21 +248,17 @@ class flight extends table {
     }
 
     public function get_flights_by_area() {
-        $flights = flight::get_all([], ['where' => 'did > 1 AND date < "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC']);
+        $range = db::select('flight')->retrieve(['MAX(date) AS max', 'MIN(date) AS min'])->filter('did > 1 AND (os_codes LIKE "%SU%" OR os_codes LIKE "%TQ%")')->set_limit(1)->execute()->fetch();
+        echo print_r($range);
+        $flights = flight::get_all([], ['where' => 'did > 1 AND (os_codes LIKE "%SU%" OR os_codes LIKE "%TQ%")', 'order' => 'fid DESC']);
+        echo count($flights);
         $flights->iterate(function (flight $flight, $cnt) {
                 $track = new track();
                 $track->id = $flight->fid;
                 $path = $track->get_kmz_raw();
-                copy($path, root . '/temp/pre/' . $cnt . '.kmz');
-            }
-        );
-
-        $flights = flight::get_all([], ['where' => 'did > 1 AND date >= "2012-08-28" AND (os_codes LIKE "%SE%" OR os_codes LIKE "%SK%" OR os_codes LIKE "%TA%" OR os_codes LIKE "%TF%")', 'order' => 'fid DESC']);
-        $flights->iterate(function (flight $flight, $cnt) {
-                $track = new track();
-                $track->id = $flight->fid;
-                $path = $track->get_kmz_raw();
-                copy($path, root . '/temp/post/' . $cnt . '.kmz');
+                if (file_exists($path)) {
+                    copy($path, root . '/tmp/' . $cnt . '.kmz');
+                }
             }
         );
     }
