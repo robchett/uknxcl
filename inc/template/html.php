@@ -45,7 +45,7 @@ abstract class html extends \core\template\html {
             return $html;
         } else {
             $content = $this->get_view();
-            return ['#main', 'append', '<div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : uri) . '">' . $content . '</div>', '#' . $this->get_page_selector()];
+            return ['#main', 'append', '<div id="' . $this->get_page_selector() . '" data-url="' . (isset($_POST['url']) ? $_POST['url'] : '/' . uri) . '">' . $content . '</div>', '#' . $this->get_page_selector()];
         }
     }
 }
