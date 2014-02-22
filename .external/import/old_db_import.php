@@ -5,12 +5,12 @@ use classes\db;
 define('load_core', false);
 include '../../index.php';
 db::default_connection();
-db::connect('localhost', 'nxcl2', 'root','','old');
+db::connect('localhost', 'nxcl2', 'root', '', 'old');
 
 set_time_limit(0);
 
 $tables = array(
-   /* 'flight' => array(
+    'flight' => array(
         'ID' => 'fid',
         'Pilot_No' => 'pid',
         'Club_No' => 'cid',
@@ -41,15 +41,15 @@ $tables = array(
         'TRs' => 'tr_score',
         'TRt' => 'tr_time',
         'Speed' => 'speed',
-    ),*/
-   /* 'pilot' => array(
+    ),
+    'pilot' => array(
         'P_ID' => 'pid',
         'P_NAME' => 'name',
         'Gender' => 'gender',
         'BHPA' => 'bhpa_no',
         'Rating' => 'rating',
         'Email' => 'email',
-    ),*/
+    ),
     'glider' => array(
         'G_ID' => 'gid',
         'G_NAME' => 'name',
@@ -69,6 +69,8 @@ $tables = array(
 
 foreach ($tables as $table => $keys) {
 
+    echo '<h1>Importing: ' . $table . '</h1>';
+
     db::swap_connection('old');
     $res = db::query('SELECT * FROM ' . $table . 's');
 
@@ -76,37 +78,67 @@ foreach ($tables as $table => $keys) {
     db::query('TRUNCATE ' . $table);
 
     // prepare_statement
-    $sql_arr = array();
-    $sql = 'INSERT INTO ' . $table . ' SET ';
+    $sql_arr = [];
+    $key_arr = [];
     foreach ($keys as $old => $new) {
         if (is_array($new)) {
-            $sql_arr[] = '`' . $new[1] . '`=:' . $old;
+            $sql_arr[] = '`' . $new[1] . '`';
         } else {
-            $sql_arr[] = '`' . $new . '`=:' . $old;
+            $sql_arr[] = '`' . $new . '`';
         }
+        $key_arr[] = ':' . $old . '_[id]';
     }
-    $sql .= implode(', ', $sql_arr);
-    $statement = db::$con->prepare($sql);
+    $base_sql = 'INSERT INTO ' . $table . ' (' . implode(', ', $sql_arr) . ') VALUES ';
+    $key_set = '(' . implode(', ', $key_arr) . ')';
+    $part_cnt = 0;
+    $cnt = 0;
 
-
+    $params = [];
     while ($row = db::fetch($res)) {
-        $params = array();
+
+        $cnt++;
+        $part_cnt++;
+        $sql_sets[] = str_replace('[id]', $part_cnt, $key_set);
+
         foreach ($keys as $old => $new) {
             if (is_array($new)) {
-                $params[$old] = $new[0] ($row->$old);
+                $params[$old . '_' . $part_cnt] = $new[0] ($row->$old);
             } else {
-                $params[$old] = $row->$old;
+                $params[$old . '_' . $part_cnt] = $row->$old;
             }
         }
 
-        $statement->execute($params);
+
+        if ($part_cnt == 500) {
+            $statement = db::$con->prepare($base_sql . implode(',', $sql_sets));
+            $statement->execute($params);
+            echo '<p>' . $cnt . ' rows imported.</p>';
+            $params = [];
+            $sql_sets = [];
+            $part_cnt = 0;
+        }
     }
+
+    if ($params) {
+        $statement = db::$con->prepare($base_sql . implode(',', $sql_sets));
+        $statement->execute($params);
+        echo '<p>' . $cnt . ' rows imported.</p>';
+        $params = [];
+        $sql_sets = [];
+        $part_cnt = 0;
+    }
+
+    echo '<p><span style="color:green">Completed</span></p>';
 }
-db::query('UPDATE flight SET lid = lid+1, ftid=ftid+1');
+
+
+db::query('UPDATE flight SET lid = lid+1');
+db::query('UPDATE flight SET ftid = ftid+1');
+db::query('UPDATE flight SET `position` = fid');
 
 function get_manu($manu) {
     $res = db::result('SELECT mid FROM manufacturer WHERE title =:title', array('title' => $manu));
-    if($res) {
+    if ($res) {
         return $res->mid;
     }
 }
