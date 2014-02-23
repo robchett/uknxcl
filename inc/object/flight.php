@@ -457,9 +457,13 @@ class flight extends table {
      */
     private function set_track() {
         $track = new track($this->fid);
-        $track->parse_IGC();
-        $track->trim();
         $this->track = $track;
+        if ($track->parse_IGC()) {
+            $track->trim();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -521,10 +525,15 @@ class flight extends table {
      * @return string
      */
     public function get_info() {
-        if (!isset($this->track)) {
-            $this->set_track();
+        if ($this->did > 1 && !isset($this->track) && $this->set_track()) {
+            $logged_data =
+                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
+                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
+                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->track_points->last()->time - $this->track->track_points->first()->time)));
+        } else {
+            $logged_data = '';
         }
-        $html = node::create('table', ['width' => '100'],
+        $html = node::create('table', ['width' => '100%'],
             node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
             node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider->name)) .
             node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club->title)) .
@@ -534,9 +543,7 @@ class flight extends table {
             node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
             node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' =' . $this->score)) .
             node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], $this->coord_info())) .
-            node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
-            node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->track_points->first()->time))) .
-            node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->track_points->last()->time - $this->track->track_points->first()->time))) .
+            $logged_data .
             ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) : '') .
             (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                 node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
@@ -550,7 +557,7 @@ class flight extends table {
                     )
                 )
             )
-        ) . ajax ? node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close') : '';
+        ) . (ajax ? node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close') : '');
 
         return $html;
     }
