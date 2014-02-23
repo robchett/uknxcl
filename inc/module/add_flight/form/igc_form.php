@@ -90,8 +90,7 @@ class igc_form extends form {
 
         if ($flight->fid) {
             track::move_temp_files($this->temp_id, $flight->fid);
-            $track = new track();
-            $track->id = $flight->fid;
+            $track = new track($flight->fid);
             $track->parse_IGC();
             $track->pre_calc();
             $track->set_from_session($flight, $this->temp_id);

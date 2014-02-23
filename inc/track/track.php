@@ -81,7 +81,12 @@ class track {
     private $parent_flight;
     private $pilot;
 
-    public function __construct() {
+    public function __construct($id = null) {
+        if ($id === null) {
+            $this->id = time();
+        } else {
+            $this->id = $id;
+        }
         $this->od = new task('Open Distance');
         $this->or = new out_and_return('Out and Return');
         $this->ft = new triangle('Flat Triangle');
@@ -94,10 +99,11 @@ class track {
         $this->club = new club();
         $this->glider = new glider();
         $this->bounds = new coordinate_bound();
+        $this->log = new log(log::DEBUG, '/uploads/flight/' . $this->id . '/info-' . time() . '.txt');
     }
 
     public static function move_temp_files($temp_id, $new_id) {
-        $track = new track();
+        $track = new track($new_id);
         $old_dir = $track->get_file_loc($temp_id, true);
         $new_dir = $track->get_file_loc($new_id, false);
         if (!file_exists($new_dir)) {
@@ -252,7 +258,6 @@ class track {
 
     public function generate(flight $flight) {
         $this->id = $flight->fid;
-        $this->log = new log(log::DEBUG, '/uploads/flight/' . $this->id . '/info.txt');
         $this->parent_flight = $flight;
         if ($this->parse_IGC()) {
             $this->calculate();
