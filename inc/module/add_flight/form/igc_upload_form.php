@@ -4,6 +4,7 @@ namespace module\add_flight\form;
 use classes\ajax;
 use classes\geometry;
 use classes\get;
+use classes\session;
 use form\form;
 use html\node;
 use object\flight_type;
@@ -102,7 +103,7 @@ class igc_upload_form extends form {
     }
 
     private function get_choose_score_html(track $track, $start, $end, $defined) {
-        $_SESSION['add_flight'][$track->id] = ['duration' => $track->get_duration(), 'start' => $start, 'end' => $end];
+        session::set(['duration' => $track->get_duration(), 'start' => $start, 'end' => $end], 'add_flight', $track->id);
         $html = node::create('table', [],
             node::create('thead tr', [],
                 node::create('th', [], 'Type') .
@@ -121,12 +122,13 @@ class igc_upload_form extends form {
     }
 
     private function get_defined_task_select_html(track $track) {
-        $_SESSION['add_flight'][$track->id]['task'] = [
-            'type' => $track->task->type,
-            'distance' => $track->task->get_distance(),
-            'coords' => $track->task->get_coordinates(),
-            'duration' => $track->task->get_duration()
-        ];
+        session::set([
+                'type' => $track->task->type,
+                'distance' => $track->task->get_distance(),
+                'coords' => $track->task->get_coordinates(),
+                'duration' => $track->task->get_duration()
+            ], 'add_flight', $track->id, 'task'
+        );
         $multiplier = flight_type::get_multiplier($track->task->ftid, date('Y'), true);
         return node::create('tr', [],
             node::create('td', [], $track->task->title) .
@@ -140,7 +142,12 @@ class igc_upload_form extends form {
         /** @var task $task */
         $task = $track->$type;
         if (isset($task->waypoints)) {
-            $_SESSION['add_flight'][$track->id][$type] = ['distance' => $task->get_distance(), 'coords' => $task->get_session_coordinates(), 'duration' => $task->get_duration()];
+            session::set([
+                    'distance' => $task->get_distance(),
+                    'coords' => $task->get_session_coordinates(),
+                    'duration' => $task->get_duration()
+                ], 'add_flight', $track->id, $type
+            );
             $flight_type = new flight_type();
             $flight_type->do_retrieve(['multi'], ['where' => 'fn=:fn', 'parameters' => ['fn' => $type]]);
             return node::create('tr', [],

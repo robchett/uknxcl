@@ -4,10 +4,11 @@ namespace track;
 
 use classes\collection_iterator;
 use classes\coordinate_bound;
+use classes\db;
 use classes\geometry;
 use classes\get;
 use classes\kml;
-use classes\db;
+use classes\session;
 use object\club;
 use object\flight;
 use object\flight_type;
@@ -47,7 +48,7 @@ class track {
     public $error = '';
     /** @var  log $log */
     protected $log;
-    public  $id;
+    public $id;
     public $maximum_alt = -1000000;
     public $maximum_alt_t;
     public $max_cr = 0;
@@ -1026,43 +1027,42 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
     }
 
     public function set_from_session(flight $flight, $id) {
-        if (isset($_SESSION['add_flight'][$id])) {
-            $this->truncate($_SESSION['add_flight'][$id]['start'], $_SESSION['add_flight'][$id]['end']);
-            $this->od->distance = $_SESSION['add_flight'][$id]['od']['distance'];
-            $this->od->coordinates = $_SESSION['add_flight'][$id]['od']['coords'];
-            $this->od->timestamp = $_SESSION['add_flight'][$id]['od']['duration'];
+        if (session::is_set('add_flight', $id)) {
+            $this->truncate(session::get('add_flight', $id, 'start'), session::get('add_flight', $id, 'end'));
+            $this->od->distance = session::get('add_flight', $id, 'od', 'distance');
+            $this->od->coordinates = session::get('add_flight', $id, 'od', 'coords');
+            $this->od->timestamp = session::get('add_flight', $id, 'od', 'duration');
             $this->od->get_waypoints_from_os();
             $this->od->waypoints->spherical = false;
 
-            if (isset($_SESSION['add_flight'][$id]['or'])) {
-                $this->or->distance = $_SESSION['add_flight'][$id]['or']['distance'];
-                $this->or->coordinates = $_SESSION['add_flight'][$id]['or']['coords'];
-                $this->or->timestamp = $_SESSION['add_flight'][$id]['or']['duration'];
+            if (session::is_set('add_flight', $id, 'or')) {
+                $this->or->distance = session::get('add_flight', $id, 'or', 'distance');
+                $this->or->coordinates = session::get('add_flight', $id, 'or', 'coords');
+                $this->or->timestamp = session::get('add_flight', $id, 'or', 'duration');
                 $this->or->get_waypoints_from_os();
                 $this->or->waypoints->spherical = false;
             }
 
-            if (isset($_SESSION['add_flight'][$id]['tr'])) {
-                $this->tr->distance = $_SESSION['add_flight'][$id]['tr']['distance'];
-                $this->tr->coordinates = $_SESSION['add_flight'][$id]['tr']['coords'];
-                $this->tr->timestamp = $_SESSION['add_flight'][$id]['tr']['duration'];
+            if (session::is_set('add_flight', $id, 'tr')) {
+                $this->tr->distance = session::get('add_flight', $id, 'tr', 'distance');
+                $this->tr->coordinates = session::get('add_flight', $id, 'tr', 'coords');
+                $this->tr->timestamp = session::get('add_flight', $id, 'tr', 'duration');
                 $this->tr->get_waypoints_from_os();
                 $this->tr->waypoints->spherical = false;
             }
-            if (isset($_SESSION['add_flight'][$id]['ft'])) {
-                $this->ft->distance = $_SESSION['add_flight'][$id]['ft']['distance'];
-                $this->ft->coordinates = $_SESSION['add_flight'][$id]['ft']['coords'];
-                $this->ft->timestamp = $_SESSION['add_flight'][$id]['ft']['duration'];
+            if (session::is_set('add_flight', $id, 'ft')) {
+                $this->ft->distance = session::get('add_flight', $id, 'ft', 'distance');
+                $this->ft->coordinates = session::get('add_flight', $id, 'ft', 'coords');
+                $this->ft->timestamp = session::get('add_flight', $id, 'ft', 'duration');
                 $this->ft->get_waypoints_from_os();
                 $this->ft->waypoints->spherical = false;
             }
-
-            if (isset($_SESSION['add_flight'][$id]['task'])) {
+            if (session::is_set('add_flight', $id, 'task')) {
                 $this->task = new defined_task();
-                $this->task->distance = $_SESSION['add_flight'][$id]['task']['distance'];
-                $this->task->coordinates = $_SESSION['add_flight'][$id]['task']['coords'];
-                $this->task->timestamp = $_SESSION['add_flight'][$id]['task']['duration'];
-                $this->task->type = $_SESSION['add_flight'][$id]['task']['type'];
+                $this->task->distance = session::get('add_flight', $id, 'task', 'distance');
+                $this->task->coordinates = session::get('add_flight', $id, 'task', 'coords');
+                $this->task->timestamp = session::get('add_flight', $id, 'task', 'duration');
+                $this->task->type = session::get('add_flight', $id, 'task', 'type');
             }
             $this->parent_flight = $flight;
             $this->parent_flight->duration = $this->get_time();
