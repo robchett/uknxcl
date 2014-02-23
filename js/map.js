@@ -33,11 +33,11 @@ function UKNXCL_Map($container) {
 
     this._callbacks = [];
     this.callback = function (callable) {
-        if(!this.initialised) {
+        if (!this.initialised) {
             this._callbacks = callable;
             return true;
         }
-        if(typeof callable == 'function') {
+        if (typeof callable == 'function') {
             callable(this)
         } else {
             window[callable](this);
@@ -129,8 +129,8 @@ function UKNXCL_Map($container) {
             }
         });
         this.initialised = true;
-        this._callbacks.each(function(callable) {
-            if(typeof callable == 'function') {
+        this._callbacks.each(function (callable) {
+            if (typeof callable == 'function') {
                 callable(this);
             } else {
                 window[callable](this);
@@ -242,6 +242,8 @@ function UKNXCL_Map($container) {
     };
 
     this.add_flight_coordinates = function (coordinate_string, id) {
+        this.$tree.find('.track_' + id).remove();
+        this.$tree.append('<div class="track_' + id + '"><div class="kmltree" data-post=\'{"id":' + id + '}\'><ul class="kmltree"><li data-path=\'{"type":"coordinates","path":[]}\' class="kmltree-item check KmlFolder visible closed open"><div class="toggler"></div>Flight ' + id + '<ul><li data-path=\'{"type":"flight","path":[0]}\' class="kmltree-item check KmlFolder visible open"></li></ul></div></div>');
         var lat_lng_array = [];
         var coordinates = coordinate_string.split(';');
         coordinates.each(function (os, i) {
@@ -249,7 +251,6 @@ function UKNXCL_Map($container) {
             coordinate.set_from_OS(os);
             lat_lng_array[i] = new google.maps.LatLng(coordinate.lat(), coordinate.lng());
         });
-        console.log(lat_lng_array);
         this.draw_coordinates(lat_lng_array, id);
     };
 
@@ -1174,7 +1175,7 @@ function Planner(parent) {
 function trackData() {
     this.loaded = false;
     this.id = 0;
-    this.xMin= 0;
+    this.xMin = 0;
     this.xMax = 0;
     this.od_score = 0;
     this.or_score = 0;
@@ -1207,7 +1208,7 @@ function trackData() {
     this.av_speed = 0;
     this.coords = [];
     this.data = [];
-    this.xMin= 0;
+    this.xMin = 0;
     this.EndT = 0;
     this.loadFromAjax = function (json) {
         for (var i in json) {
@@ -1327,6 +1328,15 @@ UKNXCL_Map.KmlPath = function (event, ths) {
             this.root = map.kmls[this.root_data.id];
             this.push(this.root.google_data.structure[0][0]);
             this.path = this.root.google_data.structure[0][0];
+        } else if (this.data.type == "coordinates") {
+            this.root = map.kmls[this.root_data.id];
+            this.root.setVisible(!this.root.getVisible());
+            if(this.root.getVisible()) {
+                this.$li.addClass('visible');
+            } else {
+                this.$li.removeClass('visible');
+            }
+            return false;
         } else {
             this.root = map.airspace;
             this.root.toggle(this.data.path[0]);
