@@ -253,8 +253,7 @@ class flight extends table {
         $flights = flight::get_all([], ['where' => 'did > 1 AND (os_codes LIKE "%SU%" OR os_codes LIKE "%TQ%")', 'order' => 'fid DESC']);
         echo count($flights);
         $flights->iterate(function (flight $flight, $cnt) {
-                $track = new track();
-                $track->id = $flight->fid;
+                $track = new track($flight->fid);
                 $path = $track->get_kmz_raw();
                 if (file_exists($path)) {
                     copy($path, root . '/tmp/' . $cnt . '.kmz');
@@ -278,9 +277,8 @@ class flight extends table {
         $total_time = 0;
         $flights->iterate(
             function (flight $flight) use (&$total_time, &$log) {
-                $track = new track();
+                $track = new track($flight->fid);
                 $track->time = 0;
-                $track->id = $flight->fid;
                 $time = time();
                 $log->info('Track: ' . $flight->fid);
                 $log->debug('---- Reading');
@@ -387,7 +385,7 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $this->do_retrieve_from_id([], $_REQUEST['id']);
             if ($this->fid) {
-                $track = new track();
+                $track = new track($this->fid);
                 $track->generate($this);
                 $this->do_save();
                 jquery::colorbox(['html' => 'Flight ' . $this->fid . ' generated successfully. ' . node::create('p pre', [], print_r($track->log_file, 1))]);
@@ -458,8 +456,7 @@ class flight extends table {
      *
      */
     private function set_track() {
-        $track = new track();
-        $track->id = $this->fid;
+        $track = new track($this->fid);
         $track->parse_IGC();
         $track->trim();
         $this->track = $track;
