@@ -78,7 +78,7 @@ foreach ($input as $a) {
         if (isset($current) && isset($current->class)) {
             $t = $current->class;
             //if ($current->has_circle) {
-                $classes["$t"] [] = $current;
+            $classes["$t"] [] = $current;
             //}
         }
         $current = new airspace();
@@ -94,9 +94,9 @@ foreach ($input as $a) {
         $lat = ConvertCord($matches[3], $matches[2]) * 2 * M_PI / 360;
         $lon = ConvertCord($matches[5], $matches[4]) * 2 * M_PI / 360;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1);
+        $t = getArcCords(array($lat, $lon, $radius), 0, 360, 1);
         $current->cords = $t[0];
-        $current->cords2 = $t[0];
+        $current->cords2 = $t[1];
         continue;
     }
     if (preg_match("/POINT=([N|S])([0-9]{6}) ([W|E])([0-9]{7})/", $a, $matches)) {
@@ -116,7 +116,7 @@ foreach ($input as $a) {
         $lat2 = ConvertCord($matches[7], $matches[6]) * 2 * M_PI / 360;
         $lon2 = ConvertCord($matches[9], $matches[8]) * 2 * M_PI / 360;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
         $current->cords .= $t[0];
         $current->cords2 .= $t[1];
         $current->prev_lat = $lat2 * 180 / M_PI;
@@ -132,7 +132,7 @@ foreach ($input as $a) {
         $lat2 = ConvertCord($matches[7], $matches[6]) * 2 * M_PI / 360;
         $lon2 = ConvertCord($matches[9], $matches[8]) * 2 * M_PI / 360;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
         $current->cords .= $t[0];
         $current->cords2 .= $t[1];
         $current->prev_lat = $lat2 * 180 / M_PI;
@@ -142,18 +142,23 @@ foreach ($input as $a) {
     //  else $out.=  $a."";
 }
 sort($classes);
-
+$out .= "
+    map.airspace.load = function (type) {
+        if (!this.isLoaded(type)) {
+            this.setLoaded(type, true);
+            switch (type) {
+        ";
 foreach ($classes as $c) {
-    $out .= "
-                case('{$c[0]->class}') :";
-    foreach ($c as $d) {
-        $out .= "
-                    this.add('{$c[0]->class}', $d->base, $d->top, '$d->cords', 1, '#{$colours[$d->type][0]}', 0.8, '#{$colours[$d->type][1]}', 0.2, '$d->name', '$d->type');";
-    }
-    $out .= "
-                    break; ";
-
+    $out .= "\t\t\t\tcase('{$c[0]->class}') :\n";
+    foreach ($c as $d) $out .= "\t\t\t\t\tthis.add('{$c[0]->class}', $d->base, $d->top, '$d->cords', 1, '#{$colours[$d->type][0]}', 0.8, '#{$colours[$d->type][1]}', 0.2, '$d->name', '$d->type');\n";
+    $out .= "\t\t\t\t\tbreak;\n";
 }
+$out .= "
+            }
+        }
+    };
+    map.airspace.loadAll(true);
+    map.airspace.reload();";
 
 echo $out;
 
@@ -210,21 +215,28 @@ function binary_left_shift($lat) {
     return $a . "0";
 }
 
+function modulo($a, $b) {
+    return $a - $b * floor($a / $b);
+}
+
 function getArcCords($cords, $start, $end, $dir, $prev_lat = 0, $prev_lon = 0) {
+    $start = modulo($start, 360);
+    $end = modulo($end, 360);;
     $out = "";
     $out2 = "";
     $angularDistance = $cords [2] / 6371000;
     $count = 0;
-    if ($dir < 0) $total_angle = ($end - $start);
-    else {
-        if ($start > $end) {
-            $end += 360;
-            $total_angle = -(($start) - ($end));
-        } else
-            $total_angle = -(($start) - ($end)) - 360;
+    if ($dir < 0) {
+        $total_angle = -($end - $start);
+    } else {
+        $total_angle = ($end - $start);
+    }
+    $total_angle = modulo($total_angle, 360);
+    if($total_angle == 0) {
+        $total_angle = 360;
     }
 
-    for ($i = $start; $count <= 48; $i += $total_angle / 48) {
+    for ($i = $start; $count <= 48; $i += $dir * $total_angle / 48) {
         //$out.= "$i";
         $bearing = deg2rad($i);
         $lat = Asin(Sin($cords [0]) * Cos($angularDistance) + Cos($cords [0]) * Sin($angularDistance) * Cos($bearing));
