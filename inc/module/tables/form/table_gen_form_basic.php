@@ -37,7 +37,7 @@ class table_gen_form_basic extends form {
                             9 => 'Top Tens',
                             15 => 'Top Tens (1x)',
                             10 => 'Pilot',
-                            11 => 'Main (3d)',
+                            //11 => 'Main (3d)',
                             12 => 'Hangies',
                             16 => 'Records',
                         ]
@@ -119,7 +119,7 @@ class table_gen_form_basic extends form {
 
     public function do_submit() {
         $table = new _object\league_table();
-        $table->use_preset($this->type);
+        $table->use_preset($this->type, $this->year);
         if ($this->type == 10) {
             $table->options->pilot_id = $this->pilot;
         }
