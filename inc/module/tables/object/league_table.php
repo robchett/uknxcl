@@ -412,7 +412,7 @@ class league_table {
 
         $this->where[] = '`delayed`=0';
         $this->where = implode(' AND ', $this->where);
-        if (isset ($this->type) && $this->type == 2) {
+        if (isset ($this->type) && $this->type == league_table_options::LAYOUT_PILOT_LOG) {
             $this->where .= ' AND p.pid=' . $this->options->pilot_id;
             $this->OrderBy = "date";
         } else {
