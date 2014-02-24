@@ -210,10 +210,13 @@ class league_table {
         $this->S_alias = 'gm';
     }
 
-    public function use_preset($type) {
+    public function use_preset($type, $year) {
         switch ($type) {
             case(0):
                 $this->options->set_official(1);
+                if($year > 2012) {
+                    $this->options->set_dimensions(1);
+                }
                 break;
 
             case(1):
