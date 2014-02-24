@@ -91,7 +91,7 @@ function Airspace() {
         this.load('RESTRICTED');
         this.load('OTHER');
         this.load('DANGER');
-        this.load('CTACTR');
+        this.load('CTRCTA');
         this.visible = {
             'PROHIBITED': bool,
             'RESTRICTED': bool,
@@ -109,16 +109,18 @@ function Airspace() {
                 if (airspace.level >= currentHeight / 0.3048 || airspace.top <= currentHeight / 0.3048) {
                     airspace.poly.setMap(null);
                     airspace.visible = false;
-                } else if (as.level >= maximum_base) {
+                } else if (airspace.level >= ths.maximum_base) {
                     airspace.poly.setMap(null);
                     airspace.visible = false;
                 }
                 return;
             }
             var c = airspace._class;
-            if (!ths.isVisible(c)) {
-                airspace.poly.setMap(null);
-                airspace.visible = false;
+            if (!ths.isVisible(c) || airspace.level >= ths.maximum_base) {
+                if (airspace.visible) {
+                    airspace.poly.setMap(null);
+                    airspace.visible = false;
+                }
             } else if (!airspace.visible) {
                 airspace.poly.setMap(map.internal_map);
                 airspace.visible = true;
