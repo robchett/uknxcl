@@ -97,8 +97,23 @@ class table_gen_form_basic extends form {
         if (!$options->minimum_score) {
             $this->no_min = true;
         }
+        switch ($options->layout) {
+            case \module\tables\object\league_table_options::LAYOUT_PILOT_LOG :
+                $this->type = 10;
+                break;
+            case \module\tables\object\league_table_options::LAYOUT_TOP_TEN :
+                $this->type = 15;
+                break;
+            case \module\tables\object\league_table_options::LAYOUT_CLUB :
+                $this->type = 8;
+                break;
+            case \module\tables\object\league_table_options::LAYOUT_RECORDS :
+                $this->type = 16;
+                break;
+        }
         if ($options->pilot_id) {
-            unset($this->get_field_from_name('pilot')->attributes['disabled']);
+            $this->get_field_from_name('pilot')->disabled = false;
+            $this->pilot = $options->pilot_id;
         }
     }
 
