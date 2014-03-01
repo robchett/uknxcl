@@ -1,6 +1,8 @@
 <?php
 namespace module\tables\object;
 
+use classes\db;
+
 class league_table_options {
 
     /** @var league_table */
@@ -21,6 +23,7 @@ class league_table_options {
     public $split_classes = false;
     public $glider_mode = false;
     public $minimum_score = 10;
+    public $flown_through = [];
 
     const LAYOUT_LEAGUE = 0;
     const LAYOUT_CLUB = 1;
@@ -51,6 +54,7 @@ class league_table_options {
         $this->get_class();
         $this->get_pilot_id();
         $this->get_glider_mode();
+        $this->get_flown_through();
     }
 
     public function add_launch($id) {
@@ -76,16 +80,17 @@ class league_table_options {
         }
     }
 
-    public function remove_flight_type($id) {
-        if (!in_array($id, $this->types)) {
+    public function add_fight_type($id) {
+        if (in_array($id, $this->types)) {
             $this->types[] = $id;
         }
     }
 
-    public function add_fight_type($id) {
+    public function remove_flight_type($id) {
         foreach ($this->types as $key => $val) {
             if ($id == $val) {
                 unset($this->types[$key]);
+                sort($this->types);
                 return true;
             }
         }
@@ -94,7 +99,7 @@ class league_table_options {
 
     public function get_flight_type_string() {
         if (count($this->types) != 5) {
-            $this->parent->where[] = '(ftid = ' . implode('OR ftid = ', $this->types) . ')';
+            $this->parent->where[] = '(ftid = ' . implode(' OR ftid = ', $this->types) . ')';
         }
     }
 
@@ -249,6 +254,29 @@ class league_table_options {
 
     public function get_min_score() {
         $this->parent->where[] = $this->parent->ScoreType . ' > ' . $this->minimum_score;
+    }
+
+    public function set_flown_through($grid_refs) {
+        $parts = explode(',', $grid_refs);
+        foreach ($parts as $ref) {
+            if (strlen($ref) == 2) {
+                $this->flown_through[] = strtoupper($ref);
+            }
+        }
+    }
+
+    public function get_flown_through() {
+        if ($this->flown_through) {
+            $sql = [];
+            foreach ($this->flown_through as $grid) {
+                if (ctype_alpha($grid)) {
+                    $sql[] = 'os_codes LIKE "%' . $grid . '%" OR coords LIKE "%' . $grid . '%"';
+                }
+            }
+            if ($sql) {
+                $this->parent->where[] = '(' . implode(' OR ', $sql) . ')';
+            }
+        }
     }
 }
  

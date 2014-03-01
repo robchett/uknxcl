@@ -70,6 +70,7 @@ class table_gen_form_basic extends form {
 
         parent::__construct($fields);
         $this->id = 'basic_tables_form';
+        $this->wrapper_class = '.basic_tables_wrapper';
         $this->submit = 'Generate';
         $this->post_text = node::create('a.form_toggle', ['data-show' => 'advanced_tables_wrapper'], 'Advanced View');
         $this->get_field_from_name('year')->value = date('Y');

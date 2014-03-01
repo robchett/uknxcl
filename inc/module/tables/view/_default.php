@@ -35,11 +35,12 @@ class _default extends \template\html {
 
         $inline_script = '
         $("body").on("click", ".form_toggle", function () {
-            $("#basic_tables_form_wrapper").hide();
-            $("#advanced_tables_wrapper").hide();
-            $("#" + $(this).data("show")).show();
+            $(".basic_tables_wrapper").hide();
+            $(".advanced_tables_wrapper").hide();
+            $("." + $(this).data("show")).show();
         });
-        $("#basic_tables_form_wrapper h2,#advanced_tables_wrapper h2").click(function () {
+        $("body").off("click", ".basic_tables_wrapper h2,.advanced_tables_wrapper h2");
+        $("body").on("click", ".basic_tables_wrapper h2,.advanced_tables_wrapper h2", function() {
             var $parent = $(this).parents("div").eq(0);
             if($parent.hasClass("visible")) {
                 $parent.removeClass("visible").children("form").stop(true, true).slideUp(function () {
@@ -51,7 +52,7 @@ class _default extends \template\html {
                 });
             }
         });
-        $("#basic_tables_form_wrapper form,#advanced_tables_wrapper form").slideUp();';
+        $(".basic_tables_wrapper form,.advanced_tables_wrapper form").slideUp();';
         if (ajax) {
             ajax::add_script($inline_script);
         } else {
