@@ -102,7 +102,8 @@ class table_gen_form extends form {
             form::create('field_string', 'os')
                 ->set_attr('label', 'Flown through')
                 ->set_attr('value', '')
-                ->set_attr('help', 'OS grids flights must fly through'),
+                ->set_attr('help', 'OS grids flights must fly through')
+                ->set_attr('required', false),
             form::create('field_multi_select', 'launch')
                 ->set_attr('label', 'Launch Type')
                 ->set_attr('help', 'Include certain launch methods')
