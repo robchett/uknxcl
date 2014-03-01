@@ -22,12 +22,16 @@ class _default extends \template\html {
         $form = new table_gen_form_basic();
         $form->set_from_options($table->options);
         $form->post_submit_text = $this->get_key();
-        $html .= $form->get_html()->get();
+        $html .= $form->get_html()
+                      ->get();
         $form = new table_gen_form();
         $form->set_from_options($table->options);
         $form->post_submit_text = $this->get_key();
-        $html .= $form->get_html()->get();
-        $html .= node::create('div#generated_tables', [], $table->get_table());
+        $html .= $form->get_html()
+                      ->get();
+        $html .= node::create('div#generated_tables', [], $table->get_table() . node::create('a.show_all.button', [
+                'href' => $table->get_show_all_url(),
+                'target' => '_blank'], 'Show all on map'));
 
         $inline_script = '
         $("body").on("click", ".form_toggle", function () {
