@@ -230,6 +230,12 @@ function UKNXCL_Map($container) {
         clearTimeout(this.timer);
     };
 
+    this.clear = function() {
+        this.kmls.each(function(flight) {
+            flight.setMap(null);
+        });
+    }
+
     this.playing = function () {
         if (this.playCount < this.obj.size() - this.playCycles) {
             this.move(this.playCount += this.playCycles);
@@ -246,22 +252,30 @@ function UKNXCL_Map($container) {
         this.$tree.append('<div class="track_' + id + '"><div class="kmltree" data-post=\'{"id":' + id + '}\'><ul class="kmltree"><li data-path=\'{"type":"coordinates","path":[]}\' class="kmltree-item check KmlFolder visible closed open"><div class="toggler"></div>Flight ' + id + '<ul><li data-path=\'{"type":"flight","path":[0]}\' class="kmltree-item check KmlFolder visible open"></li></ul></div></div>');
         var lat_lng_array = [];
         var coordinates = coordinate_string.split(';');
+
+        var type = 'od';
+        if(coordinates.length == 4 && coordinates[0] === coordinates[3]) {
+            type = 'tr';
+        } else if (coordinates.length == 3 && coordinates[0] === coordinates[2]) {
+            type = 'or';
+        }
+
         coordinates.each(function (os, i) {
             var coordinate = new Coordinate();
             coordinate.set_from_OS(os);
             lat_lng_array[i] = new google.maps.LatLng(coordinate.lat(), coordinate.lng());
         });
-        this.draw_coordinates(lat_lng_array, id);
+        this.draw_coordinates(lat_lng_array, id, type);
     };
 
-    this.draw_coordinates = function (coordinates, id) {
+    this.draw_coordinates = function (coordinates, id, type) {
         if (this.isMap()) {
             if (this.mapObject) {
                 this.mapObject.setMap(null);
             }
             this.kmls[id] = new google.maps.Polyline({
                 path: coordinates,
-                strokeColor: "000000",
+                strokeColor: (type == 'od' ? "000000" : (type == 'or' ? 'FF0000' : '00FF00')),
                 strokeOpacity: 1,
                 strokeWeight: 1.4
             });
