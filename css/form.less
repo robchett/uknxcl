@@ -8,9 +8,11 @@ h2.form_title {
   margin-bottom: 0;
 }
 
-#advanced_tables_wrapper { display: none; }
+.advanced_tables_wrapper {
+  display: none;
+}
 
-#advanced_tables_wrapper, #basic_tables_form_wrapper {
+.advanced_tables_wrapper, .basic_tables_wrapper {
   margin-bottom: 20px;
   overflow: hidden;;
 }
@@ -51,11 +53,15 @@ form {
             width: 14px !important;
             height: 14px !important;
             padding: 0 !important;
-            border: 1px solid #2a2a2a;
-            &:hover { background-color: #e5e5e5; }
+            border: 1px solid #a0a0a0;
+            &:hover {
+              background-color: #e5e5e5;
+            }
             &.checked {
               background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAA3NCSVQICAjb4U/gAAAAclBMVEXx8fHo6Ojj4+Pg4ODW1tbT09PR0dG7u7u6urq5ubmvr6+np6ehoaGenp6WlpaVlZWSkpKMjIyAgIB8fHx6enp5eXlvb29ubm5kZGRQUFBPT09HR0dGRkY/Pz87Ozs2NjY1NTUzMzMwMDAuLi4qKir///+NWczDAAAAJnRSTlP/////////////////////////////////////////////////AKd6gbwAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA2LzAzLzEz76odTwAAAFhJREFUCJk9zVcOgDAMA9Cy9x5lU8C5/xWB0uAvPytSBHGKYxDcW+w5o8YZkEEIZGRgrZDEaLDYGo5LnkL6bqLaVNRh1Aeix5v4A5VPn8mAJJD88K/JfLsBgKAR7rnTsRIAAAAASUVORK5CYII=) center center no-repeat;
-              &:hover { background-color: #e5e5e5; }
+              &:hover {
+                background-color: #e5e5e5;
+              }
             }
             input {
               display: none;
@@ -135,12 +141,16 @@ form {
       clear: none;
       margin-right: 20px;
       margin-bottom: 5px;
-      width: 192px;
+      width: 212px;
       min-height: 20px;
 
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+
       label span {
-        width: 90px;
-        font-size: 10px;
+        width: 110px;
+        font-size: 11px;
         line-height: 16px;
       }
       input, select, textarea {
@@ -150,8 +160,46 @@ form {
         padding: 0;
         height: 16px;
       }
+      select {
+        width: 102px;
+      }
       select[multiple=multiple] {
         height: 60px;
+      }
+      .mlink_selected_wrapper {
+        width: 90px;
+        border: 1px solid #a0a0a0;
+        border-top: 0;
+        float: right;
+        font-size: 11px;
+        padding: 5px 5px 0;
+        li {
+          width: 90px;
+          float: none;
+          text-align: left;
+          min-height: 0;
+          line-height: 10px;
+          a {
+            position: relative;
+            float: right;
+            display: block;
+            width: 10px;
+            height: 10px;
+            text-indent: -9999px;
+            overflow: hidden;
+            &:after {
+              content: 'x';
+              color: red;
+              position: absolute;
+              top: 0;
+              left: 0;
+              text-indent: 0;
+              line-height: 8px;
+              width: 10px;
+              text-align: center;
+            }
+          }
+        }
       }
     }
 
@@ -173,13 +221,19 @@ form {
     #coords_wrapper {
       margin-top: 20px;
       display: block;
-      span { width: 200px }
-      input { width: 400px }
+      span {
+        width: 200px
+      }
+      input {
+        width: 400px
+      }
     }
     #console {
       color: #b60000;
       font-size: medium;
-      .error { margin-top: 0 }
+      .error {
+        margin-top: 0
+      }
       table {
         width: 570px;
         margin: auto;
@@ -206,11 +260,17 @@ form {
     #coords_wrapper {
       margin: 10px 0 10px 0;
       display: block;
-      span { width: 200px }
-      input { width: 400px }
+      span {
+        width: 200px
+      }
+      input {
+        width: 400px
+      }
     }
     label {
-      span { width: 100% }
+      span {
+        width: 100%
+      }
     }
     .field_select_wrapper, .field_link_wrapper, .field_date_wrapper {
       span {
@@ -230,7 +290,9 @@ form {
         float: right;
         width: 595px;
         padding: 0 0 0 20px;
-        &.checkbox_replace { margin-top: 5px }
+        &.checkbox_replace {
+          margin-top: 5px
+        }
       }
       input {
         float: left;

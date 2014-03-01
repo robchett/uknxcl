@@ -59,7 +59,7 @@ class league_table {
             $key_val = explode('-', $part, 2);
             if (count($key_val) == 2) {
                 if (strpos($key_val[1], '[') === 0) {
-                    $key_val[1] = explode(',', substr($key_val[1], 1, strlen($key_val[1]) - 2));
+                    $key_val[1] = explode('|', substr($key_val[1], 1, strlen($key_val[1]) - 2));
                 }
                 $object->{$key_val[0]} = $key_val[1];
             }
@@ -68,6 +68,11 @@ class league_table {
     }
 
     public static function encode_url($parts) {
+        foreach ($parts as &$part) {
+            if (is_array($part)) {
+                $part = str_replace([',', '"'], ['|', ''], json_encode($part));
+            }
+        }
         $json = str_replace([':', '"'], ['-', ''], trim(json_encode($parts), '{}'));
         return urlencode($json);
     }
@@ -195,6 +200,10 @@ class league_table {
         // Choose Classes (glider/pilot), and append official if needed  - default pilot
         if (isset ($this->in ['object']) && $this->in ['object'] == 'Glider') {
             $this->options->glider_mode = true;
+        }
+
+        if (isset($this->in ['os'])) {
+            $this->options->set_flown_through($this->in ['os']);
         }
 
         $this->show_top_4 = isset ($this->in ['show_top_4']) ? true : false;
@@ -353,8 +362,7 @@ class league_table {
                 function (flight $flight) use (&$array) {
                     if (isset ($array [$flight->p_pid])) {
                         $array [$flight->p_pid]->add_flight($flight);
-                    }
-                    else {
+                    } else {
                         $array [$flight->p_pid] = new pilot_official();
                         $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
                         $array [$flight->p_pid]->output_function = 'csv';
@@ -497,8 +505,9 @@ class league_table {
     function getFlights($year) {
         if ($year >= 2003 || $year == "All Time") {
             return 6;
-        } else
+        } else {
             return 5;
+        }
     }
 
     /**
@@ -535,8 +544,9 @@ class league_table {
                     $prefix = $flight->name . ' (' . ($flight->class == 5 ? 'R' : 'F') . ') ';
                     $html .= $flight->to_print($prefix)
                                     ->get();
-                } else
+                } else {
                     $html .= node::create('td', [], 'No Flights Fit');
+                }
             }
             $html .= '</tr>';
         }
