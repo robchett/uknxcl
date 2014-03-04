@@ -100,7 +100,7 @@ class table_gen_form extends form {
                 ->set_attr('value', 1)
                 ->set_attr('help', 'Handicap to set Rigid glider'),
             form::create('field_string', 'os')
-                ->set_attr('label', 'Flown through')
+                ->set_attr('label', 'Flown through (eg. SU,TQ)')
                 ->set_attr('value', '')
                 ->set_attr('help', 'OS grids flights must fly through')
                 ->set_attr('required', false),
