@@ -2,6 +2,7 @@
 namespace module\add_flight\form;
 
 use classes\ajax;
+use classes\compiler;
 use classes\geometry;
 use classes\get;
 use classes\session;
@@ -43,7 +44,8 @@ class igc_upload_form extends form {
     }
 
     public function do_submit() {
-        if (isset($_FILES['file'])) {
+        compiler::disable();
+        if (isset($_FILES['kml'])) {
             $track = new track();
             $this->create_track($track);
         } else {
@@ -52,11 +54,8 @@ class igc_upload_form extends form {
     }
 
     private function create_track(track $track, $start = 0, $end = 0) {
-        $track->console("File upload accepted");
         $track->temp = true;
         $track->create_from_upload();
-        $track->console("File moved and backed-up");
-
         $track->parse_IGC();
         if ($end || $start) {
             $track->truncate($start, $end);
@@ -72,7 +71,6 @@ class igc_upload_form extends form {
         if (!empty($this->coords)) {
             $defined = $track->set_task($this->coords);
         }
-        $track->console($track->get_number_of_parts() . ' Track' . ($track->get_number_of_parts() > 1 ? 's' : ''));
         $html = $track->error;
         if ($track->get_number_of_parts() > 1) {
             geometry::time_split_kml_plus_js($track);
@@ -132,7 +130,7 @@ class igc_upload_form extends form {
             node::create('td', [], $track->task->title) .
             node::create('td', [], $track->task->get_distance(3) . ' / ' . number_format($multiplier)) .
             node::create('td', [], $track->task->get_distance(3) * number_format($multiplier)) .
-            node::create('td a.score_select choose', ['data-post' => '\'{"track":' . $track->id . ',"type":"task"}\''], 'Choose')
+            node::create('td a.button.score_select choose', ['data-post' => '\'{"track":' . $track->id . ',"type":"task"}\''], 'Choose')
         );
     }
 
@@ -152,7 +150,7 @@ class igc_upload_form extends form {
                 node::create('td', [], $task->title) .
                 node::create('td', [], $task->get_distance(3) . ' / ' . number_format($flight_type->multi)) .
                 node::create('td', [], $task->get_distance(3) * number_format($flight_type->multi)) .
-                node::create('td a.score_select', ['data-post' => '{"track":' . $track->id . ',"type":"' . $type . '"}'], 'Choose')
+                node::create('td a.button.score_select', ['data-post' => '{"track":' . $track->id . ',"type":"' . $type . '"}'], 'Choose')
             );
         }
         return '';
@@ -163,6 +161,7 @@ class igc_upload_form extends form {
         if (!empty($this->coords) && !preg_match('/^((h[l-z]|n[a-hj-z]|s[a-hj-z]|t[abfglmqrvw])[0-9]{6};?){2,5}$/i', $this->coords)) {
             $this->validation_errors['coords'] = 'Coordinated are not valid';
         }
+        return !count($this->validation_errors);
     }
 
     public function reset() {

@@ -109,7 +109,7 @@ class coordinates_form extends form {
         $flight->delayed = $this->force_delay ? true : $this->delay;
         $flight->do_save();
 
-        jquery::colorbox(['html' => 'Your flight has been added successfully']);
+        jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
         $form = new coordinates_form();
         ajax::update($form->get_html()->get());
     }

@@ -2,6 +2,7 @@
 
 namespace track;
 
+use classes\collection;
 use classes\collection_iterator;
 use classes\coordinate_bound;
 use classes\db;
@@ -99,6 +100,9 @@ class track {
         $this->club = new club();
         $this->glider = new glider();
         $this->bounds = new coordinate_bound();
+        if (!is_dir(root . '/uploads/flight/' . $this->id)) {
+            mkdir(root . '/uploads/flight/' . $this->id);
+        }
         $this->log = new log(log::DEBUG, '/uploads/flight/' . $this->id . '/info-' . time() . '.txt');
     }
 
@@ -223,7 +227,7 @@ class track {
     }
 
     public function create_from_upload() {
-        if (isset($_FILES ["file"] ["tmp_name"])) {
+        if (isset($_FILES['kml']['tmp_name'])) {
             $dir = $this->get_file_loc();
             if (!file_exists($dir)) {
                 mkdir($dir);
@@ -233,7 +237,7 @@ class track {
                     unlink($file);
                 }
             }
-            move_uploaded_file($_FILES ["file"] ["tmp_name"], $dir . '/track.igc');
+            move_uploaded_file($_FILES['kml']['tmp_name'], $dir . '/track.igc');
             copy($dir . '/track.igc', $dir . '/track_backup.igc');
         }
     }
@@ -317,8 +321,9 @@ class track {
         $track_inner->data = [];
         $track_inner->coords = [];
         /** @var track_point $a */
+        $initial_time = $this->track_points->first()->time;
         foreach ($this->track_points as $a) {
-            $time = $a->time - $this->track_points->first()->time;
+            $time = $a->time - $initial_time;
             $track_inner->coords[] = $a->get_js_coordinate();
             $track_inner->data[] = $a->get_graph_point($time);
         }
@@ -456,13 +461,12 @@ class track {
         $kml->get_kml_folder_close();
 
         $kml->get_kml_folder_open('Standard', 1, 'hideChildren', 0);
-        $subset = $this->track_points->subset();
-        if ($subset->count) {
-            $kml->add(kml::create_linestring('shadow', $subset, 'clampToGround'));
+        if ($this->track_points->count()) {
+            $kml->add(kml::create_linestring('shadow', $this->track_points, 'clampToGround'));
             $kml->get_kml_folder_close();
 
             $kml->get_kml_folder_open('Extrude', 0, 'hideChildren', 0);
-            $kml->add(kml::create_linestring('shadow', $subset, 'absolute', 1));
+            $kml->add(kml::create_linestring('shadow', $this->track_points, 'absolute', 1));
             $kml->get_kml_folder_close();
         }
 
@@ -540,14 +544,14 @@ class track {
             $coordinates[] = $point;
             $current_level = floor(($point->$value - $min) * 16 / $var);
             if ($current_level != $last_level && $current_level != 16) {
-                $output .= kml::create_linestring('#S' . $last_level, new collection_iterator($coordinates));
+                $output .= kml::create_linestring('#S' . $last_level, new collection($coordinates));
                 $coordinates = [];
                 $coordinates[] = $point;
                 $last_level = $current_level;
             }
         }
         if (!empty($coordinates))
-            $output .= kml::create_linestring('#S' . $current_level, new collection_iterator($coordinates));
+            $output .= kml::create_linestring('#S' . $current_level, new collection($coordinates));
         if ($scale)
             $output .= kml::get_scale($min, $max);
         return $output;
@@ -1424,7 +1428,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
             $end = $this->track_points->count();
         }
         $points = $this->track_points->subset($start, $end);
-        $this->track_points->exchangeArray($points);
+        $this->track_points->setIterator($points);
     }
 
     /**

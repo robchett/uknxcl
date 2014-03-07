@@ -130,11 +130,11 @@ class igc_form extends form {
             $track->generate_output_files();
             $flight->do_save();
 
-            jquery::colorbox(['html' => 'Your flight has been added successfully']);
+            jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
             $form = new igc_form();
             ajax::update($form->get_html()->get());
         } else {
-            jquery::colorbox(['html' => 'Your flight has failed to save']);
+            jquery::colorbox(['html' => 'Your flight has failed to save', 'className'=> 'success failure']);
         }
     }
 

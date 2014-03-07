@@ -95,7 +95,7 @@ class igc_supported extends \template\html {
         var data = $(this).data("post");
         $("#igc_form #temp_id").val(data.track);
         $("#igc_form #type").val(data.type);
-        $("#igc_upload_form").html("<p class=\"restart\">Your flight details have been saved, please complete the form below, \"Additional Details\", to finalise your sumbission.<br/><a data-ajax-click=\"igc_upload_form:reset\" href=\"#\" >Restart</a></p>");
+        $("#igc_upload_form").html("<p class=\"restart\">Your flight details have been saved, please complete the form below, \"Additional Details\", to finalise your sumbission.<br/><a data-ajax-click=\"module\\add_flight\\form\\igc_upload_form:reset\" href=\"#\" class=\"button\">Restart</a></p>");
         $("#igc_form input.submit").removeAttr("disabled");
     });';
         if (ajax) {
