@@ -577,18 +577,20 @@ function Comp(id) {
     };
 
     this.hide = function () {
-        this.nxcl_data.track.each(function (track) {
-            track.draw_graph = false;
-        });
-        this.marker.each(function (marker) {
-            marker.setMap(null);
-        });
-        this.google_data.gpolylines.each(function (polyline) {
-            polyline.setMap(null);
-        });
-        this.google_data.gpolygons.each(function (polygons) {
-            polygons.setMap(null);
-        });
+        if ( typeof this.nxcl_data.track != 'undefined' ) {
+            this.nxcl_data.track.each(function (track) {
+                track.draw_graph = false;
+            });
+            this.marker.each(function (marker) {
+                marker.setMap(null);
+            });
+            this.google_data.gpolylines.each(function (polyline) {
+                polyline.setMap(null);
+            });
+            this.google_data.gpolygons.each(function (polygons) {
+                polygons.setMap(null);
+            });
+        }
         this.visible = false;
         map.graph.setGraph();
     };
