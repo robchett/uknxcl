@@ -56,7 +56,12 @@ class table_gen_form extends form {
                 ->set_attr('help', 'Show only flights in the winter (start of november-end of February) | or the summer season'),
             form::create('field_select', 'c3d')
                 ->set_attr('label', 'KML Submitted:')
-                ->set_attr('options', [0 => 'Don\'t Sort', 3 => 'Yes (3D)', 2 => 'Yes (2D)', 1 => 'Yes (Both)', 4 => 'No'])
+                ->set_attr('options', [
+                    0 => 'Don\'t Sort',
+                    3 => 'Yes (3D)',
+                    2 => 'Yes (2D)',
+                    1 => 'Yes (Both)',
+                    4 => 'No'])
                 ->set_attr('help', 'Choose what type of track confirmation you want.'),
             form::create('field_select', 'cls')
                 ->set_attr('label', 'Glider Class:')
@@ -94,6 +99,11 @@ class table_gen_form extends form {
                 ->set_attr('label', '-&gt; Class 5')
                 ->set_attr('value', 1)
                 ->set_attr('help', 'Handicap to set Rigid glider'),
+            form::create('field_string', 'os')
+                ->set_attr('label', 'Flown through (eg. SU,TQ)')
+                ->set_attr('value', '')
+                ->set_attr('help', 'OS grids flights must fly through')
+                ->set_attr('required', false),
             form::create('field_multi_select', 'launch')
                 ->set_attr('label', 'Launch Type')
                 ->set_attr('help', 'Include certain launch methods')
@@ -104,18 +114,25 @@ class table_gen_form extends form {
                 ->set_attr('label', 'Launch Type')
                 ->set_attr('help', 'Include flight types')
                 ->set_attr('default', '')
-                ->set_attr('value', ['od', 'or', 'tr', 'go'])
-                ->set_attr('options', ['od' => 'Open Distance', 'go' => 'Goal', 'or' => 'Out and Return', 'tr' => 'Triangle'])
+                ->set_attr('value', ['od', 'or', 'tr', 'go', 'ft'])
+                ->set_attr('options', [
+                    'od' => 'Open Distance',
+                    'go' => 'Goal',
+                    'or' => 'Out and Return',
+                    'tr' => 'Triangle',
+                    'ft' => 'Flat Triangle'])
         ];
+
 
         parent::__construct($fields);
 
         $this->name = 'advTables';
         $this->title = 'Pre Calculation Checks';
         $this->description = '';
+        $this->wrapper_class = '.advanced_tables_wrapper';
         $this->id = 'advanced_tables';
         $this->submit = 'Generate';
-        $this->post_text = node::create('a.form_toggle', ['data-show' => 'basic_tables_form_wrapper'], 'Basic');
+        $this->post_text = node::create('a.form_toggle', ['data-show' => 'basic_tables_wrapper'], 'Basic');
         $this->h2 = 'Advanced Options';
     }
 
