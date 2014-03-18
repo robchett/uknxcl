@@ -1023,11 +1023,11 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
         $this->track_points->iterate(
             function (track_point $track_point) use (&$previous) {
                 if ($this->has_height() && $track_point->ele == 0) {
-                    $this->log_fine("Filled in trough  : 0 ele", $this);
+                    $this->log->debug("Filled in trough  : 0 ele", $this);
                     $track_point->ele = $previous->ele;
                 }
                 if ($this->has_height() && $track_point->ele > $previous->ele + 500) {
-                    $this->log_fine("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
+                    $this->log->debug("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
                     $track_point->ele = $previous->ele;
                 }
                 $previous = clone $track_point;
