@@ -14,7 +14,6 @@ use traits\table_trait;
 
 /**
  * @property mixed club_title
- * @property mixed invis_info
  * @property mixed winter
  * @property mixed delayed
  */
@@ -25,6 +24,7 @@ class flight extends table {
     public $title;
     public $added;
     public $admin_info;
+    public $invis_info = '';
     public $base_score;
     public $cid;
     public $club_name;
