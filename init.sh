@@ -14,6 +14,7 @@ echo 'Adding aliases'
 su vagrant -c "echo 'alias yum=\"sudo yum\"' >> ~/.bashrc"
 su vagrant -c "echo 'alias service=\"sudo service\"' >> ~/.bashrc"
 su vagrant -c "echo 'alias la=\"ls -la\"' >> ~/.bashrc"
+su vagrant -c "echo 'export EDITOR=nano' >> ~/.bashrc"
 su vagrant -c ". ~/.bashrc"
 
 echo 'Mananging git settings'
