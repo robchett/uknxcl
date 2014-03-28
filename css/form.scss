@@ -1,5 +1,5 @@
 h2.form_title {
-  .heading();
+  @include heading();
   text-align: center;
   color: #ffffff;
   font-weight: bold;
@@ -18,7 +18,7 @@ h2.form_title {
 }
 
 form {
-  border: @blue_border;
+  border: $blue_border;
   padding: 10px;
   margin-top: 0;
 
@@ -127,7 +127,7 @@ form {
     }
     a {
       display: block;
-      .button();
+      @include button();
     }
   }
   .defined_info {
@@ -307,7 +307,7 @@ form {
 
 #form_wrapper {
   p.success {
-    border: @default_border;
+    border: $default_border;
     margin: 0;
     padding: 20px 0;
     text-align: center;

@@ -8,15 +8,15 @@
         display: inline-block;
         width: 25%;
         vertical-align: bottom;
-        background-color: @primary;
+        background-color: $primary;
         &:nth-child(3n+1) {
-          background-color: @secondary;
+          background-color: $secondary;
         }
         &:nth-child(3n+2) {
-          background-color: @tertiary;
+          background-color: $tertiary;
         }
         &:hover {
-          .opacity(0.8);
+          @include opacity(0.8);
         }
         a {
           display: block;

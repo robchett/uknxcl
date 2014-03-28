@@ -20,7 +20,7 @@
       }
     }
     thead {
-      .heading();
+      @include heading();
       border: 1px solid #0a4dad;
       overflow: hidden;
       th {

@@ -35,7 +35,7 @@ a {
 }
 
 a.button {
-  .button();
+  @include button();
   &:hover {
     color: #767676;
   }
@@ -46,7 +46,7 @@ a.button {
     &:hover {
       color: #b40504;
     }
-    .opacity(0.4);
+    @include opacity(0.4);
   }
 }
 
