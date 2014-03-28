@@ -1,6 +1,6 @@
 #comp_maker {
   h2, h5 {
-    .heading(#75b7fd, #0c3f6b, #0a4dad, 10px);
+    @include heading(#75b7fd, #0c3f6b, #0a4dad, 10px);
   }
   h5 {
     font-size: 12px;
@@ -10,7 +10,7 @@
     &.loading {
     }
     div {
-      border: @blue_border;
+      border: $blue_border;
       padding: 10px;
       margin-top: 0;
       form {

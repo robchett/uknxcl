@@ -1,0 +1,23 @@
+$primary: #0c3f6b;
+$secondary: #0a4dad;
+$tertiary: #75b7fd;
+$table_background: #D5E3FF;
+$default_border: solid 1px silver;
+$blue_border: solid 1px #0E406D;
+
+@mixin button() {
+  display: block;
+  padding: 5px;
+  background-color: #ededed;
+  border: 1px solid #cccccc;
+  text-align: center;
+  font-weight: bold;
+  color: $primary;
+}
+
+@mixin heading() {
+  background-color: $secondary;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 0;
+}

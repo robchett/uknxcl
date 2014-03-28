@@ -16,7 +16,7 @@
 
   #path_wrapper {
     h4 {
-      .heading();
+      @include heading();
     }
     div#path {
       border: 1px solid #cccccc;
@@ -25,7 +25,7 @@
   }
 
   form {
-    .cf();
+    @include cf();
     border: 2px dashed #cccccc;
     ul {
       li { margin-bottom: 0;

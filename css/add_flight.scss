@@ -6,7 +6,7 @@ div.add_flight_section {
   }
   div#kml_calc {
     display: block;
-    .button();
+    @include button();
 
     a.calc {
       display: block;

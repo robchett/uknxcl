@@ -13,7 +13,7 @@
   width: 40px;
   height: 16px;
   margin-right: 20px;
-  .button;
+  @include button;
   #key2 {
     width: 400px;
     background: #ffffff;
@@ -21,7 +21,7 @@
     margin-bottom: 10px;
     text-align: center;
     position: absolute;
-    border: @default_border;
+    border: $default_border;
     left: 263px;
   }
   &:hover #key2 {
@@ -39,10 +39,10 @@
     }
   }
   tbody {
-    border-bottom: @default_border;
+    border-bottom: $default_border;
   }
   h3 {
-    .heading();
+    @include heading();
   }
 }
 
@@ -56,14 +56,14 @@ table {
 
     tr { height: 24px;
 
-      &:nth-child(2n) { background: @table_background }
+      &:nth-child(2n) { background: $table_background }
       th {
         text-align: center;
         &.flights6 { width: 59px }
         &.flights5 { width: 65px }
       }
       td {
-        border: @default_border;
+        border: $default_border;
         border-width: 0 1px 0px 1px;
         border-collapse: collapse;
         height: 100%;
@@ -82,9 +82,9 @@ table {
     margin-bottom: 10px;
     thead {
       tr {
-        background-color: @secondary;
+        background-color: $secondary;
         color: #ffffff;
-        &:hover { background-color: @secondary }
+        &:hover { background-color: $secondary }
         th {
           &.pos { width: 21px }
           &.club { width: 95px }
