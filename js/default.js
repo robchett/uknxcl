@@ -2,11 +2,17 @@ var map;
 var main_scrollpane;
 var throttleTimeout;
 var $body;
+var planner_string = planner_string || false;
 
 $(document).ready(function () {
     if (typeof google != 'undefined') {
         map = new UKNXCL_Map($("#map_wrapper"));
         map.load_map();
+        if(planner_string) {
+            map.callback(function() {
+                map.planner.load_string(planner_string);
+            });
+        }
     } else {
         $('#map').children('p.loading').html('Failed to load Google resources');
     }

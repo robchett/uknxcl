@@ -111,7 +111,7 @@ class table_gen_form extends form {
                 ->set_attr('value', ['w', 'f', 'a'])
                 ->set_attr('options', ['w' => 'Winch', 'f' => 'Foot', 'a' => 'Aerotow']),
             form::create('field_multi_select', 'flight_type')
-                ->set_attr('label', 'Launch Type')
+                ->set_attr('label', 'Flight Type')
                 ->set_attr('help', 'Include flight types')
                 ->set_attr('default', '')
                 ->set_attr('value', ['od', 'or', 'tr', 'go', 'ft'])

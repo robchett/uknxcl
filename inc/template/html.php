@@ -20,7 +20,7 @@ abstract class html extends \core\template\html {
                     )
                 ) .
                 node::create('div#map_wrapper', [],
-                    node::create('div#waypoint_mode_help', ['style' => 'display:none'], 'You are in waypoint mode') .
+                    node::create('div#waypoint_mode_help', [], 'You are in waypoint mode') .
                     node::create('div#map_interface', [],
                         node::create('div#map_interface_padding', [],
                             node::create('div#graph_wrapper', [], '') .

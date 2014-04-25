@@ -33,11 +33,16 @@ class _default extends \template\html {
             node::create('p', [], node::create('a#leave_wp_mode.button', [], 'Leave Waypoint mode (clears map of markers a well)'))
         );
 
+
         $script = '$("a#enter_wp_mode").click(function(){map.planner.enable();});';
         $script .= '$("a#leave_wp_mode").click(function(){map.planner.clear();});';
         if (ajax) {
+            $script .= 'map.planner.calculate_distances();map.planner.writeplanner();';
             ajax::add_script($script);
         } else {
+            if($this->module->import_string) {
+                \core::$global_script[] = 'var planner_string = "' . $this->module->import_string . '"';
+            }
             \core::$inline_script[] = $script;
         }
 

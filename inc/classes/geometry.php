@@ -18,6 +18,23 @@ class geometry {
         }
     }
 
+    public static function coordinate_normalise($coordinate) {
+        $parts = explode(' ', $coordinate, 2);
+        $dir = 1;
+        if(isset($parts[0][0]) && !is_numeric($parts[0][0])) {
+            $char = strtolower($parts[0][0]);
+            if($char == 's' || $char == 'w' || $char == '-') {
+                $dir = -1;
+            }
+        } else {
+            $dir = ($parts[0] >= 0 ? 1 :  -1);
+        }
+        if (count($parts) >= 2) {
+            return $parts[0] + $dir * (5 / 300 * $parts[1]);
+        }
+        return $coordinate;
+    }
+
     public static function get_distance_ellipsoid(lat_lng $obj1, lat_lng $obj2) {
         $a = 6378.137 / 1.852;
         $f = 1 / 298.257223563;
