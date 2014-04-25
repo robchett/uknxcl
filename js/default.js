@@ -10,7 +10,9 @@ $(document).ready(function () {
         map.load_map();
         if(planner_string) {
             map.callback(function() {
-                map.planner.load_string(planner_string);
+                setTimeout(function() {
+                    map.planner.load_string(planner_string);
+                },300);
             });
         }
     } else {
