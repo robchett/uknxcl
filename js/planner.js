@@ -348,6 +348,8 @@ function Planner(parent) {
                 new google.maps.event.trigger(marker, 'click');
             }
         }, this);
+        this.draw_triangle_guides();
+        map.center(this.coordinates);
     };
 
     this.add_point_full = function(lat, lng) {
