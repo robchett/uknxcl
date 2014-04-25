@@ -17,7 +17,9 @@ h2.form_title {
   overflow: hidden;;
 }
 
+
 form {
+  @include form();
   border: $blue_border;
   padding: 10px;
   margin-top: 0;

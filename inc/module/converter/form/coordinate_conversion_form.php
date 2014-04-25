@@ -6,6 +6,7 @@ use classes\geometry;
 use classes\gps_datums;
 use classes\lat_lng;
 use form\form;
+use html\a;
 
 class coordinate_conversion_form extends form {
 
@@ -23,13 +24,13 @@ class coordinate_conversion_form extends form {
             form::create('field_select', 'source')
                 ->set_attr('default', '')
                 ->set_attr('options', ['OS6', 'OS8', 'OSGB36', 'WGS84']),
-            form::create('field_float', 'OSGB36_lat')
+            form::create('field_string', 'OSGB36_lat')
                 ->set_attr('required', false),
-            form::create('field_float', 'OSGB36_lng')
+            form::create('field_string', 'OSGB36_lng')
                 ->set_attr('required', false),
-            form::create('field_float', 'WGS84_lat')
+            form::create('field_string', 'WGS84_lat')
                 ->set_attr('required', false),
-            form::create('field_float', 'WGS84_lng')
+            form::create('field_string', 'WGS84_lng')
                 ->set_attr('required', false),
             form::create('field_string', 'OS6'),
             form::create('field_string', 'OS8')
@@ -43,43 +44,46 @@ class coordinate_conversion_form extends form {
     public function set_disabled() {
         foreach ($this->fields as $field) {
             $field->set_attr('disabled', true)
-                ->set_attr('required', false);
+                  ->set_attr('required', false);
         }
         $this->get_field_from_name('source')
-            ->set_attr('disabled', false);
+             ->set_attr('disabled', false);
 
         switch ($this->source) {
             case 0:
                 $this->get_field_from_name('OS6')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 break;
             case 1:
                 $this->get_field_from_name('OS8')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 break;
             case 2:
                 $this->get_field_from_name('OSGB36_lat')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 $this->get_field_from_name('OSGB36_lng')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 break;
             case 3:
                 $this->get_field_from_name('WGS84_lat')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 $this->get_field_from_name('WGS84_lng')
-                    ->set_attr('disabled', false)
-                    ->set_attr('required', true);
+                     ->set_attr('disabled', false)
+                     ->set_attr('required', true);
                 break;
         }
     }
 
     public function get_html() {
         $this->set_disabled();
+        if ($this->OSGB36_lng && $this->OSGB36_lat) {
+            $this->post_fields_text = a::create('a.button', ['onClick' => 'javascript:map.planner.add_point_full(' . $this->WGS84_lat . ', ' . $this->WGS84_lng . ');'], 'Add to map');
+        }
         return parent::get_html();
     }
 
@@ -110,30 +114,34 @@ class coordinate_conversion_form extends form {
         parent::set_from_request();
         switch ($this->source) {
             case 0:
-                unset($this->OS8);
-                unset($this->OSGB36_lat);
-                unset($this->OSGB36_lng);
-                unset($this->WGS84_lat);
-                unset($this->WGS84_lng);
+                $this->OS8 = null;;
+                $this->OSGB36_lat = null;;
+                $this->OSGB36_lng = null;;
+                $this->WGS84_lat = null;;
+                $this->WGS84_lng = null;;
                 break;
             case 1:
-                unset($this->OS6);
-                unset($this->OSGB36_lat);
-                unset($this->OSGB36_lng);
-                unset($this->WGS84_lat);
-                unset($this->WGS84_lng);
+                $this->OS6 = null;;
+                $this->OSGB36_lat = null;;
+                $this->OSGB36_lng = null;;
+                $this->WGS84_lat = null;;
+                $this->WGS84_lng = null;;
                 break;
             case 2:
-                unset($this->OS6);
-                unset($this->OS8);
-                unset($this->WGS84_lat);
-                unset($this->WGS84_lng);
+                $this->OS6 = null;;
+                $this->OS8 = null;;
+                $this->WGS84_lat = null;;
+                $this->WGS84_lng = null;;
+                $this->OSGB36_lat = geometry::coordinate_normalise($this->OSGB36_lat);
+                $this->OSGB36_lng = geometry::coordinate_normalise($this->OSGB36_lng);
                 break;
             case 3:
-                unset($this->OS6);
-                unset($this->OS8);
-                unset($this->OSGB36_lat);
-                unset($this->OSGB36_lng);
+                $this->OS6 = null;;
+                $this->OS8 = null;;
+                $this->OSGB36_lat = null;;
+                $this->OSGB36_lng = null;;
+                $this->WGS84_lat = geometry::coordinate_normalise($this->WGS84_lat);
+                $this->WGS84_lng = geometry::coordinate_normalise($this->WGS84_lng);
                 break;
             default:
                 break;

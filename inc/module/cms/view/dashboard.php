@@ -30,7 +30,7 @@ class dashboard extends \core\module\cms\view\dashboard {
     }
 
     public function get_latest_flights() {
-        $flights = flight::get_all(['fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.title', 'admin_info', 'delayed'], ['join' => flight::$default_joins, 'limit' => 15, 'order' => 'fid DESC']);
+        $flights = flight::get_all(['fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.title', 'admin_info', 'delayed'], ['join' => flight::$default_joins, 'limit' => 14, 'order' => 'fid DESC']);
         $table = node::create('table#latest_flights.module', [],
             node::create('thead', [],
                 node::create('th', [], 'ID') .
