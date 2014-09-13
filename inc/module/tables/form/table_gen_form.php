@@ -76,6 +76,9 @@ class table_gen_form extends form {
                 ->set_attr('label', 'Minimum Distance')
                 ->set_attr('value', 10)
                 ->set_attr('help', 'Exclude flights under this distance (pre-multipliers)'),
+            form::create('field_date', 'Date')
+                ->set_attr('label', 'Date')
+                ->set_attr('help', 'A date in which to show flights flown.'),
             form::create('field_boolean', 'noMulti')
                 ->set_attr('label', 'No Multipliers')
                 ->set_attr('help', 'Do not add multipliers for qualifying flights, useful for looking up records.'),
