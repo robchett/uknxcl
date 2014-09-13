@@ -23,6 +23,7 @@ class league_table_options {
     public $split_classes = false;
     public $glider_mode = false;
     public $minimum_score = 10;
+    public $date = null;
     public $flown_through = [];
 
     const LAYOUT_LEAGUE = 0;
@@ -47,6 +48,7 @@ class league_table_options {
         $this->get_gender();
         $this->get_dimensions();
         $this->get_rigid();
+        $this->get_date();
         $this->get_multipliers();
         $this->get_launch_string();
         $this->get_flight_type_string();
@@ -169,6 +171,20 @@ class league_table_options {
         if (!is_null($this->rigid)) {
             $this->parent->where[] = 'rigid=:rigid';
             $this->parent->parameters['rigid'] = $this->rigid;
+        }
+    }
+
+    public function set_date($value) {
+        $time = @strtotime($value) ?: $value;
+        if (is_numeric($time) && $time) {
+            $this->date = $value;
+        }
+    }
+
+    public function get_date() {
+        if (!is_null($this->date)) {
+            $this->parent->where[] = 'date=:date';
+            $this->parent->parameters['date'] = $this->date;
         }
     }
 

@@ -56,7 +56,7 @@ class league_table {
         $decode = urldecode($url);
         $decode_parts = explode(',', $decode);
         foreach ($decode_parts as $part) {
-            $key_val = explode('-', $part, 2);
+            $key_val = explode('~', $part, 2);
             if (count($key_val) == 2) {
                 if (strpos($key_val[1], '[') === 0) {
                     $key_val[1] = explode('|', substr($key_val[1], 1, strlen($key_val[1]) - 2));
@@ -73,7 +73,7 @@ class league_table {
                 $part = str_replace([',', '"'], ['|', ''], json_encode($part));
             }
         }
-        $json = str_replace([':', '"'], ['-', ''], trim(json_encode($parts), '{}'));
+        $json = str_replace([':', '"'], ['~', ''], trim(json_encode($parts), '{}'));
         return urlencode($json);
     }
 
@@ -159,10 +159,8 @@ class league_table {
         if (isset ($this->in ['rdg'])) {
             $this->options->set_rigid($this->in['rgd']);
         }
-        if (isset ($this->in ['date'])) {
-            $this->where[] .= 'date = :date';
-            $this->parameters['date'] = $this->in['date'];
-            // $this->options->layout = league_table_options::LAYOUT_TOP_TEN;
+        if (isset ($this->in ['Date'])) {
+            $this->options->set_date($this->in['Date']);
         }
         if (isset ($this->in ['noMulti'])) {
             $this->options->use_multipliers = false;
