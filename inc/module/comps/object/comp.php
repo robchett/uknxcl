@@ -102,7 +102,7 @@ class comp extends table {
             $coord->type = 1;
             if ($matches[1][$key] == 'SS') {
                 $coord->speed_section = self::TASK_SPEED_SECTION_OPEN;
-            } else if ($matches[1][$key] == 'SS') {
+            } else if ($matches[1][$key] == 'ES') {
                 $coord->speed_section = self::TASK_SPEED_SECTION_CLOSE;
             } else {
                 $coord->speed_section = 0;
