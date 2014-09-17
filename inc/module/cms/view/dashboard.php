@@ -10,19 +10,21 @@ class dashboard extends \core\module\cms\view\dashboard {
 
     public function get_view() {
         $html = node::create('div', [],
-            node::create('h2', [], 'Welcome to the dashboard') .
-            node::create('div#summaries.cf', [],
-                node::create('div', [],
+            node::create('h2.page-header.container-fluid', [], 'Welcome to the dashboard') .
+            node::create('div#summaries div', [],
+                node::create('div.col-md-6', [],
                     node::create('h4 a', ['href' => '/cms/module/2', 'title' => 'View all flights'], 'Latest Flights') .
                     $this->get_latest_flights()
                 ) .
-                node::create('div', [],
-                    node::create('h4 a', ['href' => '/cms/module/3', 'title' => 'View all pilots'], 'Latest Pilots') .
-                    $this->get_latest_pilots()
-                ) .
-                node::create('div', [],
-                    node::create('h4 a', ['href' => '/cms/module/12', 'title' => 'View all gliders'], 'Latest Gliders') .
-                    $this->get_latest_gliders()
+                node::create('div.col-md-6', [],
+                    node::create('div', [],
+                        node::create('h4 a', ['href' => '/cms/module/3', 'title' => 'View all pilots'], 'Latest Pilots') .
+                        $this->get_latest_pilots()
+                    ) .
+                    node::create('div', [],
+                        node::create('h4 a', ['href' => '/cms/module/12', 'title' => 'View all gliders'], 'Latest Gliders') .
+                        $this->get_latest_gliders()
+                    )
                 )
             )
         );
@@ -31,7 +33,7 @@ class dashboard extends \core\module\cms\view\dashboard {
 
     public function get_latest_flights() {
         $flights = flight::get_all(['fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.title', 'admin_info', 'delayed'], ['join' => flight::$default_joins, 'limit' => 14, 'order' => 'fid DESC']);
-        $table = node::create('table#latest_flights.module', [],
+        $table = node::create('table#latest_flights.module.table.table-striped', [],
             node::create('thead', [],
                 node::create('th', [], 'ID') .
                 node::create('th', [], 'Date Added') .
@@ -49,7 +51,7 @@ class dashboard extends \core\module\cms\view\dashboard {
                         node::create('td a', ['href' => '/cms/module/3/' . $flight->pilot->pid, 'title' => 'Pilot: ' . $flight->pilot->name], $flight->pilot->name) .
                         node::create('td a', ['href' => '/cms/module/4/' . $flight->glider->gid, 'title' => 'Glider: ' . $flight->glider->name], $flight->glider->name) .
                         node::create('td a', ['href' => '/cms/module/12/' . $flight->club->cid, 'title' => 'Club: ' . $flight->club->name], $flight->club->name) .
-                        node::create('td', [], $flight->admin_info) .
+                        node::create('td.col-md-5', [], $flight->admin_info) .
                         node::create('td', [], $flight->delayed ? 'Yes' : 'No')
                     );
                 }
@@ -60,7 +62,7 @@ class dashboard extends \core\module\cms\view\dashboard {
 
     public function get_latest_pilots() {
         $pilots = pilot::get_all(['pid', 'name', 'bhpa_no', 'email'], ['limit' => 5, 'order' => 'pid DESC']);
-        $table = node::create('table#latest_pilots.module', [],
+        $table = node::create('table#latest_pilots.module.table.table-striped', [],
             node::create('thead', [],
                 node::create('th', [], 'ID') .
                 node::create('th', [], 'Pilot') .
@@ -83,7 +85,7 @@ class dashboard extends \core\module\cms\view\dashboard {
 
     public function get_latest_gliders() {
         $gliders = glider::get_all(['gid', 'name', 'manufacturer.title'], ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'limit' => 5, 'order' => 'gid DESC']);
-        $table = node::create('table#latest_pilots.module', [],
+        $table = node::create('table#latest_pilots.module.table.table-striped', [],
             node::create('thead', [],
                 node::create('th', [], 'ID') .
                 node::create('th', [], 'Glider') .
