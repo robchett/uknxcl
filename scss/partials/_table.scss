@@ -65,6 +65,9 @@ div#pop {
       &.view {
         padding: 5px 5px;
       }
+      &.info {
+        line-height: 1.2;
+      }
       a.download {
         float: left;
         width: 70px;
@@ -86,6 +89,7 @@ div#pop {
     height: 14px;
     background-color: #777777;
     color: #ffffff;
+    text-align: center;
   }
 }
 

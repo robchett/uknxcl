@@ -23,3 +23,10 @@ $form_default_height: 24;
   color: #ffffff;
   margin-bottom: 0;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  &.heading {
+    @include heading();
+    margin-bottom: 10px;
+  }
+}

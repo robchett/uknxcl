@@ -48,6 +48,9 @@ div#news {
       }
     }
     div.content {
+      p {
+        margin-bottom: 10px;
+      }
       padding: 10px;
       border: $blue_border;
     }
@@ -65,30 +68,25 @@ div#news_box article a.edit {
   border-top-left-radius: 10px;
 }
 
-div#news_box form, div#news_box #new_article {
-  background-color: #575757;
-  color: white;
-  text-align: center;
-  padding: 20px 0;
-}
-
-div#news_box form fieldset {
-  border: 0;
-}
-
-div#news_box form label span {
-  text-align: left;
-  line-height: 26px;
-  width: 80px;
-  display: block;
-  float: left
-}
-
-div#news_box form label input, div#news_box form label select {
-  width: 550px;
-}
-
-div#news_box form label textarea {
-  width: 550px;
-  height: 300px;
+.editable_content {
+  p {
+    margin-bottom: 10px;
+  }
+  ol {
+    list-style: decimal outside;
+  }
+  ul {
+    list-style: disc outside;
+  }
+  ol ol, ol ul, ul ol, ul ul {
+    padding-top: 10px;
+  }
+  ol, ul {
+    padding: 0 0 0 20px;
+    margin-bottom: 10px;
+    li {
+      list-style: inherit;
+      padding: 0 0 10px 0;
+    }
+  }
 }
