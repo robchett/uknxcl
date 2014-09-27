@@ -18,6 +18,14 @@
         &:hover {
           @include opacity(0.8);
         }
+
+        h2 {
+          span:before {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 15px;
+          }
+        }
         a {
           display: block;
           padding: 20px;

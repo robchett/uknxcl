@@ -23,9 +23,6 @@ body.waypoint_mode {
   }
 
   #path_wrapper {
-    h4 {
-      @include heading();
-    }
     div#path {
       border: 1px solid #cccccc;
       padding: 10px;
