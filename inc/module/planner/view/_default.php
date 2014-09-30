@@ -12,8 +12,9 @@ class _default extends \template\html {
 
     public function get_view() {
         $form = new form\planner_load_waypoints();
+        $form->h2 = 'Load a waypoint set';
         $html = node::create('div#waypoints', [],
-            node::create('h3', [], 'Flight Planner') .
+            node::create('h3.heading', [], 'Flight Planner') .
             node::create('div#wp_overlay a#enter_wp_mode.button', [], 'Enter Planner mode') .
             node::create('ul', [],
                 node::create('li', [], 'Click the map to add a waypoint or load the a predefined set of waypoints: ') .
@@ -27,7 +28,7 @@ class _default extends \template\html {
                 node::create('li', [], 'A triangle of 4 points where the 4th is also the 1st can be saved as a declaration of intent by clicking ' . node::create('a#decTR.button.inline', ['data-ajax-click' => 'planner:get_form', 'data-ajax-post' => '{"coordinates":"", "ftid":' . flight_type::TR_ID . '}', 'disabled' => 'disabled'], 'here'))
             ) .
             node::create('div#path_wrapper', [],
-                node::create('h4', [], 'Path') .
+                node::create('h4.heading.joined', [], 'Path') .
                 node::create('div#path', [], '')
             ) .
             node::create('p', [], node::create('a#leave_wp_mode.button', [], 'Leave Waypoint mode (clears map of markers a well)'))

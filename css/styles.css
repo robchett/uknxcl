@@ -534,6 +534,278 @@ h1, h2, h3, h4, h5, h6 {
   line-height: auto;
 }
 
+/*!
+ * Jasny Bootstrap v3.1.0 (http://jasny.github.com/bootstrap)
+ * Copyright 2011-2014 Arnold Daniels.
+ * Licensed under Apache-2.0 (https://github.com/jasny/bootstrap/blob/master/LICENSE)
+ */
+/* line 7, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-bottom {
+  border-bottom: 0;
+  border-top: 1px solid #dddddd;
+}
+
+/* line 12, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-bottom > li {
+  margin-bottom: 0;
+  margin-top: -1px;
+}
+
+/* line 17, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-bottom > li > a {
+  border-radius: 0 0 4px 4px;
+}
+
+/* line 21, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-bottom > li > a:hover,
+.nav-tabs-bottom > li > a:focus,
+.nav-tabs-bottom > li.active > a,
+.nav-tabs-bottom > li.active > a:hover,
+.nav-tabs-bottom > li.active > a:focus {
+  border: 1px solid #dddddd;
+  border-top-color: transparent;
+}
+
+/* line 30, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-left {
+  border-bottom: 0;
+  border-right: 1px solid #dddddd;
+}
+
+/* line 35, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-left > li {
+  margin-bottom: 0;
+  margin-right: -1px;
+  float: none;
+}
+
+/* line 41, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-left > li > a {
+  border-radius: 4px 0 0 4px;
+  margin-right: 0;
+  margin-bottom: 2px;
+}
+
+/* line 47, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-left > li > a:hover,
+.nav-tabs-left > li > a:focus,
+.nav-tabs-left > li.active > a,
+.nav-tabs-left > li.active > a:hover,
+.nav-tabs-left > li.active > a:focus {
+  border: 1px solid #dddddd;
+  border-right-color: transparent;
+}
+
+/* line 56, ../scss/partials/_2_boostrap_plugins.scss */
+.row > .nav-tabs-left {
+  padding-right: 0;
+  padding-left: 15px;
+  margin-right: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+/* line 64, ../scss/partials/_2_boostrap_plugins.scss */
+.row > .nav-tabs-left + .tab-content {
+  border-left: 1px solid #dddddd;
+}
+
+/* line 68, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-right {
+  border-bottom: 0;
+  border-left: 1px solid #dddddd;
+}
+
+/* line 73, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-right > li {
+  margin-bottom: 0;
+  margin-left: -1px;
+  float: none;
+}
+
+/* line 79, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-right > li > a {
+  border-radius: 0 4px 4px 0;
+  margin-left: 0;
+  margin-bottom: 2px;
+}
+
+/* line 85, ../scss/partials/_2_boostrap_plugins.scss */
+.nav-tabs-right > li > a:hover,
+.nav-tabs-right > li > a:focus,
+.nav-tabs-right > li.active > a,
+.nav-tabs-right > li.active > a:hover,
+.nav-tabs-right > li.active > a:focus {
+  border: 1px solid #dddddd;
+  border-left-color: transparent;
+}
+
+/* line 94, ../scss/partials/_2_boostrap_plugins.scss */
+.row > .nav-tabs-right {
+  padding-left: 0;
+  padding-right: 15px;
+}
+
+/* line 99, ../scss/partials/_2_boostrap_plugins.scss */
+.btn-file {
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+
+/* line 105, ../scss/partials/_2_boostrap_plugins.scss */
+.btn-file > input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  font-size: 23px;
+  height: 100%;
+  width: 100%;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* line 119, ../scss/partials/_2_boostrap_plugins.scss */
+#igc_upload_form_field_kml > div {
+  float: none;
+}
+/* line 122, ../scss/partials/_2_boostrap_plugins.scss */
+#igc_upload_form_field_kml .form-control {
+  width: 80%;
+  height: 100%;
+}
+/* line 126, ../scss/partials/_2_boostrap_plugins.scss */
+#igc_upload_form_field_kml .fileinput {
+  width: 100%;
+  margin-bottom: 9px;
+  display: inline-block;
+  padding: 5px;
+  border: 1px solid #efefef;
+  box-sizing: border-box;
+}
+
+/* line 136, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput .form-control {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: inline-block;
+  margin-bottom: 0px;
+  vertical-align: middle;
+  cursor: text;
+}
+/* line 143, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput .form-control i {
+  margin-right: 5px;
+}
+
+/* line 148, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput .thumbnail {
+  overflow: hidden;
+  display: inline-block;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* line 156, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput .thumbnail > img {
+  max-height: 100%;
+}
+
+/* line 160, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput .btn {
+  vertical-align: middle;
+}
+
+/* line 164, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput-exists .fileinput-new,
+.fileinput-new .fileinput-exists {
+  display: none;
+}
+
+/* line 169, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput-inline .fileinput-controls {
+  display: inline;
+}
+
+/* line 173, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput-filename {
+  vertical-align: middle;
+  display: inline-block;
+  overflow: hidden;
+}
+
+/* line 179, ../scss/partials/_2_boostrap_plugins.scss */
+.form-control .fileinput-filename {
+  vertical-align: bottom;
+}
+
+/* line 183, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput.input-group {
+  display: table;
+}
+
+/* line 187, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput.input-group > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* line 192, ../scss/partials/_2_boostrap_plugins.scss */
+.fileinput.input-group > .btn-file {
+  z-index: 1;
+}
+
+/* line 196, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-warning .fileinput .fileinput-preview {
+  color: #8a6d3b;
+}
+
+/* line 200, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-warning .fileinput .thumbnail {
+  border-color: #faebcc;
+}
+
+/* line 204, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-error .fileinput .fileinput-preview {
+  color: #a94442;
+}
+
+/* line 208, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-error .fileinput .thumbnail {
+  border-color: #ebccd1;
+}
+
+/* line 212, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-success .fileinput .fileinput-preview {
+  color: #3c763d;
+}
+
+/* line 216, ../scss/partials/_2_boostrap_plugins.scss */
+.form-group.has-success .fileinput .thumbnail {
+  border-color: #d6e9c6;
+}
+
+/* line 220, ../scss/partials/_2_boostrap_plugins.scss */
+.input-group-addon:not(:first-child) {
+  float: right;
+  background-color: #efefef;
+  border-left: 0;
+  height: 35px;
+  margin-top: -5px;
+  margin-right: -5px;
+  margin-bottom: -5px;
+  line-height: 35px;
+  padding: 0 5px;
+}
+/* line 230, ../scss/partials/_2_boostrap_plugins.scss */
+.input-group-addon:not(:first-child).fileinput-exists {
+  margin-right: 1px;
+}
+
 /* line 28, ../scss/partials/__elements.scss */
 h1.heading, h2.heading, h3.heading, h4.heading, h5.heading, h6.heading {
   background-color: #0a4dad;
@@ -541,6 +813,20 @@ h1.heading, h2.heading, h3.heading, h4.heading, h5.heading, h6.heading {
   color: #ffffff;
   margin-bottom: 0;
   margin-bottom: 10px;
+}
+/* line 32, ../scss/partials/__elements.scss */
+h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
+  margin-bottom: 0;
+}
+
+/* line 37, ../scss/partials/__elements.scss */
+img.right {
+  float: right;
+}
+
+/* line 40, ../scss/partials/__elements.scss */
+img.left {
+  float: left;
 }
 
 /* line 2, ../scss/partials/_add_flight.scss */
@@ -2201,7 +2487,7 @@ h2.form_title {
   overflow: hidden;
 }
 
-/* line 21, ../scss/partials/_form.scss */
+/* line 20, ../scss/partials/_form.scss */
 form {
   border: solid 1px #0E406D;
   padding: 10px;
@@ -2257,149 +2543,52 @@ form fieldset ul li.form_submit .submit {
   color: #0c3f6b;
   display: block;
 }
-/* line 27, ../scss/partials/_form.scss */
+/* line 26, ../scss/partials/_form.scss */
 form fieldset {
   border: none;
-}
-/* line 29, ../scss/partials/_form.scss */
-form fieldset ul {
   margin-top: 0;
 }
-/* line 32, ../scss/partials/_form.scss */
-form fieldset ul li {
+/* line 30, ../scss/partials/_form.scss */
+form fieldset .form-group {
   clear: both;
 }
-/* line 34, ../scss/partials/_form.scss */
-form fieldset ul li.err {
+/* line 32, ../scss/partials/_form.scss */
+form fieldset .form-group.err {
   color: #b60000;
 }
-/* line 37, ../scss/partials/_form.scss */
-form fieldset ul li label {
-  min-height: 16px;
-  line-height: 16px;
+/* line 35, ../scss/partials/_form.scss */
+form fieldset .form-group label {
+  min-height: 26px;
+  line-height: 26px;
   font-size: 14px;
+  vertical-align: middle;
 }
-/* line 42, ../scss/partials/_form.scss */
-form fieldset ul li input.err, form fieldset ul li form select.err, form fieldset ul li form textarea.err {
+/* line 41, ../scss/partials/_form.scss */
+form fieldset .form-group label, form fieldset .form-group > div {
+  float: left;
+}
+/* line 44, ../scss/partials/_form.scss */
+form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
   border: 1px solid red;
 }
-/* line 46, ../scss/partials/_form.scss */
-form fieldset ul li span {
-  display: block;
-  float: left;
-  width: 100px;
-  text-align: left;
-  line-height: 26px;
-}
-/* line 52, ../scss/partials/_form.scss */
-form fieldset ul li span.checkbox_replace {
-  cursor: pointer;
-  display: inline-block;
-  width: 14px !important;
-  height: 14px !important;
-  padding: 0 !important;
-  border: 1px solid #a0a0a0;
-}
-/* line 59, ../scss/partials/_form.scss */
-form fieldset ul li span.checkbox_replace:hover {
-  background-color: #e5e5e5;
-}
-/* line 62, ../scss/partials/_form.scss */
-form fieldset ul li span.checkbox_replace.checked {
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAA3NCSVQICAjb4U/gAAAAclBMVEXx8fHo6Ojj4+Pg4ODW1tbT09PR0dG7u7u6urq5ubmvr6+np6ehoaGenp6WlpaVlZWSkpKMjIyAgIB8fHx6enp5eXlvb29ubm5kZGRQUFBPT09HR0dGRkY/Pz87Ozs2NjY1NTUzMzMwMDAuLi4qKir///+NWczDAAAAJnRSTlP/////////////////////////////////////////////////AKd6gbwAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA2LzAzLzEz76odTwAAAFhJREFUCJk9zVcOgDAMA9Cy9x5lU8C5/xWB0uAvPytSBHGKYxDcW+w5o8YZkEEIZGRgrZDEaLDYGo5LnkL6bqLaVNRh1Aeix5v4A5VPn8mAJJD88K/JfLsBgKAR7rnTsRIAAAAASUVORK5CYII=) center center no-repeat;
-}
-/* line 64, ../scss/partials/_form.scss */
-form fieldset ul li span.checkbox_replace.checked:hover {
-  background-color: #e5e5e5;
-}
-/* line 68, ../scss/partials/_form.scss */
-form fieldset ul li span.checkbox_replace input {
-  display: none;
-}
-/* line 73, ../scss/partials/_form.scss */
-form fieldset ul li .long_text span {
+/* line 48, ../scss/partials/_form.scss */
+form fieldset .form-group .long_text span {
   display: block;
   float: none;
   width: auto;
   text-align: left;
 }
-/* line 79, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder {
-  display: inline-block;
-  height: 138px;
-  width: 674px;
-  font-size: 50px;
-  line-height: 66px;
-  border: 2px dashed #cccccc;
-  color: #cccccc;
-  cursor: pointer;
-  text-align: center;
-}
-/* line 89, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder.hover {
-  border-style: double;
-}
-/* line 92, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder.hoverPass, form fieldset ul li a.file_holder.pass {
-  border-color: green;
-  color: green;
-}
-/* line 96, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder.hoverFail {
-  border-color: red;
-  color: red;
-}
-/* line 100, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder span.icon {
-  font-size: 50px;
-  line-height: 66px;
-  width: auto;
-  float: none;
-  height: auto;
-  text-align: center;
-}
-/* line 108, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder p.text {
-  font-size: 20px;
-  line-height: 20px;
-}
-/* line 112, ../scss/partials/_form.scss */
-form fieldset ul li a.file_holder input {
-  opacity: 0;
-}
-/* line 120, ../scss/partials/_form.scss */
-form .form_submit input {
-  display: blcok;
-  position: absolute;
-  width: 0;
-  height: 0;
-  padding: 0;
-  margin: 0;
-  left: -9999px;
-  top: -9999px;
-}
-/* line 130, ../scss/partials/_form.scss */
-form .form_submit a {
-  display: block;
-  display: block;
-  padding: 5px;
-  background-color: #ededed;
-  border: 1px solid #cccccc;
-  text-align: center;
-  font-weight: bold;
-  color: #0c3f6b;
-}
-/* line 135, ../scss/partials/_form.scss */
+/* line 56, ../scss/partials/_form.scss */
 form .defined_info {
   margin-top: 10px;
   font-weight: bold;
 }
-/* line 139, ../scss/partials/_form.scss */
-form#advanced_tables, form#basic_tables_form {
+/* line 60, ../scss/partials/_form.scss */
+form#advanced_tables, form#basic_tables {
   display: none;
 }
-/* line 141, ../scss/partials/_form.scss */
-form#advanced_tables li, form#basic_tables_form li {
+/* line 62, ../scss/partials/_form.scss */
+form#advanced_tables .form-group, form#basic_tables .form-group {
   float: left;
   clear: none;
   margin-right: 20px;
@@ -2407,51 +2596,109 @@ form#advanced_tables li, form#basic_tables_form li {
   width: 212px;
   min-height: 20px;
 }
-/* line 149, ../scss/partials/_form.scss */
-form#advanced_tables li:nth-child(3n), form#basic_tables_form li:nth-child(3n) {
+/* line 70, ../scss/partials/_form.scss */
+form#advanced_tables .form-group:nth-child(3n), form#basic_tables .form-group:nth-child(3n) {
   margin-right: 0;
 }
-/* line 153, ../scss/partials/_form.scss */
-form#advanced_tables li label span, form#basic_tables_form li label span {
+/* line 73, ../scss/partials/_form.scss */
+form#advanced_tables .form-group label, form#advanced_tables .form-group > div, form#basic_tables .form-group label, form#basic_tables .form-group > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 77, ../scss/partials/_form.scss */
+form#advanced_tables .form-group label, form#basic_tables .form-group label {
   width: 110px;
   font-size: 11px;
+  height: 16px;
   line-height: 16px;
 }
-/* line 158, ../scss/partials/_form.scss */
-form#advanced_tables li input, form#advanced_tables li select, form#advanced_tables li textarea, form#basic_tables_form li input, form#basic_tables_form li select, form#basic_tables_form li textarea {
+/* line 83, ../scss/partials/_form.scss */
+form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
   width: 100px;
   font-size: 10px;
   line-height: 12px;
   padding: 0;
   height: 16px;
 }
-/* line 165, ../scss/partials/_form.scss */
-form#advanced_tables li select, form#basic_tables_form li select {
-  width: 102px;
+/* line 91, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .checkbox label, form#basic_tables .form-group .checkbox label {
+  width: auto;
 }
-/* line 168, ../scss/partials/_form.scss */
-form#advanced_tables li select[multiple=multiple], form#basic_tables_form li select[multiple=multiple] {
+/* line 94, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .checkbox input, form#basic_tables .form-group .checkbox input {
+  width: auto;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+/* line 100, ../scss/partials/_form.scss */
+form#advanced_tables .form-group select, form#basic_tables .form-group select {
+  width: 102px;
+  float: left;
+}
+/* line 104, ../scss/partials/_form.scss */
+form#advanced_tables .form-group select[multiple=multiple], form#basic_tables .form-group select[multiple=multiple] {
   height: 60px;
 }
-/* line 171, ../scss/partials/_form.scss */
-form#advanced_tables li .mlink_selected_wrapper, form#basic_tables_form li .mlink_selected_wrapper {
+/* line 107, ../scss/partials/_form.scss */
+form#advanced_tables .form-group#advanced_tables_field_HK, form#basic_tables .form-group#advanced_tables_field_HK {
+  clear: left;
+  margin-right: 20px;
+}
+/* line 111, ../scss/partials/_form.scss */
+form#advanced_tables .form-group#advanced_tables_field_flown_through, form#basic_tables .form-group#advanced_tables_field_flown_through {
+  margin-right: 0;
+  width: 444px;
+}
+/* line 114, ../scss/partials/_form.scss */
+form#advanced_tables .form-group#advanced_tables_field_flown_through label, form#basic_tables .form-group#advanced_tables_field_flown_through label {
+  width: 232px;
+}
+/* line 117, ../scss/partials/_form.scss */
+form#advanced_tables .form-group#advanced_tables_field_flown_through input, form#basic_tables .form-group#advanced_tables_field_flown_through input {
+  width: 210px;
+}
+/* line 121, ../scss/partials/_form.scss */
+form#advanced_tables .form-group#advanced_tables_field_c5, form#basic_tables .form-group#advanced_tables_field_c5 {
+  margin-right: 0;
+}
+/* line 124, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.field_checkboxes_wrapper, form#basic_tables .form-group.field_checkboxes_wrapper {
+  clear: left;
+  width: 100%;
+}
+/* line 127, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.field_checkboxes_wrapper .control-label, form#basic_tables .form-group.field_checkboxes_wrapper .control-label {
+  width: 14%;
+  font-weight: bold;
+}
+/* line 131, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.field_checkboxes_wrapper > div, form#basic_tables .form-group.field_checkboxes_wrapper > div {
+  width: 86%;
+}
+/* line 134, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.field_checkboxes_wrapper label, form#basic_tables .form-group.field_checkboxes_wrapper label {
+  display: inline-block;
+}
+/* line 138, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .mlink_selected_wrapper, form#basic_tables .form-group .mlink_selected_wrapper {
   width: 90px;
   border: 1px solid #a0a0a0;
   border-top: 0;
   float: right;
   font-size: 11px;
+  clear: left;
   padding: 5px 5px 0;
 }
-/* line 178, ../scss/partials/_form.scss */
-form#advanced_tables li .mlink_selected_wrapper li, form#basic_tables_form li .mlink_selected_wrapper li {
+/* line 146, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .mlink_selected_wrapper li, form#basic_tables .form-group .mlink_selected_wrapper li {
   width: 90px;
   float: none;
   text-align: left;
   min-height: 0;
   line-height: 10px;
 }
-/* line 184, ../scss/partials/_form.scss */
-form#advanced_tables li .mlink_selected_wrapper li a, form#basic_tables_form li .mlink_selected_wrapper li a {
+/* line 152, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .mlink_selected_wrapper li a, form#basic_tables .form-group .mlink_selected_wrapper li a {
   position: relative;
   float: right;
   display: block;
@@ -2460,8 +2707,8 @@ form#advanced_tables li .mlink_selected_wrapper li a, form#basic_tables_form li 
   text-indent: -9999px;
   overflow: hidden;
 }
-/* line 192, ../scss/partials/_form.scss */
-form#advanced_tables li .mlink_selected_wrapper li a:after, form#basic_tables_form li .mlink_selected_wrapper li a:after {
+/* line 160, ../scss/partials/_form.scss */
+form#advanced_tables .form-group .mlink_selected_wrapper li a:after, form#basic_tables .form-group .mlink_selected_wrapper li a:after {
   content: 'x';
   color: red;
   position: absolute;
@@ -2472,138 +2719,185 @@ form#advanced_tables li .mlink_selected_wrapper li a:after, form#basic_tables_fo
   width: 10px;
   text-align: center;
 }
-/* line 211, ../scss/partials/_form.scss */
+/* line 175, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.submit-group > div, form#advanced_tables .form-group.submit-group, form#basic_tables .form-group.submit-group > div, form#basic_tables .form-group.submit-group {
+  width: 100%;
+  margin: 0;
+}
+/* line 179, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
+  width: 80%;
+  margin-right: 3%;
+  height: 25px;
+}
+/* line 184, ../scss/partials/_form.scss */
+form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
+  width: 15%;
+  display: block;
+  padding: 5px;
+  background-color: #ededed;
+  border: 1px solid #cccccc;
+  text-align: center;
+  font-weight: bold;
+  color: #0c3f6b;
+  display: inline-block;
+}
+/* line 195, ../scss/partials/_form.scss */
 form#postcheck textarea {
   display: block;
   width: 300px;
   height: 50px;
   margin: auto;
 }
-/* line 217, ../scss/partials/_form.scss */
+/* line 201, ../scss/partials/_form.scss */
 form#postcheck li a.lightbox {
   display: block;
   margin: auto;
 }
-/* line 223, ../scss/partials/_form.scss */
-form#igc_upload_form #coords_wrapper {
-  margin-top: 20px;
-  display: block;
+/* line 207, ../scss/partials/_form.scss */
+form#igc_upload_form #igc_upload_form_field_coords {
+  margin-top: 10px;
+}
+/* line 209, ../scss/partials/_form.scss */
+form#igc_upload_form #igc_upload_form_field_coords p {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+/* line 213, ../scss/partials/_form.scss */
+form#igc_upload_form #igc_upload_form_field_coords .defined_info {
+  float: left;
+  margin: 5px 0 10px;
+}
+/* line 217, ../scss/partials/_form.scss */
+form#igc_upload_form #igc_upload_form_field_coords label {
+  width: 200px;
+  line-height: 16px;
+  margin-right: 10px;
+}
+/* line 222, ../scss/partials/_form.scss */
+form#igc_upload_form #igc_upload_form_field_coords input {
+  width: 465px;
 }
 /* line 226, ../scss/partials/_form.scss */
-form#igc_upload_form #coords_wrapper span {
-  width: 200px;
-}
-/* line 229, ../scss/partials/_form.scss */
-form#igc_upload_form #coords_wrapper input {
-  width: 400px;
-}
-/* line 233, ../scss/partials/_form.scss */
 form#igc_upload_form #console {
   color: #b60000;
-  font-size: medium;
 }
-/* line 236, ../scss/partials/_form.scss */
+/* line 228, ../scss/partials/_form.scss */
 form#igc_upload_form #console .error {
   margin-top: 0;
 }
-/* line 239, ../scss/partials/_form.scss */
+/* line 231, ../scss/partials/_form.scss */
 form#igc_upload_form #console table {
-  width: 570px;
+  width: 100%;
   margin: auto;
 }
-/* line 243, ../scss/partials/_form.scss */
+/* line 235, ../scss/partials/_form.scss */
 form#igc_upload_form #console table thead th {
   color: #00608d;
+  line-height: 31px;
   text-align: left;
 }
-/* line 248, ../scss/partials/_form.scss */
+/* line 241, ../scss/partials/_form.scss */
 form#igc_upload_form #console table td {
   text-align: left;
+  height: 31px;
+}
+/* line 244, ../scss/partials/_form.scss */
+form#igc_upload_form #console table td a.button {
+  background-color: #ffffff;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 5px;
 }
 /* line 253, ../scss/partials/_form.scss */
+form#igc_upload_form .post_text {
+  line-height: 19px;
+  background-color: #f9f9f9;
+  margin: 0 -10px -10px;
+  padding: 10px;
+}
+/* line 258, ../scss/partials/_form.scss */
+form#igc_upload_form .post_text #kml_calc {
+  margin-bottom: 10px;
+}
+/* line 263, ../scss/partials/_form.scss */
 form#igc_upload_form p.restart {
   text-align: center;
   font-weight: bold;
 }
-/* line 257, ../scss/partials/_form.scss */
+/* line 267, ../scss/partials/_form.scss */
 form#igc_upload_form a.restart {
   text-align: center;
 }
-/* line 262, ../scss/partials/_form.scss */
+/* line 272, ../scss/partials/_form.scss */
 form#igc_form #coords_wrapper, form#coordinate_form #coords_wrapper {
-  margin: 10px 0 10px 0;
   display: block;
 }
-/* line 265, ../scss/partials/_form.scss */
+/* line 274, ../scss/partials/_form.scss */
 form#igc_form #coords_wrapper span, form#coordinate_form #coords_wrapper span {
   width: 200px;
 }
-/* line 268, ../scss/partials/_form.scss */
+/* line 277, ../scss/partials/_form.scss */
 form#igc_form #coords_wrapper input, form#coordinate_form #coords_wrapper input {
   width: 400px;
 }
-/* line 273, ../scss/partials/_form.scss */
-form#igc_form label span, form#coordinate_form label span {
-  width: 100%;
+/* line 281, ../scss/partials/_form.scss */
+form#igc_form label, form#coordinate_form label {
+  width: 100px;
 }
-/* line 278, ../scss/partials/_form.scss */
+/* line 285, ../scss/partials/_form.scss */
 form#igc_form .field_select_wrapper span, form#igc_form .field_link_wrapper span, form#igc_form .field_date_wrapper span, form#coordinate_form .field_select_wrapper span, form#coordinate_form .field_link_wrapper span, form#coordinate_form .field_date_wrapper span {
   width: 100px !important;
 }
-/* line 281, ../scss/partials/_form.scss */
+/* line 288, ../scss/partials/_form.scss */
 form#igc_form .field_select_wrapper select, form#igc_form .field_link_wrapper select, form#igc_form .field_date_wrapper select, form#coordinate_form .field_select_wrapper select, form#coordinate_form .field_link_wrapper select, form#coordinate_form .field_date_wrapper select {
   width: 200px;
   margin-right: 20px;
 }
-/* line 285, ../scss/partials/_form.scss */
+/* line 292, ../scss/partials/_form.scss */
 form#igc_form .field_select_wrapper a, form#igc_form .field_link_wrapper a, form#igc_form .field_date_wrapper a, form#coordinate_form .field_select_wrapper a, form#coordinate_form .field_link_wrapper a, form#coordinate_form .field_date_wrapper a {
   text-decoration: underline;
   color: #9d9d9d;
 }
-/* line 291, ../scss/partials/_form.scss */
-form#igc_form .field_boolean_wrapper span, form#coordinate_form .field_boolean_wrapper span {
-  float: right;
-  width: 595px;
-  padding: 0 0 0 20px;
+/* line 298, ../scss/partials/_form.scss */
+form#igc_form .field_boolean_wrapper label, form#coordinate_form .field_boolean_wrapper label {
+  width: 100%;
 }
-/* line 295, ../scss/partials/_form.scss */
-form#igc_form .field_boolean_wrapper span.checkbox_replace, form#coordinate_form .field_boolean_wrapper span.checkbox_replace {
-  margin-top: 5px;
+/* line 300, ../scss/partials/_form.scss */
+form#igc_form .field_boolean_wrapper label input, form#coordinate_form .field_boolean_wrapper label input {
+  margin: 0 5px 0 0;
 }
-/* line 299, ../scss/partials/_form.scss */
+/* line 304, ../scss/partials/_form.scss */
 form#igc_form .field_boolean_wrapper input, form#coordinate_form .field_boolean_wrapper input {
   float: left;
   height: 26px;
 }
-/* line 304, ../scss/partials/_form.scss */
-form#igc_form textarea, form#coordinate_form textarea {
-  width: 629px;
+/* line 310, ../scss/partials/_form.scss */
+form#igc_form .field_textarea_wrapper label, form#igc_form .field_textarea_wrapper textarea, form#coordinate_form .field_textarea_wrapper label, form#coordinate_form .field_textarea_wrapper textarea {
+  width: 672px;
 }
-
-/* line 311, ../scss/partials/_form.scss */
-#form_wrapper p.success {
+/* line 317, ../scss/partials/_form.scss */
+form #form_wrapper p.success {
   border: solid 1px silver;
   margin: 0;
   padding: 20px 0;
   text-align: center;
   font: 16px/16px Arial bold, sans-serif;
 }
-
-/* line 320, ../scss/partials/_form.scss */
-.form_frame {
+/* line 326, ../scss/partials/_form.scss */
+form .form_frame {
   display: none;
 }
-
-/* line 324, ../scss/partials/_form.scss */
-#new_glider_form_wrapper, #new_pilot_form_wrapper, #module_planner_object_declaration_form_wrapper {
+/* line 330, ../scss/partials/_form.scss */
+form #new_glider_form_wrapper, form #new_pilot_form_wrapper, form #module_planner_object_declaration_form_wrapper {
   width: 360px;
 }
-/* line 327, ../scss/partials/_form.scss */
-#new_glider_form_wrapper fieldset span, #new_pilot_form_wrapper fieldset span, #module_planner_object_declaration_form_wrapper fieldset span {
+/* line 333, ../scss/partials/_form.scss */
+form #new_glider_form_wrapper fieldset span, form #new_pilot_form_wrapper fieldset span, form #module_planner_object_declaration_form_wrapper fieldset span {
   width: 140px;
 }
-/* line 330, ../scss/partials/_form.scss */
-#new_glider_form_wrapper fieldset select, #new_pilot_form_wrapper fieldset select, #module_planner_object_declaration_form_wrapper fieldset select {
+/* line 336, ../scss/partials/_form.scss */
+form #new_glider_form_wrapper fieldset select, form #new_pilot_form_wrapper fieldset select, form #module_planner_object_declaration_form_wrapper fieldset select {
   width: 153px;
 }
 
@@ -3722,15 +4016,20 @@ body.waypoint_mode #planner #wp_overlay {
 #planner #wp_overlay .button {
   margin: 15px 20px;
 }
-/* line 26, ../scss/partials/_planner.scss */
-#planner #path_wrapper div#path {
-  border: 1px solid #cccccc;
-  padding: 10px;
+/* line 25, ../scss/partials/_planner.scss */
+#planner #path_wrapper {
+  background-color: #f9f9f9;
+}
+/* line 27, ../scss/partials/_planner.scss */
+#planner #path_wrapper pre {
+  margin-bottom: 10px;
 }
 /* line 32, ../scss/partials/_planner.scss */
 #planner form {
   zoom: 1;
-  border: 2px dashed #cccccc;
+  background-color: #dcdcdc;
+  margin-bottom: 20px;
+  border: none;
 }
 /* line 2, ../.core/css/_mixims.scss */
 #planner form:before, #planner form:after {
@@ -3743,27 +4042,33 @@ body.waypoint_mode #planner #wp_overlay {
 #planner form:after {
   clear: both;
 }
-/* line 36, ../scss/partials/_planner.scss */
-#planner form ul li {
+/* line 38, ../scss/partials/_planner.scss */
+#planner form fieldset > div {
   margin-bottom: 0;
 }
-/* line 38, ../scss/partials/_planner.scss */
-#planner form ul li select {
+/* line 39, ../scss/partials/_planner.scss */
+#planner form fieldset > div label, #planner form fieldset > div > div {
+  float: left;
+  vertical-align: middle;
+  padding: 0 10px;
+}
+/* line 44, ../scss/partials/_planner.scss */
+#planner form fieldset > div label {
+  line-height: 28px;
+}
+/* line 48, ../scss/partials/_planner.scss */
+#planner form fieldset > div select {
   height: 28px;
 }
-/* line 43, ../scss/partials/_planner.scss */
-#planner form fieldset, #planner form .submit {
-  float: left;
+/* line 52, ../scss/partials/_planner.scss */
+#planner form fieldset button {
+  height: 28px;
 }
-/* line 46, ../scss/partials/_planner.scss */
-#planner form .submit {
-  margin-left: 5px;
-}
-/* line 51, ../scss/partials/_planner.scss */
+/* line 58, ../scss/partials/_planner.scss */
 #planner #waypoints {
   margin: 10px;
   padding: 10px;
-  border: 2px dashed #cccccc;
+  background-color: #f9f9f9;
 }
 
 /*

@@ -12,7 +12,7 @@ class post extends \template\html {
 
     public function get_view() {
         $html =
-            node::create('div#article_wrapper', [],
+            node::create('div#article_wrapper.editable_content', [],
                 node::create('article', [],
                     node::create('h2', [], $this->module->current->title) .
                     $this->module->current->post

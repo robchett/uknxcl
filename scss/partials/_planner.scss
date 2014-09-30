@@ -23,34 +23,41 @@ body.waypoint_mode {
   }
 
   #path_wrapper {
-    div#path {
-      border: 1px solid #cccccc;
-      padding: 10px;
+    background-color: #f9f9f9;
+    pre {
+      margin-bottom: 10px;
     }
   }
 
   form {
     @include cf();
-    border: 2px dashed #cccccc;
-    ul {
-      li {
+    background-color: #dcdcdc;
+    margin-bottom: 20px;
+    border: none;
+    fieldset {
+      > div {
+        label, > div {
+          float: left;
+          vertical-align: middle;
+          padding: 0 10px;
+        }
+        label {
+          line-height: 28px;
+        }
         margin-bottom: 0;
         select {
           height: 28px;
         }
       }
-    }
-    fieldset, .submit {
-      float: left;
-    }
-    .submit {
-      margin-left: 5px;
+      button {
+        height: 28px;
+      }
     }
   }
 
   #waypoints {
     margin: 10px;
     padding: 10px;
-    border: 2px dashed #cccccc;
+    background-color: #f9f9f9;
   }
 }

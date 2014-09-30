@@ -20,7 +20,7 @@ class _default extends \template\html {
             ]
         );
         $wrapper = node::create('div.table_wrapper', [],
-            node::create('h3', [], 'Latest') .
+            node::create('h3.heading', [], 'Latest') .
             node::create('table.results.main', ['style' => 'width:700px'],
                 node::create('thead', [],
                     node::create('tr', [],

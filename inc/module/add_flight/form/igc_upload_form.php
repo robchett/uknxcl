@@ -31,7 +31,11 @@ class igc_upload_form extends form {
         parent::__construct($fields);
         $this->submit = 'Calculate';
         $this->pre_text = node::create('p', [], 'Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below');
-        $this->post_text = node::create('p', [], 'Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates') . node::create('p', [], 'On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.') . node::create('div#kml_calc div#console a.calc', [], 'Calculate!');
+        $this->post_text = node::create('div', [], [
+            node::create('div#kml_calc div#console a.calc', [], 'Calculate!'),
+            node::create('p', [], 'Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates'),
+            node::create('p', [], 'On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.')
+        ]);
         $this->has_submit = false;
         $this->id = 'igc_upload_form';
         $this->h2 = 'Upload Form';
@@ -90,7 +94,9 @@ class igc_upload_form extends form {
                 function (track_part $part, $i) use ($track) {
                     return node::create('li', [],
                         node::create('span', ['style' => 'color:#' . get::colour($i - 1)], 'Track ' . $i . ' : ' . $part->get_time()) .
-                        node::create('a.choose', ['data-ajax-click' => 'igc_upload_form:do_choose_track', 'data-ajax-post' => '\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\''], 'Choose')
+                        node::create('a.choose', [
+                            'data-ajax-click' => 'igc_upload_form:do_choose_track',
+                            'data-ajax-post'  => '\'{track:' . $track->id . ', start: ' . $part->start_point . ', end: ' . $part->end_point . '}\''], 'Choose')
                     );
                 }
             )
@@ -99,7 +105,10 @@ class igc_upload_form extends form {
     }
 
     private function get_choose_score_html(track $track, $start, $end, $defined) {
-        session::set(['duration' => $track->get_duration(), 'start' => $start, 'end' => $end], 'add_flight', $track->id);
+        session::set([
+            'duration' => $track->get_duration(),
+            'start'    => $start,
+            'end'      => $end], 'add_flight', $track->id);
         $html = node::create('table', [],
             node::create('thead tr', [],
                 node::create('th', [], 'Type') .
@@ -119,9 +128,9 @@ class igc_upload_form extends form {
 
     private function get_defined_task_select_html(track $track) {
         session::set([
-                'type' => $track->task->type,
+                'type'     => $track->task->type,
                 'distance' => $track->task->get_distance(),
-                'coords' => $track->task->get_coordinates(),
+                'coords'   => $track->task->get_coordinates(),
                 'duration' => $track->task->get_duration()
             ], 'add_flight', $track->id, 'task'
         );
@@ -140,7 +149,7 @@ class igc_upload_form extends form {
         if (isset($task->waypoints)) {
             session::set([
                     'distance' => $task->get_distance(),
-                    'coords' => $task->get_session_coordinates(),
+                    'coords'   => $task->get_session_coordinates(),
                     'duration' => $task->get_duration()
                 ], 'add_flight', $track->id, $type
             );
@@ -170,56 +179,7 @@ class igc_upload_form extends form {
 
     public function get_html() {
         $html = parent::get_html();
-        $script = '
-        var dropZoneId = "kml_wrapper";
-        var buttonId = "kml_wrapper";
-        var mouseOverClass = "hover";
-        var dropZone = $("#" + dropZoneId);
-        var inputFile = dropZone.find("input");
-
-        $(function () {
-            if (document.getElementById(dropZoneId)) {
-                document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var ooleft = dropZone.offset().left;
-                    var ooright = dropZone.outerWidth() + ooleft;
-                    var ootop = dropZone.offset().top;
-                    var oobottom = dropZone.outerHeight() + ootop;
-                    dropZone.addClass(mouseOverClass);
-                    var x = e.pageX;
-                    var y = e.pageY;
-
-                    if (!(x < ooleft || x > ooright || y < ootop || y > oobottom)) {
-                        inputFile.offset({ top: y - 15, left: x - 100 });
-                    } else {
-                        inputFile.offset({ top: -400, left: -400 });
-                    }
-                }, true);
-                if (buttonId != "") {
-                    $("#" + buttonId).mousemove(function (e) {
-                        var clickZone = $("#" + buttonId);
-                        var oleft = clickZone.offset().left;
-                        var oright = clickZone.outerWidth() + oleft;
-                        var otop = clickZone.offset().top;
-                        var obottom = clickZone.outerHeight() + otop;
-                        var x = e.pageX;
-                        var y = e.pageY;
-                        if (!(x < oleft || x > oright || y < otop || y > obottom)) {
-                            inputFile.offset({ top: y - 15, left: x - 160 });
-                        } else {
-                            inputFile.offset({ top: -400, left: -400 });
-                        }
-                    });
-                }
-                document.getElementById(dropZoneId).addEventListener("dragleave", function (e) {
-                    dropZone.removeClass(mouseOverClass);
-                });
-                document.getElementById(dropZoneId).addEventListener("drop", function (e) {
-                    $("#" + dropZoneId).removeClass(mouseOverClass);
-                }, true);
-            }
-        });';
+        $script = '';
         if (!isset($this->kml) || empty($this->kml)) {
             $script .= '$("#kml_calc").hide();';
         }
