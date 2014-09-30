@@ -9,6 +9,7 @@ use object\flight_type;
 use object\launch_type;
 use object\pilot;
 use object\pilot_official;
+use object\scorable;
 
 class league_table {
 
@@ -16,8 +17,6 @@ class league_table {
     public $flights = null;
     public $league = null;
     public $where = [];
-    public $show_top_4 = false;
-    public $handicap = false;
     public $show_multipliers = false;
     public $ScoreType = 'score';
     public $OrderBy = 'score';
@@ -30,8 +29,6 @@ class league_table {
     public $SClass = '\object\club';
     public $S_alias = 'c';
     public $max_flights = 6;
-    public $KP_Mod = 1;
-    public $C5_Mod = 1;
     public $WHERE = '';
     public $date = null;
     public $in = [];
@@ -111,8 +108,8 @@ class league_table {
         if (isset ($this->in ['Flights'])) {
             $this->max_flights = $this->in ['Flights'];
         }
-        if (isset ($this->in ['t'])) {
-            $this->options->layout = $this->in ['t'];
+        if (isset ($this->in ['layout'])) {
+            $this->options->layout = $this->in ['layout'];
         }
         if (isset ($this->in ['pages'])) {
             $this->options->set_official(1);
@@ -121,76 +118,76 @@ class league_table {
         if (isset ($this->in ['base'])) {
             $this->ScoreType = 'base_score';
         }
-        if (isset ($this->in ['pilot'])) {
+        if (isset ($this->in ['pilot']) && $this->in['layout'] == 2) {
             $this->options->set_pilot_id($this->in ['pilot']);
         }
-        if (isset ($this->in ['kp']) && is_numeric($this->in ['kp'])) {
-            $this->KP_Mod = $this->in ['kp'];
+        if (isset ($this->in ['handicap_kingpost']) && is_numeric($this->in ['handicap_kingpost'])) {
+            $this->options->handicap_kingpost = $this->in ['handicap_kingpost'];
         }
-        if (isset ($this->in ['c5']) && is_numeric($this->in ['c5'])) {
-            $this->C5_Mod = $this->in ['c5'];
+        if (isset ($this->in ['handicap_rigid']) && is_numeric($this->in ['handicap_rigid'])) {
+            $this->options->handicap_rigid = $this->in ['handicap_rigid'];
         }
-        if (isset ($this->in ['Min']) && is_numeric($this->in ['Min'])) {
-            $this->options->minimum_score = $this->in ['Min'];
+        if (isset ($this->in ['minimum_score'])) {
+            $this->options->set_minimum_score($this->in ['minimum_score']);
         }
-        if (isset ($this->in ['View'])) {
+        if (isset ($this->in ['official'])) {
             $this->options->set_official(1);
         }
         if (isset ($this->in ['league']) && $this->in ['league'] == 'hangies') {
             $this->where[] = 'hangies = 1';
-            $this->options->minimum_score = 0;
+            $this->options->set_minimum_score(0);
         }
-        if (isset ($this->in ['cls'])) {
-            $this->options->set_class($this->in ['cls']);
-            $this->Title .= ' Class ' . $this->in['cls'];
+        if (isset ($this->in ['glider_class'])) {
+            $this->options->set_class($this->in ['glider_class']);
+            $this->Title .= ' Class ' . $this->in['glider_class'];
         }
-        if (isset ($this->in ['win'])) {
-            $this->options->set_winter($this->in ['win']);
+        if (isset ($this->in ['winter'])) {
+            $this->options->set_winter($this->in ['winter']);
         }
-        if (isset ($this->in ['def'])) {
-            $this->options->set_defined($this->in ['def']);
+        if (isset ($this->in ['defined'])) {
+            $this->options->set_defined($this->in ['defined']);
         }
-        if (isset ($this->in ['gen'])) {
-            $this->options->set_gender($this->in ['gen']);
+        if (isset ($this->in ['gender'])) {
+            $this->options->set_gender($this->in ['gender']);
         }
-        if (isset ($this->in ['c3d'])) {
-            $this->options->set_dimensions($this->in['c3d']);
+        if (isset ($this->in ['dimensions'])) {
+            $this->options->set_dimensions($this->in['dimensions']);
         }
-        if (isset ($this->in ['rdg'])) {
-            $this->options->set_rigid($this->in['rgd']);
+        if (isset ($this->in ['ridge'])) {
+            $this->options->set_ridge($this->in['ridge']);
         }
         if (isset ($this->in ['Date'])) {
             $this->options->set_date($this->in['Date']);
         }
-        if (isset ($this->in ['noMulti'])) {
-            $this->options->use_multipliers = false;
+        if (isset ($this->in ['no_multipliers'])) {
+            $this->options->no_multipliers = true;
         }
         // Removing launch and flight type from sql.
-        if (isset($this->in['launch'])) {
-            if (!in_array('w', $this->in['launch'])) {
+        if (isset($this->in['launches'])) {
+            if (!in_array(launch_type::WINCH, $this->in['launches'])) {
                 $this->options->remove_launch(launch_type::WINCH);
             }
-            if (!in_array('f', $this->in['launch'])) {
+            if (!in_array(launch_type::FOOT, $this->in['launches'])) {
                 $this->options->remove_launch(launch_type::FOOT);
             }
-            if (!in_array('a', $this->in['launch'])) {
+            if (!in_array(launch_type::AERO, $this->in['launches'])) {
                 $this->options->remove_launch(launch_type::AERO);
             }
         }
-        if (isset($this->in['flight_type'])) {
-            if (!in_array('od', $this->in['flight_type'])) {
+        if (isset($this->in['types'])) {
+            if (!in_array(flight_type::OD_ID, $this->in['types'])) {
                 $this->options->remove_flight_type(flight_type::OD_ID);
             }
-            if (!in_array('or', $this->in['flight_type'])) {
+            if (!in_array(flight_type::OR_ID, $this->in['types'])) {
                 $this->options->remove_flight_type(flight_type::OR_ID);
             }
-            if (!in_array('go', $this->in['flight_type'])) {
+            if (!in_array(flight_type::GO_ID, $this->in['types'])) {
                 $this->options->remove_flight_type(flight_type::GO_ID);
             }
-            if (!in_array('tr', $this->in['flight_type'])) {
+            if (!in_array(flight_type::TR_ID, $this->in['types'])) {
                 $this->options->remove_flight_type(flight_type::TR_ID);
             }
-            if (!in_array('ft', $this->in['flight_type'])) {
+            if (!in_array(flight_type::FT_ID, $this->in['types'])) {
                 $this->options->remove_flight_type(flight_type::FT_ID);
             }
         }
@@ -200,13 +197,13 @@ class league_table {
             $this->options->glider_mode = true;
         }
 
-        if (isset($this->in ['os'])) {
-            $this->options->set_flown_through($this->in ['os']);
+        if (isset($this->in ['flown_through'])) {
+            $this->options->set_flown_through($this->in ['flown_through']);
         }
 
-        $this->show_top_4 = isset ($this->in ['show_top_4']) ? true : false;
-        $this->options->split_classes = isset ($this->in ['split']) ? true : false;
-        $this->handicap = isset ($this->in ['HK']) ? true : false;
+        $this->options->show_top_4 = isset ($this->in ['show_top_4']) ? true : false;
+        $this->options->split_classes = isset ($this->in ['split_classes']) ? true : false;
+        $this->options->handicap = isset ($this->in ['handicap']) ? true : false;
     }
 
     public function set_year($year_string) {
@@ -218,7 +215,7 @@ class league_table {
         $this->class_primary_key = 'gid';
         $this->class_table_alias = 'g';
         $this->official_class = '\object\glider_official';
-        $this->SClass = 'manufacturer';
+        $this->SClass = '\object\manufacturer';
         $this->S_alias = 'gm';
     }
 
@@ -226,7 +223,7 @@ class league_table {
         switch ($type) {
             case(0):
                 $this->options->set_official(1);
-                if($year > 2012) {
+                if ($year > 2012) {
                     $this->options->set_dimensions(1);
                 }
                 break;
@@ -295,7 +292,7 @@ class league_table {
 
             case(15):
                 $this->options->layout = league_table_options::LAYOUT_TOP_TEN;
-                $this->options->use_multipliers = false;
+                $this->options->no_multipliers = true;
                 break;
 
             case(16):
@@ -314,6 +311,8 @@ class league_table {
                 return 'pilot_log/';
             case league_table_options::LAYOUT_TOP_TEN:
                 return 'top_ten/';
+            case league_table_options::LAYOUT_LIST:
+                return 'list/';
             case league_table_options::LAYOUT_RECORDS:
                 return 'records/';
         }
@@ -337,6 +336,9 @@ class league_table {
             case'records':
                 $this->options->layout = league_table_options::LAYOUT_RECORDS;
                 break;
+            case'list':
+                $this->options->layout = league_table_options::LAYOUT_LIST;
+                break;
         }
     }
 
@@ -350,38 +352,36 @@ class league_table {
             'score',
             'defined',
             'lid'], [
-            'join' => [
+            'join'  => [
                 'glider g' => 'flight.gid=g.gid',
-                'pilot p' => 'p.pid = flight.pid',
-                'club c' => 'c.cid=flight.cid'],
+                'pilot p'  => 'p.pid = flight.pid',
+                'club c'   => 'c.cid=flight.cid'],
             'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012']);
         $array = new table_array();
         $flights->iterate(
-                function (flight $flight) use (&$array) {
-                    if (isset ($array [$flight->p_pid])) {
-                        $array [$flight->p_pid]->add_flight($flight);
-                    } else {
-                        $array [$flight->p_pid] = new pilot_official();
-                        $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
-                        $array [$flight->p_pid]->output_function = 'csv';
-                    }
+            function (flight $flight) use (&$array) {
+                if (isset ($array [$flight->p_pid])) {
+                    $array [$flight->p_pid]->add_flight($flight);
+                } else {
+                    $array [$flight->p_pid] = new pilot_official();
+                    $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
+                    $array [$flight->p_pid]->output_function = 'csv';
                 }
+            }
         );
         $array->uasort(['\module\tables\object\league_table', 'cmp']);
         $class1 = $class5 = 1;
         echo node::create('pre', [], '
         Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total' . "\n" .
-            $array->iterate_return(
-                  function (pilot $pilot) use (&$class1, &$class5) {
-                      if ($pilot->class == 1) {
-                          $class1++;
-                          return $pilot->output($class1, 0);
-                      } else {
-                          $class5++;
-                          return $pilot->output($class5, 0);
-                      }
-                  }
-            )
+            $array->iterate_return(function (scorable $pilot) use (&$class1, &$class5) {
+                if ($pilot->class == 1) {
+                    $class1++;
+                    return $pilot->output($class1, 0);
+                } else {
+                    $class5++;
+                    return $pilot->output($class5, 0);
+                }
+            })
         );
         die();
     }
@@ -404,7 +404,7 @@ class league_table {
                 $pilot = new pilot();
                 $pilot->do_retrieve_from_id(['name'], $this->options->pilot_id);
                 $this->Title .= ' Pilot Log (' . $pilot->name . ')';
-                $this->options->minimum_score = 0;
+                $this->options->set_minimum_score(0);
                 break;
             case(league_table_options::LAYOUT_TOP_TEN):
                 $this->result = new result_top_ten();
@@ -413,7 +413,7 @@ class league_table {
             case(league_table_options::LAYOUT_RECORDS):
                 $this->result = new result_records();
                 return $this->result->make_table($this);
-            case(5):
+            case(league_table_options::LAYOUT_LIST):
                 $this->OrderBy = 'date';
                 $this->result = new result_list();
                 $this->Title .= ' List';
@@ -430,7 +430,7 @@ class league_table {
     }
 
     public function set_modifier_string() {
-        $this->modifier_string = $this->ScoreType . ($this->handicap ? ' * IF(g.kingpost,' . $this->KP_Mod . ',1) * IF(g.class = 5,' . $this->C5_Mod . ',1) ' : '');
+        $this->modifier_string = $this->ScoreType . ($this->options->handicap ? ' * IF(g.kingpost,' . $this->options->handicap_kingpost . ',1) * IF(g.class = 5,' . $this->options->handicap_rigid . ',1) ' : '');
     }
 
     public function get_flights() {
@@ -467,14 +467,14 @@ class league_table {
                     'date',
                     'coords'],
                 [
-                    'join' => [
-                        'glider g' => 'flight.gid=g.gid',
-                        'club c' => 'flight.cid=c.cid',
-                        'pilot p' => 'flight.pid=p.pid',
+                    'join'       => [
+                        'glider g'        => 'flight.gid=g.gid',
+                        'club c'          => 'flight.cid=c.cid',
+                        'pilot p'         => 'flight.pid=p.pid',
                         'manufacturer gm' => 'g.mid = gm.mid'
                     ],
-                    'where' => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
-                    'order' => $this->OrderBy . ' DESC',
+                    'where'      => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
+                    'order'      => $this->OrderBy . ' DESC',
                     'parameters' => $this->parameters,
                 ]
             );
@@ -510,8 +510,10 @@ class league_table {
 
     /**
      * Generates a sub table showing the top flights in each category.
+     *
      * @param string $where - a complete sql WHERE clause
-     * @param array $params
+     * @param array  $params
+     *
      * @return string
      */
     function ShowTop4($where, $params = []) {
@@ -532,9 +534,9 @@ class league_table {
                 $params['ftid'] = $i;
                 $flight = new flight();
                 $flight->do_retrieve(['flight.*', $this->class . '.name AS name', 'glider.class AS class'], [
-                        'join' => flight::$default_joins,
-                        'where' => $where_extend,
-                        'order' => 'score DESC',
+                        'join'       => flight::$default_joins,
+                        'where'      => $where_extend,
+                        'order'      => 'score DESC',
                         'parameters' => $params
                     ]
                 );
