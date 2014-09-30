@@ -424,7 +424,7 @@ class flight extends table {
                 node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
                 node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' = ' . $this->score)) .
                 node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], str_replace(';', '; ', $this->coords))) .
-                node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) .
+                node::create('tr', [], node::create('td', [], 'Info') . node::create('td.info', [], $this->vis_info)) .
 
                 (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                     node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .

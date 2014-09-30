@@ -41,7 +41,7 @@ class article extends table {
     public function get_cell() {
         return node::create('article#article' . $this->aid, [],
             node::create('div.title', [], $this->get_type()) .
-            node::create('div.content', [], (!$this->snippet ? $this->post : $this->snippet . node::create('a.button', ['href' => $this->get_url()], 'Read more')))
+            node::create('div.content.editable_content', [], (!$this->snippet ? $this->post : $this->snippet . node::create('a.button', ['href' => $this->get_url()], 'Read more')))
         );
     }
 }

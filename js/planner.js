@@ -17,19 +17,21 @@ function Planner(parent) {
     this.get_share_link = function() {
         var out = document.location.host + '/planner/';
         this.coordinates.each(function(coordinate) {
-            out += coordinate.lat() + ',' + coordinate.lng() + ';';
+            out += coordinate.lat().toFixed(6) + ',' + coordinate.lng().toFixed(6) + ';';
         });
         return out.trim(';');
     };
 
     this.writeplanner = function () {
         this.calculate_distances();
-        var out = "<table style='width:100%'>";
+        var out =
+            "<table class='results main' style='width:100%'>" +
+            "<thead><tr><th></th><th>Lat</th><th>Lng</th><th>Distance</th><th></th><th></th></tr></thead>";
         this.coordinates.each(function (coordinate, a) {
             out += '<tr>' + '<td>Turnpoint ' + a + '</td>' + '<td>Lat:' + Math.round(coordinate.lat() * 10000) / 10000 + '</td>' + '<td>Lng:' + Math.round(coordinate.lng() * 10000) / 10000 + '</td>' + '<td>' + Math.round(map.planner.distance_array[a] * 10000) / 10000 + 'km</td>' + '<td>' + Math.round((map.planner.total_distance_array[a] / map.planner.get_total_distance()) * 10000) / 100 + '%</td>' + '<td><a class="remove" href="#" onclick="map.planner.remove(' + a + '); return false;">[x]</a></td>' + '</tr>';
         });
-        out += '<tr class="total"><td>Total</td><td/><td/><td>' + Math.floor(this.get_total_distance() * 10000) / 10000 + 'km</td><td/></tr>';
-        $('#path').html(out + '</table><p>Share this track: <span>' + this.get_share_link() + '</span></p>');
+        out += '<tr class="total"><td>Total</td><td/><td/><td>' + Math.floor(this.get_total_distance() * 10000) / 10000 + 'km</td><td/><td></td></tr>';
+        $('#path').html(out + '</table><h4 class="heading">Share this track:</h4><p><pre>' + this.get_share_link() + '</pre></p>');
         var ft = this.get_flight_type();
         if (ft == 'od') { $('#decOD').removeAttr('disabled'); } else { $('#decOD').attr('disabled', 'disabled');}
         if (ft == 'or') { $('#decOR').removeAttr('disabled'); } else { $('#decOR').attr('disabled', 'disabled');}

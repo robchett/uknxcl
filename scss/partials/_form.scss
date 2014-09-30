@@ -17,7 +17,6 @@ h2.form_title {
   overflow: hidden;;
 }
 
-
 form {
   @include form();
   border: $blue_border;
@@ -26,119 +25,41 @@ form {
 
   fieldset {
     border: none;
-    ul {
-      margin-top: 0;
+    margin-top: 0;
 
-      li {
-        clear: both;
-        &.err {
-          color: #b60000;
-        }
-        label {
-          min-height: 16px;
-          line-height: 16px;
-          font-size: 14px;
-        }
-        input.err, form select.err, form textarea.err {
-          border: 1px solid red;
-        }
-
-        span {
-          display: block;
-          float: left;
-          width: 100px;
-          text-align: left;
-          line-height: 26px;
-          &.checkbox_replace {
-            cursor: pointer;
-            display: inline-block;
-            width: 14px !important;
-            height: 14px !important;
-            padding: 0 !important;
-            border: 1px solid #a0a0a0;
-            &:hover {
-              background-color: #e5e5e5;
-            }
-            &.checked {
-              background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAA3NCSVQICAjb4U/gAAAAclBMVEXx8fHo6Ojj4+Pg4ODW1tbT09PR0dG7u7u6urq5ubmvr6+np6ehoaGenp6WlpaVlZWSkpKMjIyAgIB8fHx6enp5eXlvb29ubm5kZGRQUFBPT09HR0dGRkY/Pz87Ozs2NjY1NTUzMzMwMDAuLi4qKir///+NWczDAAAAJnRSTlP/////////////////////////////////////////////////AKd6gbwAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA2LzAzLzEz76odTwAAAFhJREFUCJk9zVcOgDAMA9Cy9x5lU8C5/xWB0uAvPytSBHGKYxDcW+w5o8YZkEEIZGRgrZDEaLDYGo5LnkL6bqLaVNRh1Aeix5v4A5VPn8mAJJD88K/JfLsBgKAR7rnTsRIAAAAASUVORK5CYII=) center center no-repeat;
-              &:hover {
-                background-color: #e5e5e5;
-              }
-            }
-            input {
-              display: none;
-            }
-          }
-        }
-        .long_text span {
-          display: block;
-          float: none;
-          width: auto;
-          text-align: left;
-        }
-        a.file_holder {
-          display: inline-block;
-          height: 138px;
-          width: 674px;
-          font-size: 50px;
-          line-height: 66px;
-          border: 2px dashed #cccccc;
-          color: #cccccc;
-          cursor: pointer;
-          text-align: center;
-          &.hover {
-            border-style: double;
-          }
-          &.hoverPass, &.pass {
-            border-color: green;
-            color: green;
-          }
-          &.hoverFail {
-            border-color: red;
-            color: red;
-          }
-          span.icon {
-            font-size: 50px;
-            line-height: 66px;
-            width: auto;
-            float: none;
-            height: auto;
-            text-align: center;
-          }
-          p.text {
-            font-size: 20px;
-            line-height: 20px;
-          }
-          input {
-            opacity: 0;
-          }
-        }
+    .form-group {
+      clear: both;
+      &.err {
+        color: #b60000;
       }
-    }
-  }
-  .form_submit {
-    input {
-      display: blcok;
-      position: absolute;
-      width: 0;
-      height: 0;
-      padding: 0;
-      margin: 0;
-      left: -9999px;
-      top: -9999px;
-    }
-    a {
-      display: block;
-      @include button();
+      label {
+        min-height: 26px;
+        line-height: 26px;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      label, > div {
+        float: left;
+      }
+      input.err, form select.err, form textarea.err {
+        border: 1px solid red;
+      }
+
+      .long_text span {
+        display: block;
+        float: none;
+        width: auto;
+        text-align: left;
+      }
     }
   }
   .defined_info {
     margin-top: 10px;
     font-weight: bold;
   }
-  &#advanced_tables, &#basic_tables_form {
+  &#advanced_tables, &#basic_tables {
     display: none;
-    li {
+    .form-group {
       float: left;
       clear: none;
       margin-right: 20px;
@@ -149,10 +70,14 @@ form {
       &:nth-child(3n) {
         margin-right: 0;
       }
-
-      label span {
+      label, > div {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      label {
         width: 110px;
         font-size: 11px;
+        height: 16px;
         line-height: 16px;
       }
       input, select, textarea {
@@ -162,11 +87,53 @@ form {
         padding: 0;
         height: 16px;
       }
+      .checkbox {
+        label {
+          width: auto;
+        }
+        input {
+          width: auto;
+          vertical-align: middle;
+          margin-right: 5px;
+        }
+      }
       select {
         width: 102px;
+        float: left;
       }
       select[multiple=multiple] {
         height: 60px;
+      }
+      &#advanced_tables_field_HK {
+        clear: left;
+        margin-right: 20px;
+      }
+      &#advanced_tables_field_flown_through {
+        margin-right: 0;
+        width: 444px;
+        label {
+          width: 232px;
+        }
+        input {
+          width: 210px;
+        }
+      }
+      &#advanced_tables_field_c5 {
+        margin-right: 0;
+      }
+      &.field_checkboxes_wrapper {
+        clear: left;
+        width: 100%;
+        .control-label {
+          width: 14%;
+          font-weight: bold;
+        }
+        > div {
+          width: 86%;
+        }
+        label {
+          display: inline-block;
+        }
       }
       .mlink_selected_wrapper {
         width: 90px;
@@ -174,6 +141,7 @@ form {
         border-top: 0;
         float: right;
         font-size: 11px;
+        clear: left;
         padding: 5px 5px 0;
         li {
           width: 90px;
@@ -203,6 +171,22 @@ form {
           }
         }
       }
+      &.submit-group {
+        > div, & {
+          width: 100%;
+          margin: 0;
+        }
+        button {
+          width: 80%;
+          margin-right: 3%;
+          height: 25px;
+        }
+        a {
+          width: 15%;
+          @include button;
+          display: inline-block;
+        }
+      }
     }
 
   }
@@ -220,35 +204,61 @@ form {
     }
   }
   &#igc_upload_form {
-    #coords_wrapper {
-      margin-top: 20px;
-      display: block;
-      span {
-        width: 200px
+    #igc_upload_form_field_coords {
+      margin-top: 10px;
+      p {
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .defined_info {
+        float: left;
+        margin: 5px 0 10px;
+      }
+      label {
+        width: 200px;
+        line-height: 16px;
+        margin-right: 10px;
       }
       input {
-        width: 400px
+        width: 465px
       }
     }
     #console {
       color: #b60000;
-      font-size: medium;
       .error {
         margin-top: 0
       }
       table {
-        width: 570px;
+        width: 100%;
         margin: auto;
         thead {
           th {
             color: #00608d;
+            line-height: 31px;
             text-align: left;
           }
         }
         td {
           text-align: left;
+          height: 31px;
+          a.button {
+            background-color: #ffffff;
+            height: 24px;
+            line-height: 24px;
+            padding: 0 5px;
+          }
         }
       }
+    }
+    .post_text {
+      line-height: 19px;
+      background-color: #f9f9f9;
+      margin: 0 -10px -10px;
+      padding: 10px;
+      #kml_calc {
+        margin-bottom: 10px;
+      }
+
     }
     p.restart {
       text-align: center;
@@ -260,7 +270,6 @@ form {
   }
   &#igc_form, &#coordinate_form {
     #coords_wrapper {
-      margin: 10px 0 10px 0;
       display: block;
       span {
         width: 200px
@@ -270,9 +279,7 @@ form {
       }
     }
     label {
-      span {
-        width: 100%
-      }
+      width: 100px;
     }
     .field_select_wrapper, .field_link_wrapper, .field_date_wrapper {
       span {
@@ -288,12 +295,10 @@ form {
       }
     }
     .field_boolean_wrapper {
-      span {
-        float: right;
-        width: 595px;
-        padding: 0 0 0 20px;
-        &.checkbox_replace {
-          margin-top: 5px
+      label {
+        width: 100%;
+        input {
+          margin: 0 5px 0 0;
         }
       }
       input {
@@ -301,34 +306,36 @@ form {
         height: 26px;
       }
     }
-    textarea {
-      width: 629px;
+    .field_textarea_wrapper {
+      label, textarea {
+        width: 672px;
+      }
     }
   }
-}
 
-#form_wrapper {
-  p.success {
-    border: $default_border;
-    margin: 0;
-    padding: 20px 0;
-    text-align: center;
-    font: 16px/16px Arial bold, sans-serif;
-  }
-}
-
-.form_frame {
-  display: none;
-}
-
-#new_glider_form_wrapper, #new_pilot_form_wrapper, #module_planner_object_declaration_form_wrapper {
-  width: 360px;
-  fieldset {
-    span {
-      width: 140px;
+  #form_wrapper {
+    p.success {
+      border: $default_border;
+      margin: 0;
+      padding: 20px 0;
+      text-align: center;
+      font: 16px/16px Arial bold, sans-serif;
     }
-    select {
-      width: 153px;
+  }
+
+  .form_frame {
+    display: none;
+  }
+
+  #new_glider_form_wrapper, #new_pilot_form_wrapper, #module_planner_object_declaration_form_wrapper {
+    width: 360px;
+    fieldset {
+      span {
+        width: 140px;
+      }
+      select {
+        width: 153px;
+      }
     }
   }
 }
