@@ -2,6 +2,8 @@
 
 namespace object;
 
+use html\node;
+
 class manufacturer extends club {
 
     public $Name;
@@ -11,19 +13,5 @@ class manufacturer extends club {
     public $Glider;
     public $Num;
     public $title;
-
-
-    /**
-     * @param $pos
-     * @return string
-     */
-    function writeClubSemiHead($pos) {
-        return '
-            <div class="table_wrapper inner"><h3>
-            <span class="pos">' . $pos . '</span>
-            <span class="score">' . $this->score . '</span>
-            <span class="name">' . $this->name . '</span>
-            </h3>';
-    }
 
 }

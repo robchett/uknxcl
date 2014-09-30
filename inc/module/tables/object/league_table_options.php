@@ -14,9 +14,10 @@ class league_table_options {
     public $winter = null;
     public $defined = null;
     public $gender = null;
+    public $show_top_4 = false;
     public $dimensions = null;
-    public $rigid = null;
-    public $use_multipliers = true;
+    public $ridge = null;
+    public $no_multipliers = false;
     public $year = null;
     public $glider_class = null;
     public $layout = 0;
@@ -25,12 +26,16 @@ class league_table_options {
     public $minimum_score = 10;
     public $date = null;
     public $flown_through = [];
+    public $handicap = false;
+    public $handicap_kingpost = 1;
+    public $handicap_rigid = 1;
 
     const LAYOUT_LEAGUE = 0;
     const LAYOUT_CLUB = 1;
     const LAYOUT_PILOT_LOG = 2;
     const LAYOUT_TOP_TEN = 3;
-    const LAYOUT_RECORDS = 4;
+    const LAYOUT_LIST = 4;
+    const LAYOUT_RECORDS = 5;
 
     public function __construct($settings, $parent) {
         $this->parent = $parent;
@@ -47,7 +52,7 @@ class league_table_options {
         $this->get_defined();
         $this->get_gender();
         $this->get_dimensions();
-        $this->get_rigid();
+        $this->get_ridge();
         $this->get_date();
         $this->get_multipliers();
         $this->get_launch_string();
@@ -57,6 +62,7 @@ class league_table_options {
         $this->get_pilot_id();
         $this->get_glider_mode();
         $this->get_flown_through();
+        $this->get_minimum_score();
     }
 
     public function add_launch($id) {
@@ -77,8 +83,8 @@ class league_table_options {
     }
 
     public function get_launch_string() {
-        if (count($this->launches) != 3) {
-            $this->parent->where[] = '(lid = ' . implode('OR lid = ', $this->launches) . ')';
+        if (count($this->launches) != 3 && $this->launches) {
+            $this->parent->where[] =  'lid IN (' . implode(',', $this->launches) . ')';
         }
     }
 
@@ -101,12 +107,12 @@ class league_table_options {
 
     public function get_flight_type_string() {
         if (count($this->types) != 5) {
-            $this->parent->where[] = '(ftid = ' . implode(' OR ftid = ', $this->types) . ')';
+            $this->parent->where[] = 'ftid IN (' . implode(',', $this->types) . ')';
         }
     }
 
     public function set_winter($value) {
-        if (is_numeric($value) && $value) {
+        if (is_numeric($value) && $value >= 0) {
             $this->winter = $value;
         }
     }
@@ -119,7 +125,7 @@ class league_table_options {
     }
 
     public function set_defined($value) {
-        if (is_numeric($value) && $value) {
+        if (is_numeric($value) && $value >= 0) {
             $this->defined = $value;
         }
     }
@@ -161,16 +167,28 @@ class league_table_options {
         }
     }
 
-    public function set_rigid($value) {
-        if (is_numeric($value) && $value) {
-            $this->rigid = $value;
+    public function set_minimum_score($value) {
+        if (is_numeric($value) && $value >= 0) {
+            $this->minimum_score = $value;
         }
     }
 
-    public function get_rigid() {
-        if (!is_null($this->rigid)) {
-            $this->parent->where[] = 'rigid=:rigid';
-            $this->parent->parameters['rigid'] = $this->rigid;
+    public function get_minimum_score() {
+        if (!is_null($this->minimum_score)) {
+            $this->parent->where[] = $this->parent->ScoreType . ' > ' . $this->minimum_score;
+        }
+    }
+
+    public function set_ridge($value) {
+        if (is_numeric($value) && $value >= 0) {
+            $this->ridge = $value;
+        }
+    }
+
+    public function get_ridge() {
+        if (!is_null($this->ridge)) {
+            $this->parent->where[] = 'ridge=:ridge';
+            $this->parent->parameters['ridge'] = $this->ridge;
         }
     }
 
@@ -195,7 +213,7 @@ class league_table_options {
     }
 
     public function get_multipliers() {
-        if (!$this->use_multipliers) {
+        if ($this->no_multipliers) {
             $this->parent->ScoreType = "base_score";
             $this->parent->OrderBy = "base_score";
         }
@@ -249,7 +267,7 @@ class league_table_options {
     }
 
     public function set_pilot_id($value) {
-        if (is_numeric($this->pilot_id)) {
+        if (is_numeric($value)) {
             $this->pilot_id = $value;
         }
     }
@@ -266,10 +284,6 @@ class league_table_options {
             $this->parent->set_glider_view();
         }
 
-    }
-
-    public function get_min_score() {
-        $this->parent->where[] = $this->parent->ScoreType . ' > ' . $this->minimum_score;
     }
 
     public function set_flown_through($grid_refs) {

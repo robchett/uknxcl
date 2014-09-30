@@ -5,6 +5,7 @@ use classes\table_array;
 use html\node;
 use object\club;
 use object\pilot;
+use object\scorable;
 
 class result_club extends result {
 
@@ -32,35 +33,32 @@ class result_club extends result {
             return node::create('table.main thead tr th.c', ['style' => 'width:663px'], 'No Flights to display');
         }
         $club_array = new table_array();
-        $pilots_array->iterate(function (pilot $pilot) use ($data, $pilots, $club_array) {
-                /** @var club $club */
-                if ($pilot->club) {
-                    if (isset ($club_array [$pilot->club])) {
-                        $club = $club_array [$pilot->club];
-                        $club->AddSub($pilot, $data->max_flights);
-                    } else {
-                        $club = new $data->SClass();
-                        $club->set_from_pilot($pilot, $pilots, $data->max_flights);
-                        $club_array [$pilot->club] = $club;
-                    }
+        $pilots_array->iterate(function (scorable $pilot) use ($data, $pilots, $club_array) {
+            /** @var club $club */
+            if ($pilot->club) {
+                if (isset ($club_array [$pilot->club])) {
+                    $club = $club_array [$pilot->club];
+                    $club->AddSub($pilot, $data->max_flights);
+                } else {
+                    $club = new $data->SClass();
+                    $club->set_from_pilot($pilot, $pilots, $data->max_flights);
+                    $club_array [$pilot->club] = $club;
                 }
             }
-        );
+        });
         $club_array->uasort(['\module\tables\object\league_table', 'cmp']);
 
         $html = node::create('div.table_wrapper', [],
-            node::create('h3', [], $data->Title) .
-            $club_array->iterate_return(
-                function (club $club, $i) use ($data) {
-                    return node::create('div.table_wrapper.inner', [],
-                        $club->writeClubSemiHead($i + 1) .
-                        node::create('table.results.main.flights_' . $data->max_flights, [],
-                            $data->write_table_header($data->max_flights, $data->class_primary_key) .
-                            $club->content
-                        )
-                    );
-                }
-            )
+            node::create('h3.heading', [], $data->Title) .
+            $club_array->iterate_return(function (club $club, $i) use ($data) {
+                return node::create('div.table_wrapper.inner', [],
+                    $club->writeClubSemiHead($i + 1) .
+                    node::create('table.results.main.flights_' . $data->max_flights, [],
+                        $data->write_table_header($data->max_flights, $data->class_primary_key) .
+                        $club->content
+                    )
+                );
+            })
         );
 
         return $html;

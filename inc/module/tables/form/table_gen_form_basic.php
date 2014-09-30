@@ -21,47 +21,46 @@ class table_gen_form_basic extends form {
             $years[$year] = $year;
         }
         $fields = [
-            'type' => form::create('field_select', 'type')
-                    ->set_attr('options', [
-                            0 => 'Main',
-                            14 => 'Class1',
-                            13 => 'Class5',
-                            1 => 'Foot',
-                            2 => 'Aero',
-                            3 => 'Winch',
-                            5 => 'Defined',
-                            4 => 'Winter',
-                            6 => 'Female',
-                            8 => 'Club',
-                            7 => 'Club (Official)',
-                            9 => 'Top Tens',
-                            15 => 'Top Tens (1x)',
-                            10 => 'Pilot',
-                            //11 => 'Main (3d)',
-                            12 => 'Hangies',
-                            16 => 'Records',
-                        ]
-                    )
-                    ->set_attr('label', 'League Type'),
-            'year' => form::create('field_select', 'year')
-                    ->set_attr('options', $years)
-                    ->set_attr('label', 'Year')
-                    ->set_attr('value', date('Y'))
-                    ->set_attr('required', true),
-            'pilot' => form::create('field_link', 'pilot')
-                    ->set_attr('label', 'Pilot:')
-                    ->set_attr('link_module', '\\object\\pilot')
-                    ->set_attr('link_field', 'name')
-                    ->set_attr('options', ['order' => 'name ASC'])
-                    ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
-                    ->set_attr('required', true)
-                    ->set_attr('disabled', true),
-            'no_min' => form::create('field_boolean', 'no_min')
-                    ->set_attr('label', 'No Minimum Distance'),
-            'split_classes' => form::create('field_boolean', 'split_classes')
-                    ->set_attr('label', 'Split Class 1 & 5'),
-            'glider_mode' => form::create('field_boolean', 'glider_mode')
-                    ->set_attr('label', 'Score gliders not pilots'),
+            form::create('field_select', 'type')
+                ->set_attr('options', [
+                        0  => 'Main',
+                        14 => 'Class1',
+                        13 => 'Class5',
+                        1  => 'Foot',
+                        2  => 'Aero',
+                        3  => 'Winch',
+                        5  => 'Defined',
+                        4  => 'Winter',
+                        6  => 'Female',
+                        8  => 'Club',
+                        7  => 'Club (Official)',
+                        9  => 'Top Tens',
+                        15 => 'Top Tens (1x)',
+                        10 => 'Pilot',
+                        12 => 'Hangies',
+                        16 => 'Records',
+                    ]
+                )
+                ->set_attr('label', 'League Type'),
+            form::create('field_select', 'year')
+                ->set_attr('options', $years)
+                ->set_attr('label', 'Year')
+                ->set_attr('value', date('Y'))
+                ->set_attr('required', true),
+            form::create('field_link', 'pilot')
+                ->set_attr('label', 'Pilot:')
+                ->set_attr('link_module', '\\object\\pilot')
+                ->set_attr('link_field', 'name')
+                ->set_attr('options', ['order' => 'name ASC'])
+                ->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')
+                ->set_attr('required', true)
+                ->set_attr('disabled', true),
+            form::create('field_boolean', 'no_min')
+                ->set_attr('label', 'No Minimum Distance'),
+            form::create('field_boolean', 'split_classes')
+                ->set_attr('label', 'Split Class 1 & 5'),
+            form::create('field_boolean', 'glider_mode')
+                ->set_attr('label', 'Score gliders not pilots'),
         ];
         /** @var \form\field $field */
         foreach ($fields as $field) {
@@ -69,13 +68,29 @@ class table_gen_form_basic extends form {
         }
 
         parent::__construct($fields);
-        $this->id = 'basic_tables_form';
-        $this->wrapper_class = '.basic_tables_wrapper';
+        $this->id = 'basic_tables';
+        $this->wrapper_class[] = 'basic_tables_wrapper';
         $this->submit = 'Generate';
-        $this->post_text = node::create('a.form_toggle', ['data-show' => 'advanced_tables_wrapper'], 'Advanced View');
         $this->get_field_from_name('year')->value = date('Y');
         $this->shroud = '';
         $this->h2 = 'Options';
+    }
+
+    /**
+     * @return node
+     */
+    public function get_submit() {
+        if ($this->has_submit) {
+            $field = node::create('div.form-group.submit-group div.col-md-offset-' . $this->bootstrap[0] . '.col-md-' . $this->bootstrap[1], [], [
+                node::create('button.btn.btn-default', $this->submit_attributes, $this->submit),
+                node::create('a.form_toggle', ['data-show' => 'advanced_tables_wrapper'], 'Advanced View')
+            ]);
+            if (!$this->submittable) {
+                $field->add_attribute('disabled', 'disabled');
+            }
+            return $field;
+        }
+        return node::create('');
     }
 
     public function get_html() {
@@ -91,7 +106,7 @@ class table_gen_form_basic extends form {
 
     public function set_from_options(_object\league_table_options $options) {
         foreach ($options as $key => $value) {
-            if (isset($this->fields[$key])) {
+            if ($this->has_field($key)) {
                 $this->$key = $value;
             }
         }
@@ -103,14 +118,41 @@ class table_gen_form_basic extends form {
                 $this->type = 10;
                 break;
             case \module\tables\object\league_table_options::LAYOUT_TOP_TEN :
-                $this->type = 15;
+                if ($options->no_multipliers) {
+                    $this->type = 15;
+                } else {
+                    $this->type = 9;
+                }
                 break;
             case \module\tables\object\league_table_options::LAYOUT_CLUB :
-                $this->type = 8;
+                if ($options->official) {
+                    $this->type = 7;
+                } else {
+                    $this->type = 8;
+                }
                 break;
             case \module\tables\object\league_table_options::LAYOUT_RECORDS :
                 $this->type = 16;
                 break;
+        }
+        if (!$this->type) {
+            if ($options->gender == 2) {
+                $this->type = 6;
+            } else if ($options->glider_class == 1) {
+                $this->type = 14;
+            } else if ($options->glider_class == 5) {
+                $this->type = 13;
+            } else if ($options->launches == [1]) {
+                $this->type = 1;
+            } else if ($options->launches == [2]) {
+                $this->type = 2;
+            } else if ($options->launches == [3]) {
+                $this->type = 3;
+            } else if ($options->defined) {
+                $this->type = 5;
+            } else if ($options->winter) {
+                $this->type = 4;
+            }
         }
         if ($options->pilot_id) {
             $this->get_field_from_name('pilot')->disabled = false;
@@ -134,6 +176,6 @@ class table_gen_form_basic extends form {
         if ($this->split_classes) {
             $table->options->split_classes = true;
         }
-        get::header_redirect($table->get_url() . '?module=core&act=load_page');
+        get::header_redirect($table->get_url() . '?module=core&act=load_page&form=' . $_REQUEST['ajax_origin']);
     }
 }

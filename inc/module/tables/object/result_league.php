@@ -4,6 +4,7 @@ namespace module\tables\object;
 use classes\table_array;
 use html\node;
 use object\pilot;
+use object\scorable;
 
 class result_league extends result {
 
@@ -29,12 +30,12 @@ class result_league extends result {
             $class1 = 1;
             $class5 = 1;
             $html = node::create('div.table_wrapper', [],
-                node::create('h3', [], $data->Title) .
-                ($data->show_top_4 ? $data->ShowTop4($data->WHERE) : '') .
+                node::create('h3.heading', [], $data->Title) .
+                ($data->options->show_top_4 ? $data->ShowTop4($data->WHERE) : '') .
                 node::create('table.results.main', ['style' => 'width:700px'],
                     $data->write_table_header($data->max_flights, $data->class_primary_key) .
                     $array->iterate_return(
-                        function (pilot $pilot) use (&$class1, &$class5) {
+                        function (scorable $pilot) use (&$class1, &$class5) {
                             if ($pilot->class == 1) {
                                 return $pilot->output($class1++, 0);
                             } else {
