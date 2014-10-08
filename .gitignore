@@ -8,3 +8,4 @@ tmp
 .vagrant
 plugins
 .sass-cache
+node_modules
