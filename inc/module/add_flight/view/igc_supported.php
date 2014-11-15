@@ -31,9 +31,7 @@ class igc_supported extends \template\html {
         var $body = $("body");
     $body.on("change.bs.fileinput,clear.bs.fileinput,reset.bs.fileinput", ".fileinput", function (e) {
         var $ths = $(this);
-        console.log($ths);
         var $input = $ths.find("input[type=file]");
-        console.log($input);
         var $kml = $("#kml_calc");
         var $kml_wrapper = $("#kml_wrapper");
         if ($input.val().slice(-3) == "igc") {
@@ -48,7 +46,7 @@ class igc_supported extends \template\html {
         }
     });
     $body.on("change", "input, select, textarea", function (e) {
-        $("#" + input.attr("id") + "_hidden").val($(this).val());
+        $("#" + $(this).attr("id") + "_hidden").val($(this).val());
         return true;
     });
     $body.on("click", "#kml_calc a.calc", function () {
@@ -58,49 +56,49 @@ class igc_supported extends \template\html {
     $body.on("change","input#coords",function () {
         var arr = $(this).val().split(";");
         var coord_array = new Planner();
-        var str = "";
+        var str = [];
         arr.each(function(arg, i) {
             var coord = new Coordinate();
             coord.set_from_OS(arg);
             if (coord.is_valid_gridref()) {
                 coord_array.push(coord);
             } else {
-                str = "Coordinate " + (i + 1) + " is not valid";
+                str.push("Coordinate " + (parseInt(i) + 1) + " is not valid");
             }
         });
         if (!str.length) {
         switch (coord_array.count) {
             case 0:
-                str = "";
+                str = [""];
                 break;
             case 1:
-                str = "Please enter at least two coordinates";
+                str = ["Please enter at least two coordinates"];
                 break;
             case 2:
-                str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                str = ["Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 break;
             case 3:
                 if(coord_array[0] == coord_array[2]) {
-                    str = "Flight Type: Out & Return, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                    str = ["Flight Type: Out & Return, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 } else {
-                    str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                    str = ["Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 }
                 break;
             case 4:
                 if(coord_array[0] == coord_array[4]) {
-                    str = "Flight Type: Triangle, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                    str = ["Flight Type: Triangle, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 } else {
-                    str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                    str = ["Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 }
                 break;
             case 5:
-                str = "Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers";
+                str = ["Flight Type: Open Distance, Score: " + coord_array.get_total_distance().round(2) + " before multipliers"];
                 break;
             default :
-                str = "you can only enter 5 coordinates";
+                str = ["you can only enter 5 coordinates"];
             }
         }
-        $(this).parents("form").find(".defined_info").html(str);
+        $(this).parents("form").find(".defined_info").html(str.join("<br/>"));
     });
     $body.on("click","a.score_select",function () {
         var data = $(this).data("post");

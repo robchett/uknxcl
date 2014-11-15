@@ -13,7 +13,7 @@ module.exports = function(grunt) {
             },
             scripts: {
                 files: ['.core/**/*.js', 'js/src/*.js'],
-                tasks: ['concat','uglify'],
+                tasks: ['concat', 'uglify'],
                 spawn: false,
                 interrupt: true
             }

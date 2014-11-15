@@ -20,8 +20,8 @@ class comp_convert extends form\form {
                     ->set_attr('options', \object\flight::$launch_types)
                     ->set_attr('label', 'Launch'),
             'file' => form\form::create('field_hidden', 'file'),
-            'vis_info' => form\form::create('field_hidden', 'vis_info'),
-            'invis_info' => form\form::create('field_hidden', 'invis_info'),
+            'info' => form\form::create('field_hidden', 'info'),
+            'admin_info' => form\form::create('field_hidden', 'admin_info'),
             'comp' => form\form::create('field_hidden', 'comp'),
         ];
         parent::__construct($fields);

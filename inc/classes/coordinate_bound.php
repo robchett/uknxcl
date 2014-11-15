@@ -63,7 +63,7 @@ class coordinate_bound {
     public function get_range() {
         $ne = new lat_lng($this->north, $this->east);
         $sw = new lat_lng($this->south, $this->west);
-        $dist = $sw->get_dist_to($ne);
+        $dist = $sw->get_distance_to($ne);
         return $dist * 5;
     }
 

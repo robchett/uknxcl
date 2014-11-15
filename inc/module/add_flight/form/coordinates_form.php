@@ -60,7 +60,7 @@ class coordinates_form extends form {
                 form::create('field_boolean', 'ridge')
                     ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
                     ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'vis_info')
+                form::create('field_textarea', 'info')
                     ->set_attr('label', 'Please write any extra information you wish to be made public here')
                     ->set_attr('required', false)
                     ->add_wrapper_class('long_text'),
@@ -94,7 +94,7 @@ class coordinates_form extends form {
 
         if (strtotime($this->date) + (30 * 24 * 60 * 60) < time()) {
             $this->force_delay = true;
-            $flight->invis_info .= 'delayed as flight is old.';
+            $flight->admin_info .= 'delayed as flight is old.';
         }
 
         $track = new track();
