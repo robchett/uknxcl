@@ -40,8 +40,8 @@ class gps_datums {
     }
 
     private static function __convert(lat_lng $point, $source_ellipse, $target_ellipse, $transform) {
-        $lat = $point->lat_rad();
-        $lon = $point->lng_rad();
+        $lat = $point->lat(true);
+        $lon = $point->lng(true);
 
         $a = $source_ellipse['a'];
         $b = $source_ellipse['b'];

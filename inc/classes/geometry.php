@@ -9,15 +9,6 @@ class geometry {
 
     const EARTH_RADIUS = 6371000;
 
-    public static function get_distance(lat_lng $obj1, lat_lng $obj2) {
-        $x = $obj1->sin_lat() * $obj2->sin_lat() + $obj1->cos_lat() * $obj2->cos_lat() * cos($obj1->lng_rad() - $obj2->lng_rad());
-        if (!is_nan($acos = acos($x))) {
-            return ($acos * 6371);
-        } else {
-            return 0;
-        }
-    }
-
     public static function coordinate_normalise($coordinate) {
         $parts = explode(' ', $coordinate, 2);
         $dir = 1;
@@ -42,19 +33,19 @@ class geometry {
         $iter = 1;
         $MAXITER = 100;
         $arOut = [0, 0.0, M_PI];
-        if (abs($obj1->lat_rad() - $obj2->lat_rad()) < $EPS && (abs($obj1->lng_rad() - $obj2->lng_rad()) < $EPS || abs(abs($obj1->lng_rad() - $obj2->lng_rad()) - 2 * M_PI) < $EPS)) {
-            return 0;
+        if (abs($obj1->lat(true) - $obj2->lat(true)) < $EPS && (abs($obj1->lng(true) - $obj2->lng(true)) < $EPS || abs(abs($obj1->lng(true) - $obj2->lng(true)) - 2 * M_PI) < $EPS)) {
+            return $arOut;
         }
         $r = 1 - $f;
-        $tu1 = $r * tan($obj1->lat_rad());
-        $tu2 = $r * tan($obj2->lat_rad());
+        $tu1 = $r * tan($obj1->lat(true));
+        $tu2 = $r * tan($obj2->lat(true));
         $cu1 = 1 / (sqrt(1 + $tu1 * $tu1));
         $su1 = $cu1 * $tu1;
         $cu2 = 1 / (sqrt(1 + $tu2 * $tu2));
         $s1 = $cu1 * $cu2;
         $b1 = $s1 * $tu2;
         $f1 = $b1 * $tu1;
-        $x = $obj2->lng_rad() - $obj1->lng_rad();
+        $x = $obj2->lng(true) - $obj1->lng(true);
         do {
             $iter++;
             $sx = sin($x);
@@ -74,7 +65,7 @@ class geometry {
             $c = ((-3 * $c2a + 4) * $f + 4) * $c2a * $f / 16;
             $d = $x;
             $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
-            $x = (1 - $c) * $x * $f + $obj2->lng_rad() - $obj1->lng_rad();
+            $x = (1 - $c) * $x * $f + $obj2->lng(true) - $obj1->lng(true);
         } while ((abs($d - $x) > $EPS) && ($iter < $MAXITER));
         $x = sqrt((1 / ($r * $r) - 1) * $c2a + 1);
         $x++;
@@ -90,8 +81,8 @@ class geometry {
 
     static function lat_long_to_os(lat_lng $point, $precision = 6) {
         $point = gps_datums::convert($point, 'WGS84', 'OSGB36');
-        $lat = $point->lat_rad();
-        $lon = $point->lng_rad();
+        $lat = $point->lat(true);
+        $lon = $point->lng(true);
         $a = 6377563.396;
         $b = 6356256.910;
         $F0 = 0.9996012717;
@@ -218,7 +209,7 @@ class geometry {
             $bearing = deg2rad($i);
             $lat = asin($center_coordinate->sin_lat() * cos($angularDistance) + $center_coordinate->cos_lat() * sin($angularDistance) * cos($bearing));
             $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat(), cos($angularDistance) - $center_coordinate->sin_lat() * sin($lat));
-            $lon = fmod(($center_coordinate->lng_rad() + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $lon = fmod(($center_coordinate->lng(true) + $dlon + M_PI), 2 * M_PI) - M_PI;
             $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
         }
         return $out;
@@ -327,36 +318,4 @@ class geometry {
         }
         return $number;
     }
-
-    static function time_split_kml_plus_js(track $track) {
-        $count1 = 0;
-        $output = kml::get_kml_header();
-        /** @track_part */
-        foreach ($track->track_parts as $a) {
-            $output .= '
-    <Placemark>
-      <name>Flight</name>
-      <Style>
-        <LineStyle>
-          <color>FF' . get::colour(++$count1) . '</color>
-          <width>2</width>
-        </LineStyle>
-      </Style>
-      ' . $track->get_time_meta_data($a->start_point, $a->end_point) . '
-      ' . $track->get_kml_linestring() . '
-    </Placemark>';
-        }
-        if (isset($track->task)) {
-            $output .= self::get_task_output($track->task);
-        }
-        $output .= kml::get_kml_footer();
-
-        $outFile = fopen($track->get_file_loc() . '/Track.kml', 'w');
-        fwrite($outFile, $output);
-        $outFile = fopen($track->get_file_loc() . '/Track_Earth.kml', 'w');
-        fwrite($outFile, $output);
-
-        $track->generate_js();
-    }
-
 }

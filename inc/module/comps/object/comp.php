@@ -201,11 +201,11 @@ class comp extends table {
         foreach ($track_array as $track) {
             /** @var track $track */
             $track->colour = $cnt;
-            if ($track->track_points->last()->time > $xMax) {
-                $xMax = $track->track_points->last()->time;
+            if ($track->coordinate_set->last()->time > $xMax) {
+                $xMax = $track->coordinate_set->last()->time;
             }
-            if ($track->track_points->first()->time < $xMin) {
-                $xMin= $track->track_points->first()->time;
+            if ($track->coordinate_set->first()->time < $xMin) {
+                $xMin= $track->coordinate_set->first()->time;
             }
             $this->bounds->add_bounds_to_bound($track->bounds);
             $cnt++;
@@ -261,7 +261,7 @@ class comp extends table {
                 $form = new \comp_convert();
                 $form->get_field_from_name('file')->value = $track->source;
                 $form->get_field_from_name('comp')->value = $track->cid;
-                $form->get_field_from_name('vis_info')->value = $this->title . ' - ' . $this->type;
+                $form->get_field_from_name('info')->value = $this->title . ' - ' . $this->type;
                 $html .= $form->get_html();
 
             }
@@ -272,10 +272,10 @@ class comp extends table {
             $cnt = 0;
             foreach ($task->task_array as $turnpoint) {
                 $cnt++;
-                $tot = count($track->track_points);
+                $tot = count($track->coordinate_set);
                 for (; $tp < $tot; $tp++) {
                     if ($turnpoint->type) {
-                        $x = ($turnpoint->radius - $this->distCalc3($track->track_points[$tp], $turnpoint));
+                        $x = ($turnpoint->radius - $this->distCalc3($track->coordinate_set[$tp], $turnpoint));
                         if ($x > 0) {
                             $html .= 'made turnpoint ' . $made_turnpoint . '<br/>';
                             $dist += $task->distances[$made_turnpoint];
@@ -286,13 +286,13 @@ class comp extends table {
                             $distToTP = -$x;
                         }
                     } else {
-                        $y = ($this->distCalc3($track->track_points[$tp], $turnpoint) - $turnpoint->radius);
+                        $y = ($this->distCalc3($track->coordinate_set[$tp], $turnpoint) - $turnpoint->radius);
                         if ($y > 0) {
                             $html .= 'made turnpoint ' . $made_turnpoint . '<br/>';
                             $made_turnpoint++;
                             continue 2;
                         } else if (isset($task->task_array[$made_turnpoint + 1])) {
-                            $x = ($this->distCalc3($track->track_points[$tp], $task->task_array[$made_turnpoint + 1]) - $task->task_array[$made_turnpoint + 1][2]);
+                            $x = ($this->distCalc3($track->coordinate_set[$tp], $task->task_array[$made_turnpoint + 1]) - $task->task_array[$made_turnpoint + 1][2]);
                             if ($x < $distToTP) {
                                 $distToTP = $x;
                             }
@@ -330,17 +330,17 @@ class comp extends table {
             $tp = 0;
             for ($i = 0; $i < 1000; $i++) {
                 $time = $xMin+ ($i * $timeSteps);
-                if ($time < $track->track_points->first()->time) {
-                    $js_track->coords[] = $track->track_points->first()->get_js_coordinate();
-                    $js_track->data[] = $track->track_points->first()->get_graph_point($track->track_points->first()->time - $xMin);
-                } else if ($time > $track->track_points->last()->time) {
-                    $js_track->coords[] = $track->track_points->last()->get_js_coordinate();
-                    $js_track->data[] = $track->track_points->last()->get_graph_point($track->track_points->last()->time - $xMin);
+                if ($time < $track->coordinate_set->first()->time) {
+                    $js_track->coords[] = $track->coordinate_set->first()->get_js_coordinate();
+                    $js_track->data[] = $track->coordinate_set->first()->get_graph_point($track->coordinate_set->first()->time - $xMin);
+                } else if ($time > $track->coordinate_set->last()->time) {
+                    $js_track->coords[] = $track->coordinate_set->last()->get_js_coordinate();
+                    $js_track->data[] = $track->coordinate_set->last()->get_graph_point($track->coordinate_set->last()->time - $xMin);
                 } else {
-                    for ($p = $tp; $p < $track->track_points->count(); $p++) {
-                        if (($xMin+ ($i * $timeSteps)) < $track->track_points[$p]->time) {
-                            $js_track->coords[] = $track->track_points[$p]->get_js_coordinate();
-                            $js_track->data[] = $track->track_points[$p]->get_graph_point($track->track_points[$p]->time - $xMin);
+                    for ($p = $tp; $p < $track->coordinate_set->count(); $p++) {
+                        if (($xMin+ ($i * $timeSteps)) < $track->coordinate_set[$p]->time) {
+                            $js_track->coords[] = $track->coordinate_set[$p]->get_js_coordinate();
+                            $js_track->data[] = $track->coordinate_set[$p]->get_graph_point($track->coordinate_set[$p]->time - $xMin);
                             $tp = $p;
                             break;
                         }

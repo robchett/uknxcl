@@ -1,22 +1,26 @@
 <?php
 namespace track;
 
-use classes\geometry;
-use object\flight_type;
+class defined_task extends \task {
 
-class defined_task extends task {
-
-    public function get_task() {
-
-        $xml = '';
-        if ($this->ftid != flight_type::TR_ID) {
-            $xml .= geometry::get_task_output($this);
-        } else {
-            $waypoints = $this->waypoints;
-            $this->waypoints = new track_point_collection([$waypoints[1], $waypoints[2], $waypoints[3], $waypoints[1]]);
-            $xml .= geometry::get_task_output($this);
-            $this->waypoints = $waypoints;
+    public function __construct($coordinates) {
+        $points = explode(';', $coordinates);
+        $points = [];
+        foreach ($points as &$a) {
+            $points[] = \classes\geometry::os_to_lat_long($a);
         }
-        return $xml;
+        if(count($points) == 5) {
+            parent::__construct($points[0], $points[1], $points[2], $points[3], $points[4]);
+        } else if(count($points) == 4) {
+            parent::__construct($points[0], $points[1], $points[2], $points[3]);
+        } else if(count($points) == 3) {
+            parent::__construct($points[0], $points[1], $points[2]);
+        } else if(count($points) == 2) {
+            parent::__construct($points[0], $points[1]);
+        }
+    }
+
+    public function is_valid(track $set) {
+        return $this->completes_task();
     }
 }

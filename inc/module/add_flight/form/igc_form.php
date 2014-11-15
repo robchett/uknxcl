@@ -50,7 +50,7 @@ class igc_form extends form {
                 form::create('field_boolean', 'ridge')
                     ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
                     ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'vis_info')
+                form::create('field_textarea', 'info')
                     ->set_attr('label', 'Please write any extra information you wish to be made public here')
                     ->set_attr('required', false)
                     ->add_wrapper_class('long_text'),
@@ -92,21 +92,26 @@ class igc_form extends form {
             track::move_temp_files($this->temp_id, $flight->fid);
             $track = new track($flight->fid);
             $track->parse_IGC();
-            $track->pre_calc();
-            $track->set_from_session($flight, $this->temp_id);
+            $track->set_flight($flight);
+            $track->set_from_session($this->temp_id);
 
-            $flight->date = $track->date;
+            $flight->date = $track->get_date('Y-m-d');
             $flight->did = $track->get_dim();
             $flight->winter = $track->is_winter();
+
+            $flight->season = $track->get_date('Y');
+            if($track->get_date('m') >= 11) {
+                $flight->season++;
+            }
 
             $this->force_delay = false;
             if (!$track->check_date()) {
                 $this->force_delay = true;
-                $flight->invis_info .= 'delayed as flight is old.';
+                $flight->admin_info .= 'delayed as flight is old.';
             }
             $this->defined = false;
             if ($this->type == 'task') {
-                $this->type = $track->task->type;
+                $this->type = $flight->go_type;
                 $this->defined = true;
             }
             $flight_type = new flight_type();
@@ -115,18 +120,15 @@ class igc_form extends form {
             $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
 
             if (!$this->defined) {
-                $flight->base_score = $track->{$this->type}->get_distance();
-                $flight->coords = $track->{$this->type}->get_coordinates();
+                $flight->base_score = $flight->{$this->type . '_score'};
+                $flight->coords = $flight->{$this->type . '_coordinates'};
                 $flight->score = $flight->base_score * $flight->multi;
             } else {
-                $flight->coords = $track->task->get_coordinates();
-                $flight->base_score = $track->task->get_distance();
+                $flight->coords = $flight->go_coordinates;
+                $flight->base_score = $flight->go_distance;
                 $flight->score = $flight->base_score * $flight->multi;
             }
             $flight->delayed = $this->force_delay ? true : $this->delay;
-
-
-            $flight->file = '/uploads/flight/' . $track->id . '/track.igc';
             $track->generate_output_files();
             $flight->do_save();
 
