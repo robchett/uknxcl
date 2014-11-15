@@ -503,7 +503,7 @@ class track
             }
         );
     }
-    
+
     public function set_from_session($id) {
         if (session::is_set('add_flight', $id)) {
             if (session::is_set('add_flight', $id, 'section')) {
