@@ -263,14 +263,13 @@ class flight extends table {
     }
 
     /**
-     *
+     * @param int|null $fid
      */
-    public function generate_benchmark() {
-        die();
-        $log = new log(log::DEBUG, '/tmp/track_generation.log');
+    public static function generate_benchmark($fid = null) {
+        $log = new log(log::DEBUG, '/.cache/track_generation.log');
         $options = ['where' => 'did > 1', 'order' => 'fid ASC'];
-        if (isset($_REQUEST['fid'])) {
-            $options['where'] .= ' AND fid >=' . $_REQUEST['fid'];
+        if ($fid) {
+            $options['where'] .= ' AND fid >=' .$fid;
         }
         $flights = flight::get_all([], $options);
         set_time_limit(0);
@@ -282,6 +281,12 @@ class flight extends table {
                 $time = time();
                 $log->info('Track: ' . $flight->fid);
                 $log->debug('---- Reading');
+                if(!file_exists($track->get_igc())) {
+                    if(!is_dir($track->get_file_loc())) {
+                        mkdir($track->get_file_loc());
+                    }
+                    copy('/var/www/vhosts/uknxcl.old/web/Tracks/' . $flight->fid . '/Track_log.igc', $track->get_file_loc() . '/track_log.igc');
+                }
                 if ($track->parse_IGC()) {
                     $log->debug('---- Read');
                     $codes = [];
