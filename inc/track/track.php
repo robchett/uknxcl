@@ -87,7 +87,9 @@ class track
         //        $this->track_flat_triangles();
         //        $this->log->info("Flat Triangle Calculated, Dist:{$this->ft->get_distance()} Cords={$this->ft->get_gridref()}", $this);
         $this->tr = $this->distance_map->score_triangle();
-        $this->log->info("Triangle Calculated, Dist:{$this->tr->get_distance(true) } Cords={$this->tr->get_gridref() }", $this);
+        if($this->tr) {
+            $this->log->info("Triangle Calculated, Dist:{$this->tr->get_distance(true)} Cords={$this->tr->get_gridref()}", $this);
+        }
         $this->set_info();
     }
     
@@ -143,11 +145,13 @@ class track
             $this->flight->or_score = $this->or->get_distance();
             $this->flight->or_time = $this->or->get_duration();
             $this->flight->or_coordinates = $this->or->get_gridref();
-            
-            $this->flight->tr_score = $this->tr->get_distance();
-            $this->flight->tr_time = $this->tr->get_duration();
-            $this->flight->tr_coordinates = $this->tr->get_gridref();
-            
+
+            if($this->tr) {
+                $this->flight->tr_score = $this->tr->get_distance();
+                $this->flight->tr_time = $this->tr->get_duration();
+                $this->flight->tr_coordinates = $this->tr->get_gridref();
+            }
+
             /*
             $this->parent_flight->ft_score = $this->ft->get_distance();
             $this->parent_flight->ft_time = $this->ft->get_time();

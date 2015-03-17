@@ -286,7 +286,7 @@ class flight extends table {
         $flights->iterate(
             function (flight $flight) use (&$total_time, &$log) {
                 $track = new track($flight->fid);
-                $track->set_flight($this);
+                $track->set_flight($flight);
                 $track->time = 0;
                 $time = time();
                 $log->info('Track: ' . $flight->fid);
