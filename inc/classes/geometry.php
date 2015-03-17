@@ -43,7 +43,7 @@ class geometry {
         $MAXITER = 100;
         $arOut = [0, 0.0, M_PI];
         if (abs($obj1->lat_rad() - $obj2->lat_rad()) < $EPS && (abs($obj1->lng_rad() - $obj2->lng_rad()) < $EPS || abs(abs($obj1->lng_rad() - $obj2->lng_rad()) - 2 * M_PI) < $EPS)) {
-            return $arOut;
+            return 0;
         }
         $r = 1 - $f;
         $tu1 = $r * tan($obj1->lat_rad());
