@@ -1027,7 +1027,7 @@ TR Score / Time      ' . $this->tr->get_distance() . ' / ' . $this->tr->get_form
                     $track_point->ele = $previous->ele;
                 }
                 if ($this->has_height() && $track_point->ele > $previous->ele + 500) {
-                    $this->log->debug("Flattened peak  : {$this->track_points->last()->ele} -> $track_point->ele", $this);
+                    $this->log->debug("Flattened peak  : {$previous->ele} -> $track_point->ele", $this);
                     $track_point->ele = $previous->ele;
                 }
                 $previous = clone $track_point;
