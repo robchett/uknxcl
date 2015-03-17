@@ -5,7 +5,7 @@ use classes\db;
 define('load_core', false);
 include '../../index.php';
 db::default_connection();
-db::connect('localhost', 'nxcl2', 'root', '', 'old');
+db::connect('localhost', 'nxcl_old', 'root', '', 'old');
 
 set_time_limit(0);
 
@@ -27,7 +27,7 @@ $tables = array(
         'Defined' => 'defined',
         'Ridge' => 'ridge',
         'Winter' => 'winter',
-        'Vis_Info' => 'vis_info',
+        'Vis_Info' => 'info',
         'Admin_Info' => 'admin_info',
         'Personal' => 'personal',
         'Delay' => 'delayed',
@@ -59,7 +59,7 @@ $tables = array(
         'Single_Surface' => 'single_surface',
         'Hangies_League' => 'hangies',
     ),
-    'wayoint' => array(
+    'waypoint' => array(
         'ID' => 'wid',
         'INFO' => 'title',
         'Lat' => 'lat',
