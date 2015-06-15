@@ -26,7 +26,7 @@ module.exports = function(grunt) {
         },
         concat: {
             options: {
-                separator: ';',
+                separator: ';'
             },
             js: {
                 src: [
@@ -40,8 +40,8 @@ module.exports = function(grunt) {
                     'js/src/*.js'
                 ],
                 dest: 'js/script.js',
-                nonull: true,
-            },
+                nonull: true
+            }
         },
         sass: {
             css: {
@@ -61,6 +61,16 @@ module.exports = function(grunt) {
                     'scss/includes/modules.scss': '../inc/module/**/scss/*.scss',
                 },
                 options: {
+                }
+            }
+        },
+        sass_globbing: {
+            sass: {
+                files: {
+                    'scss/imports/partials.scss': 'scss/partials/*.scss',
+                    'scss/imports/mixins.scss': 'scss/mixins/*.scss',
+                    'scss/imports/modules.scss': 'inc/module/**/scss/*.scss',
+                    'scss/imports/core.scss': '.core/scss/*.scss'
                 }
             }
         }

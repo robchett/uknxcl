@@ -40,7 +40,7 @@ form {
 
     .form-group {
       clear: both;
-      &.err {
+      &.has-error {
         color: #b60000;
       }
       label {
