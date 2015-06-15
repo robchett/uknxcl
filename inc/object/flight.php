@@ -18,7 +18,6 @@ use traits\table_trait;
  * @property mixed delayed
  */
 class flight extends table {
-
     use table_trait;
 
     public $title;
@@ -475,7 +474,7 @@ class flight extends table {
         $track = new track($this->fid);
         $this->track = $track;
         if ($track->parse_IGC()) {
-            $track->trim();
+            $track->coordinate_set->trim();
             return true;
         } else {
             return false;
@@ -489,10 +488,10 @@ class flight extends table {
         if (!isset($this->track)) {
             $this->set_track();
         }
-        $this->track->get_graph_values();
-        $height = $this->track->get_stats('ele');
-        $speed = $this->track->get_stats('speed');
-        $climb = $this->track->get_stats('climbRate');
+        $this->track->coordinate_set->set_graph_values();
+        $height = $this->track->coordinate_set->stats()->height();
+        $speed = $this->track->coordinate_set->stats()->speed();
+        $climb = $this->track->coordinate_set->stats()->climb();
         $html = node::create('table.stats', [],
             node::create('thead tr', [],
                 node::create('th', [], '') .
@@ -503,21 +502,21 @@ class flight extends table {
             node::create('tbody', [],
                 node::create('tr', [],
                     node::create('td', [], 'Elevation') .
-                    node::create('td', [], $height->min . 'ft <span>@ ' . date('H:i:s', $height->min_point->time)) .
-                    node::create('td', [], $height->max . 'ft <span>@ ' . date('H:i:s', $height->max_point->time)) .
-                    node::create('td', [], number_format($height->average, 2) . 'm')
+                    node::create('td', [], $height->min() . 'ft <span>@ ' /*. date('H:i:s', $height->min_point->time)*/) .
+                    node::create('td', [], $height->max() . 'ft <span>@ ' /*. date('H:i:s', $height->max_point->time)*/) .
+                    node::create('td', [], number_format(/*$height->average*/0, 2) . 'm')
                 ) .
                 node::create('tr', [],
                     node::create('td', [], 'Speed') .
-                    node::create('td', [], $speed->min . 'km/h <span>@ ' . date('H:i:s', $speed->min_point->time)) .
-                    node::create('td', [], $speed->max . 'km/h <span>@ ' . date('H:i:s', $speed->max_point->time)) .
-                    node::create('td', [], number_format($speed->average, 2) . 'km/h')
+                    node::create('td', [], $speed->min() . 'km/h <span>@ ' /*. date('H:i:s', $speed->min_point->time)*/) .
+                    node::create('td', [], $speed->max() . 'km/h <span>@ ' /*. date('H:i:s', $speed->max_point->time)*/) .
+                    node::create('td', [], number_format(/*$speed->average*/0, 2) . 'km/h')
                 ) .
                 node::create('tr', [],
                     node::create('td', [], 'Speed') .
-                    node::create('td', [], $climb->min . 'ft/s <span>@ ' . date('H:i:s', $climb->min_point->time)) .
-                    node::create('td', [], $climb->max . 'ft/s <span>@ ' . date('H:i:s', $climb->max_point->time)) .
-                    node::create('td', [], number_format($climb->average, 2) . 'ft/s')
+                    node::create('td', [], $climb->min() . 'ft/s <span>@ ' /*. date('H:i:s', $climb->min_point->time)*/) .
+                    node::create('td', [], $climb->max() . 'ft/s <span>@ ' /*. date('H:i:s', $climb->max_point->time)*/) .
+                    node::create('td', [], number_format(/*$climb->average*/0, 2) . 'ft/s')
                 )
             )
         );
@@ -543,9 +542,9 @@ class flight extends table {
     public function get_info() {
         if ($this->did > 1 && !isset($this->track) && $this->set_track()) {
             $logged_data =
-                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->first()->time))) .
-                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->first()->time))) .
-                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->last()->time - $this->track->coordinate_set->first()->time)));
+                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->first()->timestamp()))) .
+                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->last()->timestamp()))) .
+                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->last()->timestamp() - $this->track->coordinate_set->first()->timestamp())));
         } else {
             $logged_data = '';
         }
@@ -560,7 +559,7 @@ class flight extends table {
             node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' =' . $this->score)) .
             node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], $this->coord_info())) .
             $logged_data .
-            ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->info)) : '') .
+            ($this->info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->info)) : '') .
             (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                 node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
                 node::create('tr', [], node::create('td.center', ['colspan' => 2],
