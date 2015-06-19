@@ -34,4 +34,8 @@ class coordinate_set {
 
     public function part_duration() { }
 
+    public function date() { }
+
+    public function part_count() { }
+
 }
