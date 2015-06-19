@@ -16,12 +16,6 @@ function UKNXCL_Map($container) {
     this.planner = new Planner(this);
     this.airspace = new Airspace();
     this.graph = new Graph($('#graph_wrapper'));
-    this.graph.options.toggles = [
-        {"name": "Height", "index": 1, "xAxis": "Height (m)", "min_value": "min_ele", "max_value": "max_ele"},
-        {"name": "Climb Rate", "index": 2, "xAxis": "Climb Rate (m/s)", "min_value": "min_cr", "max_value": "max_cr"},
-        {"name": "Speed", "index": 3, "xAxis": "Speed (m/s)", "min_value": "min_speed", "max_value": "max_speed"}
-    ];
-    this.graph.init();
     if (typeof google != 'undefined') {
         this.internal_map = new google.maps.Map(document.getElementById('map'), {
             zoom: 7,
