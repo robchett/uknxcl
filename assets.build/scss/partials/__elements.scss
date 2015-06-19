@@ -35,3 +35,12 @@ img.left {
 }
 
 @mixin form() {}
+
+}
+
+.btn {
+  @include button;
+  &.btn-default {
+
+  }
+}

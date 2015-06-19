@@ -98,7 +98,16 @@
             font-size: 12px;
           }
         }
-        #slider_time { position: absolute; z-index: 10000; color: Red; font-weight: bold; font-size: larger; background-color: white; }
+        #slider_time {
+          position: absolute;
+          z-index: 10000;
+          color: Red;
+          font-weight: bold;
+          font-size: larger;
+          background-color: white;
+          padding: 0 5px;
+          line-height: 27px;
+        }
       }
     }
   }
@@ -205,7 +214,9 @@
             box-shadow: none;
             vertical-align: middle;
 
-            &.hidden div { display: none; }
+            &.hidden div {
+              display: none;
+            }
 
             &:hover {
               -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
@@ -236,6 +247,10 @@
       }
     }
   }
+  .btn {
+    display: inline-block;
+    margin-right: 10px;
+  }
 }
 
 #map, #map3d {
@@ -244,14 +259,12 @@
   z-index: 999999;
   background: #02020c url(/img/darkearth.jpg) center center no-repeat;
   position: relative;
-  display: block;
   display: table;
   p {
     color: #fff;
     font-size: 18px;
     font-weight: bold;
     margin: 0;
-    display: block;
     width: 100%;
     height: 100%;
     text-align: center;
@@ -269,6 +282,7 @@
   line-height: 20px;
   display: none;
 }
+
 body.waypoint_mode {
   #waypoint_mode_help {
     display: block;
