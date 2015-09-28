@@ -3,10 +3,8 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             scss: {
-                files: '**/*.scss',
-                tasks: 'sass',
-                spawn: false,
-                interrupt: true
+                files: ['**/*.scss', '!scss/includes/*.scss'],
+                tasks: ['sass_globbing', 'sass'],
             },
             scripts: {
                 files: ['.core/**/*.js', 'js/src/*.js'],
@@ -34,16 +32,27 @@ module.exports = function(grunt) {
         sass: {
             dist: {
                 options: {
-                    style: 'expanded'
                 },
                 files: {
                     'css/styles.css': 'scss/styles.scss'
                 }
             }
-        }
+        },
+	sass_globbing: {
+    	    your_target: {
+      		files: {
+        	    'scss/includes/partials.scss': 'scss/partials/*.scss',
+		    'scss/includes/core.scss': '../.core/css/*.scss',
+		    'scss/includes/modules.scss': '../inc/module/**/scss/*.scss',
+		},
+	        options: {
+      		}
+            }
+  	}
     });
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks('grunt-sass-globbing');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.registerTask('default', ['watch']);
