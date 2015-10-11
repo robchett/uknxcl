@@ -3,6 +3,7 @@ namespace template;
 
 use classes\ajax;
 use classes\module;
+use classes\icon;
 use html\node;
 
 abstract class html extends \core\template\html {
@@ -19,6 +20,13 @@ abstract class html extends \core\template\html {
                         )
                     )
                 ) .
+                node::create('div#map_interface_3d', [],
+                    icon::get('chevron-left', 'span', ['class' => ['show', 'toggle']]) .
+                    icon::get('remove', 'span', ['class' => ['hide', 'toggle']]) .
+                    node::create('div#tree_content', [],
+                        node::create('a.load_airspace.button', ['href' => '#', 'onclick' => 'map.load_airspace();'], 'Load Airspace')
+                    )
+                ) .
                 node::create('div#map_wrapper', [],
                     node::create('div#waypoint_mode_help', [], 'You are in waypoint mode') .
                     node::create('div#map_interface', [],
@@ -30,13 +38,6 @@ abstract class html extends \core\template\html {
                                 node::create('input#pause', ['value' => 'pause', 'type' => 'submit', 'onclick' => "map.pause()"], '') .
                                 node::create('a#slider_time', [], '00:00')
                             )
-                        )
-                    ) .
-                    node::create('div#map_interface_3d', [],
-                        node::create('span.show', [], 'Show') .
-                        node::create('span.hide', [], 'Hide') .
-                        node::create('div#tree_content', [],
-                            node::create('a.load_airspace.button', ['href' => '#', 'onclick' => 'map.load_airspace();'], 'Load Airspace')
                         )
                     ) .
                     node::create('div#map p.loading', [], 'Google Maps are loading...') .
