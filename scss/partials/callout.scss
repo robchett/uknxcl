@@ -1,0 +1,53 @@
+/* Side notes for calling out things
+-------------------------------------------------- */
+
+.callout {
+  margin: 20px 0;
+  padding: 15px 15px 15px 15px;
+  border-left: 5px solid #eee;
+  color: #3b3b3b;
+
+  &:last-child {
+    margin-bottom: 0
+  }
+
+  h1, h2, h3, h4 {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  p, ul, li, ol {
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    &:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+  }
+
+  code,
+  .highlight {
+    background-color: #fff;
+  }
+
+  /* Themes for different contexts */
+  &-primary {
+    background-color: #eee;
+    border-color: $primary;
+  }
+
+  &-secondary {
+    background-color: #ddd;
+    border-color: darken($primary, 10%);
+  }
+
+  &-tertiary {
+    background-color: #ccc;
+    border-color: darken($primary, 20%);
+  }
+  + .callout {
+    margin-top: 0
+  }
+}

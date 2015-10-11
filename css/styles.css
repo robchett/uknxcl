@@ -1,659 +1,92 @@
-/* line 5, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  font-size: 100%;
-  vertical-align: baseline;
-}
-
-/* line 22, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-html {
-  line-height: 1;
-}
-
-/* line 24, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-ol, ul {
-  list-style: none;
-}
-
-/* line 26, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* line 28, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-caption, th, td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle;
-}
-
-/* line 30, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-q, blockquote {
-  quotes: none;
-}
-/* line 103, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-q:before, q:after, blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
-
-/* line 32, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-a img {
-  border: none;
-}
-
-/* line 116, ../../../../../../usr/local/share/gems/gems/compass-core-1.0.1/stylesheets/compass/reset/_utilities.scss */
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
-  display: block;
-}
-
-/* line 3, ../.core/css/_form.scss */
-form fieldset {
-  border: none;
-}
-/* line 7, ../.core/css/_form.scss */
-form fieldset ul li input, form fieldset ul li textarea, form fieldset ul li select {
-  border: 0;
-  background-color: #ffffff;
-}
-/* line 11, ../.core/css/_form.scss */
-form fieldset ul li input, form fieldset ul li textarea {
-  -webkit-appearance: none;
-}
-
-/* line 19, ../.core/css/_form.scss */
-.form_frame {
-  display: none;
-}
-
-/* line 97, ../.core/css/_form.scss */
-form legend legend {
-  display: block;
-  width: 100%;
-  font-size: 24px;
-  border-bottom: 4px solid #ffffff;
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-}
-
-/*! normalize.css v2.1.3 | MIT License | git.io/normalize */
-/* ==========================================================================
-   HTML5 display definitions
-   ========================================================================== */
-/**
- * Correct `block` display not defined in IE 8/9.
- */
-/* line 11, ../.core/css/normalize.scss */
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-main,
-nav,
-section,
-summary {
-  display: block;
-}
-
-/**
- * Correct `inline-block` display not defined in IE 8/9.
- */
-/* line 30, ../.core/css/normalize.scss */
-audio,
-canvas,
-video {
-  display: inline-block;
-}
-
-/**
- * Prevent modern browsers from displaying `audio` without controls.
- * Remove excess height in iOS 5 devices.
- */
-/* line 41, ../.core/css/normalize.scss */
-audio:not([controls]) {
-  display: none;
-  height: 0;
-}
-
-/**
- * Address `[hidden]` styling not present in IE 8/9.
- * Hide the `template` element in IE, Safari, and Firefox < 22.
- */
-/* line 51, ../.core/css/normalize.scss */
-[hidden],
-template {
-  display: none;
-}
-
-/* ==========================================================================
-   Base
-   ========================================================================== */
-/**
- * 1. Set default font family to sans-serif.
- * 2. Prevent iOS text size adjust after orientation change, without disabling
- *    user zoom.
- */
-/* line 66, ../.core/css/normalize.scss */
-html {
-  font-family: sans-serif;
-  /* 1 */
-  -ms-text-size-adjust: 100%;
-  /* 2 */
-  -webkit-text-size-adjust: 100%;
-  /* 2 */
-}
-
-/**
- * Remove default margin.
- */
-/* line 76, ../.core/css/normalize.scss */
-body {
-  margin: 0;
-}
-
-/* ==========================================================================
-   Links
-   ========================================================================== */
-/**
- * Remove the gray background color from active links in IE 10.
- */
-/* line 88, ../.core/css/normalize.scss */
-a {
-  background: transparent;
-}
-
-/**
- * Address `outline` inconsistency between Chrome and other browsers.
- */
-/* line 96, ../.core/css/normalize.scss */
-a:focus {
-  outline: thin dotted;
-}
-
-/**
- * Improve readability when focused and also mouse hovered in all browsers.
- */
-/* line 104, ../.core/css/normalize.scss */
-a:active,
-a:hover {
-  outline: 0;
-}
-
-/* ==========================================================================
-   Links
-   ========================================================================== */
-/* line 112, ../.core/css/normalize.scss */
-ul, ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* ==========================================================================
-   Typography
-   ========================================================================== */
-/**
- * Address variable `h1` font-size and margin within `section` and `article`
- * contexts in Firefox 4+, Safari 5, and Chrome.
- */
-/* line 127, ../.core/css/normalize.scss */
-h1 {
-  font-size: 2em;
-  margin: 0 0 0.67em 0;
-}
-
-/**
- * Address styling not present in IE 8/9, Safari 5, and Chrome.
- */
-/* line 136, ../.core/css/normalize.scss */
-abbr[title] {
-  border-bottom: 1px dotted;
-}
-
-/**
- * Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
- */
-/* line 144, ../.core/css/normalize.scss */
-b,
-strong {
-  font-weight: bold;
-}
-
-/**
- * Address styling not present in Safari 5 and Chrome.
- */
-/* line 153, ../.core/css/normalize.scss */
-dfn {
-  font-style: italic;
-}
-
-/**
- * Address differences between Firefox and other browsers.
- */
-/* line 161, ../.core/css/normalize.scss */
-hr {
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  height: 0;
-}
-
-/**
- * Address styling not present in IE 8/9.
- */
-/* line 171, ../.core/css/normalize.scss */
-mark {
-  background: #ff0;
-  color: #000;
-}
-
-/**
- * Correct font family set oddly in Safari 5 and Chrome.
- */
-/* line 180, ../.core/css/normalize.scss */
-code,
-kbd,
-pre,
-samp {
-  font-family: monospace, serif;
-  font-size: 1em;
-}
-
-/**
- * Improve readability of pre-formatted text in all browsers.
- */
-/* line 192, ../.core/css/normalize.scss */
-pre {
-  white-space: pre-wrap;
-}
-
-/**
- * Set consistent quote types.
- */
-/* line 200, ../.core/css/normalize.scss */
-q {
-  quotes: "\201C" "\201D" "\2018" "\2019";
-}
-
-/**
- * Address inconsistent and variable font size in all browsers.
- */
-/* line 208, ../.core/css/normalize.scss */
-small {
-  font-size: 80%;
-}
-
-/**
- * Prevent `sub` and `sup` affecting `line-height` in all browsers.
- */
-/* line 216, ../.core/css/normalize.scss */
-sub,
-sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-
-/* line 224, ../.core/css/normalize.scss */
-sup {
-  top: -0.5em;
-}
-
-/* line 228, ../.core/css/normalize.scss */
-sub {
-  bottom: -0.25em;
-}
-
-/* ==========================================================================
-   Embedded content
-   ========================================================================== */
-/**
- * Remove border when inside `a` element in IE 8/9.
- */
-/* line 240, ../.core/css/normalize.scss */
-img {
-  border: 0;
-}
-
-/**
- * Correct overflow displayed oddly in IE 9.
- */
-/* line 248, ../.core/css/normalize.scss */
-svg:not(:root) {
-  overflow: hidden;
-}
-
-/* ==========================================================================
-   Figures
-   ========================================================================== */
-/**
- * Address margin not present in IE 8/9 and Safari 5.
- */
-/* line 260, ../.core/css/normalize.scss */
-figure {
-  margin: 0;
-}
-
-/* ==========================================================================
-   Forms
-   ========================================================================== */
-/**
- * Define consistent border, margin, and padding.
- */
-/* line 272, ../.core/css/normalize.scss */
-fieldset {
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-/**
- * 1. Correct `color` not being inherited in IE 8/9.
- * 2. Remove padding so people aren't caught out if they zero out fieldsets.
- */
-/* line 283, ../.core/css/normalize.scss */
-legend {
-  border: 0;
-  /* 1 */
-  padding: 0;
-  /* 2 */
-}
-
-/**
- * 1. Correct font family not being inherited in all browsers.
- * 2. Correct font size not being inherited in all browsers.
- * 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome.
- */
-/* line 294, ../.core/css/normalize.scss */
-button,
-input,
-select,
-textarea {
-  font-family: inherit;
-  /* 1 */
-  font-size: 100%;
-  /* 2 */
-  margin: 0;
-  /* 3 */
-}
-
-/**
- * Address Firefox 4+ setting `line-height` on `input` using `!important` in
- * the UA stylesheet.
- */
-/* line 308, ../.core/css/normalize.scss */
-button,
-input {
-  line-height: normal;
-}
-
-/**
- * Address inconsistent `text-transform` inheritance for `button` and `select`.
- * All other form control elements do not inherit `text-transform` values.
- * Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+.
- * Correct `select` style inheritance in Firefox 4+ and Opera.
- */
-/* line 320, ../.core/css/normalize.scss */
-button,
-select {
-  text-transform: none;
-}
-
-/**
- * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
- *    and `video` controls.
- * 2. Correct inability to style clickable `input` types in iOS.
- * 3. Improve usability and consistency of cursor style between image-type
- *    `input` and others.
- */
-/* line 333, ../.core/css/normalize.scss */
-button,
-html input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-  -webkit-appearance: button;
-  /* 2 */
-  cursor: pointer;
-  /* 3 */
-}
-
-/**
- * Re-set default cursor for disabled elements.
- */
-/* line 345, ../.core/css/normalize.scss */
-button[disabled],
-html input[disabled] {
-  cursor: default;
-}
-
-/**
- * 1. Address box sizing set to `content-box` in IE 8/9/10.
- * 2. Remove excess padding in IE 8/9/10.
- */
-/* line 355, ../.core/css/normalize.scss */
-input[type="checkbox"],
-input[type="radio"] {
-  box-sizing: border-box;
-  /* 1 */
-  padding: 0;
-  /* 2 */
-}
-
-/**
- * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
- * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
- *    (include `-moz` to future-proof).
- */
-/* line 367, ../.core/css/normalize.scss */
-input[type="search"] {
-  -webkit-appearance: textfield;
-  /* 1 */
-  -moz-box-sizing: content-box;
-  -webkit-box-sizing: content-box;
-  /* 2 */
-  box-sizing: content-box;
-}
-
-/**
- * Remove inner padding and search cancel button in Safari 5 and Chrome
- * on OS X.
- */
-/* line 379, ../.core/css/normalize.scss */
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-/**
- * Remove inner padding and border in Firefox 4+.
- */
-/* line 388, ../.core/css/normalize.scss */
-button::-moz-focus-inner,
-input::-moz-focus-inner {
-  border: 0;
-  padding: 0;
-}
-
-/**
- * 1. Remove default vertical scrollbar in IE 8/9.
- * 2. Improve readability and alignment in all browsers.
- */
-/* line 399, ../.core/css/normalize.scss */
-textarea {
-  overflow: auto;
-  /* 1 */
-  vertical-align: top;
-  /* 2 */
-}
-
-/* ==========================================================================
-   Tables
-   ========================================================================== */
-/**
- * Remove most spacing between table cells.
- */
-/* line 412, ../.core/css/normalize.scss */
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* line 417, ../.core/css/normalize.scss */
-.padded_image {
-  display: block;
-}
-
-/* line 421, ../.core/css/normalize.scss */
-input:-webkit-autofill {
-  background-color: inherit;
-}
-
-/* line 425, ../.core/css/normalize.scss */
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  line-height: auto;
-}
-
+/* generated with grunt-sass-globbing */
+/* generated with grunt-sass-globbing */
 /*!
  * Jasny Bootstrap v3.1.0 (http://jasny.github.com/bootstrap)
  * Copyright 2011-2014 Arnold Daniels.
  * Licensed under Apache-2.0 (https://github.com/jasny/bootstrap/blob/master/LICENSE)
  */
-/* line 7, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-bottom {
   border-bottom: 0;
-  border-top: 1px solid #dddddd;
-}
+  border-top: 1px solid #dddddd; }
 
-/* line 12, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-bottom > li {
   margin-bottom: 0;
-  margin-top: -1px;
-}
+  margin-top: -1px; }
 
-/* line 17, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-bottom > li > a {
-  border-radius: 0 0 4px 4px;
-}
+  border-radius: 0 0 4px 4px; }
 
-/* line 21, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-bottom > li > a:hover,
 .nav-tabs-bottom > li > a:focus,
 .nav-tabs-bottom > li.active > a,
 .nav-tabs-bottom > li.active > a:hover,
 .nav-tabs-bottom > li.active > a:focus {
   border: 1px solid #dddddd;
-  border-top-color: transparent;
-}
+  border-top-color: transparent; }
 
-/* line 30, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-left {
   border-bottom: 0;
-  border-right: 1px solid #dddddd;
-}
+  border-right: 1px solid #dddddd; }
 
-/* line 35, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-left > li {
   margin-bottom: 0;
   margin-right: -1px;
-  float: none;
-}
+  float: none; }
 
-/* line 41, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-left > li > a {
   border-radius: 4px 0 0 4px;
   margin-right: 0;
-  margin-bottom: 2px;
-}
+  margin-bottom: 2px; }
 
-/* line 47, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-left > li > a:hover,
 .nav-tabs-left > li > a:focus,
 .nav-tabs-left > li.active > a,
 .nav-tabs-left > li.active > a:hover,
 .nav-tabs-left > li.active > a:focus {
   border: 1px solid #dddddd;
-  border-right-color: transparent;
-}
+  border-right-color: transparent; }
 
-/* line 56, ../scss/partials/_2_boostrap_plugins.scss */
 .row > .nav-tabs-left {
   padding-right: 0;
   padding-left: 15px;
   margin-right: -1px;
   position: relative;
-  z-index: 1;
-}
+  z-index: 1; }
 
-/* line 64, ../scss/partials/_2_boostrap_plugins.scss */
 .row > .nav-tabs-left + .tab-content {
-  border-left: 1px solid #dddddd;
-}
+  border-left: 1px solid #dddddd; }
 
-/* line 68, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-right {
   border-bottom: 0;
-  border-left: 1px solid #dddddd;
-}
+  border-left: 1px solid #dddddd; }
 
-/* line 73, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-right > li {
   margin-bottom: 0;
   margin-left: -1px;
-  float: none;
-}
+  float: none; }
 
-/* line 79, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-right > li > a {
   border-radius: 0 4px 4px 0;
   margin-left: 0;
-  margin-bottom: 2px;
-}
+  margin-bottom: 2px; }
 
-/* line 85, ../scss/partials/_2_boostrap_plugins.scss */
 .nav-tabs-right > li > a:hover,
 .nav-tabs-right > li > a:focus,
 .nav-tabs-right > li.active > a,
 .nav-tabs-right > li.active > a:hover,
 .nav-tabs-right > li.active > a:focus {
   border: 1px solid #dddddd;
-  border-left-color: transparent;
-}
+  border-left-color: transparent; }
 
-/* line 94, ../scss/partials/_2_boostrap_plugins.scss */
 .row > .nav-tabs-right {
   padding-left: 0;
-  padding-right: 15px;
-}
+  padding-right: 15px; }
 
-/* line 99, ../scss/partials/_2_boostrap_plugins.scss */
 .btn-file {
   overflow: hidden;
   position: relative;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
-/* line 105, ../scss/partials/_2_boostrap_plugins.scss */
 .btn-file > input {
   position: absolute;
   top: 0;
@@ -665,131 +98,91 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   width: 100%;
   direction: ltr;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 119, ../scss/partials/_2_boostrap_plugins.scss */
 #igc_upload_form_field_kml > div {
-  float: none;
-}
-/* line 122, ../scss/partials/_2_boostrap_plugins.scss */
+  float: none; }
+
 #igc_upload_form_field_kml .form-control {
   width: 80%;
-  height: 100%;
-}
-/* line 126, ../scss/partials/_2_boostrap_plugins.scss */
+  height: 100%; }
+
 #igc_upload_form_field_kml .fileinput {
   width: 100%;
   margin-bottom: 9px;
   display: inline-block;
   padding: 5px;
-  border: 1px solid #efefef;
+  background-color: #dedede;
+  border: 1px solid #d0d0d0;
   box-sizing: border-box;
-}
+  height: 37px; }
 
-/* line 136, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput .form-control {
   padding-top: 5px;
   padding-bottom: 5px;
   display: inline-block;
   margin-bottom: 0px;
   vertical-align: middle;
-  cursor: text;
-}
-/* line 143, ../scss/partials/_2_boostrap_plugins.scss */
-.fileinput .form-control i {
-  margin-right: 5px;
-}
+  cursor: text; }
+  .fileinput .form-control i {
+    margin-right: 5px; }
 
-/* line 148, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput .thumbnail {
   overflow: hidden;
   display: inline-block;
   margin-bottom: 5px;
   vertical-align: middle;
-  text-align: center;
-}
+  text-align: center; }
 
-/* line 156, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput .thumbnail > img {
-  max-height: 100%;
-}
+  max-height: 100%; }
 
-/* line 160, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput .btn {
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
-/* line 164, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput-exists .fileinput-new,
 .fileinput-new .fileinput-exists {
-  display: none;
-}
+  display: none; }
 
-/* line 169, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput-inline .fileinput-controls {
-  display: inline;
-}
+  display: inline; }
 
-/* line 173, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput-filename {
   vertical-align: middle;
   display: inline-block;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
-/* line 179, ../scss/partials/_2_boostrap_plugins.scss */
 .form-control .fileinput-filename {
-  vertical-align: bottom;
-}
+  vertical-align: bottom; }
 
-/* line 183, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput.input-group {
-  display: table;
-}
+  display: table; }
 
-/* line 187, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput.input-group > * {
   position: relative;
-  z-index: 2;
-}
+  z-index: 2; }
 
-/* line 192, ../scss/partials/_2_boostrap_plugins.scss */
 .fileinput.input-group > .btn-file {
-  z-index: 1;
-}
+  z-index: 1; }
 
-/* line 196, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-warning .fileinput .fileinput-preview {
-  color: #8a6d3b;
-}
+  color: #8a6d3b; }
 
-/* line 200, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-warning .fileinput .thumbnail {
-  border-color: #faebcc;
-}
+  border-color: #faebcc; }
 
-/* line 204, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-error .fileinput .fileinput-preview {
-  color: #a94442;
-}
+  color: #a94442; }
 
-/* line 208, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-error .fileinput .thumbnail {
-  border-color: #ebccd1;
-}
+  border-color: #ebccd1; }
 
-/* line 212, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-success .fileinput .fileinput-preview {
-  color: #3c763d;
-}
+  color: #3c763d; }
 
-/* line 216, ../scss/partials/_2_boostrap_plugins.scss */
 .form-group.has-success .fileinput .thumbnail {
-  border-color: #d6e9c6;
-}
+  border-color: #d6e9c6; }
 
-/* line 220, ../scss/partials/_2_boostrap_plugins.scss */
 .input-group-addon:not(:first-child) {
   float: right;
   background-color: #efefef;
@@ -799,283 +192,169 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: -5px;
   margin-bottom: -5px;
   line-height: 35px;
-  padding: 0 5px;
-}
-/* line 230, ../scss/partials/_2_boostrap_plugins.scss */
-.input-group-addon:not(:first-child).fileinput-exists {
-  margin-right: 1px;
-}
+  padding: 0 5px; }
+  .input-group-addon:not(:first-child).fileinput-exists {
+    margin-right: 1px; }
 
-/* line 28, ../scss/partials/__elements.scss */
 h1.heading, h2.heading, h3.heading, h4.heading, h5.heading, h6.heading {
   background-color: #0a4dad;
   text-align: center;
   color: #ffffff;
   margin-bottom: 0;
-  margin-bottom: 10px;
-}
-/* line 32, ../scss/partials/__elements.scss */
-h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
-  margin-bottom: 0;
-}
+  margin-bottom: 10px; }
 
-/* line 37, ../scss/partials/__elements.scss */
+h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
+  margin-bottom: 0; }
+
 img.right {
   float: right;
-}
+  margin-left: 20px; }
 
-/* line 40, ../scss/partials/__elements.scss */
 img.left {
   float: left;
-}
+  margin-right: 20px; }
 
-/* line 2, ../scss/partials/_add_flight.scss */
 div.add_flight_section {
-  height: 100%;
-}
-/* line 4, ../scss/partials/_add_flight.scss */
-div.add_flight_section a.back {
-  margin-top: 10px;
-}
-/* line 7, ../scss/partials/_add_flight.scss */
-div.add_flight_section div#kml_calc {
-  display: block;
-  display: block;
-  padding: 5px;
-  background-color: #ededed;
-  border: 1px solid #cccccc;
-  text-align: center;
-  font-weight: bold;
-  color: #0c3f6b;
-}
-/* line 11, ../scss/partials/_add_flight.scss */
-div.add_flight_section div#kml_calc a.calc {
-  display: block;
-  text-align: center;
-  width: 100%;
-  cursor: pointer;
-}
+  height: 100%; }
+  div.add_flight_section a.back {
+    margin-top: 10px; }
+  div.add_flight_section div#kml_calc {
+    display: block;
+    display: block;
+    padding: 5px;
+    background-color: #ededed;
+    border: 1px solid #cccccc;
+    text-align: center;
+    font-weight: bold;
+    color: #0c3f6b; }
+    div.add_flight_section div#kml_calc a.calc {
+      display: block;
+      text-align: center;
+      width: 100%;
+      cursor: pointer; }
 
-/* line 21, ../scss/partials/_add_flight.scss */
 #add_flight h3 {
-  padding: 0;
-}
-/* line 22, ../scss/partials/_add_flight.scss */
-#add_flight h3 a {
-  padding: 10px 0;
-}
-/* line 26, ../scss/partials/_add_flight.scss */
+  padding: 0; }
+
 #add_flight p {
-  padding: 0;
-}
-/* line 28, ../scss/partials/_add_flight.scss */
-#add_flight p a {
-  padding: 10px;
-}
-/* line 32, ../scss/partials/_add_flight.scss */
+  padding: 0; }
+
 #add_flight a {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+  display: block; }
 
 /*
     ColorBox Core Style:
     The following CSS is consistent between example themes and should not be altered.
 */
-/* line 5, ../scss/partials/_colorbox.scss */
 #colorbox, #cboxOverlay, #cboxWrapper {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 9999;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
-/* line 13, ../scss/partials/_colorbox.scss */
 #cboxOverlay {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
-}
+  background-color: #ffffff; }
 
-/* line 20, ../scss/partials/_colorbox.scss */
 #cboxMiddleLeft, #cboxBottomLeft {
-  clear: left;
-}
+  clear: left; }
 
-/* line 24, ../scss/partials/_colorbox.scss */
 #cboxContent {
-  position: relative;
-}
+  position: relative; }
 
-/* line 28, ../scss/partials/_colorbox.scss */
 #cboxLoadedContent {
-  overflow: auto;
-}
+  overflow: auto; }
 
-/* line 32, ../scss/partials/_colorbox.scss */
 #cboxTitle {
-  margin: 0;
-}
+  margin: 0; }
 
-/* line 36, ../scss/partials/_colorbox.scss */
 #cboxLoadingOverlay, #cboxLoadingGraphic {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
 
-/* line 44, ../scss/partials/_colorbox.scss */
 #cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow {
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 48, ../scss/partials/_colorbox.scss */
 .cboxPhoto {
   float: left;
   margin: auto;
   border: 0;
   display: block;
-  max-width: none;
-}
+  max-width: none; }
 
-/* line 56, ../scss/partials/_colorbox.scss */
 .cboxIframe {
   width: 100%;
   height: 100%;
   display: block;
-  border: 0;
-}
+  border: 0; }
 
-/* line 63, ../scss/partials/_colorbox.scss */
 #colorbox, #cboxContent, #cboxLoadedContent {
-  box-sizing: content-box;
-}
+  box-sizing: content-box; }
 
-/* line 67, ../scss/partials/_colorbox.scss */
+#cboxLoadedContent *:first-child {
+  margin-top: 0; }
+
 #cboxContent {
   background: #fff;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
-/* line 72, ../scss/partials/_colorbox.scss */
 #colorbox.success {
   border: 2px solid #a0a0a0;
-  -webkit-border-top-right-radius: 10px;
-  -webkit-border-bottom-right-radius: 10px;
-  -webkit-border-bottom-left-radius: 10px;
-  -webkit-border-top-left-radius: 10px;
-  -moz-border-radius-topright: 10px;
-  -moz-border-radius-bottomright: 10px;
-  -moz-border-radius-bottomleft: 10px;
-  -moz-border-radius-topleft: 10px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  border-top-left-radius: 10px;
+  border-radius: 10px, 10px, 10px, 10px;
   background: #ffffff;
-  font-size: 16px;
-}
-/* line 77, ../scss/partials/_colorbox.scss */
-#colorbox.success, #colorbox.success #cboxWrapper {
-  padding: 20px;
-}
-/* line 80, ../scss/partials/_colorbox.scss */
-#colorbox.success.failure {
-  background-color: #ffdada;
-}
+  font-size: 16px; }
+  #colorbox.success, #colorbox.success #cboxWrapper {
+    padding: 20px; }
+  #colorbox.success.failure {
+    background-color: #ffdada; }
 
-/* line 1, ../scss/partials/_comp.scss */
 #comp_wrapper {
   width: 730px;
-  overflow: hidden;
-}
-/* line 4, ../scss/partials/_comp.scss */
-#comp_wrapper #comp_list, #comp_wrapper #comp_view {
-  width: 700px;
-  float: left;
-}
-/* line 8, ../scss/partials/_comp.scss */
-#comp_wrapper #comp_list {
-  margin-right: 45px;
-}
-/* line 11, ../scss/partials/_comp.scss */
-#comp_wrapper #WriteHereComp {
-  margin-bottom: 20px;
-}
+  overflow: hidden; }
+  #comp_wrapper #comp_list, #comp_wrapper #comp_view {
+    width: 700px;
+    float: left; }
+  #comp_wrapper #comp_list {
+    margin-right: 45px; }
+  #comp_wrapper #WriteHereComp {
+    margin-bottom: 20px; }
 
-/* line 2, ../scss/partials/_comp_maker.scss */
 #comp_maker h5 {
   font-size: 12px;
-  line-height: 14px;
-}
-/* line 9, ../scss/partials/_comp_maker.scss */
+  line-height: 14px; }
+
 #comp_maker #comp_maker_target div {
   border: solid 1px #0E406D;
   padding: 10px;
-  margin-top: 0;
-}
-/* line 13, ../scss/partials/_comp_maker.scss */
-#comp_maker #comp_maker_target div form {
-  border: 0;
-}
-/* line 15, ../scss/partials/_comp_maker.scss */
-#comp_maker #comp_maker_target div form li {
-  margin-bottom: 5px;
-}
-/* line 17, ../scss/partials/_comp_maker.scss */
-#comp_maker #comp_maker_target div form li input, #comp_maker #comp_maker_target div form li select {
-  width: 300px;
-}
+  margin-top: 0; }
+  #comp_maker #comp_maker_target div form {
+    border: 0; }
+    #comp_maker #comp_maker_target div form li {
+      margin-bottom: 5px; }
+      #comp_maker #comp_maker_target div form li input, #comp_maker #comp_maker_target div form li select {
+        width: 300px; }
 
-/* line 1, ../scss/partials/_contact.scss */
-.title {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-  padding: 10px 0;
-}
-
-/* line 6, ../scss/partials/_contact.scss */
 p.boxed {
   border: solid 1px #0E406D;
   padding: 10px;
   margin: 0 0 20px 0;
-  zoom: 1;
-}
-/* line 2, ../.core/css/_mixims.scss */
-p.boxed:before, p.boxed:after {
-  content: "\0020";
-  display: block;
-  height: 0;
-  overflow: hidden;
-}
-/* line 8, ../.core/css/_mixims.scss */
-p.boxed:after {
-  clear: both;
-}
-/* line 11, ../scss/partials/_contact.scss */
-p.boxed.enclosed {
-  margin-top: 20px;
-}
-/* line 13, ../scss/partials/_contact.scss */
-p.boxed.enclosed span.img {
-  float: right;
-  margin-left: 20px;
-  margin-right: 0;
-}
-/* line 19, ../scss/partials/_contact.scss */
-p.boxed img {
-  padding: 4px;
-  border: 1px solid #c7c7c7;
-}
+  overflow: auto; }
+  p.boxed.enclosed {
+    margin-top: 20px; }
+    p.boxed.enclosed span.img {
+      float: right;
+      margin-left: 20px;
+      margin-right: 0; }
+  p.boxed img {
+    padding: 4px;
+    border: 1px solid #c7c7c7; }
 
-/* line 1, ../scss/partials/_default.scss */
 html, body {
   font-family: arial;
   border: none;
@@ -1086,38 +365,26 @@ html, body {
   word-wrap: break-word;
   font-size: small;
   overflow: hidden;
-  color: #666;
-}
+  color: #666; }
 
-/* line 14, ../scss/partials/_default.scss */
 div {
-  margin: 0px;
-}
+  margin: 0px; }
 
-/* line 18, ../scss/partials/_default.scss */
 h1, h2, h3, h4 {
   padding: 10px 0;
-  margin: 0;
-}
+  margin: 0; }
 
-/* line 23, ../scss/partials/_default.scss */
 input[type="checkbox"] {
-  margin: 0;
-}
+  margin: 0; }
 
-/* line 27, ../scss/partials/_default.scss */
 input {
-  border: 1px solid #acaeb3;
-}
+  border: 1px solid #acaeb3; }
 
-/* line 31, ../scss/partials/_default.scss */
 a {
   cursor: pointer;
   text-decoration: none;
-  color: inherit;
-}
+  color: inherit; }
 
-/* line 37, ../scss/partials/_default.scss */
 a.button {
   display: block;
   padding: 5px;
@@ -1125,31 +392,16 @@ a.button {
   border: 1px solid #cccccc;
   text-align: center;
   font-weight: bold;
-  color: #0c3f6b;
-}
-/* line 39, ../scss/partials/_default.scss */
-a.button:hover {
-  color: #767676;
-}
-/* line 42, ../scss/partials/_default.scss */
-a.button.inline {
-  display: inline-block;
-}
-/* line 45, ../scss/partials/_default.scss */
-a.button[disabled=disabled] {
-  -moz-opacity: 0.4;
-  -khtml-opacity: 0.4;
-  -webkit-opacity: 0.4;
-  opacity: 0.4;
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=${opperc});
-  filter: alpha(opacity=${opperc});
-}
-/* line 46, ../scss/partials/_default.scss */
-a.button[disabled=disabled]:hover {
-  color: #b40504;
-}
+  color: #0c3f6b; }
+  a.button:hover {
+    color: #767676; }
+  a.button.inline {
+    display: inline-block; }
+  a.button[disabled=disabled] {
+    opacity: 0.4; }
+    a.button[disabled=disabled]:hover {
+      color: #b40504; }
 
-/* line 53, ../scss/partials/_default.scss */
 .loading_shroud {
   position: absolute !important;
   width: 100% !important;
@@ -1157,100 +409,101 @@ a.button[disabled=disabled]:hover {
   opacity: .4 !important;
   background: #3b3b3b url("/.core/images/loading.gif") center no-repeat !important;
   text-indent: -99999px !important;
-  z-index: 99999 !important;
-}
+  z-index: 99999 !important; }
 
-/* line 63, ../scss/partials/_default.scss */
 ul {
   list-style: none;
-  padding: 0;
-}
+  padding: 0; }
 
-/* line 68, ../scss/partials/_default.scss */
 ul li {
   list-style: none;
-  margin-bottom: 20px;
-}
+  margin-bottom: 20px; }
 
-/* line 73, ../scss/partials/_default.scss */
 ul li p {
-  margin: 0;
-}
+  margin: 0; }
 
-/* line 77, ../scss/partials/_default.scss */
 .error_message {
   border: 1px solid #9f000b;
   color: #9f000b;
-  background-color: #fffd00;
-}
+  background-color: #fffd00; }
 
-/* line 84, ../scss/partials/_default.scss */
 #colorbox:focus {
-  outline: none;
-}
-/* line 87, ../scss/partials/_default.scss */
+  outline: none; }
+
 #colorbox button {
   border: none;
-  -webkit-appearance: normal;
-}
+  -webkit-appearance: normal; }
 
-/* line 5, ../scss/partials/_flight_info.scss */
+.cf {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%; }
+
+*:focus {
+  outline: 0; }
+
+.page-header {
+  padding-bottom: 9px;
+  margin: 10px 0 20px;
+  border-bottom: 1px solid #0c3f6b; }
+
+.editable_content p {
+  margin-bottom: 10px; }
+
+.editable_content ol {
+  list-style: decimal outside; }
+
+.editable_content ul {
+  list-style: disc outside; }
+
+.editable_content ol ol, .editable_content ol ul, .editable_content ul ol, .editable_content ul ul {
+  padding-top: 10px; }
+
+.editable_content ol, .editable_content ul {
+  padding: 0 0 0 20px;
+  margin-bottom: 10px; }
+  .editable_content ol li, .editable_content ul li {
+    list-style: inherit;
+    padding: 0 0 10px 0; }
+
 .flight_wrapper h1 span {
-  font-size: 17px;
-}
-/* line 9, ../scss/partials/_flight_info.scss */
+  font-size: 17px; }
+
 .flight_wrapper .graph {
-  height: 200px;
-}
-/* line 12, ../scss/partials/_flight_info.scss */
+  height: 200px; }
+
 .flight_wrapper table {
-  margin: 20px 0;
-}
-/* line 14, ../scss/partials/_flight_info.scss */
-.flight_wrapper table.stats {
-  width: 50%;
-}
-/* line 16, ../scss/partials/_flight_info.scss */
-.flight_wrapper table.stats td span {
-  color: #787878;
-  display: block;
-  font-size: 11px;
-}
-/* line 22, ../scss/partials/_flight_info.scss */
-.flight_wrapper table thead {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-  border: 1px solid #0a4dad;
-  overflow: hidden;
-}
-/* line 26, ../scss/partials/_flight_info.scss */
-.flight_wrapper table thead th {
-  padding: 3px 0;
-}
-/* line 31, ../scss/partials/_flight_info.scss */
-.flight_wrapper table tbody tr {
-  background-color: #ffffff;
-}
-/* line 33, ../scss/partials/_flight_info.scss */
-.flight_wrapper table tbody tr:nth-child(2n) {
-  background-color: #d5e3ff;
-}
-/* line 36, ../scss/partials/_flight_info.scss */
-.flight_wrapper table tbody tr td {
-  border: 1px solid #c0c0c0;
-  padding: 2px 5px;
-}
+  margin: 20px 0; }
+  .flight_wrapper table.stats {
+    width: 50%; }
+    .flight_wrapper table.stats td span {
+      color: #787878;
+      display: block;
+      font-size: 11px; }
+  .flight_wrapper table thead {
+    background-color: #0a4dad;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 0;
+    border: 1px solid #0a4dad;
+    overflow: hidden; }
+    .flight_wrapper table thead th {
+      padding: 3px 0; }
+  .flight_wrapper table tbody tr {
+    background-color: #ffffff; }
+    .flight_wrapper table tbody tr:nth-child(2n) {
+      background-color: #d5e3ff; }
+    .flight_wrapper table tbody tr td {
+      border: 1px solid #c0c0c0;
+      padding: 2px 5px; }
 
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.eot");
-  src: url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
-}
+  src: url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("/.core/module/cms/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg"); }
+
 /* line 25, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 8, ../scss/partials/_fonts.scss */
-.glyphicon {
+.glyphicon, .expander, .toggler, .icon {
   position: relative;
   top: 1px;
   display: inline-block;
@@ -1259,2075 +512,1270 @@ ul li p {
   font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  -moz-osx-font-smoothing: grayscale; }
 
 /* line 38, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 21, ../scss/partials/_fonts.scss */
 .glyphicon-asterisk:before {
-  content: "\2a";
-}
+  content: "\2a"; }
 
 /* line 39, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 26, ../scss/partials/_fonts.scss */
 .glyphicon-plus:before {
-  content: "\2b";
-}
+  content: "\2b"; }
 
 /* line 40, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 31, ../scss/partials/_fonts.scss */
 .glyphicon-euro:before {
-  content: "\20ac";
-}
+  content: "\20ac"; }
 
 /* line 41, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 36, ../scss/partials/_fonts.scss */
 .glyphicon-minus:before {
-  content: "\2212";
-}
+  content: "\2212"; }
 
 /* line 42, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 41, ../scss/partials/_fonts.scss */
 .glyphicon-cloud:before {
-  content: "\2601";
-}
+  content: "\2601"; }
 
 /* line 43, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 46, ../scss/partials/_fonts.scss */
 .glyphicon-envelope:before {
-  content: "\2709";
-}
+  content: "\2709"; }
 
 /* line 44, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 51, ../scss/partials/_fonts.scss */
 .glyphicon-pencil:before {
-  content: "\270f";
-}
+  content: "\270f"; }
 
 /* line 45, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 56, ../scss/partials/_fonts.scss */
 .glyphicon-glass:before {
-  content: "\e001";
-}
+  content: "\e001"; }
 
 /* line 46, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 61, ../scss/partials/_fonts.scss */
 .glyphicon-music:before {
-  content: "\e002";
-}
+  content: "\e002"; }
 
 /* line 47, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 66, ../scss/partials/_fonts.scss */
 .glyphicon-search:before {
-  content: "\e003";
-}
+  content: "\e003"; }
 
 /* line 48, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 71, ../scss/partials/_fonts.scss */
 .glyphicon-heart:before {
-  content: "\e005";
-}
+  content: "\e005"; }
 
 /* line 49, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 76, ../scss/partials/_fonts.scss */
 .glyphicon-star:before {
-  content: "\e006";
-}
+  content: "\e006"; }
 
 /* line 50, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 81, ../scss/partials/_fonts.scss */
 .glyphicon-star-empty:before {
-  content: "\e007";
-}
+  content: "\e007"; }
 
 /* line 51, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 86, ../scss/partials/_fonts.scss */
 .glyphicon-user:before {
-  content: "\e008";
-}
+  content: "\e008"; }
 
 /* line 52, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 91, ../scss/partials/_fonts.scss */
 .glyphicon-film:before {
-  content: "\e009";
-}
+  content: "\e009"; }
 
 /* line 53, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 96, ../scss/partials/_fonts.scss */
 .glyphicon-th-large:before {
-  content: "\e010";
-}
+  content: "\e010"; }
 
 /* line 54, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 101, ../scss/partials/_fonts.scss */
 .glyphicon-th:before {
-  content: "\e011";
-}
+  content: "\e011"; }
 
 /* line 55, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 106, ../scss/partials/_fonts.scss */
 .glyphicon-th-list:before {
-  content: "\e012";
-}
+  content: "\e012"; }
 
 /* line 56, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 111, ../scss/partials/_fonts.scss */
-.glyphicon-ok:before {
-  content: "\e013";
-}
+.glyphicon-ok:before, li.visible > .toggler:before {
+  content: "\e013"; }
 
 /* line 57, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 116, ../scss/partials/_fonts.scss */
 .glyphicon-remove:before {
-  content: "\e014";
-}
+  content: "\e014"; }
 
 /* line 58, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 121, ../scss/partials/_fonts.scss */
 .glyphicon-zoom-in:before {
-  content: "\e015";
-}
+  content: "\e015"; }
 
 /* line 59, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 126, ../scss/partials/_fonts.scss */
 .glyphicon-zoom-out:before {
-  content: "\e016";
-}
+  content: "\e016"; }
 
 /* line 60, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 131, ../scss/partials/_fonts.scss */
 .glyphicon-off:before {
-  content: "\e017";
-}
+  content: "\e017"; }
 
 /* line 61, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 136, ../scss/partials/_fonts.scss */
 .glyphicon-signal:before {
-  content: "\e018";
-}
+  content: "\e018"; }
 
 /* line 62, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 141, ../scss/partials/_fonts.scss */
 .glyphicon-cog:before {
-  content: "\e019";
-}
+  content: "\e019"; }
 
 /* line 63, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 146, ../scss/partials/_fonts.scss */
 .glyphicon-trash:before {
-  content: "\e020";
-}
+  content: "\e020"; }
 
 /* line 64, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 151, ../scss/partials/_fonts.scss */
 .glyphicon-home:before {
-  content: "\e021";
-}
+  content: "\e021"; }
 
 /* line 65, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 156, ../scss/partials/_fonts.scss */
 .glyphicon-file:before {
-  content: "\e022";
-}
+  content: "\e022"; }
 
 /* line 66, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 161, ../scss/partials/_fonts.scss */
 .glyphicon-time:before {
-  content: "\e023";
-}
+  content: "\e023"; }
 
 /* line 67, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 166, ../scss/partials/_fonts.scss */
 .glyphicon-road:before {
-  content: "\e024";
-}
+  content: "\e024"; }
 
 /* line 68, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 171, ../scss/partials/_fonts.scss */
 .glyphicon-download-alt:before {
-  content: "\e025";
-}
+  content: "\e025"; }
 
 /* line 69, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 176, ../scss/partials/_fonts.scss */
 .glyphicon-download:before {
-  content: "\e026";
-}
+  content: "\e026"; }
 
 /* line 70, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 181, ../scss/partials/_fonts.scss */
 .glyphicon-upload:before {
-  content: "\e027";
-}
+  content: "\e027"; }
 
 /* line 71, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 186, ../scss/partials/_fonts.scss */
 .glyphicon-inbox:before {
-  content: "\e028";
-}
+  content: "\e028"; }
 
 /* line 72, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 191, ../scss/partials/_fonts.scss */
 .glyphicon-play-circle:before {
-  content: "\e029";
-}
+  content: "\e029"; }
 
 /* line 73, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 196, ../scss/partials/_fonts.scss */
 .glyphicon-repeat:before {
-  content: "\e030";
-}
+  content: "\e030"; }
 
 /* line 74, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 201, ../scss/partials/_fonts.scss */
 .glyphicon-refresh:before {
-  content: "\e031";
-}
+  content: "\e031"; }
 
 /* line 75, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 206, ../scss/partials/_fonts.scss */
 .glyphicon-list-alt:before {
-  content: "\e032";
-}
+  content: "\e032"; }
 
 /* line 76, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 211, ../scss/partials/_fonts.scss */
 .glyphicon-lock:before {
-  content: "\e033";
-}
+  content: "\e033"; }
 
 /* line 77, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 216, ../scss/partials/_fonts.scss */
 .glyphicon-flag:before {
-  content: "\e034";
-}
+  content: "\e034"; }
 
 /* line 78, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 221, ../scss/partials/_fonts.scss */
 .glyphicon-headphones:before {
-  content: "\e035";
-}
+  content: "\e035"; }
 
 /* line 79, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 226, ../scss/partials/_fonts.scss */
 .glyphicon-volume-off:before {
-  content: "\e036";
-}
+  content: "\e036"; }
 
 /* line 80, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 231, ../scss/partials/_fonts.scss */
 .glyphicon-volume-down:before {
-  content: "\e037";
-}
+  content: "\e037"; }
 
 /* line 81, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 236, ../scss/partials/_fonts.scss */
 .glyphicon-volume-up:before {
-  content: "\e038";
-}
+  content: "\e038"; }
 
 /* line 82, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 241, ../scss/partials/_fonts.scss */
 .glyphicon-qrcode:before {
-  content: "\e039";
-}
+  content: "\e039"; }
 
 /* line 83, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 246, ../scss/partials/_fonts.scss */
 .glyphicon-barcode:before {
-  content: "\e040";
-}
+  content: "\e040"; }
 
 /* line 84, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 251, ../scss/partials/_fonts.scss */
 .glyphicon-tag:before {
-  content: "\e041";
-}
+  content: "\e041"; }
 
 /* line 85, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 256, ../scss/partials/_fonts.scss */
 .glyphicon-tags:before {
-  content: "\e042";
-}
+  content: "\e042"; }
 
 /* line 86, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 261, ../scss/partials/_fonts.scss */
 .glyphicon-book:before {
-  content: "\e043";
-}
+  content: "\e043"; }
 
 /* line 87, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 266, ../scss/partials/_fonts.scss */
 .glyphicon-bookmark:before {
-  content: "\e044";
-}
+  content: "\e044"; }
 
 /* line 88, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 271, ../scss/partials/_fonts.scss */
 .glyphicon-print:before {
-  content: "\e045";
-}
+  content: "\e045"; }
 
 /* line 89, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 276, ../scss/partials/_fonts.scss */
 .glyphicon-camera:before {
-  content: "\e046";
-}
+  content: "\e046"; }
 
 /* line 90, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 281, ../scss/partials/_fonts.scss */
 .glyphicon-font:before {
-  content: "\e047";
-}
+  content: "\e047"; }
 
 /* line 91, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 286, ../scss/partials/_fonts.scss */
 .glyphicon-bold:before {
-  content: "\e048";
-}
+  content: "\e048"; }
 
 /* line 92, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 291, ../scss/partials/_fonts.scss */
 .glyphicon-italic:before {
-  content: "\e049";
-}
+  content: "\e049"; }
 
 /* line 93, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 296, ../scss/partials/_fonts.scss */
 .glyphicon-text-height:before {
-  content: "\e050";
-}
+  content: "\e050"; }
 
 /* line 94, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 301, ../scss/partials/_fonts.scss */
 .glyphicon-text-width:before {
-  content: "\e051";
-}
+  content: "\e051"; }
 
 /* line 95, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 306, ../scss/partials/_fonts.scss */
 .glyphicon-align-left:before {
-  content: "\e052";
-}
+  content: "\e052"; }
 
 /* line 96, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 311, ../scss/partials/_fonts.scss */
 .glyphicon-align-center:before {
-  content: "\e053";
-}
+  content: "\e053"; }
 
 /* line 97, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 316, ../scss/partials/_fonts.scss */
 .glyphicon-align-right:before {
-  content: "\e054";
-}
+  content: "\e054"; }
 
 /* line 98, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 321, ../scss/partials/_fonts.scss */
 .glyphicon-align-justify:before {
-  content: "\e055";
-}
+  content: "\e055"; }
 
 /* line 99, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 326, ../scss/partials/_fonts.scss */
 .glyphicon-list:before {
-  content: "\e056";
-}
+  content: "\e056"; }
 
 /* line 100, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 331, ../scss/partials/_fonts.scss */
 .glyphicon-indent-left:before {
-  content: "\e057";
-}
+  content: "\e057"; }
 
 /* line 101, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 336, ../scss/partials/_fonts.scss */
 .glyphicon-indent-right:before {
-  content: "\e058";
-}
+  content: "\e058"; }
 
 /* line 102, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 341, ../scss/partials/_fonts.scss */
 .glyphicon-facetime-video:before {
-  content: "\e059";
-}
+  content: "\e059"; }
 
 /* line 103, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 346, ../scss/partials/_fonts.scss */
 .glyphicon-picture:before {
-  content: "\e060";
-}
+  content: "\e060"; }
 
 /* line 104, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 351, ../scss/partials/_fonts.scss */
 .glyphicon-map-marker:before {
-  content: "\e062";
-}
+  content: "\e062"; }
 
 /* line 105, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 356, ../scss/partials/_fonts.scss */
 .glyphicon-adjust:before {
-  content: "\e063";
-}
+  content: "\e063"; }
 
 /* line 106, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 361, ../scss/partials/_fonts.scss */
 .glyphicon-tint:before {
-  content: "\e064";
-}
+  content: "\e064"; }
 
 /* line 107, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 366, ../scss/partials/_fonts.scss */
 .glyphicon-edit:before {
-  content: "\e065";
-}
+  content: "\e065"; }
 
 /* line 108, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 371, ../scss/partials/_fonts.scss */
 .glyphicon-share:before {
-  content: "\e066";
-}
+  content: "\e066"; }
 
 /* line 109, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 376, ../scss/partials/_fonts.scss */
 .glyphicon-check:before {
-  content: "\e067";
-}
+  content: "\e067"; }
 
 /* line 110, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 381, ../scss/partials/_fonts.scss */
 .glyphicon-move:before {
-  content: "\e068";
-}
+  content: "\e068"; }
 
 /* line 111, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 386, ../scss/partials/_fonts.scss */
 .glyphicon-step-backward:before {
-  content: "\e069";
-}
+  content: "\e069"; }
 
 /* line 112, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 391, ../scss/partials/_fonts.scss */
 .glyphicon-fast-backward:before {
-  content: "\e070";
-}
+  content: "\e070"; }
 
 /* line 113, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 396, ../scss/partials/_fonts.scss */
 .glyphicon-backward:before {
-  content: "\e071";
-}
+  content: "\e071"; }
 
 /* line 114, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 401, ../scss/partials/_fonts.scss */
 .glyphicon-play:before {
-  content: "\e072";
-}
+  content: "\e072"; }
 
 /* line 115, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 406, ../scss/partials/_fonts.scss */
 .glyphicon-pause:before {
-  content: "\e073";
-}
+  content: "\e073"; }
 
 /* line 116, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 411, ../scss/partials/_fonts.scss */
 .glyphicon-stop:before {
-  content: "\e074";
-}
+  content: "\e074"; }
 
 /* line 117, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 416, ../scss/partials/_fonts.scss */
 .glyphicon-forward:before {
-  content: "\e075";
-}
+  content: "\e075"; }
 
 /* line 118, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 421, ../scss/partials/_fonts.scss */
 .glyphicon-fast-forward:before {
-  content: "\e076";
-}
+  content: "\e076"; }
 
 /* line 119, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 426, ../scss/partials/_fonts.scss */
 .glyphicon-step-forward:before {
-  content: "\e077";
-}
+  content: "\e077"; }
 
 /* line 120, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 431, ../scss/partials/_fonts.scss */
 .glyphicon-eject:before {
-  content: "\e078";
-}
+  content: "\e078"; }
 
 /* line 121, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 436, ../scss/partials/_fonts.scss */
 .glyphicon-chevron-left:before {
-  content: "\e079";
-}
+  content: "\e079"; }
 
 /* line 122, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 441, ../scss/partials/_fonts.scss */
-.glyphicon-chevron-right:before {
-  content: "\e080";
-}
+.glyphicon-chevron-right:before, .expander:before {
+  content: "\e080"; }
 
 /* line 123, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 446, ../scss/partials/_fonts.scss */
 .glyphicon-plus-sign:before {
-  content: "\e081";
-}
+  content: "\e081"; }
 
 /* line 124, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 451, ../scss/partials/_fonts.scss */
 .glyphicon-minus-sign:before {
-  content: "\e082";
-}
+  content: "\e082"; }
 
 /* line 125, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 456, ../scss/partials/_fonts.scss */
 .glyphicon-remove-sign:before {
-  content: "\e083";
-}
+  content: "\e083"; }
 
 /* line 126, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 461, ../scss/partials/_fonts.scss */
 .glyphicon-ok-sign:before {
-  content: "\e084";
-}
+  content: "\e084"; }
 
 /* line 127, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 466, ../scss/partials/_fonts.scss */
 .glyphicon-question-sign:before {
-  content: "\e085";
-}
+  content: "\e085"; }
 
 /* line 128, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 471, ../scss/partials/_fonts.scss */
 .glyphicon-info-sign:before {
-  content: "\e086";
-}
+  content: "\e086"; }
 
 /* line 129, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 476, ../scss/partials/_fonts.scss */
 .glyphicon-screenshot:before {
-  content: "\e087";
-}
+  content: "\e087"; }
 
 /* line 130, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 481, ../scss/partials/_fonts.scss */
 .glyphicon-remove-circle:before {
-  content: "\e088";
-}
+  content: "\e088"; }
 
 /* line 131, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 486, ../scss/partials/_fonts.scss */
 .glyphicon-ok-circle:before {
-  content: "\e089";
-}
+  content: "\e089"; }
 
 /* line 132, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 491, ../scss/partials/_fonts.scss */
 .glyphicon-ban-circle:before {
-  content: "\e090";
-}
+  content: "\e090"; }
 
 /* line 133, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 496, ../scss/partials/_fonts.scss */
 .glyphicon-arrow-left:before {
-  content: "\e091";
-}
+  content: "\e091"; }
 
 /* line 134, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 501, ../scss/partials/_fonts.scss */
 .glyphicon-arrow-right:before {
-  content: "\e092";
-}
+  content: "\e092"; }
 
 /* line 135, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 506, ../scss/partials/_fonts.scss */
 .glyphicon-arrow-up:before {
-  content: "\e093";
-}
+  content: "\e093"; }
 
 /* line 136, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 511, ../scss/partials/_fonts.scss */
 .glyphicon-arrow-down:before {
-  content: "\e094";
-}
+  content: "\e094"; }
 
 /* line 137, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 516, ../scss/partials/_fonts.scss */
 .glyphicon-share-alt:before {
-  content: "\e095";
-}
+  content: "\e095"; }
 
 /* line 138, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 521, ../scss/partials/_fonts.scss */
 .glyphicon-resize-full:before {
-  content: "\e096";
-}
+  content: "\e096"; }
 
 /* line 139, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 526, ../scss/partials/_fonts.scss */
 .glyphicon-resize-small:before {
-  content: "\e097";
-}
+  content: "\e097"; }
 
 /* line 140, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 531, ../scss/partials/_fonts.scss */
 .glyphicon-exclamation-sign:before {
-  content: "\e101";
-}
+  content: "\e101"; }
 
 /* line 141, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 536, ../scss/partials/_fonts.scss */
 .glyphicon-gift:before {
-  content: "\e102";
-}
+  content: "\e102"; }
 
 /* line 142, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 541, ../scss/partials/_fonts.scss */
 .glyphicon-leaf:before {
-  content: "\e103";
-}
+  content: "\e103"; }
 
 /* line 143, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 546, ../scss/partials/_fonts.scss */
 .glyphicon-fire:before {
-  content: "\e104";
-}
+  content: "\e104"; }
 
 /* line 144, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 551, ../scss/partials/_fonts.scss */
 .glyphicon-eye-open:before {
-  content: "\e105";
-}
+  content: "\e105"; }
 
 /* line 145, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 556, ../scss/partials/_fonts.scss */
 .glyphicon-eye-close:before {
-  content: "\e106";
-}
+  content: "\e106"; }
 
 /* line 146, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 561, ../scss/partials/_fonts.scss */
 .glyphicon-warning-sign:before {
-  content: "\e107";
-}
+  content: "\e107"; }
 
 /* line 147, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 566, ../scss/partials/_fonts.scss */
 .glyphicon-plane:before {
-  content: "\e108";
-}
+  content: "\e108"; }
 
 /* line 148, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 571, ../scss/partials/_fonts.scss */
 .glyphicon-calendar:before {
-  content: "\e109";
-}
+  content: "\e109"; }
 
 /* line 149, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 576, ../scss/partials/_fonts.scss */
 .glyphicon-random:before {
-  content: "\e110";
-}
+  content: "\e110"; }
 
 /* line 150, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 581, ../scss/partials/_fonts.scss */
 .glyphicon-comment:before {
-  content: "\e111";
-}
+  content: "\e111"; }
 
 /* line 151, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 586, ../scss/partials/_fonts.scss */
 .glyphicon-magnet:before {
-  content: "\e112";
-}
+  content: "\e112"; }
 
 /* line 152, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 591, ../scss/partials/_fonts.scss */
 .glyphicon-chevron-up:before {
-  content: "\e113";
-}
+  content: "\e113"; }
 
 /* line 153, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 596, ../scss/partials/_fonts.scss */
-.glyphicon-chevron-down:before {
-  content: "\e114";
-}
+.glyphicon-chevron-down:before, li.open > .expander:before {
+  content: "\e114"; }
 
 /* line 154, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 601, ../scss/partials/_fonts.scss */
 .glyphicon-retweet:before {
-  content: "\e115";
-}
+  content: "\e115"; }
 
 /* line 155, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 606, ../scss/partials/_fonts.scss */
 .glyphicon-shopping-cart:before {
-  content: "\e116";
-}
+  content: "\e116"; }
 
 /* line 156, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 611, ../scss/partials/_fonts.scss */
 .glyphicon-folder-close:before {
-  content: "\e117";
-}
+  content: "\e117"; }
 
 /* line 157, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 616, ../scss/partials/_fonts.scss */
 .glyphicon-folder-open:before {
-  content: "\e118";
-}
+  content: "\e118"; }
 
 /* line 158, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 621, ../scss/partials/_fonts.scss */
 .glyphicon-resize-vertical:before {
-  content: "\e119";
-}
+  content: "\e119"; }
 
 /* line 159, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 626, ../scss/partials/_fonts.scss */
 .glyphicon-resize-horizontal:before {
-  content: "\e120";
-}
+  content: "\e120"; }
 
 /* line 160, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 631, ../scss/partials/_fonts.scss */
 .glyphicon-hdd:before {
-  content: "\e121";
-}
+  content: "\e121"; }
 
 /* line 161, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 636, ../scss/partials/_fonts.scss */
 .glyphicon-bullhorn:before {
-  content: "\e122";
-}
+  content: "\e122"; }
 
 /* line 162, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 641, ../scss/partials/_fonts.scss */
 .glyphicon-bell:before {
-  content: "\e123";
-}
+  content: "\e123"; }
 
 /* line 163, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 646, ../scss/partials/_fonts.scss */
 .glyphicon-certificate:before {
-  content: "\e124";
-}
+  content: "\e124"; }
 
 /* line 164, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 651, ../scss/partials/_fonts.scss */
 .glyphicon-thumbs-up:before {
-  content: "\e125";
-}
+  content: "\e125"; }
 
 /* line 165, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 656, ../scss/partials/_fonts.scss */
 .glyphicon-thumbs-down:before {
-  content: "\e126";
-}
+  content: "\e126"; }
 
 /* line 166, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 661, ../scss/partials/_fonts.scss */
 .glyphicon-hand-right:before {
-  content: "\e127";
-}
+  content: "\e127"; }
 
 /* line 167, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 666, ../scss/partials/_fonts.scss */
 .glyphicon-hand-left:before {
-  content: "\e128";
-}
+  content: "\e128"; }
 
 /* line 168, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 671, ../scss/partials/_fonts.scss */
 .glyphicon-hand-up:before {
-  content: "\e129";
-}
+  content: "\e129"; }
 
 /* line 169, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 676, ../scss/partials/_fonts.scss */
 .glyphicon-hand-down:before {
-  content: "\e130";
-}
+  content: "\e130"; }
 
 /* line 170, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 681, ../scss/partials/_fonts.scss */
 .glyphicon-circle-arrow-right:before {
-  content: "\e131";
-}
+  content: "\e131"; }
 
 /* line 171, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 686, ../scss/partials/_fonts.scss */
 .glyphicon-circle-arrow-left:before {
-  content: "\e132";
-}
+  content: "\e132"; }
 
 /* line 172, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 691, ../scss/partials/_fonts.scss */
 .glyphicon-circle-arrow-up:before {
-  content: "\e133";
-}
+  content: "\e133"; }
 
 /* line 173, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 696, ../scss/partials/_fonts.scss */
 .glyphicon-circle-arrow-down:before {
-  content: "\e134";
-}
+  content: "\e134"; }
 
 /* line 174, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 701, ../scss/partials/_fonts.scss */
 .glyphicon-globe:before {
-  content: "\e135";
-}
+  content: "\e135"; }
 
 /* line 175, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 706, ../scss/partials/_fonts.scss */
 .glyphicon-wrench:before {
-  content: "\e136";
-}
+  content: "\e136"; }
 
 /* line 176, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 711, ../scss/partials/_fonts.scss */
 .glyphicon-tasks:before {
-  content: "\e137";
-}
+  content: "\e137"; }
 
 /* line 177, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 716, ../scss/partials/_fonts.scss */
 .glyphicon-filter:before {
-  content: "\e138";
-}
+  content: "\e138"; }
 
 /* line 178, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 721, ../scss/partials/_fonts.scss */
 .glyphicon-briefcase:before {
-  content: "\e139";
-}
+  content: "\e139"; }
 
 /* line 179, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 726, ../scss/partials/_fonts.scss */
 .glyphicon-fullscreen:before {
-  content: "\e140";
-}
+  content: "\e140"; }
 
 /* line 180, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 731, ../scss/partials/_fonts.scss */
 .glyphicon-dashboard:before {
-  content: "\e141";
-}
+  content: "\e141"; }
 
 /* line 181, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 736, ../scss/partials/_fonts.scss */
 .glyphicon-paperclip:before {
-  content: "\e142";
-}
+  content: "\e142"; }
 
 /* line 182, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 741, ../scss/partials/_fonts.scss */
 .glyphicon-heart-empty:before {
-  content: "\e143";
-}
+  content: "\e143"; }
 
 /* line 183, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 746, ../scss/partials/_fonts.scss */
 .glyphicon-link:before {
-  content: "\e144";
-}
+  content: "\e144"; }
 
 /* line 184, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 751, ../scss/partials/_fonts.scss */
 .glyphicon-phone:before {
-  content: "\e145";
-}
+  content: "\e145"; }
 
 /* line 185, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 756, ../scss/partials/_fonts.scss */
 .glyphicon-pushpin:before {
-  content: "\e146";
-}
+  content: "\e146"; }
 
 /* line 186, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 761, ../scss/partials/_fonts.scss */
 .glyphicon-usd:before {
-  content: "\e148";
-}
+  content: "\e148"; }
 
 /* line 187, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 766, ../scss/partials/_fonts.scss */
 .glyphicon-gbp:before {
-  content: "\e149";
-}
+  content: "\e149"; }
 
 /* line 188, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 771, ../scss/partials/_fonts.scss */
 .glyphicon-sort:before {
-  content: "\e150";
-}
+  content: "\e150"; }
 
 /* line 189, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 776, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-alphabet:before {
-  content: "\e151";
-}
+  content: "\e151"; }
 
 /* line 190, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 781, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-alphabet-alt:before {
-  content: "\e152";
-}
+  content: "\e152"; }
 
 /* line 191, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 786, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-order:before {
-  content: "\e153";
-}
+  content: "\e153"; }
 
 /* line 192, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 791, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-order-alt:before {
-  content: "\e154";
-}
+  content: "\e154"; }
 
 /* line 193, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 796, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-attributes:before {
-  content: "\e155";
-}
+  content: "\e155"; }
 
 /* line 194, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 801, ../scss/partials/_fonts.scss */
 .glyphicon-sort-by-attributes-alt:before {
-  content: "\e156";
-}
+  content: "\e156"; }
 
 /* line 195, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 806, ../scss/partials/_fonts.scss */
 .glyphicon-unchecked:before {
-  content: "\e157";
-}
+  content: "\e157"; }
 
 /* line 196, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 811, ../scss/partials/_fonts.scss */
 .glyphicon-expand:before {
-  content: "\e158";
-}
+  content: "\e158"; }
 
 /* line 197, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 816, ../scss/partials/_fonts.scss */
 .glyphicon-collapse-down:before {
-  content: "\e159";
-}
+  content: "\e159"; }
 
 /* line 198, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 821, ../scss/partials/_fonts.scss */
 .glyphicon-collapse-up:before {
-  content: "\e160";
-}
+  content: "\e160"; }
 
 /* line 199, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 826, ../scss/partials/_fonts.scss */
 .glyphicon-log-in:before {
-  content: "\e161";
-}
+  content: "\e161"; }
 
 /* line 200, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 831, ../scss/partials/_fonts.scss */
 .glyphicon-flash:before {
-  content: "\e162";
-}
+  content: "\e162"; }
 
 /* line 201, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 836, ../scss/partials/_fonts.scss */
 .glyphicon-log-out:before {
-  content: "\e163";
-}
+  content: "\e163"; }
 
 /* line 202, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 841, ../scss/partials/_fonts.scss */
 .glyphicon-new-window:before {
-  content: "\e164";
-}
+  content: "\e164"; }
 
 /* line 203, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 846, ../scss/partials/_fonts.scss */
 .glyphicon-record:before {
-  content: "\e165";
-}
+  content: "\e165"; }
 
 /* line 204, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 851, ../scss/partials/_fonts.scss */
 .glyphicon-save:before {
-  content: "\e166";
-}
+  content: "\e166"; }
 
 /* line 205, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 856, ../scss/partials/_fonts.scss */
 .glyphicon-open:before {
-  content: "\e167";
-}
+  content: "\e167"; }
 
 /* line 206, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 861, ../scss/partials/_fonts.scss */
 .glyphicon-saved:before {
-  content: "\e168";
-}
+  content: "\e168"; }
 
 /* line 207, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 866, ../scss/partials/_fonts.scss */
 .glyphicon-import:before {
-  content: "\e169";
-}
+  content: "\e169"; }
 
 /* line 208, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 871, ../scss/partials/_fonts.scss */
 .glyphicon-export:before {
-  content: "\e170";
-}
+  content: "\e170"; }
 
 /* line 209, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 876, ../scss/partials/_fonts.scss */
 .glyphicon-send:before {
-  content: "\e171";
-}
+  content: "\e171"; }
 
 /* line 210, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 881, ../scss/partials/_fonts.scss */
 .glyphicon-floppy-disk:before {
-  content: "\e172";
-}
+  content: "\e172"; }
 
 /* line 211, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 886, ../scss/partials/_fonts.scss */
 .glyphicon-floppy-saved:before {
-  content: "\e173";
-}
+  content: "\e173"; }
 
 /* line 212, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 891, ../scss/partials/_fonts.scss */
 .glyphicon-floppy-remove:before {
-  content: "\e174";
-}
+  content: "\e174"; }
 
 /* line 213, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 896, ../scss/partials/_fonts.scss */
 .glyphicon-floppy-save:before {
-  content: "\e175";
-}
+  content: "\e175"; }
 
 /* line 214, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 901, ../scss/partials/_fonts.scss */
 .glyphicon-floppy-open:before {
-  content: "\e176";
-}
+  content: "\e176"; }
 
 /* line 215, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 906, ../scss/partials/_fonts.scss */
 .glyphicon-credit-card:before {
-  content: "\e177";
-}
+  content: "\e177"; }
 
 /* line 216, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 911, ../scss/partials/_fonts.scss */
 .glyphicon-transfer:before {
-  content: "\e178";
-}
+  content: "\e178"; }
 
 /* line 217, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 916, ../scss/partials/_fonts.scss */
 .glyphicon-cutlery:before {
-  content: "\e179";
-}
+  content: "\e179"; }
 
 /* line 218, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 921, ../scss/partials/_fonts.scss */
 .glyphicon-header:before {
-  content: "\e180";
-}
+  content: "\e180"; }
 
 /* line 219, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 926, ../scss/partials/_fonts.scss */
 .glyphicon-compressed:before {
-  content: "\e181";
-}
+  content: "\e181"; }
 
 /* line 220, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 931, ../scss/partials/_fonts.scss */
 .glyphicon-earphone:before {
-  content: "\e182";
-}
+  content: "\e182"; }
 
 /* line 221, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 936, ../scss/partials/_fonts.scss */
 .glyphicon-phone-alt:before {
-  content: "\e183";
-}
+  content: "\e183"; }
 
 /* line 222, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 941, ../scss/partials/_fonts.scss */
 .glyphicon-tower:before {
-  content: "\e184";
-}
+  content: "\e184"; }
 
 /* line 223, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 946, ../scss/partials/_fonts.scss */
 .glyphicon-stats:before {
-  content: "\e185";
-}
+  content: "\e185"; }
 
 /* line 224, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 951, ../scss/partials/_fonts.scss */
 .glyphicon-sd-video:before {
-  content: "\e186";
-}
+  content: "\e186"; }
 
 /* line 225, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 956, ../scss/partials/_fonts.scss */
 .glyphicon-hd-video:before {
-  content: "\e187";
-}
+  content: "\e187"; }
 
 /* line 226, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 961, ../scss/partials/_fonts.scss */
 .glyphicon-subtitles:before {
-  content: "\e188";
-}
+  content: "\e188"; }
 
 /* line 227, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 966, ../scss/partials/_fonts.scss */
 .glyphicon-sound-stereo:before {
-  content: "\e189";
-}
+  content: "\e189"; }
 
 /* line 228, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 971, ../scss/partials/_fonts.scss */
 .glyphicon-sound-dolby:before {
-  content: "\e190";
-}
+  content: "\e190"; }
 
 /* line 229, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 976, ../scss/partials/_fonts.scss */
 .glyphicon-sound-5-1:before {
-  content: "\e191";
-}
+  content: "\e191"; }
 
 /* line 230, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 981, ../scss/partials/_fonts.scss */
 .glyphicon-sound-6-1:before {
-  content: "\e192";
-}
+  content: "\e192"; }
 
 /* line 231, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 986, ../scss/partials/_fonts.scss */
 .glyphicon-sound-7-1:before {
-  content: "\e193";
-}
+  content: "\e193"; }
 
 /* line 232, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 991, ../scss/partials/_fonts.scss */
 .glyphicon-copyright-mark:before {
-  content: "\e194";
-}
+  content: "\e194"; }
 
 /* line 233, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 996, ../scss/partials/_fonts.scss */
 .glyphicon-registration-mark:before {
-  content: "\e195";
-}
+  content: "\e195"; }
 
 /* line 234, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 1001, ../scss/partials/_fonts.scss */
 .glyphicon-cloud-download:before {
-  content: "\e197";
-}
+  content: "\e197"; }
 
 /* line 235, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 1006, ../scss/partials/_fonts.scss */
 .glyphicon-cloud-upload:before {
-  content: "\e198";
-}
+  content: "\e198"; }
 
 /* line 236, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 1011, ../scss/partials/_fonts.scss */
 .glyphicon-tree-conifer:before {
-  content: "\e199";
-}
+  content: "\e199"; }
 
 /* line 237, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
-/* line 1016, ../scss/partials/_fonts.scss */
 .glyphicon-tree-deciduous:before {
-  content: "\e200";
-}
+  content: "\e200"; }
 
-/* line 1, ../scss/partials/_form.scss */
 h2.form_title {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-  text-align: center;
-  color: #ffffff;
   font-weight: bold;
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 0;
-}
+  border-bottom: 1px solid #0c3f6b; }
 
-/* line 11, ../scss/partials/_form.scss */
 .advanced_tables_wrapper {
-  display: none;
-}
+  display: none; }
 
-/* line 15, ../scss/partials/_form.scss */
 .advanced_tables_wrapper, .basic_tables_wrapper {
   margin-bottom: 20px;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
-/* line 20, ../scss/partials/_form.scss */
 form {
-  border: solid 1px #0E406D;
-  padding: 10px;
-  margin-top: 0;
-}
-/* line 36, ../.core/css/_form.scss */
-form fieldset ul li {
-  margin-bottom: 10px;
-}
-/* line 38, ../.core/css/_form.scss */
-form fieldset ul li label {
-  display: block;
-  text-align: left;
-}
-/* line 42, ../.core/css/_form.scss */
-form fieldset ul li input, form fieldset ul li textarea, form fieldset ul li select {
-  -ms-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 5px;
-  border: 1px +   + "solid" +   + #333333;
-  height: 24px;
-}
-/* line 50, ../.core/css/_form.scss */
-form fieldset ul li input[disabled], form fieldset ul li textarea[disabled], form fieldset ul li select[disabled] {
-  background-color: #cacaca;
-}
-/* line 54, ../.core/css/_form.scss */
-form fieldset ul li textarea {
-  height: 48px;
-}
-/* line 59, ../.core/css/_form.scss */
-form fieldset ul li.field_boolean_wrapper input, form fieldset ul li.field_checkboxes_wrapper input {
-  width: 24px;
-  -webkit-appearance: checkbox;
-  vertical-align: text-bottom;
-}
-/* line 66, ../.core/css/_form.scss */
-form fieldset ul li.form_submit input {
-  position: absolute;
-  top: -99999px;
-  left: -9999px;
-}
-/* line 71, ../.core/css/_form.scss */
-form fieldset ul li.form_submit .submit {
-  display: block;
-  padding: 5px;
-  background-color: #ededed;
-  border: 1px solid #cccccc;
-  text-align: center;
-  font-weight: bold;
-  color: #0c3f6b;
-  display: block;
-}
-/* line 26, ../scss/partials/_form.scss */
-form fieldset {
-  border: none;
-  margin-top: 0;
-}
-/* line 30, ../scss/partials/_form.scss */
-form fieldset .form-group {
-  clear: both;
-}
-/* line 32, ../scss/partials/_form.scss */
-form fieldset .form-group.err {
-  color: #b60000;
-}
-/* line 35, ../scss/partials/_form.scss */
-form fieldset .form-group label {
-  min-height: 26px;
-  line-height: 26px;
-  font-size: 14px;
-  vertical-align: middle;
-}
-/* line 41, ../scss/partials/_form.scss */
-form fieldset .form-group label, form fieldset .form-group > div {
-  float: left;
-}
-/* line 44, ../scss/partials/_form.scss */
-form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
-  border: 1px solid red;
-}
-/* line 48, ../scss/partials/_form.scss */
-form fieldset .form-group .long_text span {
-  display: block;
-  float: none;
-  width: auto;
-  text-align: left;
-}
-/* line 56, ../scss/partials/_form.scss */
-form .defined_info {
-  margin-top: 10px;
-  font-weight: bold;
-}
-/* line 60, ../scss/partials/_form.scss */
-form#advanced_tables, form#basic_tables {
-  display: none;
-}
-/* line 62, ../scss/partials/_form.scss */
-form#advanced_tables .form-group, form#basic_tables .form-group {
-  float: left;
-  clear: none;
-  margin-right: 20px;
-  margin-bottom: 5px;
-  width: 212px;
-  min-height: 20px;
-}
-/* line 70, ../scss/partials/_form.scss */
-form#advanced_tables .form-group:nth-child(3n), form#basic_tables .form-group:nth-child(3n) {
-  margin-right: 0;
-}
-/* line 73, ../scss/partials/_form.scss */
-form#advanced_tables .form-group label, form#advanced_tables .form-group > div, form#basic_tables .form-group label, form#basic_tables .form-group > div {
-  display: inline-block;
-  vertical-align: middle;
-}
-/* line 77, ../scss/partials/_form.scss */
-form#advanced_tables .form-group label, form#basic_tables .form-group label {
-  width: 110px;
-  font-size: 11px;
-  height: 16px;
-  line-height: 16px;
-}
-/* line 83, ../scss/partials/_form.scss */
-form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
-  width: 100px;
-  font-size: 10px;
-  line-height: 12px;
-  padding: 0;
-  height: 16px;
-}
-/* line 91, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .checkbox label, form#basic_tables .form-group .checkbox label {
-  width: auto;
-}
-/* line 94, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .checkbox input, form#basic_tables .form-group .checkbox input {
-  width: auto;
-  vertical-align: middle;
-  margin-right: 5px;
-}
-/* line 100, ../scss/partials/_form.scss */
-form#advanced_tables .form-group select, form#basic_tables .form-group select {
-  width: 102px;
-  float: left;
-}
-/* line 104, ../scss/partials/_form.scss */
-form#advanced_tables .form-group select[multiple=multiple], form#basic_tables .form-group select[multiple=multiple] {
-  height: 60px;
-}
-/* line 107, ../scss/partials/_form.scss */
-form#advanced_tables .form-group#advanced_tables_field_HK, form#basic_tables .form-group#advanced_tables_field_HK {
-  clear: left;
-  margin-right: 20px;
-}
-/* line 111, ../scss/partials/_form.scss */
-form#advanced_tables .form-group#advanced_tables_field_flown_through, form#basic_tables .form-group#advanced_tables_field_flown_through {
-  margin-right: 0;
-  width: 444px;
-}
-/* line 114, ../scss/partials/_form.scss */
-form#advanced_tables .form-group#advanced_tables_field_flown_through label, form#basic_tables .form-group#advanced_tables_field_flown_through label {
-  width: 232px;
-}
-/* line 117, ../scss/partials/_form.scss */
-form#advanced_tables .form-group#advanced_tables_field_flown_through input, form#basic_tables .form-group#advanced_tables_field_flown_through input {
-  width: 210px;
-}
-/* line 121, ../scss/partials/_form.scss */
-form#advanced_tables .form-group#advanced_tables_field_c5, form#basic_tables .form-group#advanced_tables_field_c5 {
-  margin-right: 0;
-}
-/* line 124, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.field_checkboxes_wrapper, form#basic_tables .form-group.field_checkboxes_wrapper {
-  clear: left;
-  width: 100%;
-}
-/* line 127, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.field_checkboxes_wrapper .control-label, form#basic_tables .form-group.field_checkboxes_wrapper .control-label {
-  width: 14%;
-  font-weight: bold;
-}
-/* line 131, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.field_checkboxes_wrapper > div, form#basic_tables .form-group.field_checkboxes_wrapper > div {
-  width: 86%;
-}
-/* line 134, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.field_checkboxes_wrapper label, form#basic_tables .form-group.field_checkboxes_wrapper label {
-  display: inline-block;
-}
-/* line 138, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .mlink_selected_wrapper, form#basic_tables .form-group .mlink_selected_wrapper {
-  width: 90px;
-  border: 1px solid #a0a0a0;
-  border-top: 0;
-  float: right;
-  font-size: 11px;
-  clear: left;
-  padding: 5px 5px 0;
-}
-/* line 146, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .mlink_selected_wrapper li, form#basic_tables .form-group .mlink_selected_wrapper li {
-  width: 90px;
-  float: none;
-  text-align: left;
-  min-height: 0;
-  line-height: 10px;
-}
-/* line 152, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .mlink_selected_wrapper li a, form#basic_tables .form-group .mlink_selected_wrapper li a {
-  position: relative;
-  float: right;
-  display: block;
-  width: 10px;
-  height: 10px;
-  text-indent: -9999px;
-  overflow: hidden;
-}
-/* line 160, ../scss/partials/_form.scss */
-form#advanced_tables .form-group .mlink_selected_wrapper li a:after, form#basic_tables .form-group .mlink_selected_wrapper li a:after {
-  content: 'x';
-  color: red;
-  position: absolute;
-  top: 0;
-  left: 0;
-  text-indent: 0;
-  line-height: 8px;
-  width: 10px;
-  text-align: center;
-}
-/* line 175, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.submit-group > div, form#advanced_tables .form-group.submit-group, form#basic_tables .form-group.submit-group > div, form#basic_tables .form-group.submit-group {
-  width: 100%;
-  margin: 0;
-}
-/* line 179, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
-  width: 80%;
-  margin-right: 3%;
-  height: 25px;
-}
-/* line 184, ../scss/partials/_form.scss */
-form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
-  width: 15%;
-  display: block;
-  padding: 5px;
-  background-color: #ededed;
-  border: 1px solid #cccccc;
-  text-align: center;
-  font-weight: bold;
-  color: #0c3f6b;
-  display: inline-block;
-}
-/* line 195, ../scss/partials/_form.scss */
-form#postcheck textarea {
-  display: block;
-  width: 300px;
-  height: 50px;
-  margin: auto;
-}
-/* line 201, ../scss/partials/_form.scss */
-form#postcheck li a.lightbox {
-  display: block;
-  margin: auto;
-}
-/* line 207, ../scss/partials/_form.scss */
-form#igc_upload_form #igc_upload_form_field_coords {
-  margin-top: 10px;
-}
-/* line 209, ../scss/partials/_form.scss */
-form#igc_upload_form #igc_upload_form_field_coords p {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-/* line 213, ../scss/partials/_form.scss */
-form#igc_upload_form #igc_upload_form_field_coords .defined_info {
-  float: left;
-  margin: 5px 0 10px;
-}
-/* line 217, ../scss/partials/_form.scss */
-form#igc_upload_form #igc_upload_form_field_coords label {
-  width: 200px;
-  line-height: 16px;
-  margin-right: 10px;
-}
-/* line 222, ../scss/partials/_form.scss */
-form#igc_upload_form #igc_upload_form_field_coords input {
-  width: 465px;
-}
-/* line 226, ../scss/partials/_form.scss */
-form#igc_upload_form #console {
-  color: #b60000;
-}
-/* line 228, ../scss/partials/_form.scss */
-form#igc_upload_form #console .error {
-  margin-top: 0;
-}
-/* line 231, ../scss/partials/_form.scss */
-form#igc_upload_form #console table {
-  width: 100%;
-  margin: auto;
-}
-/* line 235, ../scss/partials/_form.scss */
-form#igc_upload_form #console table thead th {
-  color: #00608d;
-  line-height: 31px;
-  text-align: left;
-}
-/* line 241, ../scss/partials/_form.scss */
-form#igc_upload_form #console table td {
-  text-align: left;
-  height: 31px;
-}
-/* line 244, ../scss/partials/_form.scss */
-form#igc_upload_form #console table td a.button {
-  background-color: #ffffff;
-  height: 24px;
-  line-height: 24px;
-  padding: 0 5px;
-}
-/* line 253, ../scss/partials/_form.scss */
-form#igc_upload_form .post_text {
-  line-height: 19px;
-  background-color: #f9f9f9;
-  margin: 0 -10px -10px;
-  padding: 10px;
-}
-/* line 258, ../scss/partials/_form.scss */
-form#igc_upload_form .post_text #kml_calc {
-  margin-bottom: 10px;
-}
-/* line 263, ../scss/partials/_form.scss */
-form#igc_upload_form p.restart {
-  text-align: center;
-  font-weight: bold;
-}
-/* line 267, ../scss/partials/_form.scss */
-form#igc_upload_form a.restart {
-  text-align: center;
-}
-/* line 272, ../scss/partials/_form.scss */
-form#igc_form #coords_wrapper, form#coordinate_form #coords_wrapper {
-  display: block;
-}
-/* line 274, ../scss/partials/_form.scss */
-form#igc_form #coords_wrapper span, form#coordinate_form #coords_wrapper span {
-  width: 200px;
-}
-/* line 277, ../scss/partials/_form.scss */
-form#igc_form #coords_wrapper input, form#coordinate_form #coords_wrapper input {
-  width: 400px;
-}
-/* line 281, ../scss/partials/_form.scss */
-form#igc_form label, form#coordinate_form label {
-  width: 100px;
-}
-/* line 285, ../scss/partials/_form.scss */
-form#igc_form .field_select_wrapper span, form#igc_form .field_link_wrapper span, form#igc_form .field_date_wrapper span, form#coordinate_form .field_select_wrapper span, form#coordinate_form .field_link_wrapper span, form#coordinate_form .field_date_wrapper span {
-  width: 100px !important;
-}
-/* line 288, ../scss/partials/_form.scss */
-form#igc_form .field_select_wrapper select, form#igc_form .field_link_wrapper select, form#igc_form .field_date_wrapper select, form#coordinate_form .field_select_wrapper select, form#coordinate_form .field_link_wrapper select, form#coordinate_form .field_date_wrapper select {
-  width: 200px;
-  margin-right: 20px;
-}
-/* line 292, ../scss/partials/_form.scss */
-form#igc_form .field_select_wrapper a, form#igc_form .field_link_wrapper a, form#igc_form .field_date_wrapper a, form#coordinate_form .field_select_wrapper a, form#coordinate_form .field_link_wrapper a, form#coordinate_form .field_date_wrapper a {
-  text-decoration: underline;
-  color: #9d9d9d;
-}
-/* line 298, ../scss/partials/_form.scss */
-form#igc_form .field_boolean_wrapper label, form#coordinate_form .field_boolean_wrapper label {
-  width: 100%;
-}
-/* line 300, ../scss/partials/_form.scss */
-form#igc_form .field_boolean_wrapper label input, form#coordinate_form .field_boolean_wrapper label input {
-  margin: 0 5px 0 0;
-}
-/* line 304, ../scss/partials/_form.scss */
-form#igc_form .field_boolean_wrapper input, form#coordinate_form .field_boolean_wrapper input {
-  float: left;
-  height: 26px;
-}
-/* line 310, ../scss/partials/_form.scss */
-form#igc_form .field_textarea_wrapper label, form#igc_form .field_textarea_wrapper textarea, form#coordinate_form .field_textarea_wrapper label, form#coordinate_form .field_textarea_wrapper textarea {
-  width: 672px;
-}
-/* line 317, ../scss/partials/_form.scss */
-form #form_wrapper p.success {
-  border: solid 1px silver;
-  margin: 0;
-  padding: 20px 0;
-  text-align: center;
-  font: 16px/16px Arial bold, sans-serif;
-}
-/* line 326, ../scss/partials/_form.scss */
-form .form_frame {
-  display: none;
-}
-/* line 330, ../scss/partials/_form.scss */
-form #new_glider_form_wrapper, form #new_pilot_form_wrapper, form #module_planner_object_declaration_form_wrapper {
-  width: 360px;
-}
-/* line 333, ../scss/partials/_form.scss */
-form #new_glider_form_wrapper fieldset span, form #new_pilot_form_wrapper fieldset span, form #module_planner_object_declaration_form_wrapper fieldset span {
-  width: 140px;
-}
-/* line 336, ../scss/partials/_form.scss */
-form #new_glider_form_wrapper fieldset select, form #new_pilot_form_wrapper fieldset select, form #module_planner_object_declaration_form_wrapper fieldset select {
-  width: 153px;
-}
+  margin-top: 10px; }
+  form fieldset {
+    border: none;
+    margin-top: 0;
+    padding: 0; }
+    form fieldset .form-group {
+      clear: both; }
+      form fieldset .form-group.err {
+        color: #b60000; }
+      form fieldset .form-group label {
+        min-height: 26px;
+        line-height: 26px;
+        font-size: 14px;
+        vertical-align: middle; }
+      form fieldset .form-group label, form fieldset .form-group > div {
+        float: left; }
+      form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
+        border: 1px solid red; }
+      form fieldset .form-group .long_text span {
+        display: block;
+        float: none;
+        width: auto;
+        text-align: left; }
+  form .defined_info {
+    margin-top: 10px;
+    font-weight: bold; }
+  form#advanced_tables, form#basic_tables {
+    display: none; }
+    form#advanced_tables .form-group, form#basic_tables .form-group {
+      float: left;
+      clear: none;
+      margin-right: 20px;
+      margin-bottom: 5px;
+      width: 212px;
+      min-height: 20px; }
+      form#advanced_tables .form-group:nth-child(3n), form#basic_tables .form-group:nth-child(3n) {
+        margin-right: 0; }
+      form#advanced_tables .form-group label, form#advanced_tables .form-group > div, form#basic_tables .form-group label, form#basic_tables .form-group > div {
+        display: inline-block;
+        vertical-align: middle; }
+      form#advanced_tables .form-group label, form#basic_tables .form-group label {
+        width: 110px;
+        font-size: 11px;
+        height: 16px;
+        line-height: 16px; }
+      form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
+        width: 100px;
+        font-size: 10px;
+        line-height: 12px;
+        padding: 0;
+        height: 16px; }
+      form#advanced_tables .form-group .checkbox label, form#basic_tables .form-group .checkbox label {
+        width: auto; }
+      form#advanced_tables .form-group .checkbox input, form#basic_tables .form-group .checkbox input {
+        width: auto;
+        vertical-align: middle;
+        margin-right: 5px; }
+      form#advanced_tables .form-group select, form#basic_tables .form-group select {
+        width: 102px;
+        float: left; }
+      form#advanced_tables .form-group select[multiple=multiple], form#basic_tables .form-group select[multiple=multiple] {
+        height: 60px; }
+      form#advanced_tables .form-group#advanced_tables_field_HK, form#basic_tables .form-group#advanced_tables_field_HK {
+        clear: left;
+        margin-right: 20px; }
+      form#advanced_tables .form-group#advanced_tables_field_flown_through, form#basic_tables .form-group#advanced_tables_field_flown_through {
+        margin-right: 0;
+        width: 444px; }
+        form#advanced_tables .form-group#advanced_tables_field_flown_through label, form#basic_tables .form-group#advanced_tables_field_flown_through label {
+          width: 232px; }
+        form#advanced_tables .form-group#advanced_tables_field_flown_through input, form#basic_tables .form-group#advanced_tables_field_flown_through input {
+          width: 210px; }
+      form#advanced_tables .form-group#advanced_tables_field_c5, form#basic_tables .form-group#advanced_tables_field_c5 {
+        margin-right: 0; }
+      form#advanced_tables .form-group.field_checkboxes_wrapper, form#basic_tables .form-group.field_checkboxes_wrapper {
+        clear: left;
+        width: 100%; }
+        form#advanced_tables .form-group.field_checkboxes_wrapper .control-label, form#basic_tables .form-group.field_checkboxes_wrapper .control-label {
+          width: 14%;
+          font-weight: bold; }
+        form#advanced_tables .form-group.field_checkboxes_wrapper > div, form#basic_tables .form-group.field_checkboxes_wrapper > div {
+          width: 86%; }
+        form#advanced_tables .form-group.field_checkboxes_wrapper label, form#basic_tables .form-group.field_checkboxes_wrapper label {
+          display: inline-block; }
+      form#advanced_tables .form-group .mlink_selected_wrapper, form#basic_tables .form-group .mlink_selected_wrapper {
+        width: 90px;
+        border: 1px solid #a0a0a0;
+        border-top: 0;
+        float: right;
+        font-size: 11px;
+        clear: left;
+        padding: 5px 5px 0; }
+        form#advanced_tables .form-group .mlink_selected_wrapper li, form#basic_tables .form-group .mlink_selected_wrapper li {
+          width: 90px;
+          float: none;
+          text-align: left;
+          min-height: 0;
+          line-height: 10px; }
+          form#advanced_tables .form-group .mlink_selected_wrapper li a, form#basic_tables .form-group .mlink_selected_wrapper li a {
+            position: relative;
+            float: right;
+            display: block;
+            width: 10px;
+            height: 10px;
+            text-indent: -9999px;
+            overflow: hidden; }
+            form#advanced_tables .form-group .mlink_selected_wrapper li a:after, form#basic_tables .form-group .mlink_selected_wrapper li a:after {
+              content: 'x';
+              color: red;
+              position: absolute;
+              top: 0;
+              left: 0;
+              text-indent: 0;
+              line-height: 8px;
+              width: 10px;
+              text-align: center; }
+      form#advanced_tables .form-group.submit-group > div, form#advanced_tables .form-group.submit-group, form#basic_tables .form-group.submit-group > div, form#basic_tables .form-group.submit-group {
+        width: 100%;
+        margin: 0; }
+      form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
+        width: 80%;
+        margin-right: 3%;
+        height: 25px; }
+      form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
+        width: 15%;
+        display: block;
+        padding: 5px;
+        background-color: #ededed;
+        border: 1px solid #cccccc;
+        text-align: center;
+        font-weight: bold;
+        color: #0c3f6b;
+        display: inline-block; }
+  form#postcheck textarea {
+    display: block;
+    width: 300px;
+    height: 50px;
+    margin: auto; }
+  form#postcheck li a.lightbox {
+    display: block;
+    margin: auto; }
+  form#igc_upload_form #igc_upload_form_field_coords {
+    margin-top: 10px; }
+    form#igc_upload_form #igc_upload_form_field_coords p {
+      margin-bottom: 5px;
+      font-weight: bold; }
+    form#igc_upload_form #igc_upload_form_field_coords .defined_info {
+      float: left;
+      margin: 5px 0 10px; }
+    form#igc_upload_form #igc_upload_form_field_coords label {
+      width: 200px;
+      line-height: 16px;
+      margin-right: 10px; }
+    form#igc_upload_form #igc_upload_form_field_coords input {
+      width: 414px; }
+  form#igc_upload_form #console {
+    color: #b60000; }
+    form#igc_upload_form #console .error {
+      margin-top: 0; }
+    form#igc_upload_form #console table {
+      width: 100%;
+      margin: auto; }
+      form#igc_upload_form #console table thead th {
+        color: #00608d;
+        line-height: 31px;
+        text-align: left; }
+      form#igc_upload_form #console table td {
+        text-align: left;
+        height: 31px; }
+        form#igc_upload_form #console table td a.button {
+          background-color: #ffffff;
+          height: 24px;
+          line-height: 24px;
+          padding: 0 5px; }
+  form#igc_upload_form .post_text {
+    line-height: 19px; }
+    form#igc_upload_form .post_text #kml_calc {
+      margin-bottom: 10px; }
+  form#igc_upload_form p.restart {
+    text-align: center;
+    font-weight: bold; }
+  form#igc_upload_form a.restart {
+    text-align: center; }
+  form.form-compact #coords_wrapper {
+    display: block; }
+    form.form-compact #coords_wrapper span {
+      width: 200px; }
+    form.form-compact #coords_wrapper input {
+      width: 400px; }
+  form.form-compact label {
+    width: 100px; }
+  form.form-compact .field_select_wrapper span, form.form-compact .field_link_wrapper span, form.form-compact .field_date_wrapper span {
+    width: 100px !important; }
+  form.form-compact .field_select_wrapper select, form.form-compact .field_link_wrapper select, form.form-compact .field_date_wrapper select {
+    width: 200px;
+    margin-right: 20px; }
+  form.form-compact .field_select_wrapper a, form.form-compact .field_link_wrapper a, form.form-compact .field_date_wrapper a {
+    text-decoration: underline;
+    color: #9d9d9d; }
+  form.form-compact .field_boolean_wrapper label {
+    width: 100%; }
+    form.form-compact .field_boolean_wrapper label input {
+      margin: 0 5px 0 0; }
+  form.form-compact .field_boolean_wrapper input {
+    float: left;
+    height: 26px; }
+  form.form-compact .field_textarea_wrapper label, form.form-compact .field_textarea_wrapper textarea {
+    width: 657px; }
+  form #form_wrapper p.success {
+    border: solid 1px silver;
+    margin: 0;
+    padding: 20px 0;
+    text-align: center;
+    font: 16px/16px Arial bold, sans-serif; }
+  form .form_frame {
+    display: none; }
+  form #new_glider_form_wrapper, form #new_pilot_form_wrapper, form #module_planner_object_declaration_form_wrapper {
+    width: 360px; }
+    form #new_glider_form_wrapper fieldset span, form #new_pilot_form_wrapper fieldset span, form #module_planner_object_declaration_form_wrapper fieldset span {
+      width: 140px; }
+    form #new_glider_form_wrapper fieldset select, form #new_pilot_form_wrapper fieldset select, form #module_planner_object_declaration_form_wrapper fieldset select {
+      width: 153px; }
 
-/* line 1, ../scss/partials/_graph.scss */
 .graph_toggles {
   position: absolute;
   left: 70px;
   top: 4px;
-  z-index: 1000000;
-}
-/* line 6, ../scss/partials/_graph.scss */
-.graph_toggles label {
-  padding-right: 10px;
-  display: inline-block;
-  line-height: 13px;
-}
-/* line 10, ../scss/partials/_graph.scss */
-.graph_toggles label input {
-  margin-right: 5px;
-  vertical-align: bottom;
-}
+  z-index: 1000000; }
+  .graph_toggles label {
+    padding-right: 10px;
+    display: inline-block;
+    line-height: 13px; }
+    .graph_toggles label input {
+      margin-right: 5px;
+      vertical-align: bottom; }
 
-/* line 1, ../scss/partials/_header.scss */
 div#nav {
   width: 100%;
   height: 30px;
-  background-color: #0c3f6b;
-}
-/* line 5, ../scss/partials/_header.scss */
-div#nav ul {
-  width: 100%;
-  -webkit-padding-start: 0px;
-  margin: 0;
-  list-style: none;
-  direction: ltr;
-  display: block;
-  position: absolute;
-  padding-left: 0;
-}
-/* line 14, ../scss/partials/_header.scss */
-div#nav ul li {
-  height: 30px;
-  display: block;
-  float: left;
-  color: #ffffff;
-  margin-bottom: 0;
-}
-/* line 20, ../scss/partials/_header.scss */
-div#nav ul li:hover, div#nav ul li.sel {
-  color: #e3e3e3;
-  background-color: #0a4dad;
-}
-/* line 24, ../scss/partials/_header.scss */
-div#nav ul li a {
-  color: #ffffff;
-  background: none;
-  height: auto;
-  display: block;
-  position: relative;
-  bottom: -1px;
-  font-weight: bold;
-  line-height: 24px;
-  padding: 2px 9px;
-  text-decoration: none;
-  cursor: pointer;
-}
+  background-color: #0c3f6b; }
+  div#nav ul {
+    width: 100%;
+    -webkit-padding-start: 0px;
+    margin: 0;
+    list-style: none;
+    direction: ltr;
+    display: block;
+    position: absolute;
+    padding-left: 0; }
+    div#nav ul li {
+      height: 30px;
+      display: block;
+      float: left;
+      color: #ffffff;
+      margin-bottom: 0; }
+      div#nav ul li:hover, div#nav ul li.sel {
+        color: #e3e3e3;
+        background-color: #0a4dad; }
+      div#nav ul li a {
+        color: #ffffff;
+        background: none;
+        height: auto;
+        display: block;
+        position: relative;
+        bottom: -1px;
+        font-weight: bold;
+        line-height: 24px;
+        padding: 2px 9px;
+        text-decoration: none;
+        cursor: pointer; }
 
-/* line 3, ../scss/partials/_home.scss */
 #main #pages-12 .content {
-  padding: 0 10px;
-}
-/* line 7, ../scss/partials/_home.scss */
+  padding: 0 10px; }
+
 #main #pages-12 #page_list div {
+  position: relative;
   display: inline-block;
   width: 25%;
-  vertical-align: bottom;
-  background-color: #0c3f6b;
-}
-/* line 12, ../scss/partials/_home.scss */
-#main #pages-12 #page_list div:nth-child(3n+1) {
-  background-color: #0a4dad;
-}
-/* line 15, ../scss/partials/_home.scss */
-#main #pages-12 #page_list div:nth-child(3n+2) {
-  background-color: #75b7fd;
-}
-/* line 18, ../scss/partials/_home.scss */
-#main #pages-12 #page_list div:hover {
-  -moz-opacity: 0.8;
-  -khtml-opacity: 0.8;
-  -webkit-opacity: 0.8;
-  opacity: 0.8;
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=${opperc});
-  filter: alpha(opacity=${opperc});
-}
-/* line 23, ../scss/partials/_home.scss */
-#main #pages-12 #page_list div h2 span:before {
-  font-size: 24px;
-  display: block;
-  margin-bottom: 15px;
-}
-/* line 29, ../scss/partials/_home.scss */
-#main #pages-12 #page_list div a {
-  display: block;
-  padding: 20px;
-  height: 100px;
-  text-align: center;
-  color: #ffffff;
-}
+  vertical-align: bottom; }
+  #main #pages-12 #page_list div:nth-child(3n+1) a {
+    background-color: #0a4dad; }
+  #main #pages-12 #page_list div:nth-child(3n+2) a {
+    background-color: #75b7fd; }
+  #main #pages-12 #page_list div:hover {
+    opacity: 0.8; }
+  #main #pages-12 #page_list div h2 span:before {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 15px; }
+  #main #pages-12 #page_list div a {
+    background-color: #0c3f6b;
+    display: block;
+    border: 1px solid white;
+    padding: 15px;
+    height: 125px;
+    text-align: center;
+    color: #ffffff; }
 
-/* line 1, ../scss/partials/_kmltree.scss */
 div.kmltree {
   font-family: sans-serif;
   font-size: 12px;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
+  user-select: none; }
 
-/* line 9, ../scss/partials/_kmltree.scss */
 div.kmltree p.error {
   -moz-user-select: text;
   -khtml-user-select: text;
   -webkit-user-select: text;
-  user-select: text;
-}
+  user-select: text; }
 
-/* line 15, ../scss/partials/_kmltree.scss */
 div.kmltree ul {
   list-style: none;
-  padding-left: 18px;
-}
+  padding-left: 24px; }
 
-/* line 19, ../scss/partials/_kmltree.scss */
 div.kmltree li ul {
-  padding-top: 5px;
-  display: none;
-}
+  padding-top: 0;
+  display: none; }
 
-/* line 23, ../scss/partials/_kmltree.scss */
 div.kmltree li.open > ul {
-  display: block;
-}
+  display: block; }
 
-/* line 26, ../scss/partials/_kmltree.scss */
 span.kmlId, span.nlDocId {
-  display: none;
-}
+  display: none; }
 
-/* line 29, ../scss/partials/_kmltree.scss */
 li.kmltree-item {
   white-space: nowrap;
   margin: 0;
-  padding: 5px 0;
-}
+  line-height: 22px;
+  padding: 0; }
 
-/* line 34, ../scss/partials/_kmltree.scss */
 li.kmltree-item span.name {
   color: #313841;
-  cursor: default;
-}
+  cursor: default; }
 
-/* line 38, ../scss/partials/_kmltree.scss */
 li.kmltree-item.hasDescription > span.name {
   color: blue;
   text-decoration: underline;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 43, ../scss/partials/_kmltree.scss */
 h4.kmltree-title {
   color: #6C7C90;
   font-weight: bold;
-  margin: 0 0 -5px 0;
-}
+  margin: 0 0 -5px 0; }
 
-/* line 48, ../scss/partials/_kmltree.scss */
 .expander, .toggler, .icon {
   margin: 0;
   padding: 0;
   float: left;
-  width: 16px;
-  height: 16px;
-}
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: center;
+  color: #333; }
 
-/* line 55, ../scss/partials/_kmltree.scss */
 .expander, .toggler {
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 58, ../scss/partials/_kmltree.scss */
 .expander {
-  background: url("/img/kml.png") no-repeat -168px 0;
-  width: 16px;
-  height: 16px;
-  margin-left: -17px;
-}
+  font-size: 10px;
+  margin-left: -18px; }
+  .expander.hover {
+    color: #555; }
+  .expander:active {
+    color: #777; }
 
-/* line 64, ../scss/partials/_kmltree.scss */
-.expander:hover {
-  background: url("/img/kml.png") no-repeat -189px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 69, ../scss/partials/_kmltree.scss */
-.expander:active {
-  background: url("/img/kml.png") no-repeat -210px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 74, ../scss/partials/_kmltree.scss */
-li.open > .expander {
-  background: url("/img/kml.png") no-repeat -105px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 79, ../scss/partials/_kmltree.scss */
-li.open > .expander:hover {
-  background: url("/img/kml.png") no-repeat -126px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 84, ../scss/partials/_kmltree.scss */
-li.open > .expander:active {
-  background: url("/img/kml.png") no-repeat -147px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 89, ../scss/partials/_kmltree.scss */
 .toggler {
-  margin-right: 4px;
-  background: url("/img/kml.png") no-repeat -231px 0;
-  width: 16px;
-  height: 16px;
-}
+  margin-right: 8px;
+  border: 1px solid #ccc; }
 
-/* line 95, ../scss/partials/_kmltree.scss */
 .toggler:hover {
-  background: url("/img/kml.png") no-repeat -273px 0;
-  width: 16px;
-  height: 16px;
-}
+  background-color: #eee; }
 
-/* line 100, ../scss/partials/_kmltree.scss */
 .toggler:active {
-  background: url("/img/kml.png") no-repeat -294px 0;
-  width: 16px;
-  height: 16px;
-}
+  background-color: #ddd; }
 
-/* line 105, ../scss/partials/_kmltree.scss */
 li.checkOffOnly > .toggler {
-  background: url("/img/kml.png") no-repeat -252px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -252px 0; }
 
-/* line 110, ../scss/partials/_kmltree.scss */
-li.visible > .toggler {
-  background: url("/img/kml.png") no-repeat -315px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 115, ../scss/partials/_kmltree.scss */
-li.visible > .toggler:hover {
-  background: url("/img/kml.png") no-repeat -336px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 120, ../scss/partials/_kmltree.scss */
-li.visible > .toggler:active {
-  background: url("/img/kml.png") no-repeat -357px 0;
-  width: 16px;
-  height: 16px;
-}
-
-/* line 125, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li > .toggler {
-  background: url("/img/kml.png") no-repeat -378px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -378px 0; }
 
-/* line 130, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li > .toggler:hover {
-  background: url("/img/kml.png") no-repeat -399px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -399px 0; }
 
-/* line 135, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li > .toggler:active {
-  background: url("/img/kml.png") no-repeat -420px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -420px 0; }
 
-/* line 140, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li.visible > .toggler {
-  background: url("/img/kml.png") no-repeat -441px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -441px 0; }
 
-/* line 145, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li.visible > .toggler:hover {
-  background: url("/img/kml.png") no-repeat -462px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -462px 0; }
 
-/* line 150, ../scss/partials/_kmltree.scss */
 li.radioFolder > ul > li.visible > .toggler:active {
-  background: url("/img/kml.png") no-repeat -483px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -483px 0; }
 
-/* line 155, ../scss/partials/_kmltree.scss */
 li.radioFolder > .toggler {
-  background: url("/img/kml.png") no-repeat -378px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -378px 0; }
 
-/* line 160, ../scss/partials/_kmltree.scss */
 li.radioFolder > .toggler:hover {
-  background: url("/img/kml.png") no-repeat -399px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -399px 0; }
 
-/* line 165, ../scss/partials/_kmltree.scss */
 li.radioFolder > .toggler:active {
-  background: url("/img/kml.png") no-repeat -420px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -420px 0; }
 
-/* line 170, ../scss/partials/_kmltree.scss */
 li.radioFolder.visible > .toggler {
-  background: url("/img/kml.png") no-repeat -441px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -441px 0; }
 
-/* line 175, ../scss/partials/_kmltree.scss */
 li.radioFolder.visible > .toggler:hover {
-  background: url("/img/kml.png") no-repeat -462px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -462px 0; }
 
-/* line 180, ../scss/partials/_kmltree.scss */
 li.radioFolder.visible > .toggler:active {
-  background: url("/img/kml.png") no-repeat -483px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -483px 0; }
 
-/* line 185, ../scss/partials/_kmltree.scss */
 li.KmlPlacemark > .expander, li.KmlPhotoOverlay > .expander, li.KmlGroundOverlay > .expander, li.KmlTour > .expander {
-  display: none;
-}
+  display: none; }
 
-/* line 188, ../scss/partials/_kmltree.scss */
 li.KmlPlacemark > span.name, li.select > span.name {
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 191, ../scss/partials/_kmltree.scss */
 div.kmltree li.hideChildren ul, div.kmltree li.hideChildren .expander {
-  display: none;
-}
+  display: none; }
 
-/* line 194, ../scss/partials/_kmltree.scss */
 div.kmltree .icon {
   display: none;
-  padding: 0;
-}
+  padding: 0; }
 
-/* line 198, ../scss/partials/_kmltree.scss */
 li.KmlFolder > .icon, li.KmlNetworkLink > .icon, li.KmlTour > .icon, li.KmlPhotoOverlay > .icon, li.KmlGroundOverlay > .icon, li.KmlScreenOverlay > .icon, li.customIcon > .icon, li.KmlPolygon > .icon, li.KmlLineString > .icon, li.KmlMultiGeometry > .icon, li.KmlDocument > .icon {
   margin-right: 4px;
-  display: block;
-}
+  display: block; }
 
-/* line 202, ../scss/partials/_kmltree.scss */
 .nlSpinner {
-  display: none;
-}
+  display: none; }
 
-/* line 205, ../scss/partials/_kmltree.scss */
 li.KmlFolder > .icon, li.KmlDocument > .icon {
-  background: url("/img/kml.png") no-repeat 0 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat 0 0; }
 
-/* line 210, ../scss/partials/_kmltree.scss */
 li.KmlFolder.open > .icon, li.KmlDocument.open > .icon {
-  background: url("/img/kml.png") no-repeat -21px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -21px 0; }
 
-/* line 215, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink > .icon {
-  background: url("/img/kml.png") no-repeat 0 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat 0 0; }
 
-/* line 220, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink.loading > .icon {
   position: relative;
-  background: url("/img/kml.png") no-repeat -504px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -504px 0; }
 
-/* line 226, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink.loading > .icon > .nlSpinner {
   width: 8px;
   height: 8px;
@@ -3335,117 +1783,73 @@ li.KmlNetworkLink.loading > .icon > .nlSpinner {
   position: absolute;
   left: 6px;
   top: 6px;
-  background: transparent url(/img/networklink-loading-animated.gif) no-repeat !important;
-}
+  background: transparent url(/img/networklink-loading-animated.gif) no-repeat !important; }
 
-/* line 235, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink.loading > .expander {
   opacity: 0.3;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
-  filter: alpha(opacity="30");
-}
+  filter: alpha(opacity=30); }
 
-/* line 240, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink.error > .icon {
-  background: url("/img/kml.png") no-repeat -42px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -42px 0; }
 
-/* line 245, ../scss/partials/_kmltree.scss */
 li.KmlNetworkLink.error > .expander {
-  display: none;
-}
+  display: none; }
 
-/* line 248, ../scss/partials/_kmltree.scss */
 li.KmlTour > .icon {
-  background: url("/img/kml.png") no-repeat -63px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -63px 0; }
 
-/* line 253, ../scss/partials/_kmltree.scss */
 li.KmlPhotoOverlay > .icon, li.KmlGroundOverlay > .icon {
-  background: url("/img/kml.png") no-repeat -84px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -84px 0; }
 
-/* line 258, ../scss/partials/_kmltree.scss */
 li.KmlScreenOverlay > .icon {
-  background: url("/img/kml.png") no-repeat -567px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -567px 0; }
 
-/* line 263, ../scss/partials/_kmltree.scss */
 li.KmlPolygon > .icon {
-  background: url("/img/kml.png") no-repeat -525px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -525px 0; }
 
-/* line 268, ../scss/partials/_kmltree.scss */
 li.KmlLineString > .icon, li.KmlMultiGeometry > .icon {
-  background: url("/img/kml.png") no-repeat -546px 0;
-  width: 16px;
-  height: 16px;
-}
+  background: url("/img/kml.png") no-repeat -546px 0; }
 
-/* line 273, ../scss/partials/_kmltree.scss */
 li.customIcon > .icon {
   -moz-background-size: 16px 16px;
   -khtml-background-size: 16px, 16px;
   -webkit-background-size: 16px, 16px;
   -o-background-size: 16px, 16px;
   background-size: 16px, 16px;
-  background: transparent no-repeat;
-}
+  background: transparent no-repeat; }
 
-/* line 281, ../scss/partials/_kmltree.scss */
 li.kmltree-item p.snippet {
   text-indent: 0;
   width: 80%;
   margin: 5px 0 5px 20px;
   color: #6C7C90;
-  white-space: normal;
-}
+  white-space: normal; }
 
-/* line 288, ../scss/partials/_kmltree.scss */
 span.name {
   clear: both;
   position: relative;
-  top: 1px;
-}
+  top: 1px; }
 
-/* line 293, ../scss/partials/_kmltree.scss */
 div.kmltree li.kmltree-selected {
   background-color: #BEDCED;
   padding-left: 5px;
-  margin-left: -5px;
-}
+  margin-left: -5px; }
 
-/* line 298, ../scss/partials/_kmltree.scss */
 div.kmltree li.kmltree-selected > span.name {
   font-weight: bold;
-  border-bottom: none;
-}
+  border-bottom: none; }
 
-/* line 302, ../scss/partials/_kmltree.scss */
 div.kmltree li.kmltree-selected > span.name:hover {
-  border: none;
-}
+  border: none; }
 
-/* line 305, ../scss/partials/_kmltree.scss */
 div.kmltree li.kmltree-breadcrumb {
   background-color: #E6F7FB;
   margin-top: -1px;
   margin-left: -1px;
   margin-bottom: -1px;
-  border: dotted 1px #CCC;
-}
+  border: dotted 1px #CCC; }
 
-/* line 312, ../scss/partials/_kmltree.scss */
 div.kmltree-loading {
   position: absolute;
   left: 0;
@@ -3455,11 +1859,9 @@ div.kmltree-loading {
   background-color: #FFF;
   opacity: 0.7;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-  filter: alpha(opacity="70");
-  text-align: center;
-}
+  filter: alpha(opacity=70);
+  text-align: center; }
 
-/* line 324, ../scss/partials/_kmltree.scss */
 div.kmltree-loading span {
   position: absolute;
   padding-top: 20px;
@@ -3468,376 +1870,284 @@ div.kmltree-loading span {
   width: 100%;
   opacity: 1;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  filter: alpha(opacity="100");
+  filter: alpha(opacity=100);
   font-weight: bold;
   height: 40px;
   padding-bottom: 15px;
-  background: transparent url(/img/ajax-loader.gif) no-repeat center bottom;
-}
+  background: transparent url(/img/ajax-loader.gif) no-repeat center bottom; }
 
-/* line 338, ../scss/partials/_kmltree.scss */
 .kmlTreeReset {
   font-family: sans-serif;
-  color: black;
-}
+  color: black; }
 
-/* line 342, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h1 {
-  font-size: 18px;
-}
+  font-size: 18px; }
 
-/* line 345, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h1 a {
-  font-size: 18px;
-}
+  font-size: 18px; }
 
-/* line 348, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h2 {
-  font-size: 16px;
-}
+  font-size: 16px; }
 
-/* line 351, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h2 a {
-  font-size: 16px;
-}
+  font-size: 16px; }
 
-/* line 354, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h3 {
-  font-size: 14px;
-}
+  font-size: 14px; }
 
-/* line 357, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h3 a {
-  font-size: 14px;
-}
+  font-size: 14px; }
 
-/* line 360, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h1, .kmlTreeReset h2, .kmlTreeReset h3 {
-  margin: 1em 0;
-}
+  margin: 1em 0; }
 
-/* line 363, ../scss/partials/_kmltree.scss */
 .kmlTreeReset h1, .kmlTreeReset h2, .kmlTreeReset h3, .kmlTreeReset h4, .kmlTreeReset h5, .kmlTreeReset h6, .kmlTreeReset strong, .kmlTreeReset dt {
   font-weight: bold;
-  color: black;
-}
+  color: black; }
 
-/* line 367, ../scss/partials/_kmltree.scss */
 .kmlTreeReset em {
-  font-style: italic;
-}
+  font-style: italic; }
 
-/* line 370, ../scss/partials/_kmltree.scss */
 .kmlTreeReset blockquote, .kmlTreeReset ul, .kmlTreeReset ol, .kmlTreeReset dl {
-  margin: 1em;
-}
+  margin: 1em; }
 
-/* line 373, ../scss/partials/_kmltree.scss */
 .kmlTreeReset ol, .kmlTreeReset ul, .kmlTreeReset dl {
-  margin-left: 2em;
-}
+  margin-left: 2em; }
 
-/* line 376, ../scss/partials/_kmltree.scss */
 .kmlTreeReset ol li {
-  list-style: decimal outside;
-}
+  list-style: decimal outside; }
 
-/* line 379, ../scss/partials/_kmltree.scss */
 .kmlTreeReset ul li {
-  list-style: disc outside;
-}
+  list-style: disc outside; }
 
-/* line 382, ../scss/partials/_kmltree.scss */
 .kmlTreeReset dl dd {
-  margin-left: 1em;
-}
+  margin-left: 1em; }
 
-/* line 385, ../scss/partials/_kmltree.scss */
 .kmlTreeReset th, .kmlTreeReset td {
-  padding: 0;
-}
+  padding: 0; }
 
-/* line 388, ../scss/partials/_kmltree.scss */
 .kmlTreeReset th {
   font-weight: bold;
-  text-align: center;
-}
+  text-align: center; }
 
-/* line 392, ../scss/partials/_kmltree.scss */
 .kmlTreeReset p, .kmlTreeReset fieldset, .kmlTreeReset table, .kmlTreeReset pre {
-  margin-bottom: 1em;
-}
+  margin-bottom: 1em; }
 
-/* line 395, ../scss/partials/_kmltree.scss */
 .kmlTreeReset p, .kmlTreeReset div {
   font-size: 12px;
-  color: black;
-}
+  color: black; }
 
-/* line 399, ../scss/partials/_kmltree.scss */
 .kmlTreeReset a {
   font-size: 12px;
   color: blue;
-  text-decoration: underline;
-}
+  text-decoration: underline; }
 
-/* line 1, ../scss/partials/_layout.scss */
 #main_wrapper {
   overflow-x: hidden;
   height: 100%;
   position: absolute;
   padding: 10px;
-  width: 705px;
-}
-/* line 7, ../scss/partials/_layout.scss */
-#main_wrapper .jspPane {
-  width: 705px !important;
-  margin-left: 0 !important;
-}
-/* line 11, ../scss/partials/_layout.scss */
-#main_wrapper #main {
-  overflow: visible;
-  position: relative;
-}
-/* line 14, ../scss/partials/_layout.scss */
-#main_wrapper #main > div {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 700px;
-  height: 100%;
-  background-color: white;
-}
+  width: 705px; }
+  #main_wrapper .jspPane {
+    width: 705px !important;
+    margin-left: 0 !important; }
+  #main_wrapper #main {
+    overflow: visible;
+    position: relative; }
+    #main_wrapper #main > div {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 700px;
+      height: 100%;
+      background-color: white; }
 
-/* line 25, ../scss/partials/_layout.scss */
 #left_col {
   position: relative;
   width: 725px;
   height: 100%;
-}
+  float: left; }
 
-/* line 31, ../scss/partials/_layout.scss */
 #content {
   height: 100%;
   display: inline-block;
   vertical-align: top;
-  margin-right: -4px;
-}
+  margin-right: -4px; }
 
-/* line 1, ../scss/partials/_map.scss */
+#map_interface_3d {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0px;
+  background-color: #ffffff;
+  border-left: 1px solid #0a4dad;
+  z-index: 999999;
+  float: left; }
+  #map_interface_3d .load_airspace {
+    height: 38px;
+    line-height: 38px;
+    border-left-width: 50px;
+    border-right: 0; }
+  #map_interface_3d span.toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    background: #0c3f6b;
+    color: white;
+    font-size: 30px;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer; }
+  #map_interface_3d span.hide {
+    display: none;
+    left: 0;
+    right: auto; }
+  #map_interface_3d #tree_content {
+    height: 100%;
+    overflow: scroll; }
+
+.interface-visible #map_interface_3d {
+  width: 250px; }
+  .interface-visible #map_interface_3d span.toggle.show {
+    display: none; }
+  .interface-visible #map_interface_3d span.toggle.hide {
+    display: block; }
+
 #map_wrapper {
   position: absolute;
   right: 0;
   top: 0;
   z-index: 99999;
-  height: 100%;
-}
-/* line 7, ../scss/partials/_map.scss */
-#map_wrapper #map_interface {
-  z-index: 9999999;
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-}
-/* line 13, ../scss/partials/_map.scss */
-#map_wrapper #map_interface #map_interface_padding {
-  padding: 0 10px;
-  height: 100%;
-}
-/* line 17, ../scss/partials/_map.scss */
-#map_wrapper #map_interface #map_interface_padding #graph_wrapper {
-  margin-bottom: 10px;
-  height: 200px;
-}
-/* line 21, ../scss/partials/_map.scss */
-#map_wrapper #map_interface #map_interface_padding #slider {
-  margin-bottom: 10px;
-}
-/* line 24, ../scss/partials/_map.scss */
-#map_wrapper #map_interface #map_interface_padding #controls {
-  margin-bottom: 10px;
-}
-/* line 26, ../scss/partials/_map.scss */
-#map_wrapper #map_interface #map_interface_padding #controls #slider_time {
-  position: absolute;
-  z-index: 10000;
-  color: Red;
-  font-weight: bold;
-  font-size: larger;
-  background-color: white;
-}
-/* line 30, ../scss/partials/_map.scss */
-#map_wrapper #map_interface_3d {
-  position: absolute;
-  z-index: 0;
-  height: 100%;
-  width: 250px;
-  background-color: #ffffff;
-  border: 4px solid #75b7fd;
-}
-/* line 37, ../scss/partials/_map.scss */
-#map_wrapper #map_interface_3d span.show, #map_wrapper #map_interface_3d span.hide {
-  position: absolute;
-  top: 50%;
-  left: -22px;
-  width: 19px;
-  height: 50px;
-  background-image: url(/img/show.png);
-  text-indent: -999999px;
-}
-/* line 46, ../scss/partials/_map.scss */
-#map_wrapper #map_interface_3d span.hide {
-  background-image: url(/img/hide.png);
-  display: none;
-}
-/* line 50, ../scss/partials/_map.scss */
-#map_wrapper #map_interface_3d #tree_content {
-  height: 100%;
-  overflow: scroll;
-}
-/* line 56, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui {
-  margin-right: -6px;
-  margin-top: 5px;
-}
-/* line 60, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option {
-  float: left;
-}
-/* line 64, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option#airspace_selector ul {
-  width: 230px;
-  left: 36px;
-}
-/* line 70, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option#drawn_flights ul {
-  width: 230px;
-  left: 0px;
-}
-/* line 73, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option#drawn_flights ul li a {
-  width: 180px;
-  float: left;
-}
-/* line 76, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option#drawn_flights ul li a.remove {
-  width: 30px;
-  float: right;
-}
-/* line 84, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option#flight_types_selector ul {
-  width: 130px;
-  left: 0px;
-}
-/* line 90, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option div.title {
-  direction: ltr;
-  overflow: hidden;
-  text-align: center;
-  position: relative;
-  color: black;
-  font-family: Arial, sans-serif;
-  -webkit-user-select: none;
-  font-size: 13px;
-  background-color: white;
-  padding: 1px 6px;
-  border: 1px solid #717b87;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
-  font-weight: bold;
-  min-width: 29px;
-  background-position: initial;
-  background-repeat: initial;
-}
-/* line 109, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul {
-  background-color: white;
-  z-index: -1;
-  padding: 0;
-  width: 130px;
-  border-width: 0px 1px 1px;
-  border-bottom-style: solid;
-  border-left-style: solid;
-  border-bottom-color: #717b87;
-  border-left-color: #717b87;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
-  position: absolute;
-  left: 0px;
-  top: 7px;
-  text-align: left;
-  display: none;
-}
-/* line 127, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li {
-  padding: 0px;
-  margin: 0;
-}
-/* line 131, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li:hover {
-  background-color: #ebebeb;
-}
-/* line 134, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li a {
-  display: block;
-  padding: 5px;
-  margin: 0;
-}
-/* line 139, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li span {
-  box-sizing: border-box;
-  position: relative;
-  line-height: 0;
-  font-size: 0px;
-  margin: 0px 5px 0px 0px;
-  display: inline-block;
-  background-color: white;
-  border: 1px solid #c6c6c6;
-  border-top-left-radius: 1px;
-  border-top-right-radius: 1px;
-  border-bottom-right-radius: 1px;
-  border-bottom-left-radius: 1px;
-  width: 13px;
-  height: 13px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  vertical-align: middle;
-}
-/* line 158, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li span.hidden div {
-  display: none;
-}
-/* line 160, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li span:hover {
-  -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
-  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
-}
-/* line 165, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li div {
-  position: absolute;
-  left: 1px;
-  top: -2px;
-  width: 13px;
-  height: 11px;
-  overflow: hidden;
-  background: url(/img/imgs8.png) -52px -44px no-repeat;
-}
-/* line 173, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li div .hidden div {
-  display: none;
-}
-/* line 177, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul li p {
-  padding: 5px;
-  cursor: pointer;
-}
-/* line 182, ../scss/partials/_map.scss */
-#map_wrapper #custom_ui .maps_ui_option ul label {
-  vertical-align: middle;
-  cursor: pointer;
-}
+  height: 100%; }
+  #map_wrapper #map_interface {
+    z-index: 9999999;
+    position: absolute;
+    width: 100%;
+    bottom: 0; }
+    #map_wrapper #map_interface #map_interface_padding {
+      padding: 0 10px;
+      height: 100%; }
+      #map_wrapper #map_interface #map_interface_padding #graph_wrapper {
+        margin-bottom: 10px;
+        height: 200px; }
+      #map_wrapper #map_interface #map_interface_padding #slider {
+        margin-bottom: 10px; }
+      #map_wrapper #map_interface #map_interface_padding #controls {
+        margin-bottom: 10px; }
+        #map_wrapper #map_interface #map_interface_padding #controls #slider_time {
+          position: absolute;
+          z-index: 10000;
+          color: Red;
+          font-weight: bold;
+          font-size: larger;
+          background-color: white; }
+  #map_wrapper #custom_ui {
+    margin-right: -6px;
+    margin-top: 5px; }
+    #map_wrapper #custom_ui .maps_ui_option {
+      float: left; }
+      #map_wrapper #custom_ui .maps_ui_option#airspace_selector ul {
+        width: 230px;
+        left: 36px; }
+      #map_wrapper #custom_ui .maps_ui_option#drawn_flights ul {
+        width: 230px;
+        left: 0px; }
+        #map_wrapper #custom_ui .maps_ui_option#drawn_flights ul li a {
+          width: 180px;
+          float: left; }
+          #map_wrapper #custom_ui .maps_ui_option#drawn_flights ul li a.remove {
+            width: 30px;
+            float: right; }
+      #map_wrapper #custom_ui .maps_ui_option#flight_types_selector ul {
+        width: 130px;
+        left: 0px; }
+      #map_wrapper #custom_ui .maps_ui_option div.title {
+        direction: ltr;
+        overflow: hidden;
+        text-align: center;
+        position: relative;
+        color: black;
+        font-family: Arial, sans-serif;
+        -webkit-user-select: none;
+        font-size: 13px;
+        background-color: white;
+        padding: 1px 6px;
+        border: 1px solid #717b87;
+        -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        font-weight: bold;
+        min-width: 29px;
+        background-position: initial;
+        background-repeat: initial; }
+      #map_wrapper #custom_ui .maps_ui_option ul {
+        background-color: white;
+        z-index: -1;
+        padding: 0;
+        width: 130px;
+        border-width: 0px 1px 1px;
+        border-bottom-style: solid;
+        border-left-style: solid;
+        border-bottom-color: #717b87;
+        border-left-color: #717b87;
+        -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+        position: absolute;
+        left: 0px;
+        top: 7px;
+        text-align: left;
+        display: none; }
+        #map_wrapper #custom_ui .maps_ui_option ul li {
+          padding: 0px;
+          margin: 0; }
+          #map_wrapper #custom_ui .maps_ui_option ul li:hover {
+            background-color: #ebebeb; }
+          #map_wrapper #custom_ui .maps_ui_option ul li a {
+            display: block;
+            padding: 5px;
+            margin: 0; }
+          #map_wrapper #custom_ui .maps_ui_option ul li span {
+            box-sizing: border-box;
+            position: relative;
+            line-height: 0;
+            font-size: 0px;
+            margin: 0px 5px 0px 0px;
+            display: inline-block;
+            background-color: white;
+            border: 1px solid #c6c6c6;
+            border-top-left-radius: 1px;
+            border-top-right-radius: 1px;
+            border-bottom-right-radius: 1px;
+            border-bottom-left-radius: 1px;
+            width: 13px;
+            height: 13px;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            vertical-align: middle; }
+            #map_wrapper #custom_ui .maps_ui_option ul li span.hidden div {
+              display: none; }
+            #map_wrapper #custom_ui .maps_ui_option ul li span:hover {
+              -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset;
+              box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px inset; }
+          #map_wrapper #custom_ui .maps_ui_option ul li div {
+            position: absolute;
+            left: 1px;
+            top: -2px;
+            width: 13px;
+            height: 11px;
+            overflow: hidden;
+            background: url(/img/imgs8.png) -52px -44px no-repeat; }
+            #map_wrapper #custom_ui .maps_ui_option ul li div .hidden div {
+              display: none; }
+          #map_wrapper #custom_ui .maps_ui_option ul li p {
+            padding: 5px;
+            cursor: pointer; }
+        #map_wrapper #custom_ui .maps_ui_option ul label {
+          vertical-align: middle;
+          cursor: pointer; }
 
-/* line 191, ../scss/partials/_map.scss */
 #map, #map3d {
   width: 100%;
   height: 100%;
@@ -3845,115 +2155,86 @@ div.kmltree-loading span {
   background: #02020c url(/img/darkearth.jpg) center center no-repeat;
   position: relative;
   display: block;
-  display: table;
-}
-/* line 199, ../scss/partials/_map.scss */
-#map p, #map3d p {
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  line-height: 1;
-  display: table-cell;
-  vertical-align: middle;
-}
+  display: table; }
+  #map p, #map3d p {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 1;
+    display: table-cell;
+    vertical-align: middle; }
 
-/* line 214, ../scss/partials/_map.scss */
 #waypoint_mode_help {
   background-color: #525252;
   color: #ffffff;
   text-align: center;
   font-weight: bold;
   line-height: 20px;
-  display: none;
-}
+  display: none; }
 
-/* line 223, ../scss/partials/_map.scss */
 body.waypoint_mode #waypoint_mode_help {
-  display: block;
-}
+  display: block; }
 
-/* line 228, ../scss/partials/_map.scss */
 #superOverlays {
-  width: 100px !important;
-}
+  width: 100px !important; }
 
 /* NEWS BOX */
-/* line 2, ../scss/partials/_news.scss */
 div#news {
-  width: 1420px;
-}
-/* line 4, ../scss/partials/_news.scss */
-div#news #list_wrapper, div#news #article_wrapper {
-  width: 700px;
-  float: left;
-}
-/* line 8, ../scss/partials/_news.scss */
-div#news #list_wrapper {
-  margin-right: 40px;
-}
-/* line 12, ../scss/partials/_news.scss */
-div#news #article_wrapper ul {
-  list-style: disc;
-  padding-left: 30px;
-}
-/* line 15, ../scss/partials/_news.scss */
-div#news #article_wrapper ul li {
-  list-style: disc;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #c3c3c3;
-}
-/* line 23, ../scss/partials/_news.scss */
-div#news article {
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-/* line 27, ../scss/partials/_news.scss */
-div#news article div.title {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-}
-/* line 29, ../scss/partials/_news.scss */
-div#news article div.title span.date {
-  font-size: 13px;
-  color: #ffffff;
-  margin-left: 10px;
-  position: absolute;
-  left: 10px;
-  color: #ffffff;
-}
-/* line 37, ../scss/partials/_news.scss */
-div#news article div.title span.name {
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: bold;
-}
-/* line 42, ../scss/partials/_news.scss */
-div#news article div.title span.author {
-  position: absolute;
-  right: 10px;
-  font-size: 13px;
-  color: #ffffff;
-  margin-right: 10px;
-}
-/* line 50, ../scss/partials/_news.scss */
-div#news article div.content {
-  padding: 10px;
-  border: solid 1px #0E406D;
-}
-/* line 51, ../scss/partials/_news.scss */
-div#news article div.content p {
-  margin-bottom: 10px;
-}
+  width: 1420px; }
+  div#news #list_wrapper, div#news #article_wrapper {
+    width: 700px;
+    float: left; }
+  div#news #list_wrapper {
+    margin-right: 40px; }
+  div#news article {
+    overflow: hidden; }
+    div#news article div.title {
+      position: relative;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #0c3f6b; }
+      div#news article div.title span.date {
+        font-size: 13px;
+        margin-left: 10px;
+        position: absolute;
+        left: 0;
+        top: 0; }
+      div#news article div.title .name {
+        display: block;
+        text-align: center;
+        font-size: 15px;
+        font-weight: bold;
+        color: #0c3f6b; }
+      div#news article div.title span.author {
+        position: absolute;
+        right: 0;
+        font-size: 13px;
+        top: 0;
+        margin-right: 10px; }
+    div#news article div.content {
+      padding-top: 10px; }
+      div#news article div.content p {
+        margin-bottom: 10px; }
 
-/* line 60, ../scss/partials/_news.scss */
+#article_wrapper .page-header {
+  position: relative; }
+  #article_wrapper .page-header span {
+    position: absolute;
+    bottom: 20px;
+    right: 0; }
+
+#article_wrapper ul {
+  list-style: disc;
+  padding-left: 30px; }
+  #article_wrapper ul li {
+    list-style: disc;
+    margin-bottom: 10px;
+    padding-bottom: 10px; }
+
 div#news_box article a.edit {
   display: block;
   width: 100%;
@@ -3962,114 +2243,49 @@ div#news_box article a.edit {
   color: #ffffff;
   line-height: 30px;
   border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
-}
+  border-top-left-radius: 10px; }
 
-/* line 72, ../scss/partials/_news.scss */
-.editable_content p {
-  margin-bottom: 10px;
-}
-/* line 75, ../scss/partials/_news.scss */
-.editable_content ol {
-  list-style: decimal outside;
-}
-/* line 78, ../scss/partials/_news.scss */
-.editable_content ul {
-  list-style: disc outside;
-}
-/* line 81, ../scss/partials/_news.scss */
-.editable_content ol ol, .editable_content ol ul, .editable_content ul ol, .editable_content ul ul {
-  padding-top: 10px;
-}
-/* line 84, ../scss/partials/_news.scss */
-.editable_content ol, .editable_content ul {
-  padding: 0 0 0 20px;
-  margin-bottom: 10px;
-}
-/* line 87, ../scss/partials/_news.scss */
-.editable_content ol li, .editable_content ul li {
-  list-style: inherit;
-  padding: 0 0 10px 0;
-}
-
-/* line 3, ../scss/partials/_planner.scss */
 body.waypoint_mode #planner #wp_overlay {
-  display: none;
-}
+  display: none; }
 
-/* line 9, ../scss/partials/_planner.scss */
 #planner {
-  position: relative;
-}
-/* line 11, ../scss/partials/_planner.scss */
-#planner #wp_overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 10;
-}
-/* line 20, ../scss/partials/_planner.scss */
-#planner #wp_overlay .button {
-  margin: 15px 20px;
-}
-/* line 25, ../scss/partials/_planner.scss */
-#planner #path_wrapper {
-  background-color: #f9f9f9;
-}
-/* line 27, ../scss/partials/_planner.scss */
-#planner #path_wrapper pre {
-  margin-bottom: 10px;
-}
-/* line 32, ../scss/partials/_planner.scss */
-#planner form {
-  zoom: 1;
-  background-color: #dcdcdc;
-  margin-bottom: 20px;
-  border: none;
-}
-/* line 2, ../.core/css/_mixims.scss */
-#planner form:before, #planner form:after {
-  content: "\0020";
-  display: block;
-  height: 0;
-  overflow: hidden;
-}
-/* line 8, ../.core/css/_mixims.scss */
-#planner form:after {
-  clear: both;
-}
-/* line 38, ../scss/partials/_planner.scss */
-#planner form fieldset > div {
-  margin-bottom: 0;
-}
-/* line 39, ../scss/partials/_planner.scss */
-#planner form fieldset > div label, #planner form fieldset > div > div {
-  float: left;
-  vertical-align: middle;
-  padding: 0 10px;
-}
-/* line 44, ../scss/partials/_planner.scss */
-#planner form fieldset > div label {
-  line-height: 28px;
-}
-/* line 48, ../scss/partials/_planner.scss */
-#planner form fieldset > div select {
-  height: 28px;
-}
-/* line 52, ../scss/partials/_planner.scss */
-#planner form fieldset button {
-  height: 28px;
-}
-/* line 58, ../scss/partials/_planner.scss */
-#planner #waypoints {
-  margin: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-}
+  position: relative; }
+  #planner #wp_overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10; }
+    #planner #wp_overlay .button {
+      margin: 15px 20px; }
+  #planner #path_wrapper {
+    background-color: #f9f9f9; }
+    #planner #path_wrapper pre {
+      margin-bottom: 10px; }
+  #planner form {
+    overflow: auto;
+    background-color: #dcdcdc;
+    margin-bottom: 20px;
+    border: none; }
+    #planner form fieldset > div {
+      margin-bottom: 0; }
+      #planner form fieldset > div label, #planner form fieldset > div > div {
+        float: left;
+        vertical-align: middle;
+        padding: 0 10px; }
+      #planner form fieldset > div label {
+        line-height: 28px; }
+      #planner form fieldset > div select {
+        height: 28px; }
+    #planner form fieldset button {
+      height: 28px; }
+  #planner #waypoints {
+    margin: 10px;
+    padding: 10px;
+    background-color: #f9f9f9; }
 
 /*
  * CSS Styles that are needed by jScrollPane for it to operate correctly.
@@ -4077,149 +2293,104 @@ body.waypoint_mode #planner #wp_overlay {
  * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
  * may not operate correctly without them.
  */
-/* line 8, ../scss/partials/_scroll_pane.scss */
 .jspContainer {
   overflow: hidden;
   position: relative;
-  outline: none;
-}
+  outline: none; }
 
-/* line 14, ../scss/partials/_scroll_pane.scss */
 .jspPane {
   outline: none;
   position: absolute;
-  left: 0 !important;
-}
+  left: 0 !important; }
 
-/* line 20, ../scss/partials/_scroll_pane.scss */
 .jspVerticalBar {
   position: absolute;
-  top: 10px;
+  top: 3px;
   right: -5px;
-  width: 10px;
-  height: 100%;
-}
+  width: 15px;
+  height: 100%; }
 
-/* line 28, ../scss/partials/_scroll_pane.scss */
 .jspHorizontalBar {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 0px;
-  background: red;
-}
+  background: red; }
 
-/* line 37, ../scss/partials/_scroll_pane.scss */
 .jspCap {
-  display: none;
-}
+  display: none; }
 
-/* line 41, ../scss/partials/_scroll_pane.scss */
 .jspHorizontalBar .jspCap {
-  float: left;
-}
+  float: left; }
 
-/* line 45, ../scss/partials/_scroll_pane.scss */
 .jspTrack {
-  background: #dde;
-  position: relative;
-}
+  background: #8bb8f8;
+  position: relative; }
 
-/* line 50, ../scss/partials/_scroll_pane.scss */
 .jspDrag {
-  background: #bbd;
+  background: #2a7df3;
   position: relative;
   top: 0;
   left: 0;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
-/* line 58, ../scss/partials/_scroll_pane.scss */
 .jspHorizontalBar .jspTrack,
 .jspHorizontalBar .jspDrag {
   float: left;
-  height: 100%;
-}
+  height: 100%; }
 
-/* line 64, ../scss/partials/_scroll_pane.scss */
 .jspArrow {
   background: #50506d;
   text-indent: -20000px;
   display: block;
   cursor: pointer;
   padding: 0;
-  margin: 0;
-}
+  margin: 0; }
 
-/* line 73, ../scss/partials/_scroll_pane.scss */
 .jspArrow.jspDisabled {
   cursor: default;
-  background: #80808d;
-}
+  background: #80808d; }
 
-/* line 78, ../scss/partials/_scroll_pane.scss */
 .jspVerticalBar .jspArrow {
-  height: 16px;
-}
+  height: 16px; }
 
-/* line 82, ../scss/partials/_scroll_pane.scss */
 .jspHorizontalBar .jspArrow {
   width: 16px;
   float: left;
-  height: 100%;
-}
+  height: 100%; }
 
-/* line 88, ../scss/partials/_scroll_pane.scss */
 .jspVerticalBar .jspArrow:focus {
-  outline: none;
-}
+  outline: none; }
 
-/* line 92, ../scss/partials/_scroll_pane.scss */
 .jspCorner {
   background: #eeeef4;
   float: left;
-  height: 100%;
-}
+  height: 100%; }
 
 /* Yuk! CSS Hack for IE6 3 pixel bug :( */
-/* line 99, ../scss/partials/_scroll_pane.scss */
 * html .jspCorner {
-  margin: 0 -3px 0 0;
-}
+  margin: 0 -3px 0 0; }
 
-/* line 2, ../scss/partials/_stats.scss */
 #stats #graph_contain, #stats #graph_contain_2 {
   height: 420px;
-  margin-bottom: 20px;
-}
+  margin-bottom: 20px; }
 
-/* line 1, ../scss/partials/_table.scss */
 .defined {
-  font-weight: bolder;
-}
+  font-weight: bolder; }
 
-/* line 5, ../scss/partials/_table.scss */
 table.league {
   border-collapse: collapse;
-  border: solid 1px silver;
-}
-/* line 8, ../scss/partials/_table.scss */
-table.league th {
-  border: solid 1px silver;
-  padding: 3px;
-}
-/* line 12, ../scss/partials/_table.scss */
-table.league tr:nth-child(2n) {
-  background: #D5E3FF;
-}
-/* line 15, ../scss/partials/_table.scss */
-table.league td {
-  border: solid 1px silver;
-  text-align: center;
-}
+  border: solid 1px silver; }
+  table.league th {
+    border: solid 1px silver;
+    padding: 3px; }
+  table.league tr:nth-child(2n) {
+    background: #D5E3FF; }
+  table.league td {
+    border: solid 1px silver;
+    text-align: center; }
 
-/* line 21, ../scss/partials/_table.scss */
 div#pop {
   background-color: #ffffff;
   border: 2px solid #0d4582;
@@ -4232,166 +2403,112 @@ div#pop {
   width: 260px;
   right: -280px;
   z-index: 99999;
-  top: -2px;
-}
-/* line 35, ../scss/partials/_table.scss */
-div#pop.reverse {
-  left: -280px;
-}
-/* line 38, ../scss/partials/_table.scss */
-div#pop.reverse span.arrow {
-  border-color: transparent transparent transparent #0d4582;
-  left: 260px !important;
-}
-/* line 44, ../scss/partials/_table.scss */
-div#pop span.arrow {
-  border: 16px solid #0d4582;
-  border-color: transparent #0d4582 transparent transparent;
-  height: 0;
-  width: 0;
-  position: absolute;
-  top: 0px;
-  left: -32px;
-  text-indent: -9999px;
-}
-/* line 55, ../scss/partials/_table.scss */
-div#pop tr:hover {
-  background-color: #ffffff;
-  font-size: inherit;
-}
-/* line 59, ../scss/partials/_table.scss */
-div#pop tr:nth-child(2n) {
-  background: #d5e3ff;
-}
-/* line 62, ../scss/partials/_table.scss */
-div#pop tr td {
-  padding: 0 5px;
-  line-height: 24px;
-}
-/* line 65, ../scss/partials/_table.scss */
-div#pop tr td.view {
-  padding: 5px 5px;
-}
-/* line 68, ../scss/partials/_table.scss */
-div#pop tr td.info {
-  line-height: 1.2;
-}
-/* line 71, ../scss/partials/_table.scss */
-div#pop tr td a.download {
-  float: left;
-  width: 70px;
-  height: 76px;
-  background: url("/.core/images/sprites.png") -81px 0px;
-  text-indent: -9999px;
-  margin: 0 27px;
-}
-/* line 78, ../scss/partials/_table.scss */
-div#pop tr td a.download.kml {
-  background-position: -1px 0px;
-}
-/* line 84, ../scss/partials/_table.scss */
-div#pop .close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 60px;
-  height: 14px;
-  background-color: #777777;
-  color: #ffffff;
-  text-align: center;
-}
+  top: -2px; }
+  div#pop.reverse {
+    left: -280px; }
+    div#pop.reverse span.arrow {
+      border-color: transparent transparent transparent #0d4582;
+      left: 260px !important; }
+  div#pop span.arrow {
+    border: 16px solid #0d4582;
+    border-color: transparent #0d4582 transparent transparent;
+    height: 0;
+    width: 0;
+    position: absolute;
+    top: 0px;
+    left: -32px;
+    text-indent: -9999px; }
+  div#pop tr:hover {
+    background-color: #ffffff;
+    font-size: inherit; }
+  div#pop tr:nth-child(2n) {
+    background: #d5e3ff; }
+  div#pop tr td {
+    padding: 0 5px;
+    line-height: 24px; }
+    div#pop tr td.view {
+      padding: 5px 5px; }
+    div#pop tr td.info {
+      line-height: 1.2; }
+    div#pop tr td a.download {
+      float: left;
+      width: 70px;
+      height: 76px;
+      background: url("/.core/images/sprites.png") -81px 0px;
+      text-indent: -9999px;
+      margin: 0 27px; }
+      div#pop tr td a.download.kml {
+        background-position: -1px 0px; }
+  div#pop .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 14px;
+    background-color: #777777;
+    color: #ffffff;
+    text-align: center; }
 
-/* line 96, ../scss/partials/_table.scss */
 .T {
-  padding: 0px;
-}
+  padding: 0px; }
 
-/* line 103, ../scss/partials/_table.scss */
 .Picker {
-  width: 200px;
-}
+  width: 200px; }
 
-/* line 107, ../scss/partials/_table.scss */
 .Pickerfalse {
   width: 200px;
   border-color: red;
-  background-color: #ffdddd;
-}
+  background-color: #ffdddd; }
 
-/* line 113, ../scss/partials/_table.scss */
 .Pickertrue {
   width: 200px;
   border-color: green;
-  background-color: #D5E3FF;
-}
+  background-color: #D5E3FF; }
 
-/* line 119, ../scss/partials/_table.scss */
 .Chooser {
-  width: 200px;
-}
+  width: 200px; }
 
-/* line 123, ../scss/partials/_table.scss */
 .Choosertrue {
   width: 200px;
   border-color: green;
-  background-color: #D5E3FF;
-}
+  background-color: #D5E3FF; }
 
-/* line 129, ../scss/partials/_table.scss */
 .Chooserfalse {
   width: 200px;
   border-color: red;
-  background-color: #ffdddd;
-}
+  background-color: #ffdddd; }
 
-/* line 135, ../scss/partials/_table.scss */
 .Chooserboth {
   width: 200px;
-  border-color: purple;
-}
+  border-color: purple; }
 
-/* line 140, ../scss/partials/_table.scss */
 .file {
-  width: 300px;
-}
+  width: 300px; }
 
-/* line 144, ../scss/partials/_table.scss */
 .filetrue {
   width: 300px;
-  background-color: #D5E3FF;
-}
+  background-color: #D5E3FF; }
 
-/* line 149, ../scss/partials/_table.scss */
 .filefalse {
   width: 300px;
-  background-color: #ffdddd;
-}
+  background-color: #ffdddd; }
 
-/* line 154, ../scss/partials/_table.scss */
 #SelectedDate {
-  width: 100px;
-}
+  width: 100px; }
 
-/* line 158, ../scss/partials/_table.scss */
 .green {
   width: 100px;
   border-color: green;
-  background-color: #D5E3FF;
-}
+  background-color: #D5E3FF; }
 
-/* line 164, ../scss/partials/_table.scss */
 td.green {
   border-color: green;
-  background-color: #D5E3FF;
-}
+  background-color: #D5E3FF; }
 
-/* line 169, ../scss/partials/_table.scss */
 td.red {
   border-color: red;
-  background-color: #ffdddd;
-}
+  background-color: #ffdddd; }
 
-/* line 174, ../scss/partials/_table.scss */
 div#resultbox {
   background-color: #778899;
   border: 2px solid grey;
@@ -4403,104 +2520,73 @@ div#resultbox {
   left: 10%;
   top: 10%;
   height: 300px;
-  width: 600px;
-}
+  width: 600px; }
 
-/* line 188, ../scss/partials/_table.scss */
 div.l {
-  float: left;
-}
+  float: left; }
 
-/* line 192, ../scss/partials/_table.scss */
 div.r {
-  float: left;
-}
+  float: left; }
 
-/* line 196, ../scss/partials/_table.scss */
 div.a {
-  height: 20px;
-}
+  height: 20px; }
 
-/* line 200, ../scss/partials/_table.scss */
 a.help {
   vertical-align: super;
   font-size: 70%;
-  color: blue;
-}
+  color: blue; }
 
-/* line 206, ../scss/partials/_table.scss */
 a.click {
   color: inherit;
   text-decoration: none;
-  cursor: help;
-}
+  cursor: help; }
 
-/* line 212, ../scss/partials/_table.scss */
 .error {
   background: url(/img/error.png) no-repeat;
   color: #8b0000;
   margin-top: -20px;
   text-align: center;
   padding: 10px 0;
-  text-indent: 40px;
-}
+  text-indent: 40px; }
 
-/* line 221, ../scss/partials/_table.scss */
 .previous {
   background-position: left top;
-  left: 0;
-}
+  left: 0; }
 
-/* line 226, ../scss/partials/_table.scss */
 .previous:hover {
-  background-position: left bottom;
-}
+  background-position: left bottom; }
 
-/* line 230, ../scss/partials/_table.scss */
 .next {
   background-position: right top;
-  right: 0;
-}
+  right: 0; }
 
-/* line 235, ../scss/partials/_table.scss */
 .next:hover {
-  background-position: right bottom;
-}
+  background-position: right bottom; }
 
-/* line 239, ../scss/partials/_table.scss */
 #main {
   overflow-y: scroll;
-  background-color: #ffffff;
-}
+  background-color: #ffffff; }
 
-/* line 3, ../scss/partials/_table_sorter.scss */
 table.tablesorter thead tr .header {
   background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
   background-repeat: no-repeat;
   background-position: center right;
   cursor: pointer;
-  text-indent: -10px;
-}
-/* line 10, ../scss/partials/_table_sorter.scss */
-table.tablesorter thead tr .headerSortUp {
-  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
-}
-/* line 13, ../scss/partials/_table_sorter.scss */
-table.tablesorter thead tr .headerSortDown {
-  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
-}
-/* line 16, ../scss/partials/_table_sorter.scss */
-table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
-  background-color: #8dbdd8;
-}
+  text-indent: -10px; }
 
-/* line 2, ../scss/partials/_tables.scss */
+table.tablesorter thead tr .headerSortUp {
+  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7); }
+
+table.tablesorter thead tr .headerSortDown {
+  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7); }
+
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+  background-color: #8dbdd8; }
+
 #generated_tables.loading {
   width: 100%;
-  height: 300px;
-}
+  height: 300px; }
 
-/* line 8, ../scss/partials/_tables.scss */
 .key_switch {
   font-weight: bold;
   padding: relative;
@@ -4515,195 +2601,152 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
   border: 1px solid #cccccc;
   text-align: center;
   font-weight: bold;
-  color: #0c3f6b;
-}
-/* line 17, ../scss/partials/_tables.scss */
-.key_switch #key2 {
-  width: 400px;
-  background: #ffffff;
-  display: none;
-  margin-bottom: 10px;
-  text-align: center;
-  position: absolute;
-  border: solid 1px silver;
-  left: 263px;
-}
-/* line 27, ../scss/partials/_tables.scss */
-.key_switch:hover #key2 {
-  display: block;
-}
+  color: #0c3f6b; }
+  .key_switch #key2 {
+    width: 400px;
+    background: #ffffff;
+    display: none;
+    margin-bottom: 10px;
+    text-align: center;
+    position: absolute;
+    border: solid 1px silver;
+    left: 263px; }
+  .key_switch:hover #key2 {
+    display: block; }
 
-/* line 32, ../scss/partials/_tables.scss */
 .table_wrapper {
-  width: 700px;
-}
-/* line 34, ../scss/partials/_tables.scss */
-.table_wrapper.inner {
-  margin-left: 0px;
-}
-/* line 37, ../scss/partials/_tables.scss */
-.table_wrapper.inner span.pos {
-  float: left;
-  margin-left: 20px;
-}
-/* line 41, ../scss/partials/_tables.scss */
-.table_wrapper.inner span.name {
-  float: right;
-  margin: -18px 20px 0 0;
-}
-/* line 47, ../scss/partials/_tables.scss */
-.table_wrapper tbody {
-  border-bottom: solid 1px silver;
-}
-/* line 50, ../scss/partials/_tables.scss */
-.table_wrapper h3 {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-}
+  width: 700px; }
+  .table_wrapper.inner {
+    margin-left: 0px; }
+    .table_wrapper.inner span.pos {
+      float: left;
+      margin-left: 20px; }
+    .table_wrapper.inner span.name {
+      float: right;
+      margin: -18px 20px 0 0; }
+  .table_wrapper tbody {
+    border-bottom: solid 1px silver; }
+  .table_wrapper h3 {
+    background-color: #0a4dad;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 0; }
 
-/* line 55, ../scss/partials/_tables.scss */
 table {
-  border-collapse: collapse;
-}
-/* line 58, ../scss/partials/_tables.scss */
-table.results {
-  border-collapse: collapse;
-  font-size: 12px;
-  width: 700px;
-}
-/* line 63, ../scss/partials/_tables.scss */
-table.results tr {
-  height: 24px;
-}
-/* line 66, ../scss/partials/_tables.scss */
-table.results tr:nth-child(2n) {
-  background: #D5E3FF;
-}
-/* line 69, ../scss/partials/_tables.scss */
-table.results tr th {
-  text-align: center;
-}
-/* line 71, ../scss/partials/_tables.scss */
-table.results tr th.flights6 {
-  width: 59px;
-}
-/* line 74, ../scss/partials/_tables.scss */
-table.results tr th.flights5 {
-  width: 65px;
-}
-/* line 78, ../scss/partials/_tables.scss */
-table.results tr td {
-  border: solid 1px silver;
-  border-width: 0 1px 0px 1px;
-  border-collapse: collapse;
-  height: 100%;
-  font-size: 11px;
-  padding: 3px;
-}
-/* line 85, ../scss/partials/_tables.scss */
-table.results tr td .wrap {
-  position: relative;
-}
-/* line 88, ../scss/partials/_tables.scss */
-table.results tr td.center {
-  text-align: center !important;
-}
-/* line 91, ../scss/partials/_tables.scss */
-table.results tr td a {
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding: 5px 0;
-}
-/* line 100, ../scss/partials/_tables.scss */
-table.main {
-  margin-bottom: 10px;
-}
-/* line 103, ../scss/partials/_tables.scss */
-table.main thead tr {
-  background-color: #0a4dad;
-  color: #ffffff;
-}
-/* line 106, ../scss/partials/_tables.scss */
-table.main thead tr:hover {
-  background-color: #0a4dad;
-}
-/* line 109, ../scss/partials/_tables.scss */
-table.main thead tr th {
-  border: 1px solid #0a4dad;
-}
-/* line 111, ../scss/partials/_tables.scss */
-table.main thead tr th.pos {
-  width: 81px;
-}
-/* line 114, ../scss/partials/_tables.scss */
-table.main thead tr th.club {
-  width: 95px;
-}
-/* line 117, ../scss/partials/_tables.scss */
-table.main thead tr th.tot {
-  width: 89px;
-}
-/* line 123, ../scss/partials/_tables.scss */
-table.main tr {
-  text-align: center;
-}
-/* line 126, ../scss/partials/_tables.scss */
-table.main tr.class5 > td:first-child {
-  color: #e80400;
-  font-weight: bold;
-}
-/* line 130, ../scss/partials/_tables.scss */
-table.main tr:hover {
-  background: #fbff7d;
-  font-size: 12px;
-}
-/* line 135, ../scss/partials/_tables.scss */
-table.main tr td:nth-child(3) {
-  text-align: left;
-  padding-left: 5px;
-}
-/* line 139, ../scss/partials/_tables.scss */
-table.main tr td:last-child {
-  text-align: left;
-  padding-left: 5px;
-}
-/* line 143, ../scss/partials/_tables.scss */
-table.main tr td.title {
-  text-align: center;
-  font-size: 14px;
-  padding: 4px 0;
-}
-/* line 152, ../scss/partials/_tables.scss */
-table.top4 td {
-  text-align: center !important;
-}
+  border-collapse: collapse; }
+  table.results {
+    border-collapse: collapse;
+    font-size: 12px;
+    width: 700px; }
+    table.results tr {
+      height: 24px; }
+      table.results tr:nth-child(2n) {
+        background: #D5E3FF; }
+      table.results tr th {
+        text-align: center; }
+        table.results tr th.flights6 {
+          width: 59px; }
+        table.results tr th.flights5 {
+          width: 65px; }
+      table.results tr td {
+        border: solid 1px silver;
+        border-width: 0 1px 0px 1px;
+        border-collapse: collapse;
+        height: 100%;
+        font-size: 11px;
+        padding: 3px; }
+        table.results tr td .wrap {
+          position: relative; }
+        table.results tr td.center {
+          text-align: center !important; }
+        table.results tr td a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          padding: 5px 0; }
+  table.main {
+    margin-bottom: 10px; }
+    table.main thead tr {
+      background-color: #0a4dad;
+      color: #ffffff; }
+      table.main thead tr:hover {
+        background-color: #0a4dad; }
+      table.main thead tr th {
+        border: 1px solid #0a4dad; }
+        table.main thead tr th.pos {
+          width: 81px; }
+        table.main thead tr th.club {
+          width: 95px; }
+        table.main thead tr th.tot {
+          width: 89px; }
+    table.main tr {
+      text-align: center; }
+      table.main tr.class5 > td:first-child {
+        color: #e80400;
+        font-weight: bold; }
+      table.main tr:hover {
+        background: #fbff7d;
+        font-size: 12px; }
+      table.main tr td:nth-child(3) {
+        text-align: left;
+        padding-left: 5px; }
+      table.main tr td:last-child {
+        text-align: left;
+        padding-left: 5px; }
+      table.main tr td.title {
+        text-align: center;
+        font-size: 14px;
+        padding: 4px 0; }
+  table.top4 td {
+    text-align: center !important; }
 
-/* line 158, ../scss/partials/_tables.scss */
 .od {
-  color: black;
-}
+  color: black; }
 
-/* line 162, ../scss/partials/_tables.scss */
 .or {
-  color: green;
-}
+  color: green; }
 
-/* line 166, ../scss/partials/_tables.scss */
 .tr {
-  color: blue;
-}
+  color: blue; }
 
-/* line 170, ../scss/partials/_tables.scss */
 .go {
-  color: red;
-}
+  color: red; }
 
-/* line 174, ../scss/partials/_tables.scss */
 .ft {
-  color: #ff00ee;
-}
+  color: #ff00ee; }
 
-/* No files to import found in ../inc/module/*\/scss/* */
+/* Side notes for calling out things
+-------------------------------------------------- */
+.callout {
+  margin: 20px 0;
+  padding: 15px 15px 15px 15px;
+  border-left: 5px solid #eee;
+  color: #3b3b3b;
+  /* Themes for different contexts */ }
+  .callout:last-child {
+    margin-bottom: 0; }
+  .callout h1, .callout h2, .callout h3, .callout h4 {
+    margin-top: 0;
+    padding-top: 0; }
+  .callout p:last-child, .callout ul:last-child, .callout li:last-child, .callout ol:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0; }
+  .callout p:first-child, .callout ul:first-child, .callout li:first-child, .callout ol:first-child {
+    margin-top: 0;
+    padding-top: 0; }
+  .callout code,
+  .callout .highlight {
+    background-color: #fff; }
+  .callout-primary {
+    background-color: #eee;
+    border-color: #0c3f6b; }
+  .callout-secondary {
+    background-color: #ddd;
+    border-color: #07243d; }
+  .callout-tertiary {
+    background-color: #ccc;
+    border-color: #02090f; }
+  .callout + .callout {
+    margin-top: 0; }
+
+/* generated with grunt-sass-globbing */

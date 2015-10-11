@@ -24,6 +24,7 @@ class igc_upload_form extends form {
             form::create('field_string', 'coords')
                 ->set_attr('label', 'Defined flight coordinates')
                 ->set_attr('required_parent', 'defined')
+                ->set_attr('wrapper_class', ['callout', 'callout-tertiary', 'cf'])
                 ->set_attr('required', false)
                 ->set_attr('pre_text', node::create('p', [], 'To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\''))
                 ->set_attr('post_text', node::create('p.defined_info'))
@@ -31,11 +32,12 @@ class igc_upload_form extends form {
         parent::__construct($fields);
         $this->submit = 'Calculate';
         $this->pre_text = node::create('p', [], 'Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below');
-        $this->post_text = node::create('div', [], [
-            node::create('div#kml_calc div#console a.calc', [], 'Calculate!'),
-            node::create('p', [], 'Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates'),
-            node::create('p', [], 'On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.')
-        ]);
+        $this->post_text =
+            node::create('div#kml_calc div#console a.calc', [], 'Calculate!') .
+            node::create('div.callout.callout-secondary', [], [
+                node::create('p', [], 'Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates'),
+                node::create('p', [], 'On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.')
+            ]);
         $this->has_submit = false;
         $this->id = 'igc_upload_form';
         $this->h2 = 'Upload Form';

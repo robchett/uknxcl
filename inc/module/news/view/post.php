@@ -14,7 +14,10 @@ class post extends \template\html {
         $html =
             node::create('div#article_wrapper.editable_content', [],
                 node::create('article', [],
-                    node::create('h2', [], $this->module->current->title) .
+                    node::create('div.page-header', [], 
+                        node::create('h1', [], $this->module->current->title) . 
+                        node::create('span.author', [], 'By: ' . $this->module->current->poster)
+                    ) .
                     $this->module->current->post
                 ) .
                 node::create('a.news_back.button', ['href' => '/news'], 'Back to news')

@@ -1,7 +1,5 @@
-@import 'compass';
-@import "compass/reset";
-@import "../.core/css/*";
-@import './partials/*';
-@import '../inc/module/*/scss/*';
+@import 'vars';
 
-
+@import "includes/core";
+@import 'includes/partials';
+@import 'includes/modules';

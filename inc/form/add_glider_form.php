@@ -32,6 +32,9 @@ class add_glider_form extends form {
     }
 
     public function get_form() {
+        $this->attributes['class'][] = 'form-compact';
+        $this->wrapper_class[] = 'callout';
+        $this->wrapper_class[] = 'callout-primary';
         jquery::colorbox(['html'=>$this->get_html()->get()]);
     }
 
