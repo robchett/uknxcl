@@ -1,4 +1,9 @@
 module.exports = function(grunt) {
+    require('grunt-task-loader')(grunt, {
+        mapping: {
+            sass_globbing: 'grunt-sass-globbing'
+        }
+    })
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         watch: {
@@ -23,37 +28,42 @@ module.exports = function(grunt) {
             options: {
                 separator: ';',
             },
-            dist: {
-                src: ['./.core/js/jquery.js', './.core/js/_ajax.js', './.core/js/_default.js', './.core/js/jscrollpane.min.js', './.core/js/page_handler.js', './.core/js/table-sorter.js', 'js/src/*.js'],
+            js: {
+                src: [
+                    './.core/js/jquery.js',
+                    './.core/js/_ajax.js',
+                    './.core/js/_default.js',
+                    './.core/js/jscrollpane.min.js', 
+                    './.core/js/colorbox.js', 
+                    './.core/js/page_handler.js', 
+                    './.core/js/table-sorter.js', 
+                    'js/src/*.js'
+                ],
                 dest: 'js/script.js',
                 nonull: true,
             },
         },
         sass: {
-            dist: {
+            css: {
                 options: {
                 },
                 files: {
-                    'css/styles.css': 'scss/styles.scss'
+                    'css/styles.css': 'scss/styles.scss',
+                    'css/ckeditor.css': 'scss/ckeditor.scss',
                 }
             }
         },
-	sass_globbing: {
-    	    your_target: {
-      		files: {
-        	    'scss/includes/partials.scss': 'scss/partials/*.scss',
-		    'scss/includes/core.scss': '../.core/css/*.scss',
-		    'scss/includes/modules.scss': '../inc/module/**/scss/*.scss',
-		},
-	        options: {
-      		}
+        sass_globbing: {
+            css: {
+                files: {
+                    'scss/includes/partials.scss': 'scss/partials/*.scss',
+                    'scss/includes/core.scss': '../.core/css/*.scss',
+                    'scss/includes/modules.scss': '../inc/module/**/scss/*.scss',
+                },
+                options: {
+                }
             }
-  	}
+        }
     });
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-sass');
-    grunt.loadNpmTasks('grunt-sass-globbing');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.registerTask('default', ['watch']);
 };
