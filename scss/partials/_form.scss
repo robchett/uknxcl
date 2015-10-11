@@ -1,11 +1,9 @@
 h2.form_title {
-  @include heading();
-  text-align: center;
-  color: #ffffff;
   font-weight: bold;
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 0;
+  border-bottom: 1px solid $primary;
 }
 
 .advanced_tables_wrapper {
@@ -19,13 +17,12 @@ h2.form_title {
 
 form {
   @include form();
-  border: $blue_border;
-  padding: 10px;
-  margin-top: 0;
+  margin-top: 10px;
 
   fieldset {
     border: none;
     margin-top: 0;
+    padding: 0;
 
     .form-group {
       clear: both;
@@ -220,7 +217,7 @@ form {
         margin-right: 10px;
       }
       input {
-        width: 465px
+        width: 414px;
       }
     }
     #console {
@@ -252,9 +249,6 @@ form {
     }
     .post_text {
       line-height: 19px;
-      background-color: #f9f9f9;
-      margin: 0 -10px -10px;
-      padding: 10px;
       #kml_calc {
         margin-bottom: 10px;
       }
@@ -268,7 +262,7 @@ form {
       text-align: center;
     }
   }
-  &#igc_form, &#coordinate_form {
+  &.form-compact {
     #coords_wrapper {
       display: block;
       span {
@@ -308,7 +302,7 @@ form {
     }
     .field_textarea_wrapper {
       label, textarea {
-        width: 672px;
+        width: 657px;
       }
     }
   }

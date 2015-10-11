@@ -8,42 +8,32 @@ div#news {
   #list_wrapper {
     margin-right: 40px;
   }
-  #article_wrapper {
-    ul {
-      list-style: disc;
-      padding-left: 30px;
-      li {
-        list-style: disc;
-        margin-bottom: 10px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #c3c3c3;
-      }
-    }
-  }
   article {
-    margin-bottom: 10px;
     overflow: hidden;
 
     div.title {
-      @include heading();
+      position: relative;
+      padding-bottom: 10px;
+      border-bottom: 1px solid $primary;
       span.date {
         font-size: 13px;
-        color: #ffffff;
         margin-left: 10px;
         position: absolute;
-        left: 10px;
-        color: #ffffff;
+        left: 0;
+        top: 0;
       }
-      span.name {
-        color: #ffffff;
+      .name {
+        display: block;
+        text-align: center;
         font-size: 15px;
         font-weight: bold;
+        color: $primary;
       }
       span.author {
         position: absolute;
-        right: 10px;
+        right: 0;
         font-size: 13px;
-        color: #ffffff;
+        top: 0;
         margin-right: 10px;
       }
     }
@@ -51,8 +41,27 @@ div#news {
       p {
         margin-bottom: 10px;
       }
-      padding: 10px;
-      border: $blue_border;
+      padding-top: 10px;
+    }
+  }
+}
+
+#article_wrapper {
+  .page-header {
+    position: relative;
+    span {
+      position: absolute;
+      bottom: 20px;
+      right: 0;
+    }
+  }
+  ul {
+    list-style: disc;
+    padding-left: 30px;
+    li {
+      list-style: disc;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
     }
   }
 }
@@ -68,25 +77,3 @@ div#news_box article a.edit {
   border-top-left-radius: 10px;
 }
 
-.editable_content {
-  p {
-    margin-bottom: 10px;
-  }
-  ol {
-    list-style: decimal outside;
-  }
-  ul {
-    list-style: disc outside;
-  }
-  ol ol, ol ul, ul ol, ul ul {
-    padding-top: 10px;
-  }
-  ol, ul {
-    padding: 0 0 0 20px;
-    margin-bottom: 10px;
-    li {
-      list-style: inherit;
-      padding: 0 0 10px 0;
-    }
-  }
-}

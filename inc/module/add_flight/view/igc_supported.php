@@ -16,7 +16,12 @@ class igc_supported extends \template\html {
 
     public function get_view() {
         $form = new igc_form();
+        $form->attributes['class'][] = 'form-compact';
+        $form->wrapper_class[] = 'callout';
+        $form->wrapper_class[] = 'callout-primary';
         $form2 = new igc_upload_form();
+        $form2->wrapper_class[] = 'callout';
+        $form2->wrapper_class[] = 'callout-primary';
         $html = node::create('div.add_flight_section.upload', [],
             $form2->get_html()->get() .
             $form->get_html()->get() .

@@ -1,8 +1,3 @@
-.title {
-  @include heading();
-  padding: 10px 0;
-}
-
 p.boxed {
   border: $blue_border;
   padding: 10px;

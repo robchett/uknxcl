@@ -1,0 +1,22 @@
+.editable_content {
+  p {
+    margin-bottom: 10px;
+  }
+  ol {
+    list-style: decimal outside;
+  }
+  ul {
+    list-style: disc outside;
+  }
+  ol ol, ol ul, ul ol, ul ul {
+    padding-top: 10px;
+  }
+  ol, ul {
+    padding: 0 0 0 20px;
+    margin-bottom: 10px;
+    li {
+      list-style: inherit;
+      padding: 0 0 10px 0;
+    }
+  }
+}	

@@ -46,7 +46,7 @@ a.button {
     &:hover {
       color: #b40504;
     }
-    @include opacity(0.4);
+    opacity: 0.4;
   }
 }
 
@@ -88,4 +88,21 @@ ul li p {
     border: none;
     -webkit-appearance: normal;
   }
+}
+
+
+.cf {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+*:focus {
+    outline: 0;
+}
+
+.page-header {
+  padding-bottom: 9px;
+  margin: 10px 0 20px;
+  border-bottom: 1px solid $primary; 
 }

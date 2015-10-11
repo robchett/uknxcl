@@ -64,6 +64,12 @@
   box-sizing: content-box;
 }
 
+#cboxLoadedContent {
+  *:first-child {
+    margin-top: 0;
+  }
+}
+
 #cboxContent {
   background: #fff;
   overflow: hidden;
@@ -71,7 +77,7 @@
 
 #colorbox.success {
   border: 2px solid #a0a0a0;
-  @include border-radius(10px, 10px, 10px, 10px);
+  border-radius: 10px, 10px, 10px, 10px;
   background: #ffffff;
   font-size: 16px;
   &, #cboxWrapper {
