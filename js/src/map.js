@@ -62,16 +62,11 @@ function UKNXCL_Map($container) {
 
     var $interface = $('#map_interface_3d');
     $interface.find('span.show').click(function () {
-        $interface.stop().animate({left: -250});
-        $interface.find('span.show').hide();
-        $interface.find('span.hide').show();
+        $("body").addClass('interface-visible');
     });
     $interface.find('span.hide').click(function () {
-        $interface.stop().animate({left: 0});
-        $interface.find('span.hide').hide();
-        $interface.find('span.show').show();
+        $("body").removeClass('interface-visible');
     });
-
     this.resize = function () {
         var pageWidth = this.$body.width();
         var pageHeight = this.$body.height();
@@ -429,7 +424,7 @@ function Track(id, temp) {
     };
 
     this.is_ready = function () {
-        if (this.nxcl_data.loaded && this.google_data) {
+        if (this.nxcl_data && this.google_data) {
             this.loaded = true;
             this.add_marker();
             $('#tree_content .track_' + this.id).html(map.isMap() ? this.nxcl_data.html : this.nxcl_data.html_earth);

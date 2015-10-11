@@ -156,7 +156,7 @@ function Graph($container) {
         obj.track.each(function (track) {
             if (track.draw_graph) {
                 context.beginPath();
-                context.strokeStyle = track.colour || colour;
+                context.strokeStyle = '00' + (track.colour || colour);
                 for (j in track.data) {
                     var coord = track.data[j];
                     context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
