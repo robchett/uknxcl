@@ -73,7 +73,7 @@ class table_gen_form_basic extends form {
         $this->submit = 'Generate';
         $this->get_field_from_name('year')->value = date('Y');
         $this->shroud = '';
-        $this->h2 = 'Options';
+        //$this->h2 = 'Options';
     }
 
     /**

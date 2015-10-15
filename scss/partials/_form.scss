@@ -1,3 +1,16 @@
+#options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background-color: $primary;
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  line-height: 40px
+}
+
 h2.form_title {
   font-weight: bold;
   padding: 10px;
@@ -12,7 +25,8 @@ h2.form_title {
 
 .advanced_tables_wrapper, .basic_tables_wrapper {
   margin-bottom: 20px;
-  overflow: hidden;;
+  overflow: hidden;
+  margin-top: 0;
 }
 
 form {
@@ -34,6 +48,7 @@ form {
         line-height: 26px;
         font-size: 14px;
         vertical-align: middle;
+        width: 150px;
       }
       label, > div {
         float: left;
@@ -55,16 +70,21 @@ form {
     font-weight: bold;
   }
   &#advanced_tables, &#basic_tables {
-    display: none;
     .form-group {
       float: left;
       clear: none;
       margin-right: 20px;
       margin-bottom: 5px;
-      width: 212px;
+      width: 207px;
       min-height: 20px;
 
       &:nth-child(3n) {
+        margin-right: 0;
+      }
+      &:nth-child(n + 17) {
+        margin-right: 20px;
+      }
+      &:nth-child(3n + 17) {
         margin-right: 0;
       }
       label, > div {
@@ -72,7 +92,7 @@ form {
         vertical-align: middle;
       }
       label {
-        width: 110px;
+        width: 105px;
         font-size: 11px;
         height: 16px;
         line-height: 16px;
@@ -107,9 +127,9 @@ form {
       }
       &#advanced_tables_field_flown_through {
         margin-right: 0;
-        width: 444px;
+        width: 434px;
         label {
-          width: 232px;
+          width: 222px;
         }
         input {
           width: 210px;
@@ -263,6 +283,9 @@ form {
     }
   }
   &.form-compact {
+    input {
+      width: 197px;
+    }
     #coords_wrapper {
       display: block;
       span {
@@ -273,11 +296,11 @@ form {
       }
     }
     label {
-      width: 100px;
+      width: 140px;
     }
     .field_select_wrapper, .field_link_wrapper, .field_date_wrapper {
       span {
-        width: 100px !important;
+        width: 197px !important;
       }
       select {
         width: 200px;
@@ -292,6 +315,7 @@ form {
       label {
         width: 100%;
         input {
+          width: auto;
           margin: 0 5px 0 0;
         }
       }

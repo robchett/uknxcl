@@ -80,6 +80,24 @@
       }
       #controls {
         margin-bottom: 10px;
+        float: left;
+        a {
+          background-color: $primary;
+          font-family: arial;
+          color: white;
+          display: inline-block;
+          font-size: 16px;
+          vertical-align: middle;
+          margin-right: 2px;
+          height: 30px;
+          line-height: 30px;
+          padding: 0 5px;
+          position: relative;
+          &:before {
+            margin-right: 5px;
+            font-size: 12px;
+          }
+        }
         #slider_time { position: absolute; z-index: 10000; color: Red; font-weight: bold; font-size: larger; background-color: white; }
       }
     }

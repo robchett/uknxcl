@@ -437,15 +437,15 @@ class flight extends table {
                         node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
                         node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
                     ) :
-                    node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map'))
+                    node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], node::create('span.glyphicon.glyphicon-pushpin', [], '') . 'Add coordinates to map'))
                 ) .
-                node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close')
+                node::create('a.close.glyphicon.glyphicon-remove', ['title' => 'close', 'onclick' => '$("#pop").remove()'], '')
             );
         }
 
         ajax::add_script('$("#pop").remove();', true);
         ajax::inject('#' . $_REQUEST['origin'], 'after',
-            node::create('div#pop', [],
+            node::create('div#pop.callout.callout-primary', [],
                 node::create('span.arrow', [], 'Arrow') .
                 node::create('div.content', [], $html)
             )

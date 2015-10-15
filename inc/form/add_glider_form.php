@@ -6,6 +6,7 @@ use classes\ajax;
 use classes\jquery;
 use object\glider;
 use object\manufacturer;
+use html\node;
 
 class add_glider_form extends form {
 
@@ -29,12 +30,12 @@ class add_glider_form extends form {
         $this->get_field_from_name('single_surface')->set_attr('label', 'Is single surface?');
         $this->id = 'new_glider_form';
         $this->h2 = 'Add a new glider';
-    }
-
-    public function get_form() {
         $this->attributes['class'][] = 'form-compact';
         $this->wrapper_class[] = 'callout';
         $this->wrapper_class[] = 'callout-primary';
+    }
+
+    public function get_form() {
         jquery::colorbox(['html'=>$this->get_html()->get()]);
     }
 
@@ -46,7 +47,12 @@ class add_glider_form extends form {
         $manu->do_retrieve_from_id(['title'], $this->mid);
         if ($this->glider->gid) {
             $this->glider->do_update_selector();
-            jquery::colorbox(["html" => $manu->title . ' - ' . $this->glider->name . ' has been added to the database and should now be selectable from the list.']);
+            jquery::colorbox(["html" => 
+                node::create('div.callout.callout-primary', [], 
+                    node::create('h2.page-header', [], $manu->title . ' - ' . $this->glider->name) . 
+                    node::create('p', [], 'Has been added to the database and should now be selectable from the list.')
+                )->get()
+            ]);
         }
     }
 }

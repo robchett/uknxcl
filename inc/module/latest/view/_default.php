@@ -19,8 +19,9 @@ class _default extends \template\html {
                 'order' => 'fid DESC'
             ]
         );
-        $wrapper = node::create('div.table_wrapper', [],
-            node::create('h3.heading', [], 'Latest') .
+        $wrapper = 
+        node::create('h1.page-header', [], 'Latest') . 
+        node::create('div.table_wrapper', [],
             node::create('table.results.main', ['style' => 'width:700px'],
                 node::create('thead', [],
                     node::create('tr', [],
@@ -48,7 +49,7 @@ class _default extends \template\html {
                 )
             )
         );
-        return $wrapper->get();
+        return $wrapper;
 
     }
 }

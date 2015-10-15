@@ -142,7 +142,7 @@ class table_gen_form extends form {
         $this->wrapper_class[] = 'advanced_tables_wrapper';
         $this->id = 'advanced_tables';
         $this->submit = 'Generate';
-        $this->h2 = 'Advanced Options';
+        //$this->h2 = 'Advanced Options';
     }
 
     public function get_html() {

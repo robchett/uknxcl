@@ -28,21 +28,19 @@ class add_pilot_form extends form {
         $this->get_field_from_name('email')->set_attr('label', 'Email');
         $this->get_field_from_name('gender')
             ->set_attr('label', 'Gender')
-            ->set_attr('options', ['M' => 'Male', 'F' => 'Female'])
-            ->set_attr('required', true);
+            ->set_attr('options', ['M' => 'Male', 'F' => 'Female']);
         $this->get_field_from_name('rating')
             ->set_attr('label', 'Rating')
-            ->set_attr('options', [1 => 'Club', 2 => 'Advanced'])
-            ->set_attr('required', true);
+            ->set_attr('options', [1 => 'Club', 2 => 'Advanced']);
 
         $this->id = 'new_pilot_form';
         $this->h2 = 'Create a new pilot';
-    }
-
-    public function get_form() {
         $this->attributes['class'][] = 'form-compact';
         $this->wrapper_class[] = 'callout';
         $this->wrapper_class[] = 'callout-primary';
+    }
+
+    public function get_form() {
         jquery::colorbox(['html' => $this->get_html()->get()]);
     }
 
@@ -56,6 +54,11 @@ class add_pilot_form extends form {
         if ($this->pilot->pid) {
             $this->pilot->do_update_selector();
         }
-        jquery::colorbox(['html' => node::create('strong', [], $this->name) . ' added to the database']);
+        jquery::colorbox(['html' => 
+            node::create('div.callout.callout-primary', [], 
+                node::create('h2.page-header', [], $this->name) . 
+                node::create('p', [], 'Added to the database')
+            )->get()
+        ]);
     }
 }
