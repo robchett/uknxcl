@@ -34,8 +34,8 @@ abstract class html extends \core\template\html {
                             node::create('div#graph_wrapper', [], '') .
                             node::create('div#slider', [], '') .
                             node::create('div#controls', [],
-                                node::create('input#play', ['value' => 'play', 'type' => 'submit', 'onclick' => "map.play()"], '') .
-                                node::create('input#pause', ['value' => 'pause', 'type' => 'submit', 'onclick' => "map.pause()"], '') .
+                                node::create('a#play.glyphicon.glyphicon-play', ['onclick' => "map.play()"], 'Play') .
+                                node::create('a#pause.glyphicon.glyphicon-pause', ['onclick' => "map.pause()"], 'Pause') .
                                 node::create('a#slider_time', [], '00:00')
                             )
                         )

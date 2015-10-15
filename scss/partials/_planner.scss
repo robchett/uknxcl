@@ -23,7 +23,6 @@ body.waypoint_mode {
   }
 
   #path_wrapper {
-    background-color: #f9f9f9;
     pre {
       margin-bottom: 10px;
     }
@@ -31,8 +30,6 @@ body.waypoint_mode {
 
   form {
     @include cf();
-    background-color: #dcdcdc;
-    margin-bottom: 20px;
     border: none;
     fieldset {
       > div {
@@ -40,24 +37,32 @@ body.waypoint_mode {
           float: left;
           vertical-align: middle;
           padding: 0 10px;
+          text-indent: 0;          
         }
         label {
           line-height: 28px;
+          padding-left: 0;
         }
         margin-bottom: 0;
         select {
           height: 28px;
         }
       }
+      .form-group {
+        float: left;
+        clear: none;
+      }
       button {
         height: 28px;
+
       }
     }
   }
 
-  #waypoints {
-    margin: 10px;
-    padding: 10px;
-    background-color: #f9f9f9;
+  #flight_types {
+    a {
+      float: right;
+      margin-top: -6px
+    }
   }
 }

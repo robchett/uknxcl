@@ -12,7 +12,7 @@ class _default extends \template\html {
         $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title', 'file'], ['join' => ['comp_group' => 'comp.cgid = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, comp.cgid ASC']);
         $html = node::create('div#comp_wrapper div#comp_inner', [],
             node::create('div#comp_list', [],
-                node::create('h2.heading', [], 'Select a Competition') .
+                node::create('h1.page-header', [], 'Select a Competition') .
                 node::create('table.main.results', [],
                     node::create('thead', [],
                         node::create('th', [], 'Comp') .

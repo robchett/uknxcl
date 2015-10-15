@@ -16,22 +16,21 @@ class _default extends \template\html {
     public function get_view() {
         /** @var \module\tables\object\league_table $table */
         $table = $this->module->current;
-        //$table->use_preset(0);
-        //$table->type = 0;
-        $html = '';
-        $form = new table_gen_form_basic();
-        $form->set_from_options($table->options);
-        $form->post_submit_text = $this->get_key();
-        $html .= $form->get_html()
-                      ->get();
-        $form = new table_gen_form();
-        $form->set_from_options($table->options);
-        $form->post_submit_text = $this->get_key();
-        $html .= $form->get_html()
-                      ->get();
-        $html .= node::create('div#generated_tables', [], $table->get_table() . node::create('a.show_all.button', [
-                'href' => $table->get_show_all_url(),
-                'target' => '_blank'], 'Show all on map'));
+        $form1 = new table_gen_form_basic();
+        $form1->set_from_options($table->options);
+        $form1->post_submit_text = $this->get_key();
+        $form2 = new table_gen_form();
+        $form2->set_from_options($table->options);
+        $form2->post_submit_text = $this->get_key();
+        $html .= 
+            node::create('h1.page-header', [], 'Results') . 
+            node::create('a#options.glyphicon.glyphicon-filter', [], '') .
+            node::create('div.forms_wrapper.callout.callout-primary', [], [
+                $form1->get_html(), 
+                $form2->get_html()
+            ]) .
+            node::create('div#generated_tables', [], $table->get_table() . 
+            node::create('a.show_all.button', ['href' => $table->get_show_all_url(), 'target' => '_blank'], 'Show all on map'));
 
         $inline_script = '
         $("body").on("click", ".form_toggle", function () {
@@ -40,20 +39,12 @@ class _default extends \template\html {
             $("." + $(this).data("show")).show();
             $("." + $(this).data("show")).find("form").show();
         });
-        $("body").off("click", ".basic_tables_wrapper h2,.advanced_tables_wrapper h2");
-        $("body").on("click", ".basic_tables_wrapper h2,.advanced_tables_wrapper h2", function() {
-            var $parent = $(this).parents("div").eq(0);
-            if($parent.hasClass("visible")) {
-                $parent.removeClass("visible").children("form").stop(true, true).slideUp(function () {
-                    $(".key_switch").hide();
-                });
-            } else {
-                $parent.addClass("visible").children("form").stop(true, true).slideDown(function () {
-                    $(".key_switch").show();
-                });
-            }
+        $("body").off("click", "#options");
+        $("body").on("click", "#options", function() {
+            $(".forms_wrapper").stop(true, true).toggle();
         });
-        $(".basic_tables_wrapper form,.advanced_tables_wrapper form").slideUp();';
+        $(".forms_wrapper").slideUp();
+        $(".advanced_tables form").hide();';
         if(isset($_REQUEST['form'])) {
             $form = $_REQUEST['form'];
             if($form == 'advanced_tables' || $form == 'basic_tables') {

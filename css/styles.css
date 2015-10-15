@@ -196,13 +196,6 @@
   .input-group-addon:not(:first-child).fileinput-exists {
     margin-right: 1px; }
 
-h1.heading, h2.heading, h3.heading, h4.heading, h5.heading, h6.heading {
-  background-color: #0a4dad;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0;
-  margin-bottom: 10px; }
-
 h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
   margin-bottom: 0; }
 
@@ -241,6 +234,40 @@ div.add_flight_section {
 
 #add_flight a {
   display: block; }
+
+/* Side notes for calling out things
+-------------------------------------------------- */
+.callout {
+  margin: 20px 0;
+  padding: 15px 15px 15px 15px;
+  border-left: 5px solid #eee;
+  color: #3b3b3b;
+  /* Themes for different contexts */ }
+  .callout:last-child {
+    margin-bottom: 0; }
+  .callout h1, .callout h2, .callout h3, .callout h4 {
+    margin-top: 0;
+    padding-top: 0; }
+  .callout p:last-child, .callout ul:last-child, .callout li:last-child, .callout ol:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0; }
+  .callout p:first-child, .callout ul:first-child, .callout li:first-child, .callout ol:first-child {
+    margin-top: 0;
+    padding-top: 0; }
+  .callout code,
+  .callout .highlight {
+    background-color: #fff; }
+  .callout-primary {
+    background-color: #eee;
+    border-color: #0c3f6b; }
+  .callout-secondary {
+    background-color: #ddd;
+    border-color: #07243d; }
+  .callout-tertiary {
+    background-color: #ccc;
+    border-color: #02090f; }
+  .callout + .callout {
+    margin-top: 0; }
 
 /*
     ColorBox Core Style:
@@ -505,14 +532,14 @@ ul li p {
 /* line 25, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
 .glyphicon, .expander, .toggler, .icon {
   position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: 'Glyphicons Halflings';
   font-style: normal;
   font-weight: normal;
   line-height: 1;
+  display: inline-block;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
+  .glyphicon:before, .expander:before, .toggler:before, .icon:before {
+    font-family: 'Glyphicons Halflings'; }
 
 /* line 38, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
 .glyphicon-asterisk:before {
@@ -1314,6 +1341,18 @@ ul li p {
 .glyphicon-tree-deciduous:before {
   content: "\e200"; }
 
+#options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background-color: #0c3f6b;
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  line-height: 40px; }
+
 h2.form_title {
   font-weight: bold;
   padding: 10px;
@@ -1326,7 +1365,8 @@ h2.form_title {
 
 .advanced_tables_wrapper, .basic_tables_wrapper {
   margin-bottom: 20px;
-  overflow: hidden; }
+  overflow: hidden;
+  margin-top: 0; }
 
 form {
   margin-top: 10px; }
@@ -1342,7 +1382,8 @@ form {
         min-height: 26px;
         line-height: 26px;
         font-size: 14px;
-        vertical-align: middle; }
+        vertical-align: middle;
+        width: 150px; }
       form fieldset .form-group label, form fieldset .form-group > div {
         float: left; }
       form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
@@ -1355,113 +1396,115 @@ form {
   form .defined_info {
     margin-top: 10px;
     font-weight: bold; }
-  form#advanced_tables, form#basic_tables {
-    display: none; }
-    form#advanced_tables .form-group, form#basic_tables .form-group {
-      float: left;
-      clear: none;
-      margin-right: 20px;
-      margin-bottom: 5px;
-      width: 212px;
-      min-height: 20px; }
-      form#advanced_tables .form-group:nth-child(3n), form#basic_tables .form-group:nth-child(3n) {
-        margin-right: 0; }
-      form#advanced_tables .form-group label, form#advanced_tables .form-group > div, form#basic_tables .form-group label, form#basic_tables .form-group > div {
-        display: inline-block;
-        vertical-align: middle; }
-      form#advanced_tables .form-group label, form#basic_tables .form-group label {
-        width: 110px;
-        font-size: 11px;
-        height: 16px;
-        line-height: 16px; }
-      form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
-        width: 100px;
-        font-size: 10px;
-        line-height: 12px;
-        padding: 0;
-        height: 16px; }
-      form#advanced_tables .form-group .checkbox label, form#basic_tables .form-group .checkbox label {
-        width: auto; }
-      form#advanced_tables .form-group .checkbox input, form#basic_tables .form-group .checkbox input {
-        width: auto;
-        vertical-align: middle;
-        margin-right: 5px; }
-      form#advanced_tables .form-group select, form#basic_tables .form-group select {
-        width: 102px;
-        float: left; }
-      form#advanced_tables .form-group select[multiple=multiple], form#basic_tables .form-group select[multiple=multiple] {
-        height: 60px; }
-      form#advanced_tables .form-group#advanced_tables_field_HK, form#basic_tables .form-group#advanced_tables_field_HK {
-        clear: left;
-        margin-right: 20px; }
-      form#advanced_tables .form-group#advanced_tables_field_flown_through, form#basic_tables .form-group#advanced_tables_field_flown_through {
-        margin-right: 0;
-        width: 444px; }
-        form#advanced_tables .form-group#advanced_tables_field_flown_through label, form#basic_tables .form-group#advanced_tables_field_flown_through label {
-          width: 232px; }
-        form#advanced_tables .form-group#advanced_tables_field_flown_through input, form#basic_tables .form-group#advanced_tables_field_flown_through input {
-          width: 210px; }
-      form#advanced_tables .form-group#advanced_tables_field_c5, form#basic_tables .form-group#advanced_tables_field_c5 {
-        margin-right: 0; }
-      form#advanced_tables .form-group.field_checkboxes_wrapper, form#basic_tables .form-group.field_checkboxes_wrapper {
-        clear: left;
-        width: 100%; }
-        form#advanced_tables .form-group.field_checkboxes_wrapper .control-label, form#basic_tables .form-group.field_checkboxes_wrapper .control-label {
-          width: 14%;
-          font-weight: bold; }
-        form#advanced_tables .form-group.field_checkboxes_wrapper > div, form#basic_tables .form-group.field_checkboxes_wrapper > div {
-          width: 86%; }
-        form#advanced_tables .form-group.field_checkboxes_wrapper label, form#basic_tables .form-group.field_checkboxes_wrapper label {
-          display: inline-block; }
-      form#advanced_tables .form-group .mlink_selected_wrapper, form#basic_tables .form-group .mlink_selected_wrapper {
-        width: 90px;
-        border: 1px solid #a0a0a0;
-        border-top: 0;
-        float: right;
-        font-size: 11px;
-        clear: left;
-        padding: 5px 5px 0; }
-        form#advanced_tables .form-group .mlink_selected_wrapper li, form#basic_tables .form-group .mlink_selected_wrapper li {
-          width: 90px;
-          float: none;
-          text-align: left;
-          min-height: 0;
-          line-height: 10px; }
-          form#advanced_tables .form-group .mlink_selected_wrapper li a, form#basic_tables .form-group .mlink_selected_wrapper li a {
-            position: relative;
-            float: right;
-            display: block;
-            width: 10px;
-            height: 10px;
-            text-indent: -9999px;
-            overflow: hidden; }
-            form#advanced_tables .form-group .mlink_selected_wrapper li a:after, form#basic_tables .form-group .mlink_selected_wrapper li a:after {
-              content: 'x';
-              color: red;
-              position: absolute;
-              top: 0;
-              left: 0;
-              text-indent: 0;
-              line-height: 8px;
-              width: 10px;
-              text-align: center; }
-      form#advanced_tables .form-group.submit-group > div, form#advanced_tables .form-group.submit-group, form#basic_tables .form-group.submit-group > div, form#basic_tables .form-group.submit-group {
-        width: 100%;
-        margin: 0; }
-      form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
-        width: 80%;
-        margin-right: 3%;
-        height: 25px; }
-      form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
-        width: 15%;
-        display: block;
-        padding: 5px;
-        background-color: #ededed;
-        border: 1px solid #cccccc;
-        text-align: center;
-        font-weight: bold;
-        color: #0c3f6b;
+  form#advanced_tables .form-group, form#basic_tables .form-group {
+    float: left;
+    clear: none;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    width: 207px;
+    min-height: 20px; }
+    form#advanced_tables .form-group:nth-child(3n), form#basic_tables .form-group:nth-child(3n) {
+      margin-right: 0; }
+    form#advanced_tables .form-group:nth-child(n + 17), form#basic_tables .form-group:nth-child(n + 17) {
+      margin-right: 20px; }
+    form#advanced_tables .form-group:nth-child(3n + 17), form#basic_tables .form-group:nth-child(3n + 17) {
+      margin-right: 0; }
+    form#advanced_tables .form-group label, form#advanced_tables .form-group > div, form#basic_tables .form-group label, form#basic_tables .form-group > div {
+      display: inline-block;
+      vertical-align: middle; }
+    form#advanced_tables .form-group label, form#basic_tables .form-group label {
+      width: 105px;
+      font-size: 11px;
+      height: 16px;
+      line-height: 16px; }
+    form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
+      width: 100px;
+      font-size: 10px;
+      line-height: 12px;
+      padding: 0;
+      height: 16px; }
+    form#advanced_tables .form-group .checkbox label, form#basic_tables .form-group .checkbox label {
+      width: auto; }
+    form#advanced_tables .form-group .checkbox input, form#basic_tables .form-group .checkbox input {
+      width: auto;
+      vertical-align: middle;
+      margin-right: 5px; }
+    form#advanced_tables .form-group select, form#basic_tables .form-group select {
+      width: 102px;
+      float: left; }
+    form#advanced_tables .form-group select[multiple=multiple], form#basic_tables .form-group select[multiple=multiple] {
+      height: 60px; }
+    form#advanced_tables .form-group#advanced_tables_field_HK, form#basic_tables .form-group#advanced_tables_field_HK {
+      clear: left;
+      margin-right: 20px; }
+    form#advanced_tables .form-group#advanced_tables_field_flown_through, form#basic_tables .form-group#advanced_tables_field_flown_through {
+      margin-right: 0;
+      width: 434px; }
+      form#advanced_tables .form-group#advanced_tables_field_flown_through label, form#basic_tables .form-group#advanced_tables_field_flown_through label {
+        width: 222px; }
+      form#advanced_tables .form-group#advanced_tables_field_flown_through input, form#basic_tables .form-group#advanced_tables_field_flown_through input {
+        width: 210px; }
+    form#advanced_tables .form-group#advanced_tables_field_c5, form#basic_tables .form-group#advanced_tables_field_c5 {
+      margin-right: 0; }
+    form#advanced_tables .form-group.field_checkboxes_wrapper, form#basic_tables .form-group.field_checkboxes_wrapper {
+      clear: left;
+      width: 100%; }
+      form#advanced_tables .form-group.field_checkboxes_wrapper .control-label, form#basic_tables .form-group.field_checkboxes_wrapper .control-label {
+        width: 14%;
+        font-weight: bold; }
+      form#advanced_tables .form-group.field_checkboxes_wrapper > div, form#basic_tables .form-group.field_checkboxes_wrapper > div {
+        width: 86%; }
+      form#advanced_tables .form-group.field_checkboxes_wrapper label, form#basic_tables .form-group.field_checkboxes_wrapper label {
         display: inline-block; }
+    form#advanced_tables .form-group .mlink_selected_wrapper, form#basic_tables .form-group .mlink_selected_wrapper {
+      width: 90px;
+      border: 1px solid #a0a0a0;
+      border-top: 0;
+      float: right;
+      font-size: 11px;
+      clear: left;
+      padding: 5px 5px 0; }
+      form#advanced_tables .form-group .mlink_selected_wrapper li, form#basic_tables .form-group .mlink_selected_wrapper li {
+        width: 90px;
+        float: none;
+        text-align: left;
+        min-height: 0;
+        line-height: 10px; }
+        form#advanced_tables .form-group .mlink_selected_wrapper li a, form#basic_tables .form-group .mlink_selected_wrapper li a {
+          position: relative;
+          float: right;
+          display: block;
+          width: 10px;
+          height: 10px;
+          text-indent: -9999px;
+          overflow: hidden; }
+          form#advanced_tables .form-group .mlink_selected_wrapper li a:after, form#basic_tables .form-group .mlink_selected_wrapper li a:after {
+            content: 'x';
+            color: red;
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-indent: 0;
+            line-height: 8px;
+            width: 10px;
+            text-align: center; }
+    form#advanced_tables .form-group.submit-group > div, form#advanced_tables .form-group.submit-group, form#basic_tables .form-group.submit-group > div, form#basic_tables .form-group.submit-group {
+      width: 100%;
+      margin: 0; }
+    form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
+      width: 80%;
+      margin-right: 3%;
+      height: 25px; }
+    form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
+      width: 15%;
+      display: block;
+      padding: 5px;
+      background-color: #ededed;
+      border: 1px solid #cccccc;
+      text-align: center;
+      font-weight: bold;
+      color: #0c3f6b;
+      display: inline-block; }
   form#postcheck textarea {
     display: block;
     width: 300px;
@@ -1512,6 +1555,8 @@ form {
     font-weight: bold; }
   form#igc_upload_form a.restart {
     text-align: center; }
+  form.form-compact input {
+    width: 197px; }
   form.form-compact #coords_wrapper {
     display: block; }
     form.form-compact #coords_wrapper span {
@@ -1519,9 +1564,9 @@ form {
     form.form-compact #coords_wrapper input {
       width: 400px; }
   form.form-compact label {
-    width: 100px; }
+    width: 140px; }
   form.form-compact .field_select_wrapper span, form.form-compact .field_link_wrapper span, form.form-compact .field_date_wrapper span {
-    width: 100px !important; }
+    width: 197px !important; }
   form.form-compact .field_select_wrapper select, form.form-compact .field_link_wrapper select, form.form-compact .field_date_wrapper select {
     width: 200px;
     margin-right: 20px; }
@@ -1531,6 +1576,7 @@ form {
   form.form-compact .field_boolean_wrapper label {
     width: 100%; }
     form.form-compact .field_boolean_wrapper label input {
+      width: auto;
       margin: 0 5px 0 0; }
   form.form-compact .field_boolean_wrapper input {
     float: left;
@@ -2036,7 +2082,23 @@ div.kmltree-loading span {
       #map_wrapper #map_interface #map_interface_padding #slider {
         margin-bottom: 10px; }
       #map_wrapper #map_interface #map_interface_padding #controls {
-        margin-bottom: 10px; }
+        margin-bottom: 10px;
+        float: left; }
+        #map_wrapper #map_interface #map_interface_padding #controls a {
+          background-color: #0c3f6b;
+          font-family: arial;
+          color: white;
+          display: inline-block;
+          font-size: 16px;
+          vertical-align: middle;
+          margin-right: 2px;
+          height: 30px;
+          line-height: 30px;
+          padding: 0 5px;
+          position: relative; }
+          #map_wrapper #map_interface #map_interface_padding #controls a:before {
+            margin-right: 5px;
+            font-size: 12px; }
         #map_wrapper #map_interface #map_interface_padding #controls #slider_time {
           position: absolute;
           z-index: 10000;
@@ -2261,31 +2323,31 @@ body.waypoint_mode #planner #wp_overlay {
     z-index: 10; }
     #planner #wp_overlay .button {
       margin: 15px 20px; }
-  #planner #path_wrapper {
-    background-color: #f9f9f9; }
-    #planner #path_wrapper pre {
-      margin-bottom: 10px; }
+  #planner #path_wrapper pre {
+    margin-bottom: 10px; }
   #planner form {
     overflow: auto;
-    background-color: #dcdcdc;
-    margin-bottom: 20px;
     border: none; }
     #planner form fieldset > div {
       margin-bottom: 0; }
       #planner form fieldset > div label, #planner form fieldset > div > div {
         float: left;
         vertical-align: middle;
-        padding: 0 10px; }
+        padding: 0 10px;
+        text-indent: 0; }
       #planner form fieldset > div label {
-        line-height: 28px; }
+        line-height: 28px;
+        padding-left: 0; }
       #planner form fieldset > div select {
         height: 28px; }
+    #planner form fieldset .form-group {
+      float: left;
+      clear: none; }
     #planner form fieldset button {
       height: 28px; }
-  #planner #waypoints {
-    margin: 10px;
-    padding: 10px;
-    background-color: #f9f9f9; }
+  #planner #flight_types a {
+    float: right;
+    margin-top: -6px; }
 
 /*
  * CSS Styles that are needed by jScrollPane for it to operate correctly.
@@ -2392,58 +2454,66 @@ table.league {
     text-align: center; }
 
 div#pop {
-  background-color: #ffffff;
-  border: 2px solid #0d4582;
-  box-shadow: 7px 7px 5px #888888;
   color: #666;
   font-size: 13px;
   font-weight: bold;
   position: absolute;
   height: auto;
   width: 260px;
-  right: -280px;
+  left: 65px;
   z-index: 99999;
-  top: -2px; }
+  top: -23px;
+  padding: 0; }
   div#pop.reverse {
     left: -280px; }
     div#pop.reverse span.arrow {
       border-color: transparent transparent transparent #0d4582;
       left: 260px !important; }
   div#pop span.arrow {
-    border: 16px solid #0d4582;
-    border-color: transparent #0d4582 transparent transparent;
+    border: 14px solid #0c3f6b;
+    border-color: transparent #0c3f6b transparent transparent;
     height: 0;
     width: 0;
     position: absolute;
     top: 0px;
-    left: -32px;
+    left: -33px;
     text-indent: -9999px; }
-  div#pop tr:hover {
-    background-color: #ffffff;
-    font-size: inherit; }
-  div#pop tr:nth-child(2n) {
-    background: #d5e3ff; }
-  div#pop tr td {
-    padding: 0 5px;
-    line-height: 24px; }
-    div#pop tr td.view {
-      padding: 5px 5px; }
-    div#pop tr td.info {
-      line-height: 1.2; }
-    div#pop tr td a.download {
-      float: left;
-      width: 70px;
-      height: 76px;
-      background: url("/.core/images/sprites.png") -81px 0px;
-      text-indent: -9999px;
-      margin: 0 27px; }
-      div#pop tr td a.download.kml {
-        background-position: -1px 0px; }
+  div#pop table {
+    border: 0; }
+    div#pop table tr:hover {
+      background-color: #ffffff;
+      font-size: inherit; }
+    div#pop table tr:nth-child(2n) {
+      background: #d5e3ff; }
+    div#pop table tr td {
+      padding: 0 5px;
+      line-height: 24px; }
+      div#pop table tr td.view {
+        padding: 5px 5px; }
+      div#pop table tr td.info {
+        line-height: 1.2; }
+      div#pop table tr td a.download {
+        float: left;
+        width: 70px;
+        height: 76px;
+        background: url("/.core/images/sprites.png") -81px 0px;
+        text-indent: -9999px;
+        margin: 0 27px; }
+        div#pop table tr td a.download.kml {
+          background-position: -1px 0px; }
+  div#pop a {
+    position: relative; }
+    div#pop a span {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      font-size: 18px;
+      color: #0a4dad; }
   div#pop .close {
     position: absolute;
     top: 0;
     right: 0;
-    width: 60px;
+    width: 24px;
     height: 14px;
     background-color: #777777;
     color: #ffffff;
@@ -2665,7 +2735,8 @@ table {
           height: 100%;
           padding: 5px 0; }
   table.main {
-    margin-bottom: 10px; }
+    margin-bottom: 10px;
+    width: 100%; }
     table.main thead tr {
       background-color: #0a4dad;
       color: #ffffff; }
@@ -2685,8 +2756,7 @@ table {
         color: #e80400;
         font-weight: bold; }
       table.main tr:hover {
-        background: #fbff7d;
-        font-size: 12px; }
+        background: #fbff7d; }
       table.main tr td:nth-child(3) {
         text-align: left;
         padding-left: 5px; }
@@ -2714,39 +2784,5 @@ table {
 
 .ft {
   color: #ff00ee; }
-
-/* Side notes for calling out things
--------------------------------------------------- */
-.callout {
-  margin: 20px 0;
-  padding: 15px 15px 15px 15px;
-  border-left: 5px solid #eee;
-  color: #3b3b3b;
-  /* Themes for different contexts */ }
-  .callout:last-child {
-    margin-bottom: 0; }
-  .callout h1, .callout h2, .callout h3, .callout h4 {
-    margin-top: 0;
-    padding-top: 0; }
-  .callout p:last-child, .callout ul:last-child, .callout li:last-child, .callout ol:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0; }
-  .callout p:first-child, .callout ul:first-child, .callout li:first-child, .callout ol:first-child {
-    margin-top: 0;
-    padding-top: 0; }
-  .callout code,
-  .callout .highlight {
-    background-color: #fff; }
-  .callout-primary {
-    background-color: #eee;
-    border-color: #0c3f6b; }
-  .callout-secondary {
-    background-color: #ddd;
-    border-color: #07243d; }
-  .callout-tertiary {
-    background-color: #ccc;
-    border-color: #02090f; }
-  .callout + .callout {
-    margin-top: 0; }
 
 /* generated with grunt-sass-globbing */

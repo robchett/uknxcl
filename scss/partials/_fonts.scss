@@ -7,14 +7,15 @@
 /* line 25, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */
 .glyphicon {
   position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: 'Glyphicons Halflings';
   font-style: normal;
   font-weight: normal;
   line-height: 1;
+  display: inline-block;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  &:before {
+  font-family: 'Glyphicons Halflings';
+  }
 }
 
 /* line 38, ../../../../../../../../../usr/local/share/gems/gems/bootstrap-sass-3.2.0.2/assets/stylesheets/bootstrap/_glyphicons.scss */

@@ -99,6 +99,7 @@ table {
   }
   &.main {
     margin-bottom: 10px;
+    width: 100%;
     thead {
       tr {
         background-color: $secondary;
@@ -129,7 +130,6 @@ table {
       }
       &:hover {
         background: #fbff7d;
-        font-size: 12px;
       }
       td {
         &:nth-child(3) {

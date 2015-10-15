@@ -19,19 +19,17 @@ table.league {
 }
 
 div#pop {
-  background-color: #ffffff;
-  border: 2px solid #0d4582;
-  box-shadow: 7px 7px 5px #888888;
+  //box-shadow: 7px 7px 5px #888888;
   color: #666;
   font-size: 13px;
   font-weight: bold;
   position: absolute;
   height: auto;
   width: 260px;
-  right: -280px;
+  left: 65px;
   z-index: 99999;
-  top: -2px;
-
+  top: -23px;
+  padding: 0;
   &.reverse {
     left: -280px;
 
@@ -42,50 +40,63 @@ div#pop {
   }
 
   span.arrow {
-    border: 16px solid #0d4582;
-    border-color: transparent #0d4582 transparent transparent;
+    border: 14px solid $primary;
+    border-color: transparent $primary transparent transparent;
     height: 0;
     width: 0;
     position: absolute;
     top: 0px;
-    left: -32px;
+    left: -33px;
     text-indent: -9999px;
   }
-  tr {
-    &:hover {
-      background-color: #ffffff;
-      font-size: inherit;
-    }
-    &:nth-child(2n) {
-      background: #d5e3ff;
-    }
-    td {
-      padding: 0 5px;
-      line-height: 24px;
-      &.view {
-        padding: 5px 5px;
+  table {
+    border: 0;
+    tr {
+      &:hover {
+        background-color: #ffffff;
+        font-size: inherit;
       }
-      &.info {
-        line-height: 1.2;
+      &:nth-child(2n) {
+        background: #d5e3ff;
       }
-      a.download {
-        float: left;
-        width: 70px;
-        height: 76px;
-        background: url('/.core/images/sprites.png') -81px 0px;
-        text-indent: -9999px;
-        margin: 0 27px;
-        &.kml {
-          background-position: -1px 0px;
+      td {
+        padding: 0 5px;
+        line-height: 24px;
+        &.view {
+          padding: 5px 5px;
+        }
+        &.info {
+          line-height: 1.2;
+        }
+        a.download {
+          float: left;
+          width: 70px;
+          height: 76px;
+          background: url('/.core/images/sprites.png') -81px 0px;
+          text-indent: -9999px;
+          margin: 0 27px;
+          &.kml {
+            background-position: -1px 0px;
+          }
         }
       }
+    }
+  }
+  a {
+    position: relative;
+    span {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      font-size: 18px;
+      color: $secondary;
     }
   }
   .close {
     position: absolute;
     top: 0;
     right: 0;
-    width: 60px;
+    width: 24px;
     height: 14px;
     background-color: #777777;
     color: #ffffff;
