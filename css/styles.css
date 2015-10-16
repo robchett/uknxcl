@@ -1664,6 +1664,8 @@ div#nav {
     font-size: 24px;
     display: block;
     margin-bottom: 15px; }
+  #main #pages-12 #page_list div p {
+    margin-top: 0; }
   #main #pages-12 #page_list div a {
     background-color: #0c3f6b;
     display: block;
