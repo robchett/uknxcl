@@ -6,6 +6,16 @@ module.exports = function (grunt) {
             sass_globbing: 'grunt-sass-globbing'
         }
     })
+
+    var sass_globbing_files = {};
+    sass_globbing_files[assets_root + 'scss/includes/partials.scss'] = assets_root + 'scss/partials/*.scss';
+    sass_globbing_files[assets_root + 'scss/includes/core.scss'] = root + '.core/css/*.scss';
+    sass_globbing_files[assets_root + 'scss/includes/modules.scss'] = root + '/inc/module/**/scss/*.scss';
+
+    var sass_files = {};
+    sass_files[root + 'css/styles.css'] = assets_root + 'scss/styles.scss';
+    sass_files[root + 'css/ckeditor.css'] = assets_root + 'scss/ckeditor.scss';                 
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         watch: {
@@ -14,7 +24,7 @@ module.exports = function (grunt) {
                 tasks: ['sass_globbing', 'sass'],
             },
             scripts: {
-                files: [root + '.core/**/*.js', root + 'js/src/*.js'],
+                files: [root + '.core/**/*.js', assets_root + 'js/*.js'],
                 tasks: ['concat', 'uglify'],
                 spawn: false,
                 interrupt: true
@@ -39,7 +49,7 @@ module.exports = function (grunt) {
                     root + '.core/js/page_handler.js',
                     root + '.core/js/table-sorter.js',
                     root + '.core/js/colorbox.js',
-                    root + 'js/src/*.js'
+                    assets_root + 'js/*.js'
                 ],
                 dest: root + 'js/script.js',
                 nonull: true
@@ -47,23 +57,14 @@ module.exports = function (grunt) {
         },
         sass: {
             css: {
-                options: {
-                },
-                files: {
-                    root + 'css/styles.css': assets_root + 'scss/styles.scss',
-                    root + 'css/ckeditor.css': assets_root + 'scss/ckeditor.scss',                   
-                }
+                options: {},
+                files: sass_files
             }
         },
         sass_globbing: {
             css: {
-                files: {
-                    assets_root + 'scss/includes/partials.scss': assets_root + 'scss/partials/*.scss',
-                    assets_root + 'scss/includes/core.scss': root + '.core/css/*.scss',
-                    assets_root + 'scss/includes/modules.scss': root + '/inc/module/**/scss/*.scss',
-                },
-                options: {
-                }
+                files: sass_globbing_files,
+                options: {}
             }
         }
     });
