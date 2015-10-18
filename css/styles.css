@@ -207,6 +207,15 @@ img.left {
   float: left;
   margin-right: 20px; }
 
+.btn {
+  display: block;
+  padding: 5px;
+  background-color: #ededed;
+  border: 1px solid #cccccc;
+  text-align: center;
+  font-weight: bold;
+  color: #0c3f6b; }
+
 div.add_flight_section {
   height: 100%; }
   div.add_flight_section a.back {
@@ -1374,7 +1383,7 @@ form {
     padding: 0; }
     form fieldset .form-group {
       clear: both; }
-      form fieldset .form-group.err {
+      form fieldset .form-group.has-error {
         color: #b60000; }
       form fieldset .form-group label {
         min-height: 26px;
@@ -1492,7 +1501,8 @@ form {
     form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
       width: 80%;
       margin-right: 3%;
-      height: 25px; }
+      height: 25px;
+      display: inline-block; }
     form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
       width: 15%;
       display: block;
@@ -2105,7 +2115,9 @@ div.kmltree-loading span {
           color: Red;
           font-weight: bold;
           font-size: larger;
-          background-color: white; }
+          background-color: white;
+          padding: 0 5px;
+          line-height: 27px; }
   #map_wrapper #custom_ui {
     margin-right: -6px;
     margin-top: 5px; }
@@ -2209,6 +2221,9 @@ div.kmltree-loading span {
         #map_wrapper #custom_ui .maps_ui_option ul label {
           vertical-align: middle;
           cursor: pointer; }
+  #map_wrapper .btn {
+    display: inline-block;
+    margin-right: 10px; }
 
 #map, #map3d {
   width: 100%;
@@ -2216,14 +2231,12 @@ div.kmltree-loading span {
   z-index: 999999;
   background: #02020c url(/img/darkearth.jpg) center center no-repeat;
   position: relative;
-  display: block;
   display: table; }
   #map p, #map3d p {
     color: #fff;
     font-size: 18px;
     font-weight: bold;
     margin: 0;
-    display: block;
     width: 100%;
     height: 100%;
     text-align: center;
