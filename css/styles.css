@@ -2721,8 +2721,6 @@ table {
         table.results tr th.flights5 {
           width: 65px; }
       table.results tr td {
-        border: solid 1px silver;
-        border-width: 0 1px 0px 1px;
         border-collapse: collapse;
         height: 100%;
         font-size: 11px;
@@ -2747,7 +2745,7 @@ table {
       table.main thead tr th {
         border: 1px solid #0a4dad; }
         table.main thead tr th.pos {
-          width: 81px; }
+          width: 51px; }
         table.main thead tr th.club {
           width: 95px; }
         table.main thead tr th.tot {
@@ -2762,6 +2760,8 @@ table {
       table.main tr td:nth-child(3) {
         text-align: left;
         padding-left: 5px; }
+      table.main tr td:nth-child(2) {
+        text-align: left; }
       table.main tr td:last-child {
         text-align: left;
         padding-left: 5px; }
