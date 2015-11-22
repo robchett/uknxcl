@@ -294,7 +294,7 @@ class flight extends table {
                     if(!is_dir($track->get_file_loc())) {
                         mkdir($track->get_file_loc());
                     }
-                    copy('/var/www/vhosts/uknxcl.old/web/Tracks/' . $flight->fid . '/Track_log.igc', $track->get_file_loc() . '/track_log.igc');
+                    copy('/var/www/vhosts/uknxcl.old/web/Tracks/' . $flight->fid . '/Track_log.igc', $track->get_file_loc() . '/track.igc');
                 }
                 if ($track->parse_IGC()) {
                     $log->debug('---- Read');

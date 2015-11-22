@@ -57,7 +57,11 @@ class track
         if (!is_dir($this->get_file_loc())) {
             mkdir($this->get_file_loc());
         }
-        $this->log = new log(log::DEBUG, $this->get_file_loc() . '/info-' . time() . '.txt');
+        $this->log = new log(log::DEBUG, $this->get_file_loc() . '/info.txt');
+    }
+    
+    public function set_flight(flight $flight) {
+        $this->flight = $flight;
     }
     
     public function set_flight(flight $flight) {
