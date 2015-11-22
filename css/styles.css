@@ -2081,7 +2081,7 @@ div.kmltree-loading span {
   #map_wrapper #map_interface {
     z-index: 9999999;
     position: absolute;
-    width: 100%;
+    width: 200px;
     bottom: 0; }
     #map_wrapper #map_interface #map_interface_padding {
       padding: 0 10px;

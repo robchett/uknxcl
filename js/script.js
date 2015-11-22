@@ -2280,6 +2280,7 @@ page_handeler.toggle_page = function ($page) {
     this.$container.css({position: "relative"});
     this.$container.html("<canvas class='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
     this.$a_canvas = this.$container.find('.graph_a_canvas');
+    this.$container.hide();
     this.add_radios();
     this.initiated = true;
     this.legend = {
@@ -2382,56 +2383,59 @@ Graph.prototype.addLegend = function (colour, obj) {
         this.$container.prepend('<div class="legend" style="background-color:#ffffff; padding: 4px; border: 1px solid #EEEEEE; position: absolute;' + this.legend.position.x + ':10px;' + this.legend.position.y + ':10px;">' + html + '</div>');
     }
 };
+
 Graph.prototype.draw_graph = function (max, min, colour, index, text) {
-    this.$a_canvas[0].width = this.$a_canvas.width();
-    this.width = this.$container.width();
-    this.height = this.$container.height();
-    var context = this.$a_canvas[0].getContext('2d');
-    context.fillStyle = "rgba(255, 255, 255, 0.7)";
-    context.fillRect(0, 0, this.width, this.height);
-
-    if (this.grid.x.show) {
-        for (var x1 = 0; x1 <= (this.grid.x.count - 1); x1++) {
-            var x_coord = x1 * this.width / (this.grid.x.count - 1);
-            context.moveTo(x_coord, 0);
-            context.lineTo(x_coord, this.height);
-        }
-    }
-    if (this.grid.y.show) {
-        for (var y1 = 0; y1 <= (this.grid.y.count - 1); y1++) {
-            var y_coord = y1 * this.height / (this.grid.y.count - 1);
-            context.moveTo(0, y_coord);
-            context.lineTo(this.width, y_coord);
-        }
-    }
-    context.strokeStyle = '#DBDBDB';
-    context.stroke();
-
     // Get graph data;
-    if (this.obj) {
-        var obj = this.obj.nxcl_data
-    } else {
-        return;
-    }
-    this.addLegend(colour, obj);
-    var Xscale = this.width / (obj.xMax - obj.xMin);
-    var Yscale = this.height / (max - min);
-    obj.track.each(function (track, count, ths) {
-        if (track.draw_graph) {
-            context.beginPath();
-            context.strokeStyle = track.colour ? ('#' + track.colour) : colour;
-            for (j in track.data) {
-                var coord = track.data[j];
-                context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
+    if (this.obj && this.obj.nxcl_data.track.length) {
+        this.$container.show();
+        this.$a_canvas[0].width = this.$a_canvas.width();
+        this.width = this.$container.width();
+        this.height = this.$container.height();
+        var context = this.$a_canvas[0].getContext('2d');
+        context.fillStyle = "rgba(255, 255, 255, 0.7)";
+        context.fillRect(0, 0, this.width, this.height);
+
+        if (this.grid.x.show) {
+            for (var x1 = 0; x1 <= (this.grid.x.count - 1); x1++) {
+                var x_coord = x1 * this.width / (this.grid.x.count - 1);
+                context.moveTo(x_coord, 0);
+                context.lineTo(x_coord, this.height);
             }
-            context.stroke();
         }
-    }, this);
-    context.font = '12px sans-serif';
-    context.fillStyle = '#444';
-    context.fillText(max, 10, 15);
-    context.fillText(min, 10, this.height - 5);
-    context.fillText(text, 10, this.height / 2);
+        if (this.grid.y.show) {
+            for (var y1 = 0; y1 <= (this.grid.y.count - 1); y1++) {
+                var y_coord = y1 * this.height / (this.grid.y.count - 1);
+                context.moveTo(0, y_coord);
+                context.lineTo(this.width, y_coord);
+            }
+        }
+        context.strokeStyle = '#DBDBDB';
+        context.stroke();
+        var obj = this.obj.nxcl_data
+        this.addLegend(colour, obj);
+        var Xscale = this.width / (obj.xMax - obj.xMin);
+        var Yscale = this.height / (max - min);
+        if (obj.track.count) {
+            obj.track.each(function (track, count, ths) {
+                if (track.draw_graph) {
+                    context.beginPath();
+                    context.strokeStyle = track.colour ? ('#' + track.colour) : colour;
+                    for (j in track.data) {
+                        var coord = track.data[j];
+                        context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
+                    }
+                    context.stroke();
+                }
+            }, this);
+        } 
+        context.font = '12px sans-serif';
+        context.fillStyle = '#444';
+        context.fillText(max, 10, 15);
+        context.fillText(min, 10, this.height - 5);
+        context.fillText(text, 10, this.height / 2);
+    } else {
+        this.$container.hide();
+    }
 }
 
 Number.prototype.roundDown = function (significant) {
@@ -2538,7 +2542,7 @@ function UKNXCL_Map($container) {
         google.maps.event.addListener(this.internal_map, 'click', function (event) {
             if (map.planner.enabled) {
                 var latlon = event.latLng;
-                map.planner.addWaypoint(latlon.lat(), latlon.lng());
+                map.planner.add_marker(latlon.lat(), latlon.lng());
             }
         });
 
@@ -2622,7 +2626,7 @@ function UKNXCL_Map($container) {
             if (this.isMap()) {
                 var bound = new google.maps.LatLngBounds();
                 object.each(function (latLng) {
-                    bound.union(new google.maps.LatLngBounds(latLng, latLng));
+                    bound.union(new google.maps.LatLngBounds(latLng.toLatLng(), latLng.toLatLng()));
                 });
                 this.internal_map.fitBounds(bound);
             }
@@ -3125,6 +3129,10 @@ function Coordinate(lat, lon) {
         };
     }
     this._gridref = null;
+
+    this.toLatLng = function() {
+        return new google.maps.LatLng(this.lat(), this.lng());
+    }
 
     this.set_from_OS = function (gridref) {
         this._gridref = gridref;
@@ -4652,6 +4660,7 @@ geoXML3.nodeValue = function (node) {
             obj.coordinates = coordinates;
             $(this).data('ajax-post', obj);
         });
+        reload_scrollpane();
     };
 
     this.set_triangle_guides = function () {
@@ -4718,7 +4727,7 @@ geoXML3.nodeValue = function (node) {
     this.toGoogleEarth = function () {
         var arr = [];
         this.coordinates.each(function (c) {
-            arr.push(new google.maps.LatLng(c.lat(), c.lng()));
+            arr.push(c.toLatLng());
         });
         return arr;
     };
@@ -4736,7 +4745,12 @@ geoXML3.nodeValue = function (node) {
                 path: map.planner.toGoogleEarth(),
                 strokeColor: "FF0000",
                 strokeOpacity: 1,
-                strokeWeight: 2
+                strokeWeight: 3
+            });
+            google.maps.event.addListener(this.mapObject, 'click', function(h) {
+                var point = map.planner.getClosestPoint(h.latLng);
+                var marker = map.planner.add_marker(point.x, point.y);
+                map.planner.add_waypoint(marker, point.i -1);
             });
         } else {
             if (!this.mapObject) {
@@ -4762,6 +4776,63 @@ geoXML3.nodeValue = function (node) {
             this.hide_triangle_guides();
         }
     };
+
+    this.getClosestPoint = function(latLng) {
+        var minDist;
+        var fTo;
+        var fFrom;
+        var x;
+        var y;
+        var i;
+        var dist;
+
+        if (this.count > 1) {
+            for (var n = 1 ; n < this.count ; n++) {
+                if (this.coordinates[n].lat() != this.coordinates[n - 1].lat()) {
+                    var a = (this.coordinates[n].lng() - this.coordinates[n - 1].lng()) / (this.coordinates[n].lat() - this.coordinates[n - 1].lat());
+                    var b = this.coordinates[n].lng() - a * this.coordinates[n].lat();
+                    dist = Math.abs(a * latLng.lat() + b - latLng.lng()) / Math.sqrt(a * a + 1);
+                } else {
+                    dist = Math.abs(latLng.lat() - this.coordinates[n].lat())
+                }
+                var rl2 = Math.pow(this.coordinates[n].lng() - this.coordinates[n - 1].lng(), 2) + Math.pow(this.coordinates[n].lat() - this.coordinates[n - 1].lat(), 2);
+                var ln2 = Math.pow(this.coordinates[n].lng() - latLng.lng(), 2) + Math.pow(this.coordinates[n].lat() - latLng.lat(), 2);
+                var lnm12 = Math.pow(this.coordinates[n - 1].lng() - latLng.lng(), 2) + Math.pow(this.coordinates[n - 1].lat() - latLng.lat(), 2);
+                var dist2 = Math.pow(dist, 2);
+                var calcrl2 = ln2 - dist2 + lnm12 - dist2;
+                if (calcrl2 > rl2) {
+                    dist = Math.sqrt(Math.min(ln2, lnm12));
+                }
+
+                if ((minDist == null) || (minDist > dist)) {
+                    if (calcrl2 > rl2) {
+                        if (lnm12 < ln2) {
+                            fTo = 0;//nearer to previous point
+                            fFrom = 1;
+                        } else {
+                            fFrom = 0;//nearer to current point
+                            fTo = 1;
+                        }
+                    } else {
+                        // perpendicular from point intersects line segment
+                        fTo = ((Math.sqrt(lnm12 - dist2)) / Math.sqrt(rl2));
+                        fFrom = ((Math.sqrt(ln2 - dist2)) / Math.sqrt(rl2));
+                    }
+                    minDist = dist;
+                    i = n;
+                }
+            }
+
+            var dx = this.coordinates[i - 1].lat() - this.coordinates[i].lat();
+            var dy = this.coordinates[i - 1].lng() - this.coordinates[i].lng();
+
+            x = this.coordinates[i - 1].lat() - (dx * fTo);
+            y = this.coordinates[i - 1].lng() - (dy * fTo);
+
+        }
+
+        return { 'x': x, 'y': y, 'i': i, 'fTo': fTo, 'fFrom': fFrom };
+    }
 
     this.hide_triangle_guides = function () {
         if (this.parent.isMap()) {
@@ -4822,8 +4893,8 @@ geoXML3.nodeValue = function (node) {
         this.draw();
     };
 
-    this.push = function (coordinate) {
-        this.coordinates.push(coordinate);
+    this.push = function (coordinate, index) {
+        this.coordinates.splice(index, 0, coordinate);
         this.calculate_distances();
         this.count++;
     };
@@ -4869,7 +4940,7 @@ geoXML3.nodeValue = function (node) {
         return this.total_distance_array[this.total_distance_array.length - 1];
     };
 
-    this.addWaypoint = function (lat, lon, image) {
+    this.add_marker = function (lat, lon, image) {
         if (!this.enabled) {
             return;
         }
@@ -4927,10 +4998,7 @@ geoXML3.nodeValue = function (node) {
             });
             marker.id = map.planner.waypoints.length;
             google.maps.event.addListener(marker, 'click', function (event) {
-                map.planner.push(new Coordinate(marker));
-                map.planner.coordinates[map.planner.coordinates.length - 1].markerId = marker.id;
-                map.planner.writeplanner();
-                map.planner.draw();
+                map.planner.add_waypoint(marker);
                 map.event = event;
             });
             google.maps.event.addListener(marker, 'drag', function (event) {
@@ -4949,23 +5017,41 @@ geoXML3.nodeValue = function (node) {
         return marker;
     };
 
+    this.add_waypoint = function(marker, index) {
+        if (index) {
+            index = index || map.planner.count;
+            index++;
+            if (index >= map.planner.count) index = map.planner.count - 1;
+        } else {
+            index = map.planner.count;
+        }
+        //alert(index);
+        map.planner.push(new Coordinate(marker), index);
+        map.planner.writeplanner();
+        map.planner.draw();
+    }
+
     this.load_string = function(string) {
         this.enable();
-        var parts = string.split(';');
-        parts.each(function(part, count, ths) {
-            var sub = part.split(',');
-            if(sub.length > 1) {
-                var marker = ths.addWaypoint(sub[0], sub[1]);
-                new google.maps.event.trigger(marker, 'click');
-            }
-        }, this);
-        this.draw_triangle_guides();
+        var groups = string.split('|');
+        groups.each(function(group, g_count, ths) {
+            var parts = group.split(';');
+            parts.each(function(part, count, ths) {
+                var sub = part.split(',');
+                if(sub.length > 1) {
+                    var marker = ths.add_marker(sub[0], sub[1]);
+                    if (g_count == 0) {
+                        new google.maps.event.trigger(marker, 'click');
+                    }
+                }
+            }, ths);
+        },this);
         map.center(this.coordinates);
     };
 
     this.add_point_full = function(lat, lng) {
         this.enable();
-        var marker = this.addWaypoint(lat, lng);
+        var marker = this.add_marker(lat, lng);
         new google.maps.event.trigger( marker, 'click' );
     }
 }

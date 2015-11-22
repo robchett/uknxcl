@@ -14,6 +14,7 @@ function Graph($container) {
     this.$container.css({position: "relative"});
     this.$container.html("<canvas class='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
     this.$a_canvas = this.$container.find('.graph_a_canvas');
+    this.$container.hide();
     this.add_radios();
     this.initiated = true;
     this.legend = {
@@ -116,56 +117,59 @@ Graph.prototype.addLegend = function (colour, obj) {
         this.$container.prepend('<div class="legend" style="background-color:#ffffff; padding: 4px; border: 1px solid #EEEEEE; position: absolute;' + this.legend.position.x + ':10px;' + this.legend.position.y + ':10px;">' + html + '</div>');
     }
 };
+
 Graph.prototype.draw_graph = function (max, min, colour, index, text) {
-    this.$a_canvas[0].width = this.$a_canvas.width();
-    this.width = this.$container.width();
-    this.height = this.$container.height();
-    var context = this.$a_canvas[0].getContext('2d');
-    context.fillStyle = "rgba(255, 255, 255, 0.7)";
-    context.fillRect(0, 0, this.width, this.height);
-
-    if (this.grid.x.show) {
-        for (var x1 = 0; x1 <= (this.grid.x.count - 1); x1++) {
-            var x_coord = x1 * this.width / (this.grid.x.count - 1);
-            context.moveTo(x_coord, 0);
-            context.lineTo(x_coord, this.height);
-        }
-    }
-    if (this.grid.y.show) {
-        for (var y1 = 0; y1 <= (this.grid.y.count - 1); y1++) {
-            var y_coord = y1 * this.height / (this.grid.y.count - 1);
-            context.moveTo(0, y_coord);
-            context.lineTo(this.width, y_coord);
-        }
-    }
-    context.strokeStyle = '#DBDBDB';
-    context.stroke();
-
     // Get graph data;
-    if (this.obj) {
-        var obj = this.obj.nxcl_data
-    } else {
-        return;
-    }
-    this.addLegend(colour, obj);
-    var Xscale = this.width / (obj.xMax - obj.xMin);
-    var Yscale = this.height / (max - min);
-    obj.track.each(function (track, count, ths) {
-        if (track.draw_graph) {
-            context.beginPath();
-            context.strokeStyle = track.colour ? ('#' + track.colour) : colour;
-            for (j in track.data) {
-                var coord = track.data[j];
-                context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
+    if (this.obj && this.obj.nxcl_data.track.length) {
+        this.$container.show();
+        this.$a_canvas[0].width = this.$a_canvas.width();
+        this.width = this.$container.width();
+        this.height = this.$container.height();
+        var context = this.$a_canvas[0].getContext('2d');
+        context.fillStyle = "rgba(255, 255, 255, 0.7)";
+        context.fillRect(0, 0, this.width, this.height);
+
+        if (this.grid.x.show) {
+            for (var x1 = 0; x1 <= (this.grid.x.count - 1); x1++) {
+                var x_coord = x1 * this.width / (this.grid.x.count - 1);
+                context.moveTo(x_coord, 0);
+                context.lineTo(x_coord, this.height);
             }
-            context.stroke();
         }
-    }, this);
-    context.font = '12px sans-serif';
-    context.fillStyle = '#444';
-    context.fillText(max, 10, 15);
-    context.fillText(min, 10, this.height - 5);
-    context.fillText(text, 10, this.height / 2);
+        if (this.grid.y.show) {
+            for (var y1 = 0; y1 <= (this.grid.y.count - 1); y1++) {
+                var y_coord = y1 * this.height / (this.grid.y.count - 1);
+                context.moveTo(0, y_coord);
+                context.lineTo(this.width, y_coord);
+            }
+        }
+        context.strokeStyle = '#DBDBDB';
+        context.stroke();
+        var obj = this.obj.nxcl_data
+        this.addLegend(colour, obj);
+        var Xscale = this.width / (obj.xMax - obj.xMin);
+        var Yscale = this.height / (max - min);
+        if (obj.track.count) {
+            obj.track.each(function (track, count, ths) {
+                if (track.draw_graph) {
+                    context.beginPath();
+                    context.strokeStyle = track.colour ? ('#' + track.colour) : colour;
+                    for (j in track.data) {
+                        var coord = track.data[j];
+                        context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
+                    }
+                    context.stroke();
+                }
+            }, this);
+        } 
+        context.font = '12px sans-serif';
+        context.fillStyle = '#444';
+        context.fillText(max, 10, 15);
+        context.fillText(min, 10, this.height - 5);
+        context.fillText(text, 10, this.height / 2);
+    } else {
+        this.$container.hide();
+    }
 }
 
 Number.prototype.roundDown = function (significant) {
