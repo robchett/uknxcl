@@ -84,7 +84,7 @@ function UKNXCL_Map($container) {
         google.maps.event.addListener(this.internal_map, 'click', function (event) {
             if (map.planner.enabled) {
                 var latlon = event.latLng;
-                map.planner.addWaypoint(latlon.lat(), latlon.lng());
+                map.planner.add_marker(latlon.lat(), latlon.lng());
             }
         });
 
@@ -168,7 +168,7 @@ function UKNXCL_Map($container) {
             if (this.isMap()) {
                 var bound = new google.maps.LatLngBounds();
                 object.each(function (latLng) {
-                    bound.union(new google.maps.LatLngBounds(latLng, latLng));
+                    bound.union(new google.maps.LatLngBounds(latLng.toLatLng(), latLng.toLatLng()));
                 });
                 this.internal_map.fitBounds(bound);
             }
@@ -671,6 +671,10 @@ function Coordinate(lat, lon) {
         };
     }
     this._gridref = null;
+
+    this.toLatLng = function() {
+        return new google.maps.LatLng(this.lat(), this.lng());
+    }
 
     this.set_from_OS = function (gridref) {
         this._gridref = gridref;

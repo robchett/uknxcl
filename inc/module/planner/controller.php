@@ -12,7 +12,7 @@ class controller extends module {
 
     public function __controller(array $path) {
         if(isset($path[1])) {
-            $this->import_string = filter_var($path[1], FILTER_SANITIZE_STRING);
+            $this->import_string = filter_var(urldecode($path[1]), FILTER_SANITIZE_STRING);
             compiler::disable();
         }
         parent::__controller($path);
