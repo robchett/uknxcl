@@ -64,10 +64,7 @@ class track
         $this->flight = $flight;
     }
     
-    public function set_flight(flight $flight) {
-        $this->flight = $flight;
-    }
-    
+
     public static function move_temp_files($temp_id, $new_id) {
         $track = new track($new_id);
         $old_dir = $track->get_file_loc($temp_id, true);
