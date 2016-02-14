@@ -38,10 +38,10 @@ class result_club extends result {
             if ($pilot->club) {
                 if (isset ($club_array [$pilot->club])) {
                     $club = $club_array [$pilot->club];
-                    $club->AddSub($pilot, $data->max_flights);
+                    $club->AddSub($pilot);
                 } else {
                     $club = new $data->SClass();
-                    $club->set_from_pilot($pilot, $pilots, $data->max_flights);
+                    $club->set_from_pilot($pilot, $pilots);
                     $club_array [$pilot->club] = $club;
                 }
             }

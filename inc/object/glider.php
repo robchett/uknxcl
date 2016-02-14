@@ -32,7 +32,7 @@ class glider extends scorable {
         parent::__construct();
         if ($flight != '') {
             /** @var \object\flight $flight */
-            parent::__construct($flight, $num, $split);
+            parent::__construct($flight, $num);
             if ($this->number_of_flights == 1) {
                 $this->club = $flight->gm_title;
                 $this->name = $flight->g_name;

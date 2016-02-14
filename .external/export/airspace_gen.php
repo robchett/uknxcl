@@ -87,7 +87,7 @@ foreach ($input as $a) {
         $lat = ConvertCord($matches[3], $matches[2]) * M_PI / 180;
         $lon = ConvertCord($matches[5], $matches[4]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1, 0, 0, $current->top);
+        $t = getArcCords(array($lat, $lon, $radius), 0, 360, -1, 0, 0);
         $current->cords = $t[0];
         $current->cords2 = $t[1];
         continue;
@@ -109,7 +109,7 @@ foreach ($input as $a) {
         $lat2 = ConvertCord($matches[7], $matches[6]) * M_PI / 180;
         $lon2 = ConvertCord($matches[9], $matches[8]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), 1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
         $current->cords .= $t[0];
         $current->cords2 = array_merge($current->cords2, $t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;
@@ -124,7 +124,7 @@ foreach ($input as $a) {
         $lat2 = ConvertCord($matches[7], $matches[6]) * M_PI / 180;
         $lon2 = ConvertCord($matches[9], $matches[8]) * M_PI / 180;
         $radius = round($matches[1], 2) * $bodgeFactor;
-        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI, $current->top);
+        $t = getArcCords(array($latC, $lonC, $radius), get_bearing(array($latC, $lonC), array($lat1, $lon1)), get_bearing(array($latC, $lonC), array($lat2, $lon2)), -1, $lat1 * 180 / M_PI, $lon1 * 180 / M_PI);
         $current->cords .= $t[0];
         $current->cords2 = array_merge($current->cords2, $t[1]);
         $current->prev_lat = $lat2 * 180 / M_PI;

@@ -29,7 +29,7 @@ class flight_type extends table {
      * @param bool $defined
      * @return mixed
      */
-    public static function get_multiplier($type, $season, $defined = false) {
+    public static function get_multiplier($type, $season = 2001, $defined = false) {
         if (!isset(self::$all_rows)) {
             self::$all_rows = flight_type::get_all([]);
         }

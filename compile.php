@@ -1,5 +1,5 @@
 <?php
-$time = time(true);
+$time = time();
 
 define('load_core', false);
 require $_SERVER['DOCUMENT_ROOT'] . '/.core/config.php';
