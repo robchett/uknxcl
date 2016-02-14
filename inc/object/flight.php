@@ -13,9 +13,6 @@ use track\track;
 use traits\table_trait;
 
 /**
- * @property mixed club_title
- * @property mixed winter
- * @property mixed delayed
  */
 class flight extends table {
     use table_trait;
@@ -54,6 +51,11 @@ class flight extends table {
     public $class;
     /** @var int The id used for a flight, depends on whether $class is 1 or 5 */
     public $ClassID;
+
+    public $club_title;
+    public $winter;
+    public $delayed;
+
     public $pid;
 
     public $speed;
@@ -117,35 +119,23 @@ class flight extends table {
                 'where_equals' => ['flight.fid' => $id]
             ]
         );
+        $temp = isset($_REQUEST['temp']);
         header("Content-type: application/octet-stream");
         header("Cache-control: private");
-        $fullPath = '';
-        if ((isset($this->fid) && $this->fid) || isset($_REQUEST['temp'])) {
+        $fullPath = root . ($temp ? '/.cache/' : '/uploads/flight/') . $id . '/';
+        if ((isset($this->fid) && $this->fid) || $temp) {
             if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml') {
-                $fullPath = root . '/uploads/flight/' . $id . '/track_earth.kml';
+                $fullPath .= 'track_earth.kml';
             } else if ($_REQUEST['type'] == 'igc') {
-                $fullPath = root . '/uploads/flight/' . $id . '/track.igc';
+                $fullPath .= 'track.igc';
             } else if ($_REQUEST['type'] == 'kmz') {
-                $zip = zip_open(root . '/uploads/flight/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
-                $fullPath = zip_read($zip);
-                $size = zip_entry_filesize($fullPath);
-                $file = zip_entry_read($fullPath, $size);
-                header("Content-length: $size");
-                header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date : '') . '.kml"');
-                echo $file;
-                zip_close($zip);
-                return;
+                $fullPath .= 'track' . (isset($_REQUEST['split']) ? '_split' : '') . '.kml';
             }
-            if ($fullPath && $fd = fopen($fullPath, "r")) {
-                $fsize = filesize($fullPath);
-                header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
-                header("Content-length: $fsize");
-                while (!feof($fd)) {
-                    $buffer = fread($fd, 2048);
-                    echo $buffer;
-                }
-                fclose($fd);
-            }
+            $fsize = filesize($fullPath);
+//            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
+            header("Content-length: $fsize");
+            echo file_get_contents($fullPath);
+            die();
         }
     }
 
@@ -270,127 +260,7 @@ class flight extends table {
         );
     }
 
-    /**
-     * @param int|null $fid
-     */
-    public static function generate_benchmark($fid = null) {
-        $log = new log(log::DEBUG, '/.cache/track_generation.log');
-        $options = ['where' => 'did > 1', 'order' => 'fid ASC'];
-        if ($fid) {
-            $options['where'] .= ' AND fid >=' .$fid;
-        }
-        $flights = flight::get_all([], $options);
-        set_time_limit(0);
-        $total_time = 0;
-        $flights->iterate(
-            function (flight $flight) use (&$total_time, &$log) {
-                $track = new track($flight->fid);
-                $track->set_flight($flight);
-                $track->time = 0;
-                $time = time();
-                $log->info('Track: ' . $flight->fid);
-                $log->debug('---- Reading');
-                if(!file_exists($track->get_igc())) {
-                    if(!is_dir($track->get_file_loc())) {
-                        mkdir($track->get_file_loc());
-                    }
-                    copy('/var/www/vhosts/uknxcl.old/web/Tracks/' . $flight->fid . '/Track_log.igc', $track->get_file_loc() . '/track.igc');
-                }
-                if ($track->parse_IGC()) {
-                    $log->debug('---- Read');
-                    $codes = [];
-                    /** @var \classes\lat_lng $point */
-                    foreach ($track->coordinate_set as $point) {
-                        $codes[] = $point->get_grid_cell()->code;
-                        $codes = array_unique($codes);
-                    }
-                    $flight->os_codes = implode(',', $codes);
-                    $log->debug('---- OS Areas');
-                    $track->generate();
-                    $flight->do_save();
-                    $log->debug('---- Generated');
-//                    $best_score = $flight->get_best_score();
-//                    switch ($flight->ftid) {
-//                        case  1:
-//                            if ($track->od->get_distance() > $flight->base_score) {
-//                                echo node::create('span', ['style' => 'color:#00ff00'], 'OD Gained ' . ($track->od->get_distance() - $flight->base_score) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            } else {
-//                                echo node::create('span', ['style' => 'color:#ff0000'], 'OD Lost ' . ($flight->base_score - $track->od->get_distance()) . 'km (' . ($track->od->get_distance() / ($track->od->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            }
-//                            break;
-//                        case
-//                        2:
-//                            if ($track->or->get_distance() > $flight->base_score) {
-//                                echo node::create('span', ['style' => 'color:#00ff00'], 'OR Gained ' . ($track->or->get_distance() - $flight->base_score) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            } else {
-//                                echo node::create('span', ['style' => 'color:#ff0000'], 'OR Lost ' . ($flight->base_score - $track->or->get_distance()) . 'km (' . ($track->or->get_distance() / ($track->or->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            }
-//                            break;
-//                        case  3:
-//                            break;
-//                        case  4:
-//                            if ($track->tr->get_distance() > $flight->base_score) {
-//                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->tr->get_distance() - $flight->base_score) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            } else {
-//                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->tr->get_distance()) . 'km (' . ($track->tr->get_distance() / ($track->tr->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            }
-//                            break;
-//                        case  5:
-//                            if ($track->ft->get_distance() > $flight->base_score) {
-//                                echo node::create('span', ['style' => 'color:#00ff00'], 'TR Gained ' . ($track->ft->get_distance() - $flight->base_score) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            } else {
-//                                echo node::create('span', ['style' => 'color:#ff0000'], 'TR Lost ' . ($flight->base_score - $track->ft->get_distance()) . 'km (' . ($track->ft->get_distance() / ($track->ft->get_distance() - $flight->base_score * 100)) . ')') . '<br/>';
-//                            }
-//                            break;
-//                    }
-//                    if ($flight->ftid != $best_score[1]) {
-//                        echo 'Flight Scored better as a' . $best_score[1];
-//                        switch ($best_score[0]) {
-//                            case  flight_type::OD_ID:
-//                                $flight->coords = $track->od->get_coordinates();
-//                                $flight->base_score = $track->od->get_distance();
-//                                break;
-//                            case  flight_type::OR_ID:
-//                                $flight->coords = $track->or->get_coordinates();
-//                                $flight->base_score = $track->or->get_distance();
-//                                break;
-//                            case  flight_type::TR_ID:
-//                                $flight->coords = $track->tr->get_coordinates();
-//                                $flight->base_score = $track->tr->get_distance();
-//                                break;
-//                            case  flight_type::FT_ID:
-//                                $flight->coords = $track->ft->get_coordinates();
-//                                $flight->base_score = $track->ft->get_distance();
-//                                break;
-//                        }
-//                        $flight->score = $best_score[0];
-//                        $flight->ftid = $best_score[1];
-//                        $flight->multi = $flight->get_multiplier();
-//                    }
-//                    $flight->do_save();
-                    $time = time() - $time - 60 * 60;
-                    $total_time += $time;
-                    $flight->time = $time;
-                } else {
-                    $flight->time = 0;
-                    $log->warning('---- Could not be read');
-                }
-            }
-        );
 
-        $flights->uasort(function ($a, $b) {
-                return $b->time - $a->time;
-            }
-        );
-
-        foreach ($flights as $flight) {
-            $log->info('Track :' . $flight->fid . ' scored in ' . date('H:i:s', $flight->time));
-        }
-
-        $average_time = $total_time / count($flights);
-
-        $log->info('Average Time :' . date('H:i:s', $average_time));
-    }
 
     /**
      *
@@ -468,30 +338,13 @@ class flight extends table {
     }
 
     /**
-     *
-     */
-    private function set_track() {
-        $track = new track($this->fid);
-        $this->track = $track;
-        if ($track->parse_IGC()) {
-            $track->coordinate_set->trim();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * @return string
      */
     public function get_stats() {
-        if (!isset($this->track)) {
-            $this->set_track();
-        }
-        $this->track->coordinate_set->set_graph_values();
-        $height = $this->track->coordinate_set->stats()->height();
-        $speed = $this->track->coordinate_set->stats()->speed();
-        $climb = $this->track->coordinate_set->stats()->climb();
+        // TODO get from igc_parser
+        $height = $this->track->stats()->height();
+        $speed = $this->track->stats()->speed();
+        $climb = $this->track->stats()->climb();
         $html = node::create('table.stats', [],
             node::create('thead tr', [],
                 node::create('th', [], '') .
@@ -536,15 +389,26 @@ class flight extends table {
         return $html;
     }
 
+    public function move_temp_files($temp_id) {
+        $old_dir = root . '/.cache/' . $temp_id;
+        $new_dir = $this->get_file_loc();
+        rename($old_dir, $new_dir);
+    }
+
+    public function get_file_loc() {
+        return root . '/uploads/flight/' . $this->fid;
+    }
+
     /**
      * @return string
      */
     public function get_info() {
-        if ($this->did > 1 && !isset($this->track) && $this->set_track()) {
+        if ($this->did > 1) {
+            // TODO get from igc_parser
             $logged_data =
-                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->first()->timestamp()))) .
-                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->last()->timestamp()))) .
-                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->coordinate_set->last()->timestamp() - $this->track->coordinate_set->first()->timestamp())));
+                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->get_launch_time()))) .
+                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->get_land_time()))) .
+                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->get_duration())));
         } else {
             $logged_data = '';
         }
@@ -584,7 +448,8 @@ class flight extends table {
         if (isset($_REQUEST['id'])) {
             $id = (int) $_REQUEST['id'];
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/flight/' . ($id > 100000 ? 'temp/' : '') . $id . '/track.js')));
+            $root = root . ($id > 100000 ? '/.cache/' : '/uploads/flight/') . $id . '/';
+            die(preg_replace('/\s+/im', ' ', file_get_contents($root . 'track.js')));
         }
     }
 

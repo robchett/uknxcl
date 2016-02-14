@@ -2745,11 +2745,11 @@ function UKNXCL_Map($container) {
         }
     }
 
-    this.add_flight = function (id, airspace, reload_flight, temp) {
+    this.add_flight = function (id, airspace, reload_flight, temp, split) {
         this.$tree.find('.track_' + id).remove();
         this.$tree.append('<div class="track_' + id + '"></div>');
         if (this.kmls[id] === undefined || reload_flight) {
-            this.kmls[id] = new Track(id, temp);
+            this.kmls[id] = new Track(id, temp, split || false);
             this.kmls[id].load();
         } else {
             this.swap(map.kmls[id]);
@@ -2819,7 +2819,7 @@ function UKNXCL_Map($container) {
 }
 
 
-function Track(id, temp) {
+function Track(id, temp, split) {
     var ths = this;
     this.type = 0;
     this.id = id;
@@ -2828,10 +2828,11 @@ function Track(id, temp) {
     this.loaded = false;
     this.visible = true;
     this.temp = temp ? '&temp=true' : '';
+    this.split = split ? '&split=true' : '';
 
     this.add_google_data = function () {
         if (map.isMap()) {
-            map.GeoXMLsingle.parse('?module=\\object\\flight&act=download&type=kmz' + this.temp + '&id=' + this.id, null, this.id);
+            map.GeoXMLsingle.parse('?module=\\object\\flight&act=download&type=kmz' + this.temp + this.split + '&id=' + this.id, null, this.id);
         } else {
             map.parseKML('/uploads/flight/' + this.temp + this.id + '/track_earth.kmz', this);
         }

@@ -7,6 +7,7 @@ use form\form;
 use html\node;
 use object\flight;
 use object\flight_type;
+use track\igc_parser;
 use track\track;
 
 class igc_form extends form {
@@ -78,6 +79,9 @@ class igc_form extends form {
         $this->id = 'igc_form';
         $this->name = 'igc';
         $this->title = 'Add Flight Form';
+
+        $this->attributes['class'][] = 'form-compact';
+
         if (!ajax) {
             $this->submittable = false;
         }
@@ -86,50 +90,59 @@ class igc_form extends form {
     public function do_submit() {
         $flight = new flight();
         $flight->set_from_request();
+        $flight->live = false;
         $flight->do_save();
 
         if ($flight->fid) {
-            track::move_temp_files($this->temp_id, $flight->fid);
-            $track = new track($flight->fid);
-            $track->parse_IGC();
-            $track->set_flight($flight);
-            $track->set_from_session($this->temp_id);
+            $flight->move_temp_files($this->temp_id);
 
-            $flight->date = $track->get_date('Y-m-d');
-            $flight->did = $track->get_dim();
-            $flight->winter = $track->is_winter();
+            $igc_parser = new igc_parser();
+            $igc_parser->load_data($flight->fid, false);
 
-            $flight->season = $track->get_date('Y');
-            if($track->get_date('m') >= 11) {
+            $flight->date = $igc_parser->get_date();
+            $flight->did = $igc_parser->has_height_data() ? 3 : 2;
+            $flight->winter = $igc_parser->is_winter();
+
+            $flight->season = $igc_parser->get_date('Y');
+            if($igc_parser->get_date('m') >= 11) {
                 $flight->season++;
             }
 
             $this->force_delay = false;
-            if (!$track->check_date()) {
+            if (!$this->check_date($igc_parser)) {
                 $this->force_delay = true;
                 $flight->admin_info .= 'delayed as flight is old.';
             }
-            $this->defined = false;
-            if ($this->type == 'task') {
-                $this->type = $flight->go_type;
-                $this->defined = true;
-            }
-            $flight_type = new flight_type();
-            $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $this->type]]);
-            $flight->ftid = $flight_type->ftid;
-            $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
+            $this->defined = ($this->type == 'task');
 
-            if (!$this->defined) {
-                $flight->base_score = $flight->{$this->type . '_score'};
-                $flight->coords = $flight->{$this->type . '_coordinates'};
-                $flight->score = $flight->base_score * $flight->multi;
-            } else {
-                $flight->coords = $flight->go_coordinates;
-                $flight->base_score = $flight->go_distance;
-                $flight->score = $flight->base_score * $flight->multi;
+            $flight->duration = $igc_parser->get_duration();
+
+            foreach (['od' => 'open_distance', 'or' => 'out_and_return', 'tr' => 'triangle'] as $task_id => $name) {
+                if ($task = $igc_parser->get_task($name)) {
+                    $flight->{$task_id . '_score'} = $task->get_distance();
+                    $flight->{$task_id . '_time'} = $task->get_duration();
+                    $flight->{$task_id . '_coordinates'} = $task->get_gridref();
+
+                    if ($this->type == $task->type) {
+                        $flight->ftid = $this->type;
+                        $flight->base_score = $task->get_distance();
+                        $flight->duration = $task->get_duration();
+                        $flight->coords = $task->get_gridref();
+                    }
+                }
             }
-            $flight->delayed = $this->force_delay ? true : $this->delay;
-            $track->generate_output_files();
+            if ($this->defined) {
+                $flight->ftid = $igc_parser->get_task('task')->type;
+                $flight->base_score = $igc_parser->get_task('task')->get_distance();
+                $flight->duration = $igc_parser->get_task('task')->get_duration();
+                $flight->coords = $igc_parser->get_task('task')->get_gridref();
+            }
+
+            $flight->multi = (!$this->ridge ? flight_type::get_multiplier($flight->ftid, $igc_parser->get_date('Y'), $this->defined) : 1);
+            $flight->score = $flight->multi * $flight->base_score;
+
+            $flight->delayed = $this->force_delay || $this->delay;
+            $flight->live = true;
             $flight->do_save();
 
             jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
@@ -147,4 +160,13 @@ class igc_form extends form {
         return parent::do_validate();
     }
 
+    public function check_date(igc_parser $parser) {
+        $current_time = time();
+        $closure_time = $current_time - (31 * 24 * 60 * 60);
+        if (strtotime($parser->get_date()) >= $closure_time && strtotime($parser->get_date()) <= $current_time) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

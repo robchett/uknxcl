@@ -1,26 +1,17 @@
 <?php
 namespace track;
 
-class defined_task extends \task {
+class defined_task extends task {
 
-    public function __construct($coordinates) {
-        $points = explode(';', $coordinates);
-        $points = [];
-        foreach ($points as &$a) {
-            $points[] = \classes\geometry::os_to_lat_long($a);
-        }
-        if(count($points) == 5) {
-            parent::__construct($points[0], $points[1], $points[2], $points[3], $points[4]);
-        } else if(count($points) == 4) {
-            parent::__construct($points[0], $points[1], $points[2], $points[3]);
-        } else if(count($points) == 3) {
-            parent::__construct($points[0], $points[1], $points[2]);
-        } else if(count($points) == 2) {
-            parent::__construct($points[0], $points[1]);
+    public function create_from_coordinates($coordinate_string) {
+        $coords = explode(";", $coordinate_string);
+        if ($coords) {
+            foreach($coords as $gridref) {
+                $coord = new \stdClass();
+                $coord->os_gridref = $gridref;
+                $this->coordinates[] = $coord;
+            }
         }
     }
 
-    public function is_valid(track $set) {
-        return $this->completes_task();
-    }
 }

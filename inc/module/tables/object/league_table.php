@@ -376,10 +376,10 @@ class league_table {
             $array->iterate_return(function (scorable $pilot) use (&$class1, &$class5) {
                 if ($pilot->class == 1) {
                     $class1++;
-                    return $pilot->output($class1, 0);
+                    return $pilot->output($class1);
                 } else {
                     $class5++;
-                    return $pilot->output($class5, 0);
+                    return $pilot->output($class5);
                 }
             })
         );
