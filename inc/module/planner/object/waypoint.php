@@ -27,6 +27,6 @@ class waypoint extends table {
      * @return string
      */
     public function get_js() {
-        return 'map.planner.addWaypoint(' . $this->lat . ',' . $this->lon . ');';
+        return 'map.planner.add_waypoint(' . $this->lat . ',' . $this->lon . ');';
     }
 }
