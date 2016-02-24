@@ -2085,7 +2085,7 @@ page_handeler.toggle_page = function ($page) {
  * limitations under the License.
  * ========================================================== */
 
-+function ($) { "use strict";
++function ($) {
 
     var isIE = window.navigator.appName == 'Microsoft Internet Explorer'
 
