@@ -124,15 +124,17 @@ class flight extends table {
         header("Cache-control: private");
         $fullPath = root . ($temp ? '/.cache/' : '/uploads/flight/') . $id . '/';
         if ((isset($this->fid) && $this->fid) || $temp) {
-            if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml') {
+            $ext = 'kml';
+            if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml_earth') {
                 $fullPath .= 'track_earth.kml';
             } else if ($_REQUEST['type'] == 'igc') {
+                $ext = 'igc';
                 $fullPath .= 'track.igc';
-            } else if ($_REQUEST['type'] == 'kmz') {
+            } else if ($_REQUEST['type'] == 'kml') {
                 $fullPath .= 'track' . (isset($_REQUEST['split']) ? '_split' : '') . '.kml';
             }
             $fsize = filesize($fullPath);
-//            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $_REQUEST['type'] . '"');
+            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $ext . '"');
             header("Content-length: $fsize");
             echo file_get_contents($fullPath);
             die();
@@ -311,11 +313,11 @@ class flight extends table {
                 node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], str_replace(';', '; ', $this->coords))) .
                 node::create('tr', [], node::create('td', [], 'Info') . node::create('td.info', [], $this->info)) .
 
-                (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
+                (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kml') ?
                     node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .
                     node::create('tr td.center.view', ['colspan' => 2],
                         node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'title' => "Download IGC", 'rel' => 'external'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
+                        node::create('a.download.kml', ['href' => $this->get_download_url('kml'), 'title' => 'Download KML', 'rel' => 'external'], 'Download KML')
                     ) :
                     node::create('tr td.center.view.coords', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], node::create('span.glyphicon.glyphicon-pushpin', [], '') . 'Add coordinates to map'))
                 ) .
