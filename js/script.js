@@ -2626,7 +2626,11 @@ function UKNXCL_Map($container) {
             if (this.isMap()) {
                 var bound = new google.maps.LatLngBounds();
                 object.each(function (latLng) {
-                    bound.union(new google.maps.LatLngBounds(latLng.toLatLng(), latLng.toLatLng()));
+                    if (typeof latLng.toLatLng == 'function') {
+                        bound.union(new google.maps.LatLngBounds(latLng.toLatLng(), latLng.toLatLng()));
+                    } else {
+                        bound.union(new google.maps.LatLngBounds(latLng, latLng));
+                    }
                 });
                 this.internal_map.fitBounds(bound);
             }
