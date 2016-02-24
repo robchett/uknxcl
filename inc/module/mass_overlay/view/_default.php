@@ -17,8 +17,9 @@ class _default extends \template\html {
         $this->module->current->get_flights();
         $script = 'map.clear();';
         $this->module->current->flights->iterate(function (flight $flight) use (&$script) {
-            if ($flight->coords != '?') {
-                $script .= 'map.add_flight_coordinates("' . str_replace("\n", '', $flight->coords) . '", ' . $flight->get_primary_key() . ');';
+            $flight->coords = trim($flight->coords);
+            if ($flight->coords != '?' && $flight->coords) {
+                $script .= 'map.add_flight_coordinates("' . $flight->coords . '", ' . $flight->get_primary_key() . ', false);';
             }
         });
         $script .= '
