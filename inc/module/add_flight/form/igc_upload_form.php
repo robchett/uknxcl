@@ -184,7 +184,7 @@ class igc_upload_form extends form {
                 node::create('td', [], $task->title),
                 node::create('td', [], number_format($task->distance, 2) . ' / ' . number_format($multi, 2)),
                 node::create('td', [], number_format($task->distance * $multi, 2)),
-                node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"' . ($task->type + 1) . '"}'], 'Choose')
+                node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"' . $task->type . '"}'], 'Choose')
             ]);
         }
         return '';

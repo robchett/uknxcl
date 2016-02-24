@@ -51,7 +51,7 @@ class task {
         $this->duration = $data->duration;
         $this->distance = $data->distance;
         $this->coordinates = $data->coordinates;
-        $this->type = $data->type;
+        $this->type = $data->type + 1;
         $this->title = static::$names[$data->type];
     }
 }
