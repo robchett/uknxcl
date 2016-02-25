@@ -1974,6 +1974,7 @@ $(document).ready(function () {
     } else {
         $('#map').children('p.loading').html('Google maps are unavailable');
         $("#map_interface_3d span.toggle").hide();
+        $("#map_interface").hide();
     }
     map.resize();
 

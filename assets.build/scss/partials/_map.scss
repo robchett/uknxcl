@@ -257,13 +257,13 @@
   width: 100%;
   height: 100%;
   z-index: 999999;
-  background: #02020c url(/img/darkearth.jpg) center center no-repeat;
+  background: #e0e0e0;
   position: relative;
   display: table;
   p {
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
+    color: #747474;
+    font-size: 32px;
+    text-shadow: 1px 1px #fff;
     margin: 0;
     width: 100%;
     height: 100%;
