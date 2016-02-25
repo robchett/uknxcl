@@ -1979,6 +1979,7 @@ $(document).ready(function () {
     map.resize();
 
     $body = $("body");
+
     reload_scrollpane();
     page_handeler.defaults.complete.push('reload_scrollpane')
 
@@ -2029,7 +2030,7 @@ function reload_scrollpane() {
     } else if (main_scrollpane) {
         main_scrollpane.reinitialise();
     } else {
-        main_scrollpane.init();
+        main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
     }
 }
 
