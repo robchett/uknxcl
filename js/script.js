@@ -1978,11 +1978,11 @@ $(document).ready(function () {
     }
     map.resize();
 
+    $body = $("body");
     reload_scrollpane();
     page_handeler.defaults.complete.push('reload_scrollpane')
-    $.fn.ajax_factory.defaults.complete.push('center_colorbox');
 
-    $body = $("body");
+    $.fn.ajax_factory.defaults.complete.push('center_colorbox');
 
 
     $body.on('change', 'input[name=flights]', function () {
