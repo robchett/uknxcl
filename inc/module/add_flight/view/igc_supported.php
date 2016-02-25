@@ -33,7 +33,7 @@ class igc_supported extends \template\html {
         var $input = $ths.find("input[type=file]");
         var $kml = $("#kml_calc");
         var $kml_wrapper = $("#kml_wrapper");
-        if ($input.val().slice(-3) == "igc") {
+        if ($input.val().toLowerCase().slice(-3) == "igc") {
             $kml.fadeIn(1000).html("<div id=\'console\'><a class=\'calc\'>Calculate</a></div>");
             $kml_wrapper.find("a").show();
             $kml_wrapper.addClass("pass").removeClass("hoverFail");
