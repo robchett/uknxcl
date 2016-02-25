@@ -5,7 +5,7 @@ class task {
 
     const TYPE_OPEN_DISTANCE = 1;
     const TYPE_OUT_AND_RETURN = 2;
-    const TYPE_TRIANGLE = 3;
+    const TYPE_TRIANGLE = 4;
 
     static $names = [
         self::TYPE_OPEN_DISTANCE => 'Open Distance',
@@ -52,6 +52,6 @@ class task {
         $this->distance = $data->distance;
         $this->coordinates = $data->coordinates;
         $this->type = $data->type + 1;
-        $this->title = static::$names[$data->type];
+        $this->title = static::$names[$this->type];
     }
 }
