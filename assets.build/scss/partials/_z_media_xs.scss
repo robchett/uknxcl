@@ -1,0 +1,37 @@
+@media (max-width: 750px) {
+  div#news #list_wrapper, div#news #article_wrapper, #comp_wrapper #comp_list {
+    width: 100%;
+  }
+  #map_interface_3d, #map_wrapper {
+    display: none !important;
+  }
+
+  #content {
+    display: block;
+    margin-right: 0;
+  }
+  #nav {
+
+  }
+  #left_col {
+    float: none;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+  }
+  .table_wrapper {
+    &, table {
+      width: 100% !important;
+    }
+  }
+  #main_wrapper {
+    text-align: left;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    margin: auto;
+    #main > div {
+      width: 100%;
+    }
+  }
+}

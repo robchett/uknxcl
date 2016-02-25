@@ -22,7 +22,7 @@ $(document).ready(function () {
     }
     map.resize();
 
-    main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
+    reload_scrollpane();
     page_handeler.defaults.complete.push('reload_scrollpane')
     $.fn.ajax_factory.defaults.complete.push('center_colorbox');
 
@@ -66,8 +66,14 @@ function center_colorbox() {
 }
 
 function reload_scrollpane() {
-    if (main_scrollpane) {
+    if ($body.width() < 750) {
+        if (main_scrollpane) {
+            main_scrollpane.destroy();
+        }
+    } else if (main_scrollpane) {
         main_scrollpane.reinitialise();
+    } else {
+        main_scrollpane.init();
     }
 }
 
