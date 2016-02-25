@@ -1961,8 +1961,8 @@ var $body;
 var planner_string = planner_string || false;
 
 $(document).ready(function () {
+    map = new UKNXCL_Map($("#map_wrapper"));
     if (typeof google != 'undefined') {
-        map = new UKNXCL_Map($("#map_wrapper"));
         map.load_map();
         if(planner_string) {
             map.callback(function() {
@@ -1972,8 +1972,10 @@ $(document).ready(function () {
             });
         }
     } else {
-        $('#map').children('p.loading').html('Failed to load Google resources');
+        $('#map').children('p.loading').html('Google maps are unavailable');
+        $("#map_interface_3d span.toggle").hide();
     }
+    map.resize();
 
     main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
     page_handeler.defaults.complete.push('reload_scrollpane')
