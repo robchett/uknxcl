@@ -15,7 +15,6 @@ function Graph($container) {
     this.$container.html("<canvas class='graph_a_canvas' style='height:100%;width:100%' width='1000' height='" + this.height + "'></canvas>");
     this.$a_canvas = this.$container.find('.graph_a_canvas');
     this.$container.hide();
-    this.add_radios();
     this.initiated = true;
     this.legend = {
         show: false,
@@ -41,9 +40,9 @@ Graph.prototype.add_radios = function () {
     this.$container.find('.graph_toggles').remove();
     if (this.options.toggles) {
         var html = '<span class="graph_toggles">';
-        this.options.toggles.each(function (toggle, count) {
-            html += '<label><input type="radio" name="graph_type" data-type="' + count + '" ' + (count == 0 ? 'checked' : '' ) + '/>' + toggle.name + '</label>';
-        });
+        this.options.toggles.each(function (toggle, count, ths) {
+            html += '<label><input type="radio" name="graph_type" data-type="' + count + '" ' + (count == ths.type ? 'checked' : '' ) + '/>' + toggle.name + '</label>';
+        }, this);
         html += '</span>';
         this.$container.prepend(html);
     }
@@ -79,10 +78,16 @@ Graph.prototype.setGraph = function () {
         return;
     }
     this.$container.show();
-    var title = this.options.toggles[this.type].xAxis;
-    var index = this.options.toggles[this.type].index;
-    var min_value = this.options.toggles[this.type].min_value;
-    var max_value = this.options.toggles[this.type].max_value;
+    var title = '';
+    var index = '';
+    var min_value = 0;
+    var max_value = 0;
+    if (typeof this.options.toggles[this.type] != 'undefined') {
+        var title = this.options.toggles[this.type].xAxis;
+        var index = this.options.toggles[this.type].index;
+        var min_value = this.options.toggles[this.type].min_value;
+        var max_value = this.options.toggles[this.type].max_value;
+    }
     var max = -1000000;
     var min = 10000000;
     this.obj.nxcl_data.track.each(function (track) {
@@ -103,15 +108,6 @@ Graph.prototype.addLegend = function (colour, obj) {
         var html = '';
         obj.track.each(function (track) {
             colour = track.colour || colour;
-            if (track.draw_graph) {
-                context.beginPath();
-                context.strokeStyle = '00' + colour;
-                for (j in track.data) {
-                    var coord = track.data[j];
-                    context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
-                }
-                context.stroke();
-            }
             html += '<span class="legend_entry" style="display: block">' + track.name + '<span class="line" style="display:inline-block; margin-left:10px; width:7px; height:2px; margin-bottom: 5px; background:#' + colour + ';text-indent:-999px;overflow:hidden">' + colour + '</span></span>';
         });
         this.$container.prepend('<div class="legend" style="background-color:#ffffff; padding: 4px; border: 1px solid #EEEEEE; position: absolute;' + this.legend.position.x + ':10px;' + this.legend.position.y + ':10px;">' + html + '</div>');
@@ -156,7 +152,7 @@ Graph.prototype.draw_graph = function (max, min, colour, index, text) {
                     context.strokeStyle = track.colour ? ('#' + track.colour) : colour;
                     for (j in track.data) {
                         var coord = track.data[j];
-                        context.lineTo(coord[0] * Xscale, ths.height - ((coord[index] - min) * Yscale));
+                        context.lineTo(coord[0] * Xscale, ths.height - ((parseInt(coord[index]) - min) * Yscale));
                     }
                     context.stroke();
                 }
@@ -167,6 +163,7 @@ Graph.prototype.draw_graph = function (max, min, colour, index, text) {
         context.fillText(max, 10, 15);
         context.fillText(min, 10, this.height - 5);
         context.fillText(text, 10, this.height / 2);
+        this.add_radios();
     } else {
         this.$container.hide();
     }

@@ -28,7 +28,6 @@ class _default extends \template\html {
             return this.nxcl_data.track.length;
         }
         $graph.type = 0;
-        $graph.init();
         $graph.swap(obj);
 
         var $graph2 = new Graph($("#graph_contain_2"), 600);
@@ -44,7 +43,6 @@ class _default extends \template\html {
         obj.size = function() {
             return this.nxcl_data.track.length;
         }
-        $graph2.init();
         $graph2.swap(obj);
 
         ';
