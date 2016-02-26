@@ -2,6 +2,7 @@
 namespace module\add_flight\form;
 
 use classes\ajax;
+use classes\email;
 use classes\jquery;
 use form\form;
 use html\node;
@@ -102,7 +103,7 @@ class igc_form extends form {
 
             $flight->did = $igc_parser->has_height_data() ? 3 : 2;
             $flight->winter = $igc_parser->is_winter();
-            $flight->set_date($igc_parser->get_date());
+            $flight->set_date(strtotime($igc_parser->get_date()));
 
             $this->force_delay = false;
             if (!$this->check_date($igc_parser)) {
