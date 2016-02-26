@@ -101,7 +101,7 @@ class coordinates_form extends form {
         $flight_type = new flight_type();
         $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $task->type]]);
         $flight->ftid = $flight_type->ftid;
-        $flight->set_date(strtotime($this->date));
+        $flight->set_date($this->date);
         $flight->multi = !$this->ridge ? flight_type::get_multiplier($flight->ftid, $flight->season, $this->defined) : 1;
         $flight->base_score = $task->get_distance();
         $flight->coords = $this->coords;
