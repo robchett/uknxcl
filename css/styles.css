@@ -2041,6 +2041,14 @@ div#nav {
     text-align: center;
     color: #ffffff; }
 
+@media (max-width: 700px) {
+  #main #pages-12 #page_list div {
+    width: 33.33%; } }
+
+@media (max-width: 550px) {
+  #main #pages-12 #page_list div {
+    width: 50%; } }
+
 div.kmltree {
   font-family: sans-serif;
   font-size: 12px;
@@ -3172,6 +3180,7 @@ table {
   .table_wrapper, .table_wrapper table {
     width: 100% !important; }
   #main_wrapper {
+    overflow: scroll;
     text-align: left;
     width: 100%;
     position: relative;

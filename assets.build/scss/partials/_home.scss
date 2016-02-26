@@ -45,3 +45,15 @@
     }
   }
 }
+
+@media (max-width: 700px) {
+  #main #pages-12 #page_list div {
+    width: 33.33%;
+  }
+}
+
+@media (max-width: 550px) {
+  #main #pages-12 #page_list div {
+    width: 50%;
+  }
+}
