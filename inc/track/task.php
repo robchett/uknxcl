@@ -5,6 +5,7 @@ class task {
 
     const TYPE_OPEN_DISTANCE = 1;
     const TYPE_OUT_AND_RETURN = 2;
+    const TYPE_GOAL = 3;
     const TYPE_TRIANGLE = 4;
 
     static $names = [

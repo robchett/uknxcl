@@ -7,6 +7,7 @@ use form\form;
 use html\node;
 use object\flight;
 use object\flight_type;
+use object\new_flight_notification;
 use track\igc_parser;
 use track\track;
 
@@ -99,14 +100,9 @@ class igc_form extends form {
             $igc_parser = new igc_parser();
             $igc_parser->load_data($flight->fid, false);
 
-            $flight->date = $igc_parser->get_date();
             $flight->did = $igc_parser->has_height_data() ? 3 : 2;
             $flight->winter = $igc_parser->is_winter();
-
-            $flight->season = $igc_parser->get_date('Y');
-            if($igc_parser->get_date('m') >= 11) {
-                $flight->season++;
-            }
+            $flight->set_date($igc_parser->get_date());
 
             $this->force_delay = false;
             if (!$this->check_date($igc_parser)) {
@@ -148,6 +144,10 @@ class igc_form extends form {
             jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
             $form = new igc_form();
             ajax::update($form->get_html()->get());
+//            $users = new_flight_notification::get_all([]);
+//            foreach($users as $user) {
+//                Todo send email here.
+//            };
         } else {
             jquery::colorbox(['html' => 'Your flight has failed to save', 'className'=> 'success failure']);
         }

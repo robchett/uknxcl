@@ -44,10 +44,12 @@ class track {
         $this->club = new club();
         $this->glider = new glider();
         $this->bounds = new coordinate_bound();
-        if (!is_dir($this->get_file_loc())) {
-            mkdir($this->get_file_loc());
+        if ($id) {
+            if (!is_dir($this->get_file_loc())) {
+                mkdir($this->get_file_loc());
+            }
+            $this->log = new log(log::DEBUG, $this->get_file_loc() . '/info.txt');
         }
-        $this->log = new log(log::DEBUG, $this->get_file_loc() . '/info.txt');
     }
     
     public function set_flight(flight $flight) {
@@ -173,5 +175,36 @@ class track {
             $this->club->do_retrieve_from_id(['title'], $this->flight->cid);
             $this->glider->do_retrieve_from_id(['name'], $this->flight->gid);
         }
+    }
+
+    public function set_task($coordinates) {
+        $points = explode(';', $coordinates);
+        $task = new defined_task();
+        /**
+         * @var $waypoints \classes\lat_lng[]
+         */
+        $waypoints = [];
+        foreach ($points as &$a) {
+            $point = \classes\geometry::os_to_lat_long($a);
+            $waypoints[] = $point;
+        }
+        if (count($waypoints) == 3 && $waypoints[0]->get_distance_to($waypoints[2]) < 800) {
+            $task->type = 'or';
+            $task->title = 'Defined Out & Return';
+            $task->ftid = $task::TYPE_OUT_AND_RETURN;
+        } else if (count($waypoints) == 4 && $waypoints[0]->get_distance_to($waypoints[3]) < 800) {
+            $task->type = 'tr';
+            $task->title = 'Defined Triangle';
+            $task->ftid = $task::TYPE_TRIANGLE;
+        } else {
+            $task->type = 'go';
+            $task->title = 'Open distance';
+            $task->ftid = $task::TYPE_OPEN_DISTANCE;
+        }
+
+        for ($i = 0; $i < count($waypoints) - 1; $i++) {
+            $task->distance += $waypoints[$i]->get_distance_to($waypoints[$i+1]);
+        }
+        return $task;
     }
 }

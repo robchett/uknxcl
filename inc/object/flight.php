@@ -486,4 +486,14 @@ class flight extends table {
     public function get_url() {
         return '/flight_info/' . $this->fid;
     }
+
+    public function set_date($date) {
+        $this->date = $date;
+        $this->season = date('Y', $date);
+        if(date('m', $date) >= 11) {
+            $this->season++;
+        }
+        $month = date('m', $date);
+        $this->winter = ($month == 1 || $month == 2 || $month == 12);
+    }
 }

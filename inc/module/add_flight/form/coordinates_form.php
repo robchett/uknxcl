@@ -77,7 +77,7 @@ class coordinates_form extends form {
                     ->set_attr('required', true),
             ]
         );
-        
+
         $this->attributes['class'][] = 'form-compact';
 
         $this->h2 = 'Coordinate Flight';
@@ -91,22 +91,20 @@ class coordinates_form extends form {
         $flight->set_from_request();
         $flight->dim = 1;
 
-        $month = date('m', strtotime($this->date));
-        $flight->winter = ($month == 1 || $month == 2 || $month == 12);
-
         if (strtotime($this->date) + (30 * 24 * 60 * 60) < time()) {
             $this->force_delay = true;
             $flight->admin_info .= 'delayed as flight is old.';
         }
 
         $track = new track();
-        $track->set_task($this->coords);
+        $task = $track->set_task($this->coords);
         $flight_type = new flight_type();
-        $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $track->task->type]]);
+        $flight_type->do_retrieve(['ftid', 'multi', 'multi_defined'], ['where_equals' => ['fn' => $task->type]]);
         $flight->ftid = $flight_type->ftid;
-        $flight->multi = (!$this->ridge ? ($this->defined ? $flight_type->multi_defined : $flight_type->multi) : 1);
-        $flight->base_score = $track->task->get_distance();
-        $flight->coords = $track->task->get_coordinates();
+        $flight->set_date(strtotime($this->date));
+        $flight->multi = !$this->ridge ? flight_type::get_multiplier($flight->ftid, $flight->season, $this->defined) : 1;
+        $flight->base_score = $task->get_distance();
+        $flight->coords = $this->coords;
         $flight->score = $flight->base_score * $flight->multi;
         $flight->delayed = $this->force_delay ? true : $this->delay;
         $flight->do_save();
