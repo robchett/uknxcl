@@ -2055,8 +2055,9 @@ page_handeler.toggle_page = function ($page) {
         $page.css({left:800, top:0, position: "absolute"});
         $main.stop(true, true).animate({left: -800}, 200, 'linear', function () {
             var $children = $main.children('div');
-            $children.hide();
-            $page.show();
+            $children.addClass('remove');
+            $page.show().removeClass('remove');
+            $main.children('div.remove').remove();
             $main.css({left:0});
             $page.css({left:0, position:"relative"});
             $("a").removeClass('sel').parent('li').removeClass('sel');
