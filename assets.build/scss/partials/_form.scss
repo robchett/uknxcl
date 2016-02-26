@@ -13,7 +13,7 @@
 
 h2.form_title {
   font-weight: bold;
-  padding: 10px;
+  padding: 10px 0;
   margin-top: 10px;
   margin-bottom: 0;
   border-bottom: 1px solid $primary;
@@ -48,10 +48,10 @@ form {
         line-height: 26px;
         font-size: 14px;
         vertical-align: middle;
-        width: 150px;
+        width: 40%;
       }
       label, > div {
-        float: left;
+        display: inline-block;
       }
       input.err, form select.err, form textarea.err {
         border: 1px solid red;
@@ -223,6 +223,9 @@ form {
   }
   &#igc_upload_form {
     #igc_upload_form_field_coords {
+      > div {
+        width: 60%;
+      }
       margin-top: 10px;
       p {
         margin-bottom: 5px;
@@ -233,12 +236,11 @@ form {
         margin: 5px 0 10px;
       }
       label {
-        width: 200px;
         line-height: 16px;
-        margin-right: 10px;
+        padding-right: 10px;
       }
       input {
-        width: 414px;
+        width: 100%;
       }
     }
     #console {
@@ -284,27 +286,15 @@ form {
     }
   }
   &.form-compact {
-    input {
-      width: 197px;
-    }
-    #coords_wrapper {
-      display: block;
-      span {
-        width: 200px
+    .form-group > div {
+      width: 60%;
+      input, select, textarea {
+        width: 100%;
       }
-      input {
-        width: 400px
-      }
-    }
-    label {
-      width: 140px;
     }
     .field_select_wrapper, .field_link_wrapper, .field_date_wrapper {
-      span {
-        width: 197px !important;
-      }
       select {
-        width: 200px;
+        width: 60%;
         margin-right: 20px;
       }
       a {
@@ -312,7 +302,10 @@ form {
         color: #9d9d9d;
       }
     }
-    .field_boolean_wrapper {
+    .field_boolean_wrapper, .field_textarea_wrapper {
+      > div {
+        width: 100%;
+      }
       label {
         width: 100%;
         input {
@@ -327,7 +320,7 @@ form {
     }
     .field_textarea_wrapper {
       label, textarea {
-        width: 657px;
+        width: 100%;
       }
     }
   }
@@ -356,5 +349,16 @@ form {
         width: 153px;
       }
     }
+  }
+}
+
+#igc_form_field_pid, #igc_form_field_gid,
+#coordinate_form_field_pid, #coordinate_form_field_gid {
+  padding-bottom: 20px;
+  position: relative;
+  a {
+    position: absolute;
+    bottom: 5px;
+    right: 0;
   }
 }

@@ -32,7 +32,7 @@ class result_league extends result {
             $html = node::create('div.table_wrapper', [],
                 node::create('h3.heading', [], $data->Title) .
                 ($data->options->show_top_4 ? $data->ShowTop4($data->WHERE) : '') .
-                node::create('table.results.main', ['style' => 'width:700px'],
+                node::create('table.results.main', [],
                     $data->write_table_header($data->max_flights, $data->class_primary_key) .
                     $array->iterate_return(
                         function (scorable $pilot) use (&$class1, &$class5) {

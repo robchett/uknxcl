@@ -2,20 +2,20 @@
   overflow-x: hidden;
   height: 100%;
   position: absolute;
-  padding: 10px;
-  width: 705px;
+  width: 725px;
   .jspPane {
-    width: 705px !important;
+    width: 725px !important;
     margin-left: 0 !important;
   }
   #main {
+    padding: 10px;
     overflow: visible;
     position: relative;
     > div {
       position: relative;
       top: 0;
       left: 0;
-      width: 700px;
+      width: 100%;
       height: 100%;
       background-color: white;
     }

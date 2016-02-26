@@ -15,7 +15,6 @@ class coordinate extends \template\html {
 
     public function get_view() {
         $form = new coordinates_form();
-        $form->attributes['class'][] = 'form-compact';
         $form->wrapper_class[] = 'callout';
         $form->wrapper_class[] = 'callout-primary';
         $html = node::create('div.add_flight_section.coordinate', [],

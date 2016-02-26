@@ -35,4 +35,12 @@
       width: 100%;
     }
   }
+  form#igc_upload_form #igc_upload_form_field_coords label,
+  form#igc_upload_form #igc_upload_form_field_coords div {
+    float: none;
+    display: block;
+  }
+  form#igc_upload_form #igc_upload_form_field_coords input {
+    width: 100%;
+  }
 }

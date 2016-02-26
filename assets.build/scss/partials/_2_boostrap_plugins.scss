@@ -117,27 +117,30 @@
 }
 #igc_upload_form_field_kml {
   > div {
-    float: none;
+    display: block;
   }
   .form-control {
-    width: 80%;
+    width: 100%;
     height: 100%;
+    padding: 10px;
+    position: relative;
   }
   .fileinput {
     width: 100%;
     margin-bottom: 9px;
     display: inline-block;
-    padding: 5px;
+    padding: 0;
     background-color: #dedede;
     border: 1px solid #d0d0d0;
     box-sizing: border-box;
-    height: 37px;
+    height: 35px;
+    position: relative;
   }
 }
 
 .fileinput .form-control {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
   display: inline-block;
   margin-bottom: 0px;
   vertical-align: middle;
@@ -220,16 +223,16 @@
 }
 
 .input-group-addon:not(:first-child) {
-  float: right;
+  cursor: pointer;
+  position: absolute;
   background-color: #efefef;
   border-left: 0;
   height: 35px;
-  margin-top: -5px;
-  margin-right: -5px;
-  margin-bottom: -5px;
+  top: -1px;
+  right: 0;
   line-height: 35px;
   padding: 0 5px;
-  &.fileinput-exists {
-    margin-right: 1px;
+  &.fileremove {
+    right: 60px;
   }
 }

@@ -358,6 +358,9 @@ td,
 th {
   padding: 0; }
 
+* {
+  box-sizing: border-box; }
+
 /*!
  * Jasny Bootstrap v3.1.0 (http://jasny.github.com/bootstrap)
  * Copyright 2011-2014 Arnold Daniels.
@@ -459,25 +462,28 @@ th {
   cursor: pointer; }
 
 #igc_upload_form_field_kml > div {
-  float: none; }
+  display: block; }
 
 #igc_upload_form_field_kml .form-control {
-  width: 80%;
-  height: 100%; }
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  position: relative; }
 
 #igc_upload_form_field_kml .fileinput {
   width: 100%;
   margin-bottom: 9px;
   display: inline-block;
-  padding: 5px;
+  padding: 0;
   background-color: #dedede;
   border: 1px solid #d0d0d0;
   box-sizing: border-box;
-  height: 37px; }
+  height: 35px;
+  position: relative; }
 
 .fileinput .form-control {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
   display: inline-block;
   margin-bottom: 0px;
   vertical-align: middle;
@@ -542,17 +548,17 @@ th {
   border-color: #d6e9c6; }
 
 .input-group-addon:not(:first-child) {
-  float: right;
+  cursor: pointer;
+  position: absolute;
   background-color: #efefef;
   border-left: 0;
   height: 35px;
-  margin-top: -5px;
-  margin-right: -5px;
-  margin-bottom: -5px;
+  top: -1px;
+  right: 0;
   line-height: 35px;
   padding: 0 5px; }
-  .input-group-addon:not(:first-child).fileinput-exists {
-    margin-right: 1px; }
+  .input-group-addon:not(:first-child).fileremove {
+    right: 60px; }
 
 h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
   margin-bottom: 0; }
@@ -707,10 +713,9 @@ div.add_flight_section {
     background-color: #ffdada; }
 
 #comp_wrapper {
-  width: 730px;
   overflow: hidden; }
   #comp_wrapper #comp_list, #comp_wrapper #comp_view {
-    width: 700px;
+    width: 100%;
     float: left; }
   #comp_wrapper #comp_list {
     margin-right: 45px; }
@@ -1720,7 +1725,7 @@ ul li p {
 
 h2.form_title {
   font-weight: bold;
-  padding: 10px;
+  padding: 10px 0;
   margin-top: 10px;
   margin-bottom: 0;
   border-bottom: 1px solid #0c3f6b; }
@@ -1748,9 +1753,9 @@ form {
         line-height: 26px;
         font-size: 14px;
         vertical-align: middle;
-        width: 150px; }
+        width: 40%; }
       form fieldset .form-group label, form fieldset .form-group > div {
-        float: left; }
+        display: inline-block; }
       form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
         border: 1px solid red; }
       form fieldset .form-group .long_text span {
@@ -1881,6 +1886,8 @@ form {
     margin: auto; }
   form#igc_upload_form #igc_upload_form_field_coords {
     margin-top: 10px; }
+    form#igc_upload_form #igc_upload_form_field_coords > div {
+      width: 60%; }
     form#igc_upload_form #igc_upload_form_field_coords p {
       margin-bottom: 5px;
       font-weight: bold; }
@@ -1888,11 +1895,10 @@ form {
       float: left;
       margin: 5px 0 10px; }
     form#igc_upload_form #igc_upload_form_field_coords label {
-      width: 200px;
       line-height: 16px;
-      margin-right: 10px; }
+      padding-right: 10px; }
     form#igc_upload_form #igc_upload_form_field_coords input {
-      width: 414px; }
+      width: 100%; }
   form#igc_upload_form #console {
     color: #b60000; }
     form#igc_upload_form #console .error {
@@ -1921,34 +1927,28 @@ form {
     font-weight: bold; }
   form#igc_upload_form a.restart {
     text-align: center; }
-  form.form-compact input {
-    width: 197px; }
-  form.form-compact #coords_wrapper {
-    display: block; }
-    form.form-compact #coords_wrapper span {
-      width: 200px; }
-    form.form-compact #coords_wrapper input {
-      width: 400px; }
-  form.form-compact label {
-    width: 140px; }
-  form.form-compact .field_select_wrapper span, form.form-compact .field_link_wrapper span, form.form-compact .field_date_wrapper span {
-    width: 197px !important; }
+  form.form-compact .form-group > div {
+    width: 60%; }
+    form.form-compact .form-group > div input, form.form-compact .form-group > div select, form.form-compact .form-group > div textarea {
+      width: 100%; }
   form.form-compact .field_select_wrapper select, form.form-compact .field_link_wrapper select, form.form-compact .field_date_wrapper select {
-    width: 200px;
+    width: 60%;
     margin-right: 20px; }
   form.form-compact .field_select_wrapper a, form.form-compact .field_link_wrapper a, form.form-compact .field_date_wrapper a {
     text-decoration: underline;
     color: #9d9d9d; }
-  form.form-compact .field_boolean_wrapper label {
+  form.form-compact .field_boolean_wrapper > div, form.form-compact .field_textarea_wrapper > div {
     width: 100%; }
-    form.form-compact .field_boolean_wrapper label input {
+  form.form-compact .field_boolean_wrapper label, form.form-compact .field_textarea_wrapper label {
+    width: 100%; }
+    form.form-compact .field_boolean_wrapper label input, form.form-compact .field_textarea_wrapper label input {
       width: auto;
       margin: 0 5px 0 0; }
-  form.form-compact .field_boolean_wrapper input {
+  form.form-compact .field_boolean_wrapper input, form.form-compact .field_textarea_wrapper input {
     float: left;
     height: 26px; }
   form.form-compact .field_textarea_wrapper label, form.form-compact .field_textarea_wrapper textarea {
-    width: 657px; }
+    width: 100%; }
   form #form_wrapper p.success {
     border: solid 1px silver;
     margin: 0;
@@ -1963,6 +1963,16 @@ form {
       width: 140px; }
     form #new_glider_form_wrapper fieldset select, form #new_pilot_form_wrapper fieldset select, form #module_planner_object_declaration_form_wrapper fieldset select {
       width: 153px; }
+
+#igc_form_field_pid, #igc_form_field_gid,
+#coordinate_form_field_pid, #coordinate_form_field_gid {
+  padding-bottom: 20px;
+  position: relative; }
+  #igc_form_field_pid a, #igc_form_field_gid a,
+  #coordinate_form_field_pid a, #coordinate_form_field_gid a {
+    position: absolute;
+    bottom: 5px;
+    right: 0; }
 
 .graph_toggles {
   position: absolute;
@@ -2012,9 +2022,6 @@ div#nav {
         text-decoration: none;
         cursor: pointer; }
 
-#main #pages-12 .content {
-  padding: 0 10px; }
-
 #main #pages-12 #page_list div {
   position: relative;
   display: inline-block;
@@ -2037,7 +2044,7 @@ div#nav {
     display: block;
     border: 1px solid white;
     padding: 15px;
-    height: 125px;
+    height: 155px;
     text-align: center;
     color: #ffffff; }
 
@@ -2368,19 +2375,19 @@ div.kmltree-loading span {
   overflow-x: hidden;
   height: 100%;
   position: absolute;
-  padding: 10px;
-  width: 705px; }
+  width: 725px; }
   #main_wrapper .jspPane {
-    width: 705px !important;
+    width: 725px !important;
     margin-left: 0 !important; }
   #main_wrapper #main {
+    padding: 10px;
     overflow: visible;
     position: relative; }
     #main_wrapper #main > div {
       position: relative;
       top: 0;
       left: 0;
-      width: 700px;
+      width: 100%;
       height: 100%;
       background-color: white; }
 
@@ -2625,41 +2632,34 @@ body.waypoint_mode #waypoint_mode_help {
   width: 100px !important; }
 
 /* NEWS BOX */
-div#news {
-  width: 1420px; }
-  div#news #list_wrapper, div#news #article_wrapper {
-    width: 700px;
-    float: left; }
-  div#news #list_wrapper {
-    margin-right: 40px; }
-  div#news article {
-    overflow: hidden; }
-    div#news article div.title {
-      position: relative;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #0c3f6b; }
-      div#news article div.title span.date {
-        font-size: 13px;
-        margin-left: 10px;
-        position: absolute;
-        left: 0;
-        top: 0; }
-      div#news article div.title .name {
-        display: block;
-        text-align: center;
-        font-size: 15px;
-        font-weight: bold;
-        color: #0c3f6b; }
-      div#news article div.title span.author {
-        position: absolute;
-        right: 0;
-        font-size: 13px;
-        top: 0;
-        margin-right: 10px; }
-    div#news article div.content {
-      padding-top: 10px; }
-      div#news article div.content p {
-        margin-bottom: 10px; }
+div#news article {
+  overflow: hidden; }
+  div#news article div.title {
+    position: relative;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #0c3f6b; }
+    div#news article div.title span.date {
+      font-size: 13px;
+      margin-left: 10px;
+      position: absolute;
+      left: 0;
+      top: 0; }
+    div#news article div.title .name {
+      display: block;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      color: #0c3f6b; }
+    div#news article div.title span.author {
+      position: absolute;
+      right: 0;
+      font-size: 13px;
+      top: 0;
+      margin-right: 10px; }
+  div#news article div.content {
+    padding-top: 10px; }
+    div#news article div.content p {
+      margin-bottom: 10px; }
 
 #article_wrapper .page-header {
   position: relative; }
@@ -3064,7 +3064,9 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
     display: block; }
 
 .table_wrapper {
-  width: 700px; }
+  width: 100%; }
+  .table_wrapper table {
+    width: 100%; }
   .table_wrapper.inner {
     margin-left: 0px; }
     .table_wrapper.inner span.pos {
@@ -3085,8 +3087,7 @@ table {
   border-collapse: collapse; }
   table.results {
     border-collapse: collapse;
-    font-size: 12px;
-    width: 700px; }
+    font-size: 12px; }
     table.results tr {
       height: 24px; }
       table.results tr:nth-child(2n) {
@@ -3187,6 +3188,12 @@ table {
     box-sizing: border-box;
     margin: auto; }
     #main_wrapper #main > div {
-      width: 100%; } }
+      width: 100%; }
+  form#igc_upload_form #igc_upload_form_field_coords label,
+  form#igc_upload_form #igc_upload_form_field_coords div {
+    float: none;
+    display: block; }
+  form#igc_upload_form #igc_upload_form_field_coords input {
+    width: 100%; } }
 
 /* generated with grunt-sass-globbing */

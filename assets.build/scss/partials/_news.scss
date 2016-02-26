@@ -1,13 +1,5 @@
 /* NEWS BOX */
 div#news {
-  width: 1420px;
-  #list_wrapper, #article_wrapper {
-    width: 700px;
-    float: left;
-  }
-  #list_wrapper {
-    margin-right: 40px;
-  }
   article {
     overflow: hidden;
 

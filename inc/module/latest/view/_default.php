@@ -22,7 +22,7 @@ class _default extends \template\html {
         $wrapper = 
         node::create('h1.page-header', [], 'Latest') . 
         node::create('div.table_wrapper', [],
-            node::create('table.results.main', ['style' => 'width:700px'],
+            node::create('table.results.main', [],
                 node::create('thead', [],
                     node::create('tr', [],
                         node::create('th', [], 'ID') .

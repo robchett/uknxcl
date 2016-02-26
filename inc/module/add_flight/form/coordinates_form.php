@@ -77,6 +77,8 @@ class coordinates_form extends form {
                     ->set_attr('required', true),
             ]
         );
+        
+        $this->attributes['class'][] = 'form-compact';
 
         $this->h2 = 'Coordinate Flight';
         $this->id = 'coordinate_form';

@@ -2023,15 +2023,15 @@ function center_colorbox() {
 }
 
 function reload_scrollpane() {
-    if ($body.width() < 750) {
-        if (main_scrollpane) {
-            main_scrollpane.destroy();
-        }
-    } else if (main_scrollpane) {
-        main_scrollpane.reinitialise();
-    } else {
-        main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
-    }
+    //if ($body.width() < 750) {
+    //    if (main_scrollpane) {
+    //        main_scrollpane.destroy();
+    //    }
+    //} else if (main_scrollpane) {
+    //    main_scrollpane.reinitialise();
+    //} else {
+    //    main_scrollpane = $("#main_wrapper").jScrollPane().data('jsp');
+    //}
 }
 
 window.onresize = function () {

@@ -30,7 +30,10 @@
 }
 
 .table_wrapper {
-  width: 700px;
+  width: 100%;
+  table {
+    width: 100%;
+  }
   &.inner {
     margin-left: 0px;
     span {
@@ -58,8 +61,6 @@ table {
   &.results {
     border-collapse: collapse;
     font-size: 12px;
-    width: 700px;
-
     tr {
       height: 24px;
 
