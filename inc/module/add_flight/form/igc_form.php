@@ -145,10 +145,25 @@ class igc_form extends form {
             jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
             $form = new igc_form();
             ajax::update($form->get_html()->get());
-//            $users = new_flight_notification::get_all([]);
-//            foreach($users as $user) {
-//                Todo send email here.
-//            };
+            $users = new_flight_notification::get_all([]);
+            foreach($users as $user) {
+                $mail = new email();
+                $mail->load_template(root . '/template/email/basic.html');
+                $mail->set_recipients([$user->email]);
+                $mail->set_subject('New flight added' . ($flight->delayed ? ' - Delayed' : '') . '.');
+                $mail->replacements = [
+                    'content' => '
+                        <h2>New flight added: ' . $flight->get_primary_key() . '</h2>
+                        <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td>
+                                    <a href="' . host . '/cms/edit/2/' . $flight->get_primary_key() . '">View in CMS</a>
+                                </td>
+                            </tr>
+                        </table>'
+                ];
+                $mail->send();
+            };
         } else {
             jquery::colorbox(['html' => 'Your flight has failed to save', 'className'=> 'success failure']);
         }
