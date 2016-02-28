@@ -22,7 +22,7 @@ class _default extends \template\html {
         $form2 = new table_gen_form();
         $form2->set_from_options($table->options);
         $form2->post_submit_text = $this->get_key();
-        $html .= 
+        $html =
             node::create('h1.page-header', [], 'Results') . 
             node::create('a#options.glyphicon.glyphicon-filter', [], '') .
             node::create('div.forms_wrapper.callout.callout-primary', [], [
