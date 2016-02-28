@@ -1785,8 +1785,8 @@ form {
     form#advanced_tables .form-group label, form#basic_tables .form-group label {
       width: 105px;
       font-size: 11px;
-      height: 16px;
-      line-height: 16px; }
+      height: 26px;
+      line-height: 26px; }
     form#advanced_tables .form-group input, form#advanced_tables .form-group select, form#advanced_tables .form-group textarea, form#basic_tables .form-group input, form#basic_tables .form-group select, form#basic_tables .form-group textarea {
       width: 100px;
       font-size: 10px;
@@ -1862,12 +1862,12 @@ form {
       width: 100%;
       margin: 0; }
     form#advanced_tables .form-group.submit-group button, form#basic_tables .form-group.submit-group button {
-      width: 80%;
-      margin-right: 3%;
+      width: 66%;
+      margin-right: 4%;
       height: 25px;
       display: inline-block; }
     form#advanced_tables .form-group.submit-group a, form#basic_tables .form-group.submit-group a {
-      width: 15%;
+      width: 30%;
       display: block;
       padding: 5px;
       background-color: #ededed;

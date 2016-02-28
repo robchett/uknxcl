@@ -94,8 +94,8 @@ form {
       label {
         width: 105px;
         font-size: 11px;
-        height: 16px;
-        line-height: 16px;
+        height: 26px;
+        line-height: 26px;
       }
       input, select, textarea {
         width: 100px;
@@ -194,13 +194,13 @@ form {
           margin: 0;
         }
         button {
-          width: 80%;
-          margin-right: 3%;
+          width: 66%;
+          margin-right: 4%;
           height: 25px;
           display: inline-block;
         }
         a {
-          width: 15%;
+          width: 30%;
           @include button;
           display: inline-block;
         }
