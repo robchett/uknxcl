@@ -19,7 +19,7 @@ class flight extends table {
 
     public $title;
     public $added;
-    public $info;
+    public $vis_info;
     public $admin_info;
     public $base_score;
     public $cid;
@@ -311,7 +311,7 @@ class flight extends table {
                 node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
                 node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' = ' . $this->score)) .
                 node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], str_replace(';', '; ', $this->coords))) .
-                node::create('tr', [], node::create('td', [], 'Info') . node::create('td.info', [], $this->info)) .
+                node::create('tr', [], node::create('td', [], 'Info') . node::create('td.info', [], $this->vis_info)) .
 
                 (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kml') ?
                     node::create('tr td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map')) .
@@ -425,7 +425,7 @@ class flight extends table {
             node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' =' . $this->score)) .
             node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], $this->coord_info())) .
             $logged_data .
-            ($this->info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->info)) : '') .
+            ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) : '') .
             (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
                 node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
                 node::create('tr', [], node::create('td.center', ['colspan' => 2],
