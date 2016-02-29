@@ -146,7 +146,7 @@ class table_gen_form extends form {
     }
 
     public function get_html() {
-        \core::$inline_script[] = '$("#' . $this->id . ' #t").change(function() {
+        \core::$inline_script[] = '$("#' . $this->id . ' #layout").change(function() {
             if($(this).val() == 2) {
                 $("#' . $this->id . ' #pilot").attr("disabled", false);
             } else {
@@ -164,8 +164,9 @@ class table_gen_form extends form {
                 $this->$key = $value;
             }
         }
-        if ($options->pilot_id) {
-            unset($this->get_field_from_name('pilot')->attributes['disabled']);
+        $this->pilot = $options->pilot_id;
+        if ($this->layout == 2) {
+            $this->get_field_from_name('pilot')->disabled = false;
         }
     }
 
