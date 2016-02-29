@@ -1756,6 +1756,8 @@ form {
         width: 40%; }
       form fieldset .form-group label, form fieldset .form-group > div {
         display: inline-block; }
+      form fieldset .form-group [disabled] {
+        opacity: 0.2; }
       form fieldset .form-group input.err, form fieldset .form-group form select.err, form fieldset .form-group form textarea.err {
         border: 1px solid red; }
       form fieldset .form-group .long_text span {

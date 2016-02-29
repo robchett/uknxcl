@@ -53,6 +53,9 @@ form {
       label, > div {
         display: inline-block;
       }
+      [disabled] {
+        opacity: 0.2;
+      }
       input.err, form select.err, form textarea.err {
         border: 1px solid red;
       }
