@@ -152,7 +152,7 @@ class igc_form extends form {
                 $mail->set_recipients([$user->email]);
                 $mail->set_subject('New flight added' . ($flight->delayed ? ' - Delayed' : '') . '.');
                 $mail->replacements = [
-                    'content' => '
+                    '[content]' => '
                         <h2>New flight added: ' . $flight->get_primary_key() . '</h2>
                         <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
                             <tr>
