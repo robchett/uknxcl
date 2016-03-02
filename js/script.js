@@ -2836,7 +2836,7 @@ function Track(id, temp, split) {
     this.type = 0;
     this.id = id;
     this.google_data = null;
-    this.nxcl_data = new trackData();
+    this.nxcl_data = null;
     this.loaded = false;
     this.visible = true;
     this.temp = temp ? '&temp=true' : '';
@@ -2870,6 +2870,7 @@ function Track(id, temp, split) {
             type: 'POST',
             dataType: 'json',
             success: function (result) {
+                this.nxcl_data = new trackData(); 
                 this.nxcl_data.loadFromAjax(result);
                 callback();
             }
