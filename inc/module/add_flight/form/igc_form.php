@@ -108,7 +108,11 @@ class igc_form extends form {
             $this->force_delay = false;
             if (!$this->check_date($igc_parser)) {
                 $this->force_delay = true;
-                $flight->admin_info .= 'delayed as flight is old.';
+                $flight->admin_info .= 'delayed as flight is old.' . "\n";
+            }
+
+            if ($igc_parser->get_validated() === 0) {
+                $flight->admin_info .= 'G record invalid.' . "\n";
             }
             $this->defined = ($this->type == 'task');
 
@@ -150,7 +154,14 @@ class igc_form extends form {
                 $mail = new email();
                 $mail->load_template(root . '/template/email/basic.html');
                 $mail->set_recipients([$user->email]);
-                $mail->set_subject('New flight added' . ($flight->delayed ? ' - Delayed' : '') . '.');
+                $subject = 'New flight added';
+                if ($flight->delayed) {
+                    $subject .= ' - Delayed';
+                }
+                if ($igc_parser->get_validated() === 0) {
+                    $subject .= ' - G record invalid';
+                }
+                $mail->set_subject($subject);
                 $mail->replacements = [
                     '[content]' => '
                         <h2>New flight added: ' . $flight->get_primary_key() . '</h2>
