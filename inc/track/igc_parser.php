@@ -12,6 +12,9 @@ class igc_parser{
         $file = root . '/.cache/' . $id . '/track.json';
         $this->id = $id;
         $res = exec("/usr/local/bin/igc_parser '" . json_encode($data) . "'");
+        if (!$res) {
+            return false;
+        }
         file_put_contents($file, $res);
         $this->data = json_decode($res);
         return true;
@@ -41,6 +44,10 @@ class igc_parser{
 
     public function get_duration() {
         return $this->data->duration;
+    }
+
+    public function get_validated() {
+        return isset($this->data->validated) ? $this->data->validated : null;
     }
 
     public function has_height_data() {

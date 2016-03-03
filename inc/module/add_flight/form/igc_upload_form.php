@@ -16,6 +16,20 @@ class igc_upload_form extends form {
         Please continue to enter the flight. It will not be visible until we clear it.<br/>
         Please contact a member of the team with the reason why it has taken this long and if we see fit we will add it.';
 
+    const NO_VALIDATION = '
+        Your flight did not contain a valid G record<br/>
+        While this doen\'t currently effect flights, the record is required to make sure the IGC hasn\'t been tampered with.';
+
+    const NOT_VALID = '
+        Your flight\'s G record was not valid<br/>
+        Usually this is because it is missing entierly (GPSDump doesn\'t provide it).<br/>
+        You can continue to submit the flight and an admin will investigate the track<br/>
+        Please provide any details if you have amended the track.';
+
+    const PARSE_FAILED = '
+        We were unable to parse the flight. Please check the IGC<br/>
+        If you think the problem is us (likely) please let us know and we\'ll investigate';
+
     public $coords;
 
     public function __construct() {
@@ -80,24 +94,35 @@ class igc_upload_form extends form {
             $data['section'] = $section;
         }
 
-        $igc_parser->exec($id, $data);
+        $parsed = $igc_parser->exec($id, $data);
 
         $html = '';
 
-        if (!$this->check_date($igc_parser)) {
-            $html .= node::create('p.error', [], static::OUT_OF_BOUNDS_TEXT);
-        }
+        if ($parsed) {
+            if (!$this->check_date($igc_parser)) {
+                $html .= node::create('p.error', [], static::OUT_OF_BOUNDS_TEXT);
+            }
 
-        if ($igc_parser->get_part_count() > 1) {
-            $split = "1";
-            $html .= $this->get_choose_track_html($igc_parser);
+            $validated = $igc_parser->get_validated();
+            if ($validated === 0) {
+                $html .= node::create('p.callout.callout-warning', [], static::NOT_VALID);
+            } /*else if ($validated === null) {
+                $html .= node::create('p.callout.callout-warning', [], static::NO_VALIDATION);
+            }*/
+
+            if ($igc_parser->get_part_count() > 1) {
+                $split = "1";
+                $html .= $this->get_choose_track_html($igc_parser);
+            } else {
+                $split = "0";
+                $html .= $this->get_choose_score_html($igc_parser);
+            }
+            ajax::add_script('map.add_flight(' . $id . ',1,1,1,' . $split . ');');
         } else {
-            $split = "0";
-            $html .= $this->get_choose_score_html($igc_parser);
+            $html .= node::create('p.callout.callout-warning', [], static::PARSE_FAILED);
         }
 
         ajax::update('<div id="console">' . $html . '</div>');
-        ajax::add_script('map.add_flight(' . $id . ',1,1,1,' . $split . ');');
     }
 
     public function do_submit() {
