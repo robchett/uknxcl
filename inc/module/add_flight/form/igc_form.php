@@ -114,7 +114,7 @@ class igc_form extends form {
             if ($igc_parser->get_validated() === 0) {
                 $flight->admin_info .= 'G record invalid.' . "\n";
             }
-            $this->defined = ($this->type == 'task');
+            $flight->defined = ($this->type == 'task');
 
             $flight->duration = $igc_parser->get_duration();
 
@@ -132,14 +132,18 @@ class igc_form extends form {
                     }
                 }
             }
-            if ($this->defined) {
-                $flight->ftid = $igc_parser->get_task('task')->type;
-                $flight->base_score = $igc_parser->get_task('task')->get_distance();
-                $flight->duration = $igc_parser->get_task('task')->get_duration();
-                $flight->coords = $igc_parser->get_task('task')->get_gridref();
+            if ($flight->defined) {
+                $task = $igc_parser->get_task('declared');
+                $flight->ftid = $task->type;
+                if ($flight->ftid == \track\task::TYPE_OPEN_DISTANCE) {
+                    $flight->ftid = \track\task::TYPE_GOAL;
+                }
+                $flight->base_score = $task->get_distance();
+                $flight->duration = $task->get_duration();
+                $flight->coords = $task->get_gridref();
             }
 
-            $flight->multi = (!$this->ridge ? flight_type::get_multiplier($flight->ftid, $igc_parser->get_date('Y'), $this->defined) : 1);
+            $flight->multi = (!$flight->ridge ? flight_type::get_multiplier($flight->ftid, $igc_parser->get_date('Y'), $flight->defined) : 1);
             $flight->score = $flight->multi * $flight->base_score;
 
             $flight->delayed = $this->force_delay || $this->delay;

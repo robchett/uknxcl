@@ -191,13 +191,15 @@ class igc_upload_form extends form {
     }
 
     private function get_defined_task_select_html(igc_parser $parser) {
-        if ($task = $parser->get_task('defined')) {
+        if ($task = $parser->get_task('declared')) {
             $multiplier = flight_type::get_multiplier($task->type, date('Y'), true);
             return node::create('tr', [], [
                 node::create('td', [], $task->title),
                 node::create('td', [], number_format($task->distance, 3) . ' / ' . number_format($multiplier, 2)),
                 node::create('td', [], number_format($task->distance * $multiplier, 3)),
-                node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"task"}'], 'Choose')
+                $parser->is_task_completed() ?
+                    node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"task"}'], 'Choose') :
+                    node::create('td span.button.score_select', [], 'Not Valid')
             ]);
         }
         return '';

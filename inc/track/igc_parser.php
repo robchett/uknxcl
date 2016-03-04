@@ -68,7 +68,7 @@ class igc_parser{
     }
 
     public function is_task_completed() {
-        return isset($this->data->task->completed) && $this->data->task->completed;
+        return isset($this->data->task->complete) && $this->data->task->complete;
     }
 
     public function get_task($type) {

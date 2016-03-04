@@ -33,6 +33,9 @@ class flight_type extends table {
         if (!isset(self::$all_rows)) {
             self::$all_rows = flight_type::get_all([]);
         }
+        if ($defined && $type == static::OD_ID) {
+            $type = static::GO_ID;
+        }
         foreach (self::$all_rows as $flight_type) {
             if ($flight_type->ftid == $type) {
                 if ($season < 2001) {
