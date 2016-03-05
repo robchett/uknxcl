@@ -404,7 +404,7 @@ function Track(id, temp, split) {
             type: 'POST',
             dataType: 'json',
             success: function (result) {
-                this.nxcl_data = new trackData(); 
+                this.nxcl_data = new trackData();
                 this.nxcl_data.loadFromAjax(result);
                 callback();
             }
@@ -427,7 +427,40 @@ function Track(id, temp, split) {
         if (this.nxcl_data && this.google_data) {
             this.loaded = true;
             this.add_marker();
-            $('#tree_content .track_' + this.id).html(map.isMap() ? this.nxcl_data.html : this.nxcl_data.html_earth);
+            $('#tree_content .track_' + this.id).html("\
+<div class='kmltree' data-post='{\"id\":" + this.id + "}'>\
+    <ul>\
+        <li data-path='{\"type\":\"flight\",\"path\":[false]}' class=\"kmltree-item check KmlFolder visible open\">\
+            <div class=\"expander\"></div><div class=\"toggler\"></div>Flight: " + this.id + "\
+            <ul>\
+                <li data-path='{\"type\":\"flight\",\"path\":[0]}' class=\"kmltree-item check KmlFolder visible closed\">\
+                    <div class=\"toggler\"></div>Flight\
+                </li>\
+                <li data-path='{\"type\":\"flight\",\"path\":[1]}' class=\"kmltree-item check KmlFolder visible open\">\
+                    <div class=\"expander\"></div><div class=\"toggler\"></div>Task\
+                    <ul>\
+                        <li data-path='{\"type\":\"flight\",\"path\":[1,0]}' class=\"kmltree-item check KmlFolder visible\">\
+                            <div class=\"toggler\"></div>Open Distance\
+                        </li>\
+                        <li data-path='{\"type\":\"flight\",\"path\":[1,1]}' class=\"kmltree-item check KmlFolder visible\">\
+                            <div class=\"toggler\"></div>Out & Return\
+                        </li>\
+                        <li data-path='{\"type\":\"flight\",\"path\":[1,2]}' class=\"kmltree-item check KmlFolder visible\">\
+                            <div class=\"toggler\"></div>Triangle\
+                        </li>\
+                        <li data-path='{\"type\":\"flight\",\"path\":[1,3]}' class=\"kmltree-item check KmlFolder visible\">\
+                            <div class=\"toggler\"></div>Flat Triangle\
+                        </li>\
+                        <li data-path='{\"type\":\"flight\",\"path\":[1,4]}' class=\"kmltree-item check KmlFolder visible\">\
+                            <div class=\"toggler\"></div>Defined\
+                        </li>\
+                    </ul>\
+                </li>\
+            </ul>\
+        </li>\
+    </ul>\
+</div>"
+        )
             map.swap(this);
         }
     };
@@ -1110,13 +1143,21 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this._map_recursiveHide = function (relative_placemarks) {
-        for (var i = 0; i < relative_placemarks.length; i++) {
-            if (typeof relative_placemarks[i] == 'object') {
-                this.recursiveHide(relative_placemarks[i]);
-            } else {
-                var object = this.root.google_data.placemarks[relative_placemarks[i]];
-                if (typeof object.polyline != 'undefined') object.polyline.setMap(null);
-                if (typeof object.polygon != 'undefined') object.polygon.setMap(null);
+        if (typeof relative_placemarks == 'undefined') {
+            this.recursiveHide(this.root.google_data.structure[0][0]);
+        } else if (typeof relative_placemarks == 'number') {
+            var object = this.root.google_data.placemarks[relative_placemarks];
+            if (typeof object.polyline != 'undefined') object.polyline.setMap(null);
+            if (typeof object.polygon != 'undefined') object.polygon.setMap(null);
+        } else {
+            for (var i = 0; i < relative_placemarks.length; i++) {
+                if (typeof relative_placemarks[i] == 'object') {
+                    this.recursiveHide(relative_placemarks[i]);
+                } else {
+                    var object = this.root.google_data.placemarks[relative_placemarks[i]];
+                    if (typeof object.polyline != 'undefined') object.polyline.setMap(null);
+                    if (typeof object.polygon != 'undefined') object.polygon.setMap(null);
+                }
             }
         }
     };
@@ -1133,13 +1174,21 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     };
 
     this._map_recursiveShow = function (relative_placemarks) {
-        for (var i = 0; i < relative_placemarks.length; i++) {
-            if (typeof relative_placemarks[i] == 'object') {
-                this.recursiveShow(relative_placemarks[i]);
-            } else {
-                var object = this.root.google_data.placemarks[relative_placemarks[i]];
-                if (typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
-                if (typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
+        if (typeof relative_placemarks == 'undefined') {
+            this.recursiveShow(this.root.google_data.structure[0][0]);
+        } else if (typeof relative_placemarks == 'number') {
+            var object = this.root.google_data.placemarks[relative_placemarks];
+            if (typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
+            if (typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
+        } else {
+            for (var i = 0; i < relative_placemarks.length; i++) {
+                if (typeof relative_placemarks[i] == 'object') {
+                    this.recursiveShow(relative_placemarks[i]);
+                } else {
+                    var object = this.root.google_data.placemarks[relative_placemarks[i]];
+                    if (typeof object.polyline != 'undefined') object.polyline.setMap(map.internal_map);
+                    if (typeof object.polygon != 'undefined') object.polygon.setMap(map.internal_map);
+                }
             }
         }
     }
