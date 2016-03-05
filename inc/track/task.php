@@ -28,10 +28,6 @@ class task {
 
     }
 
-    public function is_valid(track $set) {
-        return $this->completes_task();
-    }
-
     public function get_distance() {
         return $this->distance;
     }
