@@ -408,9 +408,9 @@ class flight extends table {
         if ($this->did > 1) {
             // TODO get from igc_parser
             $logged_data =
-                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', $this->track->get_launch_time()))) .
-                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', $this->track->get_land_time()))) .
-                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', $this->track->get_duration())));
+                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', /*$this->track->get_launch_time()*/1))) .
+                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', /*$this->track->get_land_time()*/1))) .
+                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', /*$this->track->get_duration()*/1)));
         } else {
             $logged_data = '';
         }
