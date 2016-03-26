@@ -145,7 +145,7 @@ class igc_upload_form extends form {
     }
 
     public function do_choose_track() {
-        $this->do_calc_score($_REQUEST['track'], $_REQUEST['section']);
+        $this->do_calc_score($_REQUEST['track'], (int) $_REQUEST['section']);
     }
 
     private function get_choose_track_html(igc_parser $track) {
@@ -157,7 +157,8 @@ class igc_upload_form extends form {
                 node::create('td', [], $part->points),
                 node::create('td a.choose.button', [
                     'data-ajax-click' => get_class($this) . ':do_choose_track',
-                    'data-ajax-post'  => '{"track":' . $track->id . ', "section": ' . $key . '}'
+                    'data-ajax-post'  => '{"track":' . $track->id . ', "section": ' . $key . '}',
+                    'data-ajax-shroud'  => '#igc_upload_form_wrapper',
                 ], 'Choose')
             ]);
         }

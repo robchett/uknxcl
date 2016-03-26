@@ -3,6 +3,8 @@
 namespace track;
 
 
+use classes\error_handler;
+
 class igc_parser{
 
     protected $data;
@@ -11,6 +13,7 @@ class igc_parser{
     public function exec($id, $data) {
         $file = root . '/.cache/' . $id . '/track.json';
         $this->id = $id;
+        error_handler::debug('IGC Parser call', $data);
         $res = exec("/usr/local/bin/igc_parser '" . json_encode($data) . "'");
         if (!$res) {
             return false;
