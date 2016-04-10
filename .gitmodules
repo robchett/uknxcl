@@ -1,0 +1,3 @@
+[submodule "igc_parser"]
+	path = igc_parser
+	url = https://github.com/robchett/igc_parser
