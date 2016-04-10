@@ -14,7 +14,7 @@ class igc_parser{
         $file = root . '/.cache/' . $id . '/track.json';
         $this->id = $id;
         error_handler::debug('IGC Parser call', $data);
-        $res = exec("/usr/local/bin/igc_parser '" . json_encode($data) . "'");
+        $res = exec(root . "/igc_parser/igc_parser '" . json_encode($data) . "'");
         if (!$res) {
             return false;
         }

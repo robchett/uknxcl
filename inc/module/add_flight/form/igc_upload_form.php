@@ -185,6 +185,7 @@ class igc_upload_form extends form {
                 $this->get_task_select_html($parser, 'open_distance', flight_type::get_multiplier(flight_type::OD_ID)),
                 $this->get_task_select_html($parser, 'out_and_return', flight_type::get_multiplier(flight_type::OR_ID)),
                 $this->get_task_select_html($parser, 'triangle', flight_type::get_multiplier(flight_type::TR_ID)),
+                $this->get_task_select_html($parser, 'flat_triangle', flight_type::get_multiplier(flight_type::FT_ID)),
                 $this->get_defined_task_select_html($parser)
             ])
         ]);

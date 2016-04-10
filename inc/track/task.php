@@ -7,11 +7,13 @@ class task {
     const TYPE_OUT_AND_RETURN = 2;
     const TYPE_GOAL = 3;
     const TYPE_TRIANGLE = 4;
+    const TYPE_FLAT_TRIANGLE = 5;
 
     static $names = [
         self::TYPE_OPEN_DISTANCE => 'Open Distance',
         self::TYPE_OUT_AND_RETURN => 'Out & Return',
         self::TYPE_TRIANGLE => 'Triangle',
+        self::TYPE_FLAT_TRIANGLE => 'Flat Triangle',
     ];
 
     public $duration;

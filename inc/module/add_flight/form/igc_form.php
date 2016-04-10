@@ -118,7 +118,7 @@ class igc_form extends form {
 
             $flight->duration = $igc_parser->get_duration();
 
-            foreach (['od' => 'open_distance', 'or' => 'out_and_return', 'tr' => 'triangle'] as $task_id => $name) {
+            foreach (['od' => 'open_distance', 'or' => 'out_and_return', 'tr' => 'triangle', 'ft' => 'flat_triangle'] as $task_id => $name) {
                 if ($task = $igc_parser->get_task($name)) {
                     $flight->{$task_id . '_score'} = $task->get_distance();
                     $flight->{$task_id . '_time'} = $task->get_duration();
