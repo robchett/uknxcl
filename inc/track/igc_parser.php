@@ -13,8 +13,10 @@ class igc_parser{
     public function exec($id, $data) {
         $file = root . '/.cache/' . $id . '/track.json';
         $this->id = $id;
+        chdir(root . '/igc_parser');
         error_handler::debug('IGC Parser call', $data);
-        $res = exec(root . "/igc_parser/igc_parser '" . json_encode($data) . "'");
+        $res = exec("igc_parser '" . json_encode($data) . "'");
+        chdir(root);
         if (!$res) {
             return false;
         }
