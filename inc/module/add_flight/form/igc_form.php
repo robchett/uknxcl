@@ -53,7 +53,7 @@ class igc_form extends form {
                 form::create('field_boolean', 'ridge')
                     ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
                     ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'info')
+                form::create('field_textarea', 'vis_info')
                     ->set_attr('label', 'Please write any extra information you wish to be made public here')
                     ->set_attr('required', false)
                     ->add_wrapper_class('long_text'),

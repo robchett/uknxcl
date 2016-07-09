@@ -129,7 +129,11 @@ class igc_upload_form extends form {
         $time = time();
         mkdir(root . '/.cache/' . $time);
         $file = root . '/.cache/' . $time . '/track.igc';
-        move_uploaded_file($_FILES['kml']['tmp_name'], $file);
+        if (isset($_FILES['kml'])) {
+            move_uploaded_file($_FILES['kml']['tmp_name'], $file);
+        } else {
+            copy($this->file, $file);
+        }
 
         $this->do_calc_score($time);
     }

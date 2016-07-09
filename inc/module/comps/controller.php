@@ -13,11 +13,11 @@ class controller extends module {
 
     public function __controller(array $path) {
         $this->current = new comp();
-        if (isset($path[1])) {
-            $this->current->do_retrieve_from_id([], $path[1]);
-        }
-        if ($this->current->cid) {
+        if (isset($path[1]) && $this->current->do_retrieve_from_id([], $path[1])) {
             $this->view = 'comp';
+            if (isset($path[2]) && $path[2] == 'create') {
+                $this->view = 'create';
+            }
         }
         parent::__controller($path);
     }
