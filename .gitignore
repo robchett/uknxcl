@@ -9,3 +9,4 @@ tmp
 plugins
 .sass-cache
 node_modules
+vendor
