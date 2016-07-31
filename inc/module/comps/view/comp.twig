@@ -1,0 +1,24 @@
+{% if html is defined and html %}
+    {{ html }}
+{%  else %}
+<table>
+    <thead>
+    <tr>
+        <th>Pilot</th>
+        {% for i in 1..turnpoints %}
+            <th>Turnpoint {{ i }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    {% for row in rows %}
+        <tr>
+            <td>{{ row.pilot }}</td>
+            {% for i in 1..turnpoints %}
+                <th>{{ row.made_turnpoints > 0 ? '#10004;' : '&#10006;' }}</th>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<a class="comp_back" href="/comps">Back to list</a>

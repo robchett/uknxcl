@@ -1,0 +1,14 @@
+<form id="igc_upload_form">
+    <div id="console" class="callout callout-primary">
+
+    </div>
+</form>
+<div id="second_form" class="callout callout-primary">
+
+</div>
+
+<ul>
+    {% for row in rows %}
+        <li><a class="btn" data-ajax-post="{{ row.data | json_encode }}" data-ajax-click="\module\comps\object\comp:add_flight">Process flight for {{ row.name }}{% if row.matched %}   (Processed){% endif %}</a></li>
+    {% endfor %}
+</ul>

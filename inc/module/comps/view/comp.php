@@ -4,31 +4,30 @@ namespace module\comps\view;
 use classes\ajax;
 use classes\view;
 use html\node;
+use traits\twig_view;
 
 class comp extends \template\html {
+    use twig_view;
 
     /** @vat \module\comps\controller */
     public $module;
 
-    /** @return \html\node */
-    public function get_view() {
-        $html = '';
-        $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/points.js');
-        if ($file) {
-            $data = json_decode($file);
-            $html .= $data->html;
-        }
-        $html .= node::create('a.comp_back.button', ['href' => '/comps'], 'Back To List');
+    function get_template_file() {
+        return 'inc/module/comps/view/comp.twig';
+    }
 
-        if (!ajax) {
-            \core::$inline_script[] = "
-            map.callback(function(map) {
-                map.add_comp(" . $this->module->current->cid . ");
-            }); ";
-        } else {
-            ajax::add_script('map.add_comp(' . $this->module->current->cid . ');');
-        }
-        return $html;
+    function get_template_data() {
+        $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/points.js');
+        $data = json_decode($file);
+        return $data;
+    }
+
+    public function get_js() {
+        return "map.callback(function(map) {map.add_comp(" . $this->module->current->cid . ")});";
+    }
+
+    public function get_js_ajax() {
+        return 'map.add_comp(' . $this->module->current->cid . ');';
     }
 }
  

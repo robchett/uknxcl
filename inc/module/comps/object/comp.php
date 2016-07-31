@@ -271,7 +271,7 @@ class comp extends table {
         $form = new igc_upload_form();
         $form->file = $_REQUEST['path'];
         $form->coords = implode(';', array_map(function($coord) {
-            $point = new lat_lng($coord->lat, $coord->lng);
+            $point = new lat_lng($coord->lat, $coord->lon);
             return geometry::lat_long_to_os($point);
         }, $coords));
         $form->do_submit();

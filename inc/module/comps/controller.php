@@ -15,9 +15,9 @@ class controller extends module {
         $this->current = new comp();
         if (isset($path[1]) && $this->current->do_retrieve_from_id([], $path[1])) {
             $this->view = 'comp';
-            if (isset($path[2]) && $path[2] == 'create') {
-                $this->view = 'create';
-            }
+        }
+        if (isset($path[1]) && $path[1] == 'create' && $this->current->do_retrieve_from_id([], $path[2])) {
+            $this->view = 'create';
         }
         parent::__controller($path);
     }
@@ -38,8 +38,8 @@ class controller extends module {
     public function do_generate_all() {
         $comps = comp::get_all([]);
         $comps->iterate(function (comp $comp) {
-                $comp->do_zip_to_comp();
-            }
+            $comp->do_zip_to_comp();
+        }
         );
     }
 
