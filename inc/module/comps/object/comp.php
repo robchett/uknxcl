@@ -59,6 +59,7 @@ class comp extends table {
             $this->coords = strip_tags($this->coords);
             $this->coords = preg_replace("/\r/s", "", $this->coords);
             $this->coords = preg_replace("/\n+/s", "\n", $this->coords);
+            $this->coords = str_replace("&nbsp;", " ", $this->coords);
             $this->coords = html_entity_decode($this->coords);
             if (!json_decode($this->coords)) {
                 if (strstr($this->coords, 'lat:')) {
@@ -105,7 +106,8 @@ class comp extends table {
     private function set_task_from_html() {
         $task = [];
         $matches = [];
-        preg_match_all('/\d+\s(.*?)\s.*?km\s.*?\s(\d+)\sm.*?Lat: ([\d.]*) Lon: ([\-\d.]*)/', $this->coords, $matches);
+        preg_match_all('/([A-Z]*)\s*[\d,]*\skm.*?(\d+)m.*?Lat: ([\d.]*) Lon: ([\-\d.]*)/', $this->coords, $matches);
+
         foreach ($matches[0] as $key => $match) {
             $coord = new \stdClass();
             $coord->lat = $matches[3][$key];
