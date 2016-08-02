@@ -17,7 +17,10 @@ class comp extends \template\html {
     }
 
     function get_template_data() {
-        $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/points.js');
+        if (file_exists(root . '/uploads/comp/' . $this->module->current->cid . '/points.js')) {
+            rename(root . '/uploads/comp/' . $this->module->current->cid . '/points.js', root . '/uploads/comp/' . $this->module->current->cid . '/comp.js');
+        }
+        $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/comp.js');
         $data = json_decode($file);
         return $data;
     }
