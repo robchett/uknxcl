@@ -39,6 +39,7 @@ class table_gen_form_basic extends form {
                         10 => 'Pilot',
                         12 => 'Hangies',
                         16 => 'Records',
+                        17 => 'Dales',
                     ]
                 )
                 ->set_attr('label', 'League Type'),

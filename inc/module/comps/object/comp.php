@@ -171,14 +171,24 @@ class comp extends table {
         return $out;
     }
 
+    public function get_js_file() {
+        $old = root . '/uploads/comp/' . $this->get_primary_key() . '/points.js';
+        $new = root . '/uploads/comp/' . $this->get_primary_key() . '/comp.js';
+        if (file_exists($old)) {
+            rename($old, $new);
+        }
+        return $new;
+    }
+
     /**
      *
      */
-    public function get_js() {
+    public static function get_js() {
         if (isset($_REQUEST['id'])) {
-            $id = (int) $_REQUEST['id'];
+            $comp = new comp();
+            $comp->set_primary_key($_REQUEST['id']);
             header("Content-type: application/json");
-            die(preg_replace('/\s+/im', ' ', file_get_contents(root . '/uploads/comp/' . $id . '/points.js')));
+            die(preg_replace('/\s+/im', ' ', file_get_contents($comp->get_js_file())));
         }
     }
 
@@ -202,6 +212,13 @@ class comp extends table {
                     $zip->open(root . $this->file);
                     $zip->extractTo($root . '/');
                     $files = glob($root . '/*.igc');
+                    $files = array_map(function($file) {
+                        $exp = explode("/", $file);
+                        return [
+                            'name' => trim(preg_replace('/[^a-zA-Z ]/', '', substr(end($exp), 0, -3))),
+                            'source' => $file
+                        ];
+                    }, $files);
                     if ($files) {
                         $coords = json_decode($this->coords);
                         $parser = new igc_parser();
@@ -244,14 +261,19 @@ class comp extends table {
             } else if ($_REQUEST['type'] == 'igc') {
                 $fullPath = root . '/uploads/comp/' . $id . '/track.igc';
             } else if ($_REQUEST['type'] == 'kmz') {
-                $zip = zip_open(root . '/uploads/comp/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
-                $fullPath = zip_read($zip);
-                $size = zip_entry_filesize($fullPath);
-                $file = zip_entry_read($fullPath, $size);
+                if (file_exists(root . '/uploads/comp/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz')) {
+                    $zip = zip_open(root . '/uploads/comp/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/track.kmz');
+                    $fullPath = zip_read($zip);
+                    $size = zip_entry_filesize($fullPath);
+                    $file = zip_entry_read($fullPath, $size);
+                    zip_close($zip);
+                } else {
+                    $file = file_get_contents(root . '/uploads/comp/' . (isset($_REQUEST['temp']) ? 'temp/' : '') . $id . '/comp.kml');
+                    $size = mb_strlen($file, "UTF-8");
+                }
                 header("Content-length: $size");
                 header('Content-Disposition: filename="' . $id . (!isset($_REQUEST['temp']) ? '-' . $this->type . '_' . date('Y', $this->date) . '_round' . $this->round . '_task' . $this->task : '') . '.kml"');
                 echo $file;
-                zip_close($zip);
                 return;
             }
             if ($fullPath && $fd = fopen($fullPath, "r")) {

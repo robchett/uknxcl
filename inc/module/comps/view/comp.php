@@ -1,9 +1,7 @@
 <?php
 namespace module\comps\view;
 
-use classes\ajax;
-use classes\view;
-use html\node;
+use classes\error_handler;
 use traits\twig_view;
 
 class comp extends \template\html {
@@ -17,11 +15,11 @@ class comp extends \template\html {
     }
 
     function get_template_data() {
-        if (file_exists(root . '/uploads/comp/' . $this->module->current->cid . '/points.js')) {
-            rename(root . '/uploads/comp/' . $this->module->current->cid . '/points.js', root . '/uploads/comp/' . $this->module->current->cid . '/comp.js');
+        $file = file_get_contents($this->module->current->get_js_file());
+        $data = json_decode($file) || [];
+        if ($data === []) {
+            error_handler::debug('Json decode error', ['message' => json_last_error_msg()]);
         }
-        $file = file_get_contents(root . '/uploads/comp/' . $this->module->current->cid . '/comp.js');
-        $data = json_decode($file);
         return $data;
     }
 

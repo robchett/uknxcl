@@ -298,6 +298,11 @@ class league_table {
             case(16):
                 $this->options->layout = league_table_options::LAYOUT_RECORDS;
                 break;
+
+            case(17):
+                $this->options->set_club_id(31);
+                $this->options->set_launched_from('SD,SE,NY');
+                break;
         }
     }
 
@@ -352,10 +357,10 @@ class league_table {
             'score',
             'defined',
             'lid'], [
-            'join'  => [
+            'join' => [
                 'glider g' => 'flight.gid=g.gid',
-                'pilot p'  => 'p.pid = flight.pid',
-                'club c'   => 'c.cid=flight.cid'],
+                'pilot p' => 'p.pid = flight.pid',
+                'club c' => 'c.cid=flight.cid'],
             'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012']);
         $array = new table_array();
         $flights->iterate(
@@ -448,33 +453,33 @@ class league_table {
             }
 
             $this->flights = flight::get_all([
-                    'fid',
-                    'p.pid AS p_pid',
-                    'g.gid',
-                    $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID',
-                    'p.name AS p_name',
-                    $this->S_alias . '.title AS c_name',
-                    'g.class AS class',
-                    'g.name AS g_name',
-                    'gm.title AS gm_title',
-                    'g.kingpost AS g_kingpost',
-                    'did',
-                    'defined',
-                    'lid',
-                    'multi',
-                    'ftid',
-                    $this->modifier_string . ' AS score',
-                    'date',
-                    'coords'],
+                'fid',
+                'p.pid AS p_pid',
+                'g.gid',
+                $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID',
+                'p.name AS p_name',
+                $this->S_alias . '.title AS c_name',
+                'g.class AS class',
+                'g.name AS g_name',
+                'gm.title AS gm_title',
+                'g.kingpost AS g_kingpost',
+                'did',
+                'defined',
+                'lid',
+                'multi',
+                'ftid',
+                $this->modifier_string . ' AS score',
+                'date',
+                'coords'],
                 [
-                    'join'       => [
-                        'glider g'        => 'flight.gid=g.gid',
-                        'club c'          => 'flight.cid=c.cid',
-                        'pilot p'         => 'flight.pid=p.pid',
+                    'join' => [
+                        'glider g' => 'flight.gid=g.gid',
+                        'club c' => 'flight.cid=c.cid',
+                        'pilot p' => 'flight.pid=p.pid',
                         'manufacturer gm' => 'g.mid = gm.mid'
                     ],
-                    'where'      => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
-                    'order'      => $this->OrderBy . ' DESC',
+                    'where' => (is_array($this->where) ? implode(' AND ', $this->where) : $this->where),
+                    'order' => $this->OrderBy . ' DESC',
                     'parameters' => $this->parameters,
                 ]
             );
@@ -512,7 +517,7 @@ class league_table {
      * Generates a sub table showing the top flights in each category.
      *
      * @param string $where - a complete sql WHERE clause
-     * @param array  $params
+     * @param array $params
      *
      * @return string
      */
@@ -534,16 +539,16 @@ class league_table {
                 $params['ftid'] = $i;
                 $flight = new flight();
                 $flight->do_retrieve(['flight.*', $this->class . '.name AS name', 'glider.class AS class'], [
-                        'join'       => flight::$default_joins,
-                        'where'      => $where_extend,
-                        'order'      => 'score DESC',
+                        'join' => flight::$default_joins,
+                        'where' => $where_extend,
+                        'order' => 'score DESC',
                         'parameters' => $params
                     ]
                 );
                 if (isset($flight->fid) && $flight->fid) {
                     $prefix = $flight->name . ' (' . ($flight->class == 5 ? 'R' : 'F') . ') ';
                     $html .= $flight->to_print($prefix)
-                                    ->get();
+                        ->get();
                 } else {
                     $html .= node::create('td', [], 'No Flights Fit');
                 }

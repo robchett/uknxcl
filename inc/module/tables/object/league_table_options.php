@@ -9,6 +9,7 @@ class league_table_options {
     public $parent;
     public $official = 1;
     public $pilot_id = null;
+    public $club_id = null;
     public $launches = [1, 2, 3];
     public $types = [1, 2, 3, 4, 5];
     public $winter = null;
@@ -26,6 +27,7 @@ class league_table_options {
     public $minimum_score = 10;
     public $date = null;
     public $flown_through = [];
+    public $launch_areas = [];
     public $handicap = false;
     public $handicap_kingpost = 1;
     public $handicap_rigid = 1;
@@ -60,8 +62,10 @@ class league_table_options {
         $this->get_year();
         $this->get_class();
         $this->get_pilot_id();
+        $this->get_club_id();
         $this->get_glider_mode();
         $this->get_flown_through();
+        $this->get_launched_from();
         $this->get_minimum_score();
     }
 
@@ -279,11 +283,46 @@ class league_table_options {
         }
     }
 
+    public function set_club_id($value) {
+        if (is_numeric($value)) {
+            $this->club_id = $value;
+        }
+    }
+
+    public function get_club_id() {
+        if (!is_null($this->club_id)) {
+            $this->parent->where[] = 'c.cid=:cid';
+            $this->parent->parameters['cid'] = $this->club_id;
+        }
+    }
     public function get_glider_mode() {
         if ($this->glider_mode) {
             $this->parent->set_glider_view();
         }
 
+    }
+
+    public function set_launched_from($grid_refs) {
+        $parts = explode(',', $grid_refs);
+        foreach ($parts as $ref) {
+            if (strlen($ref) == 2) {
+                $this->launch_areas[] = strtoupper($ref);
+            }
+        }
+    }
+
+    public function get_launched_from() {
+        if ($this->launch_areas) {
+            $sql = [];
+            foreach ($this->launch_areas as $grid) {
+                if (ctype_alpha($grid)) {
+                    $sql[] = 'os_codes LIKE "%' . $grid . '%"';
+                }
+            }
+            if ($sql) {
+                $this->parent->where[] = '(' . implode(' OR ', $sql) . ')';
+            }
+        }
     }
 
     public function set_flown_through($grid_refs) {
