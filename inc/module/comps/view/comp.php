@@ -20,7 +20,7 @@ class comp extends \template\html {
         if ($data === []) {
             error_handler::debug('Json decode error', ['message' => json_last_error_msg()]);
         }
-        return $data;
+        return (array) $data;
     }
 
     public function get_js() {
