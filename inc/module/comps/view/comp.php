@@ -16,7 +16,7 @@ class comp extends \template\html {
 
     function get_template_data() {
         $file = file_get_contents($this->module->current->get_js_file());
-        $data = json_decode($file) || [];
+        $data = json_decode($file) ?: [];
         if ($data === []) {
             error_handler::debug('Json decode error', ['message' => json_last_error_msg()]);
         }
