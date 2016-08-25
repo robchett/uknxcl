@@ -2052,14 +2052,14 @@ window.onresize = function () {
 page_handeler.toggle_page = function ($page) {
     if ($page.css('z-index') != 2) {
         var $main = $('#main');
-        $page.css({left:800, top:0, position: "absolute"});
+        $page.css({left:800, top:10, position: "absolute"});
         $main.stop(true, true).animate({left: -800}, 200, 'linear', function () {
             var $children = $main.children('div');
             $children.addClass('remove');
             $page.show().removeClass('remove');
             $main.children('div.remove').remove();
             $main.css({left:0});
-            $page.css({left:0, position:"relative"});
+            $page.css({left:0, position:"relative", top: 0});
             $("a").removeClass('sel').parent('li').removeClass('sel');
             var $links = $('a[href="' + $page.data('url') + '"]');
             $links.addClass('sel').parent('li').addClass('sel');
