@@ -8,6 +8,7 @@ use classes\geometry;
 use classes\get;
 use classes\jquery;
 use classes\table;
+use classes\twig;
 use html\node;
 use track\track;
 use traits\table_trait;
@@ -106,6 +107,36 @@ class flight extends table {
     ];
     public $go_distance;
 
+    const DOWNLOAD_IGC = 'igc';
+    const DOWNLOAD_KML = 'kml';
+    const DOWNLOAD_JSON = 'json';
+    const DOWNLOAD_KML_SPLIT = 'kml_split';
+    const DOWNLOAD_KML_EARTH = 'kml_earth';
+
+    public function get_download_path($type, $tmp = false) {
+        switch ($type) {
+            case static::DOWNLOAD_KML:
+                $filename = 'track.kml';
+                break;
+            case static::DOWNLOAD_KML_EARTH:
+                $filename = 'track_earth.kml';
+                break;
+            case static::DOWNLOAD_KML_SPLIT:
+                $filename = 'track_split.kml';
+                break;
+            case static::DOWNLOAD_JSON:
+                $filename = 'track.js';
+                break;
+            case static::DOWNLOAD_IGC:
+            default:
+                $filename = 'track.igc';
+        }
+        return root . ($tmp ? '/.cache/' : '/uploads/flight/') . $this->get_primary_key() . '/' . $filename;
+    }
+
+    public function has_download($type) {
+        return file_exists($this->get_download_path($type, $tmp = false));
+    }
 
     /**
      *
@@ -120,20 +151,16 @@ class flight extends table {
             ]
         );
         $temp = isset($_REQUEST['temp']);
-        header("Content-type: application/octet-stream");
-        header("Cache-control: private");
-        $fullPath = root . ($temp ? '/.cache/' : '/uploads/flight/') . $id . '/';
+        $type = $_REQUEST['type'];
+        if ($type == static::DOWNLOAD_KML && isset($_REQUEST['split'])) {
+            $type = static::DOWNLOAD_KML_SPLIT;
+        }
         if ((isset($this->fid) && $this->fid) || $temp) {
-            $ext = 'kml';
-            if (!isset($_REQUEST['type']) || $_REQUEST['type'] == 'kml_earth') {
-                $fullPath .= 'track_earth.kml';
-            } else if ($_REQUEST['type'] == 'igc') {
-                $ext = 'igc';
-                $fullPath .= 'track.igc';
-            } else if ($_REQUEST['type'] == 'kml') {
-                $fullPath .= 'track' . (isset($_REQUEST['split']) ? '_split' : '') . '.kml';
-            }
+            $fullPath = $this->get_download_path($type, $temp);
             $fsize = filesize($fullPath);
+            $ext = end(explode('.', $fullPath));
+            header("Content-type: application/octet-stream");
+            header("Cache-control: private");
             header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . $this->date . '.' . $ext . '"');
             header("Content-length: $fsize");
             echo file_get_contents($fullPath);
@@ -382,13 +409,17 @@ class flight extends table {
      * @return string
      */
     private function coord_info() {
-        $html = '';
+        $env = [];
         $coordinates = explode(';', $this->coords);
         foreach ($coordinates as $coord) {
             $lat_lng = geometry::os_to_lat_long($coord);
-            $html .= 'Lat Long: ' . ($lat_lng->lat() > 0 ? 'N' : 'S') . number_format(abs($lat_lng->lat()), 5) . ', ' . ($lat_lng->lng() > 0 ? 'E' : 'W') . number_format(abs($lat_lng->lng()), 5) . '; OS: ' . $coord . '<br/>';
+            $env[] = [
+                'lat' => $lat_lng->lat(),
+                'lng' => $lat_lng->lng(),
+                'os' => $coord
+            ];
         }
-        return $html;
+        return $env;
     }
 
     public function move_temp_files($temp_id) {
@@ -405,42 +436,21 @@ class flight extends table {
      * @return string
      */
     public function get_info() {
-        if ($this->did > 1) {
-            // TODO get from igc_parser
-            $logged_data =
-                node::create('tr', [], node::create('td', [], 'Launched@') . node::create('td', [], date('H:i:s', /*$this->track->get_launch_time()*/1))) .
-                node::create('tr', [], node::create('td', [], 'Landed@') . node::create('td', [], date('H:i:s', /*$this->track->get_land_time()*/1))) .
-                node::create('tr', [], node::create('td', [], 'Duration') . node::create('td', [], date('H:i:s', /*$this->track->get_duration()*/1)));
-        } else {
-            $logged_data = '';
-        }
-        $html = node::create('table', ['width' => '100%'],
-            node::create('tr', [], node::create('td', [], 'Flight ID') . node::create('td', [], $this->fid)) .
-            node::create('tr', [], node::create('td', [], 'Glider') . node::create('td', [], $this->manufacturer_title . ' - ' . $this->glider->name)) .
-            node::create('tr', [], node::create('td', [], 'Club') . node::create('td', [], $this->club->title)) .
-            node::create('tr', [], node::create('td', [], 'Defined') . node::create('td', [], get::bool($this->defined))) .
-            node::create('tr', [], node::create('td', [], 'Launch') . node::create('td', [], get::launch($this->lid))) .
-            node::create('tr', [], node::create('td', [], 'Type') . node::create('td', [], get::flight_type($this->ftid))) .
-            node::create('tr', [], node::create('td', [], 'Ridge Lift') . node::create('td', [], get::bool($this->ridge))) .
-            node::create('tr', [], node::create('td', [], 'Score') . node::create('td', [], $this->base_score . 'x' . $this->multi . ' =' . $this->score)) .
-            node::create('tr', [], node::create('td', [], 'Coordinates') . node::create('td', [], $this->coord_info())) .
-            $logged_data .
-            ($this->vis_info ? node::create('tr', [], node::create('td', [], 'Info') . node::create('td', [], $this->vis_info)) : '') .
-            (file_exists(root . '/uploads/flight/' . $this->fid . '/track.kmz') ?
-                node::create('tr', [], node::create('td.center.view', ['colspan' => 2], node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight(' . $this->fid . ')'], 'Add trace to Map'))) .
-                node::create('tr', [], node::create('td.center', ['colspan' => 2],
-                        node::create('a.download.igc', ['href' => $this->get_download_url('igc'), 'rel' => 'external'], 'Download IGC') .
-                        node::create('a.download.kml', ['href' => $this->get_download_url('kmz'), 'rel' => 'external'], 'Download KML')
-                    )
-                ) :
-                node::create('tr', [], node::create('td.center.view.coords', ['colspan' => 2],
-                        node::create('a.button', ['href' => '#', 'onclick' => 'map.add_flight_coordinates(\'' . $this->coords . '\',' . $this->fid . ');return false;'], 'Add coordinates to map')
-                    )
-                )
-            )
-        ) . (ajax ? node::create('a.close', ['title' => 'close', 'onclick' => '$("#pop").remove()'], 'Close') : '');
-
-        return $html;
+        return twig::singleton()->render_file('flight_info.twig', [
+            'flight' => $this->get_template_data(),
+            'pilot' => $this->pilot->get_template_data(),
+            'club' => $this->club->get_template_data(),
+            'glider' => $this->glider->get_template_data(),
+            'coordinates' => $this->coord_info(),
+            'timings' => [
+                'launch' => 1,
+                'Landed' => 1,
+            ],
+            'files' => [
+                'igc' => $this->has_download(static::DOWNLOAD_IGC) ? $this->get_download_url(static::DOWNLOAD_IGC) : false,
+                'kml' => $this->has_download(static::DOWNLOAD_KML) ? $this->get_download_url(static::DOWNLOAD_KML) : false,
+            ]
+        ]);
     }
 
     /**

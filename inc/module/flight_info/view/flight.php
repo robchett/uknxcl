@@ -3,24 +3,23 @@ namespace module\flight_info\view;
 
 use classes\view;
 use html\node;
+use traits\twig_view;
 
 class flight extends \template\html {
+    use twig_view;
 
     /** @var  \module\flight_info\controller */
     public $module;
 
-    public function get_view() {
-        $html = node::create('div.flight_wrapper', [],
-            node::create('h1', [], $this->module->current->pilot->name . ' ' . node::create('span', [], date('Y-m-d', $this->module->current->date))) .
-            $this->module->current->get_info()
-        );
-        if ($this->module->current->did > 1) {
-            \core::$inline_script[] = '
-            var graph = new Graph($("#graph-' . $this->module->current->fid . '"));
-            var flight = new Track(' . $this->module->current->fid . ');
-            flight.add_nxcl_data(function() {graph.swap(flight)});
-            map.callback(function(map) {map.add_flight(' . $this->module->current->fid . ')});';
-        }
-        return $html;
+    function get_template_file() {
+        return 'inc/module/flight_info/view/flight.twig';
+    }
+
+    function get_template_data() {
+        return [
+            'flight' => $this->module->current->get_template_data(),
+            'pilot' => $this->module->current->pilot->get_template_data(),
+            'flight_info' => $this->module->current->get_info(),
+        ];
     }
 }
