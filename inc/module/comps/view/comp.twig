@@ -1,24 +1,33 @@
-{% if html is defined and html %}
+{#{% if html is defined and html %}
     {{ html }}
-{%  else %}
-<table>
+{%  else %}#}
+<table class="main results">
     <thead>
     <tr>
         <th>Pilot</th>
         {% for i in 1..turnpoints %}
             <th>Turnpoint {{ i }}</th>
         {% endfor %}
+        <th>On map</th>
     </tr>
     </thead>
-    {% for row in rows %}
+    {% for row in track %}
         <tr>
             <td>{{ row.pilot }}</td>
             {% for i in 1..turnpoints %}
-                <th>{{ row.made_turnpoints > 0 ? '#10004;' : '&#10006;' }}</th>
+                <td>{{ row.turnpoint > 0 ? '&#10004;' : '&#10006;' }}</td>
             {% endfor %}
+            <td><input type="checkbox" checked="checked"></td>
         </tr>
     {% endfor %}
 </table>
-{% endif %}
+{#{% endif %}#}
 
-<a class="comp_back" href="/comps">Back to list</a>
+<a class="comp_back btn" href="/comps">Back to list</a>
+
+<script>
+    var load_callback = load_callback || [];
+    load_callback.push(function() {
+        map.callback(function(map) {map.add_comp({{ _id }})});
+    });
+</script>

@@ -3,8 +3,9 @@ var main_scrollpane;
 var throttleTimeout;
 var $body;
 var planner_string = planner_string || false;
-
+var load_callback = new load_callback(load_callback || []);
 $(document).ready(function () {
+    load_callback.trigger();
     map = new UKNXCL_Map($("#map_wrapper"));
     if (typeof google != 'undefined') {
         map.load_map();

@@ -20,15 +20,8 @@ class comp extends \template\html {
         if ($data === []) {
             error_handler::debug('Json decode error', ['message' => json_last_error_msg()]);
         }
+        $data->_id = $this->module->current->cid;
         return (array) $data;
-    }
-
-    public function get_js() {
-        return "map.callback(function(map) {map.add_comp(" . $this->module->current->cid . ")});";
-    }
-
-    public function get_js_ajax() {
-        return 'map.add_comp(' . $this->module->current->cid . ');';
     }
 }
  

@@ -86,7 +86,7 @@ class scorable extends table {
     <td>' . $this->name . '</td>
     <td>' . $this->glider . '<br/>' . $this->club . '</td>
     ' . $flights . '
-    <td>' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
+    <td class="left">' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
 </tr>' . "\n";
     }
 
