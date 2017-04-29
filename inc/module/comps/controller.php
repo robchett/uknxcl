@@ -12,6 +12,7 @@ class controller extends module {
     public $current;
 
     public function __controller(array $path) {
+        $this->view = 'comp_list';
         $this->current = new comp();
         if (isset($path[1]) && $this->current->do_retrieve_from_id([], $path[1])) {
             $this->view = 'comp';

@@ -1,0 +1,45 @@
+<div id="comp_wrapper">
+    <div id="comp_inner">
+        <div id="comp_list">
+            <h1 class="page-header">Select a Competition</h1>
+            <table class="main results">
+                <thead>
+                <tr>
+                    <th>Comp</th>
+                    <th>Round</th>
+                    <th>Task</th>
+                    <th>Class</th>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for comp in comps %}
+                    <tr>
+                        <td>{{ comp.type }}</td>
+                        <td>{{ comp.round }}</td>
+                        <td>{{ comp.task }}</td>
+                        <td>{{ comp.comp_group.title }}</td>
+                        <td>{{ comp.title }}</td>
+                        <td>{{ comp.date | date("d/m/Y") }}</td>
+                        <td><a class="button" href="{{ comp._url }}" data-click="{{ comp._id }}">View</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="comp_view"></div>
+    </div>
+</div>
+
+
+<script>
+    var load_callback = load_callback || [];
+    load_callback.push(function () {
+        $('#comp').on('click', '#comp_list ul li a', function () {
+            var id = $(this).attr('data-click');
+            page('/comp/' + id);
+        });
+    });
+</script>
