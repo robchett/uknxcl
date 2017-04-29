@@ -6,21 +6,23 @@ use classes\get;
 use classes\view;
 use html\node;
 use module\add_flight\form\coordinates_form;
+use traits\twig_view;
 
 class coordinate extends \template\html {
+    use twig_view;
 
     public function get_page_selector() {
         return get::__namespace($this->module, 0) . '-coordinate';
     }
 
-    public function get_view() {
-        $form = new coordinates_form();
-        $form->wrapper_class[] = 'callout';
-        $form->wrapper_class[] = 'callout-primary';
-        $html = node::create('div.add_flight_section.coordinate', [],
-            $form->get_html() .
-            node::create('a.back.button', ['href' => '/add_flight'], 'Back')
-        );
-        return $html;
+    function get_template_file() {
+        return 'inc/module/add_flight/view/coordinate.twig';
+    }
+
+    function get_template_data() {
+        $form1 = new coordinates_form();
+        return [
+            'form_1' => $form1->get_html()->get(),
+        ];
     }
 }

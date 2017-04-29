@@ -8,6 +8,7 @@ class controller extends module {
     public $page = 'add_flight';
 
     public function __controller(array $path) {
+        $this->view = 'type_select';
         if (isset($path[1])) {
             $this->view = $path[1];
         }

@@ -1,31 +1,28 @@
 <?php
 namespace module\add_flight\view;
 
-use classes\ajax;
 use classes\get;
-use classes\view;
-use html\node;
 use module\add_flight\form\igc_form;
 use module\add_flight\form\igc_upload_form;
+use traits\twig_view;
 
 class igc_supported extends \template\html {
+    use twig_view;
 
     public function get_page_selector() {
         return get::__namespace($this->module, 0) . '-igc';
     }
 
-    public function get_view() {
-        $form = new igc_form();
-        $form->wrapper_class[] = 'callout';
-        $form->wrapper_class[] = 'callout-primary';
+    function get_template_file() {
+        return 'inc/module/add_flight/view/igc_supported.twig';
+    }
+
+    function get_template_data() {
+        $form1 = new igc_form();
         $form2 = new igc_upload_form();
-        $form2->wrapper_class[] = 'callout';
-        $form2->wrapper_class[] = 'callout-primary';
-        $html = node::create('div.add_flight_section.upload', [],
-            $form2->get_html()->get() .
-            $form->get_html()->get() .
-            node::create('a.back.button', ['href' => '/add_flight'], 'Back')
-        );
-        return $html;
+        return [
+            'form_1' => $form1->get_html()->get(),
+            'form_2' => $form2->get_html()->get(),
+        ];
     }
 }
