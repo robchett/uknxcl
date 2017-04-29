@@ -27,15 +27,6 @@ class pilot extends scorable {
     public $score = 0;
     public $total = 0;
 
-    /*    public static $fields = array(
-            array('field_string', 'name'),
-            array('field_string', 'bhpa_no'),
-            array('field_select', 'rating'),
-            array('field_select', 'gender'),
-            array('field_string', 'email')
-        );*/
-
-
     /**
      * @param flight $flight
      */
@@ -79,25 +70,6 @@ class pilot extends scorable {
         }
         $csv .= $this->score . ',' . $this->total . '(' . $this->number_of_flights . ')<br/>';
         return $csv;
-    }
-
-    /**
-     * @param $pos
-     * @return string
-     */
-    public function output_table($pos) {
-        $flights = implode('', $this->flights);
-        for ($i = count($this->flights); $i < $this->max_flights; $i++) {
-            $flights .= '<td></td>';
-        }
-        return '
-<tr class="class' . $this->class . '">
-    <td>' . $pos . '</td>
-    <td>' . $this->name . '</td>
-    <td>' . $this->glider . '<br/>' . $this->club . '</td>
-    ' . $flights . '
-    <td>' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
-</tr>' . "\n";
     }
 
     /**

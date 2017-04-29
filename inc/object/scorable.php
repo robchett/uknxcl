@@ -26,6 +26,10 @@ class scorable extends table {
     public $score = 0;
     public $total = 0;
 
+    public $primary_name = 'name';
+    public $secondary_name = 'glider';
+    public $tertiary_name = 'club';
+
     /**
      * @param flight $flight
      */
@@ -83,8 +87,8 @@ class scorable extends table {
         return '
 <tr class="class' . $this->class . '">
     <td>' . $pos . '</td>
-    <td>' . $this->name . '</td>
-    <td>' . $this->glider . '<br/>' . $this->club . '</td>
+    <td>' . $this->{$this->primary_name} . '</td>
+    <td>' . $this->{$this->secondary_name} . ($this->tertiary_name ? '<br/>' . $this->{$this->tertiary_name} : '') . '</td>
     ' . $flights . '
     <td class="left">' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
 </tr>' . "\n";

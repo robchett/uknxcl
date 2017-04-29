@@ -23,6 +23,10 @@ class glider extends scorable {
     public $class = 1;
     public $output_function = 'table';
 
+    public $primary_name = 'glider';
+    public $secondary_name = 'club';
+    public $tertiary_name = false;
+
     /**
      * @param string $flight
      * @param int $num
@@ -38,26 +42,6 @@ class glider extends scorable {
                 $this->name = $flight->g_name;
             }
         }
-    }
-
-
-    /**
-     * @param $pos
-     * @return string
-     */
-    public function output_table($pos) {
-        $flights = implode('', $this->flights);
-        for ($i = count($this->flights); $i < $this->max_flights; $i++) {
-            $flights .= '<td></td>';
-        }
-        return '
-<tr class="class' . $this->class . '">
-    <td>' . $pos . '</td>
-    <td>' . $this->glider . '</td>
-    <td>' . $this->club . '</td>
-    ' . $flights . '
-    <td>' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
-</tr>' . "\n";
     }
 
     /**
