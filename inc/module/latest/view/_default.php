@@ -1,13 +1,17 @@
 <?php
 namespace module\latest\view;
 
-use classes\view;
-use html\node;
 use object\flight;
+use traits\twig_view;
 
 class _default extends \template\html {
+    use twig_view;
 
-    public function get_view() {
+    function get_template_file() {
+        return 'inc/module/latest/view/_default.twig';
+    }
+
+    function get_template_data() {
         $flights = flight::get_all(
             ['flight.*', 'pilot.name', 'pilot.pid'],
             [
@@ -19,37 +23,8 @@ class _default extends \template\html {
                 'order' => 'fid DESC'
             ]
         );
-        $wrapper = 
-        node::create('h1.page-header', [], 'Latest') . 
-        node::create('div.table_wrapper', [],
-            node::create('table.results.main', [],
-                node::create('thead', [],
-                    node::create('tr', [],
-                        node::create('th', [], 'ID') .
-                        node::create('th', [], 'Pilot') .
-                        node::create('th', [], 'Date Flown') .
-                        node::create('th', [], 'Date Added') .
-                        node::create('th', [], 'Score') .
-                        node::create('th.left', [], 'Flight Waypoints')
-                    )
-                ) .
-                node::create('tbody', [],
-                    $flights->iterate_return(function (flight $flight) use (&$body) {
-                            $added = substr($flight->created, 0, 10);
-                            return node::create('tr', [],
-                                node::create('td', [], $flight->fid) .
-                                node::create('td', [], $flight->pilot->name) .
-                                node::create('td', [], date('Y-m-d', $flight->date)) .
-                                node::create('td', [], ($added != '0000-00-00' ? $added : 'Unknown')) .
-                                $flight->to_print() .
-                                node::create('td.left', [], $flight->coords)
-                            );
-                        }
-                    )
-                )
-            )
-        );
-        return $wrapper;
-
+        return [
+            'flights' => $flights->getArrayCopy()
+        ];
     }
 }

@@ -1,0 +1,28 @@
+<h1 class="page-header">Latest</h1>
+<div class="table_wrapper">
+    <table class="results main">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Pilot</th>
+            <th>Date Flown</th>
+            <th>Date Added</th>
+            <th>Score</th>
+            <th class="left">Flight Waypoints</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for flight in flights %}
+        <tr>
+            <td>{{ flight.fid }}</td>
+            <td>{{ flight.pilot.name }}</td>
+            <td>{{ flight.date | date("Y-m-d") }}</td>
+            <td>{{ flight.created | date("Y-m-d") }}</td>
+            {{ flight.to_print() }}
+            <td class="left">{{ flight.coords }})</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+return $wrapper;
