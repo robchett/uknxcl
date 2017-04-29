@@ -48,6 +48,7 @@ class coordinates_form extends form {
                     ->set_attr('required', true)
                     ->set_attr('pre_text', node::create('p', [], 'Enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\''))
                     ->add_wrapper_class('cf')
+                    ->add_wrapper_class('coordinates')
                     ->set_attr('post_text', node::create('p.defined_info')),
                 form::create('field_date', 'date')
                     ->set_attr('label', 'Date:')

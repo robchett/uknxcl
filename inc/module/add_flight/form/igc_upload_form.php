@@ -45,6 +45,7 @@ class igc_upload_form extends form {
                 ->set_attr('required', false)
                 ->set_attr('pre_text', node::create('p', [], 'To submit a defined flight enter the coordinates below in \'XX000000;XX000000\' format, with no ending \';\'') . node::create('p i', [], "If you have declared your flight in your IGC file, they you don't need to do so again here."))
                 ->set_attr('post_text', node::create('p.defined_info'))
+                ->add_wrapper_class('coordinates')
         ];
         parent::__construct($fields);
         $this->submit = 'Calculate';
