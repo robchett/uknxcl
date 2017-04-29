@@ -130,14 +130,7 @@ table {
       &:hover {
         background: #fbff7d;
       }
-      td {
-        &:nth-child(3) {
-          text-align: left;
-          padding-left: 5px
-        }
-        &:nth-child(2) {
-          text-align: left;
-        }
+      td, th {
         &.left {
           text-align: left;
           padding-left: 5px

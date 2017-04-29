@@ -30,7 +30,7 @@ class _default extends \template\html {
                         node::create('th', [], 'Date Flown') .
                         node::create('th', [], 'Date Added') .
                         node::create('th', [], 'Score') .
-                        node::create('th', [], 'Flight Waypoints')
+                        node::create('th.left', [], 'Flight Waypoints')
                     )
                 ) .
                 node::create('tbody', [],
@@ -42,7 +42,7 @@ class _default extends \template\html {
                                 node::create('td', [], date('Y-m-d', $flight->date)) .
                                 node::create('td', [], ($added != '0000-00-00' ? $added : 'Unknown')) .
                                 $flight->to_print() .
-                                node::create('td', [], $flight->coords)
+                                node::create('td.left', [], $flight->coords)
                             );
                         }
                     )
