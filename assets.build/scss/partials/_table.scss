@@ -68,17 +68,6 @@ div#pop {
         &.info {
           line-height: 1.2;
         }
-        a.download {
-          float: left;
-          width: 70px;
-          height: 76px;
-          background: url('/.core/images/sprites.png') -81px 0px;
-          text-indent: -9999px;
-          margin: 0 27px;
-          &.kml {
-            background-position: -1px 0px;
-          }
-        }
       }
     }
   }
@@ -101,6 +90,17 @@ div#pop {
     background-color: #777777;
     color: #ffffff;
     text-align: center;
+  }
+}
+
+a.download {
+  display: inline-block !important;
+  width: 70px;
+  height: 76px;
+  background: url('/.core/images/sprites.png') -81px 0px;
+  text-indent: -9999px;
+  &.kml {
+    background-position: -1px 0px;
   }
 }
 
