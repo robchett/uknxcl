@@ -1,13 +1,13 @@
-function load_callback(callbacks) {
+function LoadCallback(callbacks) {
 
-    var array = [];
+    var array = callbacks || [];
     var triggered = false;
 
     this.trigger = function () {
         triggered = true;
-        for (var i in this.array) {
-            if (this.array.hasOwnProperty(i)) {
-                callback();
+        for (var i in array) {
+            if (array.hasOwnProperty(i)) {
+                array[i]();
             }
         }
     }; 

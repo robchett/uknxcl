@@ -2,28 +2,20 @@ var map;
 var main_scrollpane;
 var throttleTimeout;
 var $body;
-var planner_string = planner_string || false;
-var load_callback = new load_callback(load_callback || []);
+var load_callback = new LoadCallback(load_callback || []);
 $(document).ready(function () {
+    $body = $("body");
     load_callback.trigger();
-    map = new UKNXCL_Map($("#map_wrapper"));
+    map = new UKNXCL_Map($("#map_wrapper"), map);
     if (typeof google != 'undefined') {
         map.load_map();
-        if(planner_string) {
-            map.callback(function() {
-                setTimeout(function() {
-                    map.planner.load_string(planner_string);
-                },300);
-            });
-        }
     } else {
         $('#map').children('p.loading').html('Google maps are unavailable');
         $("#map_interface_3d span.toggle").hide();
         $("#map_interface").hide();
     }
-    map.resize();
 
-    $body = $("body");
+    map.resize();
 
     reload_scrollpane();
     page_handeler.defaults.complete.push('reload_scrollpane')

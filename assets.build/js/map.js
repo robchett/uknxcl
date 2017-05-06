@@ -7,7 +7,7 @@
  JQuery:true,
  slider:true,
  */
-function UKNXCL_Map($container) {
+function UKNXCL_Map($container, callbacks) {
     this.MAP = 1;
     this.EARTH = 2;
 
@@ -25,8 +25,8 @@ function UKNXCL_Map($container) {
         });
     }
 
-    this._callbacks = [];
-    this.callback = function (callable) {
+    this._callbacks = callbacks || [];
+    this.push = this.callback = function (callable) {
         if (!this.initialised) {
             this._callbacks = callable;
             return true;
@@ -87,6 +87,18 @@ function UKNXCL_Map($container) {
                 map.planner.add_marker(latlon.lat(), latlon.lng());
             }
         });
+        google.maps.event.addListener(this.internal_map, 'idle', function (event) {
+            map.initialised = true;
+            var callbacks = map._callbacks;
+            map._callbacks = [];
+            callbacks.each(function (callable) {
+                if (typeof callable == 'function') {
+                    callable(map);
+                } else {
+                    window[callable](map);
+                }
+            });
+        });
 
         this.radiusCircle = new google.maps.Circle({
             center: new google.maps.LatLng(0, 0),
@@ -117,14 +129,6 @@ function UKNXCL_Map($container) {
                 map.comp.is_ready();
             }
         });
-        this.initialised = true;
-        this._callbacks.each(function (callable) {
-            if (typeof callable == 'function') {
-                callable(this);
-            } else {
-                window[callable](this);
-            }
-        });
     };
 
     this.swap = function (obj) {
@@ -151,14 +155,20 @@ function UKNXCL_Map($container) {
 
     this.parseKML = function (url, caller) {
         map.caller = caller;
-        google.earth.fetchKml(this.ge, 'http://' + window.location.hostname + '/' + url, function (kmlObject) {
-            if (!kmlObject) { alert('Error loading KML'); }
-            map.ge.getFeatures().appendChild(kmlObject);
-            kmlObject.setVisibility(true);
-            map.caller.google_data = {root: kmlObject};
-            map.caller.is_ready();
-            delete map.caller;
-        });
+        if(typeof google != 'undefined') {
+            google.earth.fetchKml(this.ge, 'http://' + window.location.hostname + '/' + url, function (kmlObject) {
+                if (!kmlObject) {
+                    alert('Error loading KML');
+                }
+                map.ge.getFeatures().appendChild(kmlObject);
+                kmlObject.setVisibility(true);
+                map.caller.google_data = {root: kmlObject};
+                map.caller.is_ready();
+                delete map.caller;
+            });
+        } else {
+            alert('Google map not loaded.');
+        }
     };
 
     this.center = function (object) {
