@@ -6,10 +6,6 @@ use module\comps\object\comp;
 class comp_list extends \template\html {
     use \traits\twig_view;
 
-    function get_template_file() {
-        return 'inc/module/comps/view/comp_list.twig';
-    }
-
     function get_template_data() {
         $comps = comp::get_all([
             'type',

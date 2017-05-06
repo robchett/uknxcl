@@ -1,31 +1,17 @@
 <?php
 namespace module\pages\view;
 
-use classes\icon;
-use html\node;
 use module\pages\object\page;
+use traits\twig_view;
 
 /** @property \module\pages\controller $module */
 class home extends \core\module\pages\view\_default {
+    use twig_view;
 
-    public function get_view() {
-        $html = node::create('div.content', [], $this->module->current->body);
+    public function get_template_data() {
         $pages = page::get_all(['title', 'info', 'module_name', 'fn', 'icon'], ['order' => 'position', 'where' => 'pid != 12']);
-        if ($pages) {
-            $html .= node::create('div#page_list', [],
-                $pages->iterate_return(
-                    function (page $page) {
-                        return node::create('div.page', [],
-                            node::create('a', ['href' => $page->get_url()],
-                                node::create('h2', [], icon::get($page->icon) . '<br/>' . $page->title) .
-                                ($page->info ? node::create('p', [], $page->info) : '')
-                            )
-                        );
-                    }
-                )
-            );
-        }
-        return $html;
+        return [
+            'pages' => $pages->get_template_data()
+        ];
     }
-
 }

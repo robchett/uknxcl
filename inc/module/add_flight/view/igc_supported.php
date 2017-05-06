@@ -13,10 +13,6 @@ class igc_supported extends \template\html {
         return get::__namespace($this->module, 0) . '-igc';
     }
 
-    function get_template_file() {
-        return 'inc/module/add_flight/view/igc_supported.twig';
-    }
-
     function get_template_data() {
         $form1 = new igc_form();
         $form2 = new igc_upload_form();

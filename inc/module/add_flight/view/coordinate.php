@@ -15,10 +15,6 @@ class coordinate extends \template\html {
         return get::__namespace($this->module, 0) . '-coordinate';
     }
 
-    function get_template_file() {
-        return 'inc/module/add_flight/view/coordinate.twig';
-    }
-
     function get_template_data() {
         $form1 = new coordinates_form();
         return [

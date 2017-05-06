@@ -11,10 +11,6 @@ class flight extends \template\html {
     /** @var  \module\flight_info\controller */
     public $module;
 
-    function get_template_file() {
-        return 'inc/module/flight_info/view/flight.twig';
-    }
-
     function get_template_data() {
         return [
             'flight' => $this->module->current->get_template_data(),

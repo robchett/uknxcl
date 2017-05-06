@@ -1,13 +1,13 @@
 /* generated with grunt-sass-globbing */
 
+@import "../partials/_elements";
 @import "../partials/1_normalize";
 @import "../partials/2_boostrap_plugins";
-@import "../partials/_elements";
 @import "../partials/add_flight";
 @import "../partials/callout";
 @import "../partials/colorbox";
-@import "../partials/comp";
 @import "../partials/comp_maker";
+@import "../partials/comp";
 @import "../partials/contact";
 @import "../partials/default";
 @import "../partials/editable_content";
@@ -25,7 +25,7 @@
 @import "../partials/rules";
 @import "../partials/scroll_pane";
 @import "../partials/stats";
-@import "../partials/table";
 @import "../partials/table_sorter";
+@import "../partials/table";
 @import "../partials/tables";
 @import "../partials/z_media_xs";

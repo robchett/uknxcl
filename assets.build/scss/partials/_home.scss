@@ -2,8 +2,7 @@
   #pages-12 {
     #page_list {
       div {
-        position: relative;
-        display: inline-block;
+        float: left;
         width: 25%;
         vertical-align: bottom;
         &:nth-child(3n+1) {

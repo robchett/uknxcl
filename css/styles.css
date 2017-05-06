@@ -1,5 +1,25 @@
 /* generated with grunt-sass-globbing */
 /* generated with grunt-sass-globbing */
+h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
+  margin-bottom: 0; }
+
+img.right {
+  float: right;
+  margin-left: 20px; }
+
+img.left {
+  float: left;
+  margin-right: 20px; }
+
+.btn {
+  display: block;
+  padding: 5px;
+  background-color: #ededed;
+  border: 1px solid #cccccc;
+  text-align: center;
+  font-weight: bold;
+  color: #0c3f6b; }
+
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -560,26 +580,6 @@ th {
   .input-group-addon:not(:first-child).fileremove {
     right: 60px; }
 
-h1.joined, h2.joined, h3.joined, h4.joined, h5.joined, h6.joined {
-  margin-bottom: 0; }
-
-img.right {
-  float: right;
-  margin-left: 20px; }
-
-img.left {
-  float: left;
-  margin-right: 20px; }
-
-.btn {
-  display: block;
-  padding: 5px;
-  background-color: #ededed;
-  border: 1px solid #cccccc;
-  text-align: center;
-  font-weight: bold;
-  color: #0c3f6b; }
-
 div.add_flight_section {
   height: 100%; }
   div.add_flight_section a.back {
@@ -712,16 +712,6 @@ div.add_flight_section {
   #colorbox.success.failure {
     background-color: #ffdada; }
 
-#comp_wrapper {
-  overflow: hidden; }
-  #comp_wrapper #comp_list, #comp_wrapper #comp_view {
-    width: 100%;
-    float: left; }
-  #comp_wrapper #comp_list {
-    margin-right: 45px; }
-  #comp_wrapper #WriteHereComp {
-    margin-bottom: 20px; }
-
 #comp_maker h5 {
   font-size: 12px;
   line-height: 14px; }
@@ -736,6 +726,16 @@ div.add_flight_section {
       margin-bottom: 5px; }
       #comp_maker #comp_maker_target div form li input, #comp_maker #comp_maker_target div form li select {
         width: 300px; }
+
+#comp_wrapper {
+  overflow: hidden; }
+  #comp_wrapper #comp_list, #comp_wrapper #comp_view {
+    width: 100%;
+    float: left; }
+  #comp_wrapper #comp_list {
+    margin-right: 45px; }
+  #comp_wrapper #WriteHereComp {
+    margin-bottom: 20px; }
 
 p.boxed {
   border: solid 1px #0E406D;
@@ -2025,8 +2025,7 @@ div#nav {
         cursor: pointer; }
 
 #main #pages-12 #page_list div {
-  position: relative;
-  display: inline-block;
+  float: left;
   width: 25%;
   vertical-align: bottom; }
   #main #pages-12 #page_list div:nth-child(3n+1) a {
@@ -2722,7 +2721,6 @@ body.waypoint_mode #planner #wp_overlay {
       #planner form fieldset > div select {
         height: 28px; }
     #planner form fieldset .form-group {
-      float: left;
       clear: none; }
     #planner form fieldset button {
       height: 28px; }
@@ -2819,6 +2817,22 @@ body.waypoint_mode #planner #wp_overlay {
   height: 420px;
   margin-bottom: 20px; }
 
+table.tablesorter thead tr .header {
+  background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+  background-repeat: no-repeat;
+  background-position: center right;
+  cursor: pointer;
+  text-indent: -10px; }
+
+table.tablesorter thead tr .headerSortUp {
+  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7); }
+
+table.tablesorter thead tr .headerSortDown {
+  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7); }
+
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+  background-color: #8dbdd8; }
+
 .defined {
   font-weight: bolder; }
 
@@ -2873,15 +2887,6 @@ div#pop {
         padding: 5px 5px; }
       div#pop table tr td.info {
         line-height: 1.2; }
-      div#pop table tr td a.download {
-        float: left;
-        width: 70px;
-        height: 76px;
-        background: url("/.core/images/sprites.png") -81px 0px;
-        text-indent: -9999px;
-        margin: 0 27px; }
-        div#pop table tr td a.download.kml {
-          background-position: -1px 0px; }
   div#pop a {
     position: relative; }
     div#pop a span {
@@ -2899,6 +2904,15 @@ div#pop {
     background-color: #777777;
     color: #ffffff;
     text-align: center; }
+
+a.download {
+  display: inline-block !important;
+  width: 70px;
+  height: 76px;
+  background: url("/.core/images/sprites.png") -81px 0px;
+  text-indent: -9999px; }
+  a.download.kml {
+    background-position: -1px 0px; }
 
 .T {
   padding: 0px; }
@@ -3018,22 +3032,6 @@ a.click {
   overflow-y: scroll;
   background-color: #ffffff; }
 
-table.tablesorter thead tr .header {
-  background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
-  background-repeat: no-repeat;
-  background-position: center right;
-  cursor: pointer;
-  text-indent: -10px; }
-
-table.tablesorter thead tr .headerSortUp {
-  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7); }
-
-table.tablesorter thead tr .headerSortDown {
-  background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7); }
-
-table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
-  background-color: #8dbdd8; }
-
 #generated_tables.loading {
   width: 100%;
   height: 300px; }
@@ -3091,7 +3089,7 @@ table {
     border-collapse: collapse;
     font-size: 12px; }
     table.results tr {
-      height: 24px; }
+      height: 30px; }
       table.results tr:nth-child(2n) {
         background: #D5E3FF; }
       table.results tr th {
@@ -3102,18 +3100,16 @@ table {
           width: 65px; }
       table.results tr td {
         border-collapse: collapse;
-        height: 100%;
+        height: 30px;
         font-size: 11px;
-        padding: 3px; }
+        padding: 0 3px; }
         table.results tr td .wrap {
           position: relative; }
         table.results tr td.center {
           text-align: center !important; }
         table.results tr td a {
           display: block;
-          width: 100%;
-          height: 100%;
-          padding: 5px 0; }
+          width: 100%; }
   table.main {
     margin-bottom: 10px;
     width: 100%; }
@@ -3137,15 +3133,10 @@ table {
         font-weight: bold; }
       table.main tr:hover {
         background: #fbff7d; }
-      table.main tr td:nth-child(3) {
+      table.main tr td.left, table.main tr th.left {
         text-align: left;
         padding-left: 5px; }
-      table.main tr td:nth-child(2) {
-        text-align: left; }
-      table.main tr td:last-child {
-        text-align: left;
-        padding-left: 5px; }
-      table.main tr td.title {
+      table.main tr td.title, table.main tr th.title {
         text-align: center;
         font-size: 14px;
         padding: 4px 0; }

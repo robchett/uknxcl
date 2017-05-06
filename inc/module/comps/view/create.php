@@ -11,9 +11,6 @@ class create extends \template\html {
     /** @vat \module\comps\controller */
     public $module;
 
-    function get_template_file() {
-        return 'inc/module/comps/view/create.twig';
-    }
 
     public function get_template_data() {
         $root = root . '/uploads/comp/' . $this->module->current->get_primary_key();
@@ -43,18 +40,6 @@ class create extends \template\html {
         return [
             'rows' => $flights
         ];
-    }
-
-    public function get_js() {
-        return <<<'JS'
-            $body.on("click","a.score_select",function () {
-                var data = $(this).data("post");
-                $("#temp_id").val(data.track);
-                $("#type").val(data.type);
-                $("#igc_upload_form").html("<div id='console' class='callout callout-primary'></div>");
-                $("#igc_form ").find("input.submit").removeAttr("disabled");
-            });
-JS;
     }
 }
  

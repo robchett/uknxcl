@@ -12,3 +12,16 @@
         <li><a class="btn" data-ajax-post="{{ row.data | json_encode }}" data-ajax-click="\module\comps\object\comp:add_flight">Process flight for {{ row.name }}{% if row.matched %}   (Processed){% endif %}</a></li>
     {% endfor %}
 </ul>
+
+<script>
+    var load_callback = load_callback || [];
+    load_callback.push(function () {
+        $body.on("click","a.score_select",function () {
+            var data = $(this).data("post");
+            $("#temp_id").val(data.track);
+            $("#type").val(data.type);
+            $("#igc_upload_form").html("<div id='console' class='callout callout-primary'></div>");
+            $("#igc_form ").find("input.submit").removeAttr("disabled");
+        });
+    })
+</script>

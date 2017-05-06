@@ -7,10 +7,6 @@ use traits\twig_view;
 class _default extends \template\html {
     use twig_view;
 
-    function get_template_file() {
-        return 'inc/module/latest/view/_default.twig';
-    }
-
     function get_template_data() {
         $flights = flight::get_all(
             ['flight.*', 'pilot.name', 'pilot.pid'],

@@ -9,10 +9,6 @@ use traits\twig_view;
 class _default extends \template\html {
     use twig_view;
 
-    function get_template_file() {
-        return 'inc/module/converter/view/_default.twig';
-    }
-
     function get_template_data() {
         $form1 = new form\coordinate_conversion_form();
         return [

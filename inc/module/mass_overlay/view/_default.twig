@@ -1,0 +1,14 @@
+<h2>The following flights are displayed on the map</h2>
+<div id="generated_tables">{{ table }}</div>
+
+<script>
+    var map = map || [];
+    map.push(function () {
+        map.clear();
+        {% for id,coords in flights %}
+        map.add_flight_coordinates("{{ coords }}", {{ id }}, false);
+        {% endfor %}
+        var bound = new google.maps.LatLngBounds(new google.maps.LatLng(57.326521, -6.551285), new google.maps.LatLng(50.875311, 2.127914));
+        map.internal_map.fitBounds(bound);
+    });
+</script>

@@ -13,7 +13,7 @@ use object\scorable;
 
 class league_table {
 
-    /** @var \classes\table_array */
+    /** @var flight[] */
     public $flights = null;
     public $league = null;
     public $where = [];
@@ -438,6 +438,9 @@ class league_table {
         $this->modifier_string = $this->ScoreType . ($this->options->handicap ? ' * IF(g.kingpost,' . $this->options->handicap_kingpost . ',1) * IF(g.class = 5,' . $this->options->handicap_rigid . ',1) ' : '');
     }
 
+    /**
+     * @return flight[]
+     */
     public function get_flights() {
         if (!$this->flights) {
             $this->options->get_sql();
@@ -484,6 +487,7 @@ class league_table {
                 ]
             );
         }
+        return $this->flights;
     }
 
     function write_table_header($flights, $type = 'pid') {

@@ -1,0 +1,14 @@
+<div class="content">{{ page.body }}</div>
+<div id="page_list">
+{% for page in pages %}
+    <div class="page">
+        <a href="{{ page._url }}">
+            <h2>
+                <span class="glyphicon glyphicon-{{ page.icon }}"></span><br/>
+                {{ page.title }}
+            </h2>
+            <p>{{ page.info }}</p>
+        </a>
+    </div>
+    {% endfor %}
+</div>
