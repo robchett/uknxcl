@@ -2,8 +2,9 @@
 
 namespace classes;
 
+use Exception;
+use JetBrains\PhpStorm\Pure;
 use track\task;
-use track\track;
 
 class geometry {
 
@@ -12,13 +13,13 @@ class geometry {
     public static function coordinate_normalise($coordinate) {
         $parts = explode(' ', $coordinate, 2);
         $dir = 1;
-        if(isset($parts[0][0]) && !is_numeric($parts[0][0])) {
+        if (isset($parts[0][0]) && !is_numeric($parts[0][0])) {
             $char = strtolower($parts[0][0]);
-            if($char == 's' || $char == 'w' || $char == '-') {
+            if ($char == 's' || $char == 'w' || $char == '-') {
                 $dir = -1;
             }
         } else {
-            $dir = ($parts[0] >= 0 ? 1 :  -1);
+            $dir = ($parts[0] >= 0 ? 1 : -1);
         }
         if (count($parts) >= 2) {
             return $parts[0] + $dir * (5 / 300 * $parts[1]);
@@ -26,7 +27,8 @@ class geometry {
         return $coordinate;
     }
 
-    public static function get_distance_ellipsoid(lat_lng $obj1, lat_lng $obj2) {
+    #[Pure]
+    public static function get_distance_ellipsoid(lat_lng $obj1, lat_lng $obj2): float|array {
         $a = 6378.137 / 1.852;
         $f = 1 / 298.257223563;
         $EPS = 0.00000000005;
@@ -79,7 +81,7 @@ class geometry {
         return $arOut;
     }
 
-    static function lat_long_to_os(lat_lng $point, $precision = 6) {
+    static function lat_long_to_os(lat_lng $point, $precision = 6): string {
         $point = gps_datums::convert($point, 'WGS84', 'OSGB36');
         $lat = $point->lat(true);
         $lon = $point->lng(true);
@@ -132,11 +134,45 @@ class geometry {
         return self::gridref_number_to_letter($E, $N, $precision);
     }
 
+    #[Pure]
+    static function gridref_number_to_letter($e, $n, $digits): string {
+        $precision = $digits / 2;
+        // get the 100km-grid indices
+        $e100k = floor($e / 100000);
+        $n100k = floor($n / 100000);
+
+        // translate those into numeric equivalents of the grid letters
+        $l1 = (19 - $n100k) - (19 - $n100k) % 5 + floor(($e100k + 10) / 5);
+        $l2 = (19 - $n100k) * 5 % 25 + $e100k % 5;
+
+        // compensate for skipped 'I' and build grid letter-pairs
+        if ($l1 > 7)
+            $l1++;
+        if ($l2 > 7)
+            $l2++;
+        $letPair = chr($l1 + ord('A')) . chr($l2 + ord('A'));
+
+        // strip 100km-grid indices from easting & northing, and reduce precision
+        $e = floor(($e % 100000) / pow(10, 5 - $precision));
+        $n = floor(($n % 100000) / pow(10, 5 - $precision));
+        return $letPair . self::pad_number($e, $precision) . self::pad_number($n, $precision);
+    }
+
+    #[Pure]
+    static function pad_number($number, $precision) {
+        $length = strlen($number);
+        for ($i = 0; $i < $precision - $length; $i++) {
+            $number = '0' . $number;
+        }
+        return $number;
+    }
+
     /**
-     * @param string $gridRef
+     * @param $gridRef
      * @return lat_lng
+     * @throws Exception
      */
-    static function os_to_lat_long($gridRef) {
+    public static function os_to_lat_long($gridRef): lat_lng {
         $gr = self::gridref_letter_to_number($gridRef);
         $E = $gr[0];
         $N = $gr[1];
@@ -202,26 +238,16 @@ class geometry {
         return gps_datums::convert(new lat_lng(rad2deg($lat), rad2deg($lon)), 'OSGB36', 'WGS84');
     }
 
-    static function get_circle_coordinates(lat_lng $center_coordinate, $radius = 400) {
-        $out = "";
-        $angularDistance = $radius / 6378137;
-        for ($i = 0; $i <= 360; $i++) {
-            $bearing = deg2rad($i);
-            $lat = asin($center_coordinate->sin_lat() * cos($angularDistance) + $center_coordinate->cos_lat() * sin($angularDistance) * cos($bearing));
-            $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat(), cos($angularDistance) - $center_coordinate->sin_lat() * sin($lat));
-            $lon = fmod(($center_coordinate->lng(true) + $dlon + M_PI), 2 * M_PI) - M_PI;
-            $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
-        }
-        return $out;
-    }
-
-    static function gridref_letter_to_number($gridref) {
+    #[Pure]
+    static function gridref_letter_to_number($gridref): array {
         // get numeric values of letter references, mapping A->0, B->1, C->2, etc:
         $l1 = ord($gridref[0]) - ord('A');
         $l2 = ord($gridref[1]) - ord('A');
         // shuffle down letters after 'I' since 'I' is not used in grid:
-        if ($l1 > 7) $l1--;
-        if ($l2 > 7) $l2--;
+        if ($l1 > 7)
+            $l1--;
+        if ($l2 > 7)
+            $l2--;
         // convert grid letters into 100km-square indexes from false origin (grid square SV):
         $e = (($l1 - 2) % 5) * 5 + ($l2 % 5);
         $n = (19 - floor($l1 / 5) * 5) - floor($l2 / 5);
@@ -239,39 +265,13 @@ class geometry {
         return [$e, $n];
     }
 
-    static function gridref_number_to_letter($e, $n, $digits) {
-        $precision = $digits / 2;
-        // get the 100km-grid indices
-        $e100k = floor($e / 100000);
-        $n100k = floor($n / 100000);
-
-        if ($e100k < 0 || $e100k > 8 || $n100k < 0 || $n100k > 12) { //echo "broke";
-        }
-
-        // translate those into numeric equivalents of the grid letters
-        $l1 = (19 - $n100k) - (19 - $n100k) % 5 + floor(($e100k + 10) / 5);
-        $l2 = (19 - $n100k) * 5 % 25 + $e100k % 5;
-
-        // compensate for skipped 'I' and build grid letter-pairs
-        if ($l1 > 7) $l1++;
-        if ($l2 > 7) $l2++;
-        $letPair = chr($l1 + ord('A')) . chr($l2 + ord('A'));
-
-        // strip 100km-grid indices from easting & northing, and reduce precision
-        $e = floor(($e % 100000) / pow(10, 5 - $precision));
-        $n = floor(($n % 100000) / pow(10, 5 - $precision));
-        $gridRef = $letPair . self::pad_number($e, $precision) . self::pad_number($n, $precision);
-        return $gridRef;
-    }
-
     static function osgb32_to_wgs84($lat, $lng) {
 
     }
 
-    static function get_task_output(task $task) {
-        $xml = '<Folder><name>Task</name>';
-        foreach ($task->waypoints as $point) {
-            $xml .= "<Placemark>
+    #[Pure]
+    static function get_task_output(task $task): string {
+        $placemarks = array_reduce($task->waypoints, fn(string $a, lat_lng $point) => $a . (/** @lang XML */ "<Placemark>
         <Style>
             <PolyStyle>
               <color>99ffffaa</color>
@@ -288,34 +288,40 @@ class geometry {
                     </coordinates>
                 </LinearRing>
             </outerBoundaryIs>
-        </Polygon>
-    </Placemark>";
-        }
-        $xml .= "<Placemark>
-    <LineStyle>
-      <color>FFFFFF00</color>
-      <width>2</width>
-    </LineStyle>
-    <LineString>
-    <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>";
-
-        /** @var lat_lng $point */
-        foreach ($task->waypoints as $point) {
-            $xml .= $point->lng() . ',' . $point->lat() . ",-100 ";
-        }
-        $xml .= "</coordinates>
-    </LineString>
-    </Placemark></Folder>
+        </Polygon
+    </Placemark>"));
+        $coordinates = array_reduce($task->waypoints, fn(string $a, lat_lng $point) => $a . $point->lng() . ',' . $point->lat() . ",-100 ");
+        return /** @lang XML */ "
+<Folder>
+    <name>Task</name>
+    $placemarks
+    <Placemark>
+        <LineStyle>
+          <color>FFFFFF00</color>
+          <width>2</width>
+        </LineStyle>
+        <LineString>
+        <altitudeMode>clampToGround</altitudeMode>
+            <coordinates>
+                $coordinates
+             </coordinates>
+        </LineString>
+    </Placemark>
+</Folder>
     ";
-        return $xml;
     }
 
-    static function pad_number($number, $precision) {
-        $length = strlen($number);
-        for ($i = 0; $i < $precision - $length; $i++) {
-            $number = '0' . $number;
+    #[Pure]
+    static function get_circle_coordinates(lat_lng $center_coordinate, $radius = 400): string {
+        $out = "";
+        $angularDistance = $radius / 6378137;
+        for ($i = 0; $i <= 360; $i++) {
+            $bearing = deg2rad($i);
+            $lat = asin($center_coordinate->sin_lat() * cos($angularDistance) + $center_coordinate->cos_lat() * sin($angularDistance) * cos($bearing));
+            $dlon = atan2(sin($bearing) * sin($angularDistance) * $center_coordinate->cos_lat(), cos($angularDistance) - $center_coordinate->sin_lat() * sin($lat));
+            $lon = fmod(($center_coordinate->lng(true) + $dlon + M_PI), 2 * M_PI) - M_PI;
+            $out .= rad2deg($lon) . ',' . rad2deg($lat) . ',0 ';
         }
-        return $number;
+        return $out;
     }
 }

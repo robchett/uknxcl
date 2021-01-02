@@ -1,4 +1,5 @@
 <?php
+
 namespace track;
 
 class track_part {
@@ -17,6 +18,6 @@ class track_part {
         $this->duration = $data->duration;
         $this->points = $data->points;
         $this->skipped_distance = $data->skipped_distance;
-        $this->skipped_duration= $data->skipped_duration;
+        $this->skipped_duration = $data->skipped_duration;
     }
 }

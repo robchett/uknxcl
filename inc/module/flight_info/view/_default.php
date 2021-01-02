@@ -1,14 +1,11 @@
 <?php
+
 namespace module\flight_info\view;
 
-use traits\twig_view;
+use template\html;
 
-class _default extends \template\html {
-    use twig_view;
-
-    function get_template_data() {
-        return [
-            'content' => $this->module->page_object->body
-        ];
+class _default extends html {
+    function get_view(): string {
+        return $this->module->page_object->body;
     }
 }

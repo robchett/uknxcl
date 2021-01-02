@@ -1,11 +1,10 @@
 <?php
+
 namespace module\tables;
 
 use classes\module;
 
 class controller extends module {
-
-    public $page = 'tables';
 
     public function __controller(array $path) {
         $layout = '';
@@ -14,12 +13,12 @@ class controller extends module {
             $this->view = $path[1];
             $end_count++;
         }
-        $this->current = new  object\league_table();
+        $this->current = new model\league_table();
         if (isset($path[$end_count]) && !strstr($path[$end_count], '-')) {
             $layout = $path[$end_count];
         }
         if (isset($path[$end_count])) {
-            $this->current->set_default(object\league_table::decode_url(end($path)));
+            $this->current->set_default(model\league_table::decode_url(end($path)));
         }
         if ($layout) {
             $this->current->set_layout_from_url($layout);

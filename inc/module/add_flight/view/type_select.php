@@ -1,17 +1,18 @@
 <?php
+
 namespace module\add_flight\view;
 
-use traits\twig_view;
+use classes\module;
+use template\html;
 
-class type_select extends \template\html {
-    use twig_view;
-
+class type_select extends html {
     /** @vat \module\comps\controller */
-    public $module;
+    public module $module;
 
-    function get_template_data() {
-        return [
-            'content' => $this->module->page_object->body
-        ];
+    function get_view(): string {
+        return "
+<div class='editable_content'>
+    {$this->module->page_object->body}
+</div>";
     }
 }

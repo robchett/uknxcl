@@ -3,9 +3,8 @@
 namespace module\mass_overlay;
 
 use classes\module;
-use module\tables\object\league_table;
+use module\tables\model\league_table;
 
-/** @property league_table $current */
 class controller extends module {
     public function __controller(array $path) {
         $end_count = 1;

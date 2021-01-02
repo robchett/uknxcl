@@ -1,0 +1,53 @@
+#page_list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -5px;
+  div {
+    padding: 5px;
+    max-width: 25%;
+    min-width: 25%;
+    vertical-align: bottom;
+    @media (max-width: 700px) {
+      max-width: 33.33%;
+      min-width: 33.33%;
+    }
+    @media (max-width: 550px) {
+      max-width: 50%;
+      min-width: 50%;
+    }
+    &:nth-child(3n+1) {
+      a {
+        background-color: $secondary;
+      }
+    }
+    &:nth-child(3n+2) {
+      a {
+        background-color: $tertiary;
+      }
+    }
+    &:hover {
+      opacity: 0.8;
+    }
+    h2 {
+      span:before {
+        font-size: 24px;
+        display: block;
+        margin-bottom: 15px;
+      }
+    }
+    p {
+      margin-top: 0;
+    }
+    a {
+      background-color: $primary;
+      border-radius: 5px;
+      overflow: hidden;
+      display: block;
+      padding: 15px;
+      height: 155px;
+      text-align: center;
+      color: #ffffff;
+    }
+  }
+}
+

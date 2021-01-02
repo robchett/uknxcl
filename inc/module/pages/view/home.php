@@ -1,17 +1,36 @@
 <?php
+
 namespace module\pages\view;
 
-use module\pages\object\page;
-use traits\twig_view;
+use classes\module;
+use module\cms\controller;
+use module\pages\model\page;
 
 /** @property \module\pages\controller $module */
-class home extends \core\module\pages\view\_default {
-    use twig_view;
+class home extends _default {
 
-    public function get_template_data() {
+    /** @var controller */
+    public module $module;
+
+
+    public function get_view(): string {
         $pages = page::get_all(['title', 'info', 'module_name', 'fn', 'icon'], ['order' => 'position', 'where' => 'pid != 12']);
-        return [
-            'pages' => $pages->get_template_data()
-        ];
+        return "<div class='content'>{$this->module->current->body}</div>
+<div id='page_list'>
+    {$pages->reduce(fn ($_, page $page) => $_ . "
+    <div class='page'>
+        <a href='{$page->get_url()}'>
+            <h2>
+                <span class='glyphicon glyphicon-{$page->icon}'></span><br/>
+                {$page->title}
+            </h2>
+            <p>{$page->info}</p>
+        </a>
+    </div>")}
+</div>";
+    }
+
+    public function get_page_selector(): string {
+        return 'pages-' . $this->module->current->pid;
     }
 }

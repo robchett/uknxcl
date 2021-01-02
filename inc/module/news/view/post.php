@@ -1,19 +1,29 @@
 <?php
+
 namespace module\news\view;
 
-use module\news;
-use traits\twig_view;
+use classes\module;
+use module\news\controller;
+use template\html;
 
-class post extends \template\html {
-    use twig_view;
+class post extends html {
 
+    /** @var controller */
+    public module $module;
 
-    /** @var \module\news\controller $module */
-    public $module;
+    public function get_view(): string {
+        $article = $this->module->current;
+        return "
+<div id='article_wrapper' class='editable_content'>
+    <article>
+        <div class='page-header'>
+            <h1>{$article->title}</h1>
+            <span class='author'>By: {$article->poster}</span>
+        </div>
+        {$article->post}
+    </article>
 
-    public function get_template_data() {
-        return [
-            'article' => $this->module->current->get_template_data()
-        ];
+    <a class='news_back button' href='/news' style='margin-top: 10px'>Back to news</a>
+</div>";
     }
 }

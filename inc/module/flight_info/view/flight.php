@@ -1,21 +1,35 @@
 <?php
+
 namespace module\flight_info\view;
 
-use classes\view;
-use html\node;
-use traits\twig_view;
+use classes\module;
+use module\flight_info\controller;
+use template\html;
 
-class flight extends \template\html {
-    use twig_view;
+class flight extends html {
 
-    /** @var  \module\flight_info\controller */
-    public $module;
+    /** @var controller */
+    public module $module;
 
-    function get_template_data() {
-        return [
-            'flight' => $this->module->current->get_template_data(),
-            'pilot' => $this->module->current->pilot->get_template_data(),
-            'flight_info' => $this->module->current->get_info(),
-        ];
+    function get_view(): string {
+        $flight = $this->module->current;
+        $res = "
+<div class='flight_wrapper'>
+    <h1>{$flight->pilot->name} <span>{$flight->format_date($flight->date)}</span></h1>
+    {$flight->get_info()}
+</div>";
+        if ($flight->did > 1) {
+            $res .= "
+<script>
+        var load_callback = load_callback || [];
+        load_callback.push(function() {
+            var graph = new Graph($('#graph-{$flight->get_primary_key()}'));
+            var flight = new Track({$flight->get_primary_key()})
+            flight.add_nxcl_data(function() {graph.swap(flight)});
+            map.callback(function(map) {map.add_flight({$flight->get_primary_key()})})
+        });
+</script>";
+        }
+        return $res;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace track;
 
 class task {
@@ -9,18 +10,14 @@ class task {
     const TYPE_TRIANGLE = 4;
     const TYPE_FLAT_TRIANGLE = 5;
 
-    static $names = [
-        self::TYPE_OPEN_DISTANCE => 'Open Distance',
-        self::TYPE_OUT_AND_RETURN => 'Out & Return',
-        self::TYPE_TRIANGLE => 'Triangle',
-        self::TYPE_FLAT_TRIANGLE => 'Flat Triangle',
-    ];
+    static array $names = [self::TYPE_OPEN_DISTANCE => 'Open Distance', self::TYPE_OUT_AND_RETURN => 'Out & Return', self::TYPE_TRIANGLE => 'Triangle', self::TYPE_FLAT_TRIANGLE => 'Flat Triangle',];
 
     public $duration;
     public $distance;
     public $type;
     public $coordinates;
-    public $title;
+    public string $title;
+    public $waypoints;
 
 
     public function __construct() {
@@ -38,9 +35,9 @@ class task {
         return $this->duration;
     }
 
-    public function get_gridref() {
+    public function get_gridref(): string {
         $coords = [];
-        foreach($this->coordinates as $coordinate) {
+        foreach ($this->coordinates as $coordinate) {
             $coords[] = $coordinate->os_gridref;
         }
         return implode(';', $coords);

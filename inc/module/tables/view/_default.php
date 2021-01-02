@@ -1,21 +1,23 @@
 <?php
+
 namespace module\tables\view;
 
-use classes\ajax;
+use classes\module;
 use html\node;
+use module\tables\controller;
 use module\tables\form\table_gen_form;
 use module\tables\form\table_gen_form_basic;
-use traits\twig_view;
+use module\tables\model\league_table;
+use template\html;
 
-class _default extends \template\html {
-    use twig_view;
+class _default extends html {
 
-    /** @var  \module\tables\controller $module */
-    public $module;
+    /** @var controller */
+    public module $module;
 
 
-    public function get_template_data() {
-        /** @var \module\tables\object\league_table $table */
+    public function get_view(): string {
+        /** @var league_table $table */
         $table = $this->module->current;
         $form1 = new table_gen_form_basic();
         $form1->set_from_options($table->options);
@@ -24,29 +26,41 @@ class _default extends \template\html {
         $form2->set_from_options($table->options);
         $form2->post_submit_text = $this->get_key();
 
-        return [
-            'form1' => $form1->get_html(),
-            'form2' => $form2->get_html(),
-            'table' => $table->get_table(),
-            'url' => $table->get_show_all_url()
-        ];
+        return "
+<h1 class='page-header'>Results</h1>
+<a id='options' class='glyphicon glyphicon-filter'></a>
+<div class='forms_wrapper callout callout-primary'>
+    {$form1->get_html()}
+    {$form2->get_html()}
+</div>
+<div id='generated_tables'>{$table->get_table()}
+    <a class='show_all button' href='{$table->get_show_all_url()}' target='_blank'>Show all on map</a>
+</div>
+
+<script>
+    var load_callback = load_callback || [];
+    load_callback.push(function () {
+        \$body.on('click', '.form_toggle', function () {
+            $('.basic_tables_wrapper').hide();
+            $('.advanced_tables_wrapper').hide();
+            $('.' + $(this).data('show')).show().find('form').show();
+        });
+        \$body.off('click', '#options');
+        \$body.on('click', '#options', function () {
+            $('.forms_wrapper').stop(true, true).toggle();
+        });
+        $('.forms_wrapper').slideUp();
+        $('.advanced_tables form').hide();
+    });
+</script>";
     }
 
 
-    protected function get_key() {
+    protected function get_key(): string {
         return node::create('div.key_switch', [],
-            node::create('span', [], 'Key') .
+            "<span>Key<span>" .
             node::create('div#key2', [],
-                node::create('b', [], 'KML prefixes:') .
-                '-is no trace, = shows 2D, &#8801; shows 3D <br/>' .
-                node::create('b', [], 'Launch prefixes:') .
-                'A = Aerotow, W = Winch, else Foot <br/>' .
-                node::create('b', [], 'Colours:') .
-                node::create('span.od', [], 'Open Dist') .
-                node::create('span.or', [], 'Out & Return') .
-                node::create('span.goal', [], 'Goal') .
-                node::create('span.tr', [], 'Triangle') .
-                node::create('span.ft', [], 'Flat Triangle')
+                "<b>KML prefixes:<b>-is no trace, = shows 2D, &#8801; shows 3D <br/><b>Launch prefixes:<b>A = Aerotow, W = Winch, else Foot <br/><b>Colours:<b><span class='od'>Open Dist<span><span class='or'>Out & Return<span><span class='goal'>Goal<span><span class='tr'>Triangle<span><span class='ft'>Flat Triangle<span>"
             )
         );
     }

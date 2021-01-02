@@ -1,0 +1,45 @@
+@mixin button() {
+  display: block;
+  background-color: $tertiary;
+  border: 1px solid $primary;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  line-height: 16px;
+  padding: 7px;
+}
+
+@mixin heading() {
+  background-color: $secondary;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  &.joined {
+    margin-bottom: 0;
+  }
+}
+
+img.right {
+  float: right;
+  margin-left: 20px;
+}
+img.left {
+  float: left;
+  margin-right: 20px;
+}
+
+@mixin cf() {
+  overflow: auto;
+}
+
+@mixin form() {}
+
+.btn {
+  @include button;
+  &.btn-default {
+
+  }
+}

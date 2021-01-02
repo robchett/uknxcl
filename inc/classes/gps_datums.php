@@ -2,27 +2,30 @@
 
 namespace classes;
 
+use Exception;
+use JetBrains\PhpStorm\Pure;
+
 class gps_datums {
 
-    private static $ellipse = [
-        'WGS84' => ['a' => 6378137, 'b' => 6356752.3142],
-        'GRS80' => ['a' => 6378137, 'b' => 6356752.314140],
-        'OSGB36' => ['a' => 6377563.396, 'b' => 6356256.909],
+    private static array $ellipse = [
+        'WGS84'        => ['a' => 6378137, 'b' => 6356752.3142],
+        'GRS80'        => ['a' => 6378137, 'b' => 6356752.314140],
+        'OSGB36'       => ['a' => 6377563.396, 'b' => 6356256.909],
         'AiryModified' => ['a' => 6377340.189, 'b' => 6356034.448],
-        'Intl1924' => ['a' => 6378388.000, 'b' => 6356911.946]
+        'Intl1924'     => ['a' => 6378388.000, 'b' => 6356911.946],
     ];
 
-    private static $transform = [
-        'OSGB36' => ['tx' => -446.448, 'ty' => 125.157, 'tz' => -542.060, 'rx' => -0.1502, 'ry' => -0.2470, 'rz' => -0.8421, 's' => 20.4894],
-        'ED50' => ['tx' => 89.5, 'ty' => 93.8, 'tz' => 123.1, 'rx' => 0.0, 'ry' => 0.0, 'rz' => 0.156, 's' => -1.2],
+    private static array $transform = [
+        'OSGB36'  => ['tx' => -446.448, 'ty' => 125.157, 'tz' => -542.060, 'rx' => -0.1502, 'ry' => -0.2470, 'rz' => -0.8421, 's' => 20.4894],
+        'ED50'    => ['tx' => 89.5, 'ty' => 93.8, 'tz' => 123.1, 'rx' => 0.0, 'ry' => 0.0, 'rz' => 0.156, 's' => -1.2],
         'Irl1975' => ['tx' => -482.530, 'ty' => 130.596, 'tz' => -564.557, 'rx' => -1.042, 'ry' => -0.214, 'rz' => -0.631, 's' => -8.150]];
 
-    public static function convert(lat_lng $point, $from, $to) {
+    public static function convert(lat_lng $point, $from, $to): lat_lng {
         if (!isset(self::$ellipse[$from]) && !isset(self::$ellipse[$to])) {
-            throw new \Exception('The transform for this conversion doesn\'t exitst. Please add a Helmert transform');
+            throw new Exception('The transform for this conversion doesn\'t exitst. Please add a Helmert transform');
         }
         if (!isset(self::$ellipse[$to]) || !isset(self::$ellipse[$from])) {
-            throw new \Exception('No ellipsis is available for this transform');
+            throw new Exception('No ellipsis is available for this transform');
         }
 
         if (!isset(self::$transform[$to])) {
@@ -39,7 +42,8 @@ class gps_datums {
         return self::__convert($point, $e1, $e2, $transform);
     }
 
-    private static function __convert(lat_lng $point, $source_ellipse, $target_ellipse, $transform) {
+    #[Pure]
+    private static function __convert(lat_lng $point, $source_ellipse, $target_ellipse, $transform): lat_lng {
         $lat = $point->lat(true);
         $lon = $point->lng(true);
 
@@ -89,8 +93,6 @@ class gps_datums {
             $iterations++;
         }
         $lambda = atan2($y2, $x2);
-        $H = $p / cos($phi) - $nu;
-
-        return new lat_lng(rad2deg($phi), rad2deg($lambda), $H);
+        return new lat_lng(rad2deg($phi), rad2deg($lambda));
     }
 }

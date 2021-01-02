@@ -1,38 +1,43 @@
 <?php
+
 namespace track;
 
 use classes\coordinate_bound;
-use classes\get;
-use object\club;
-use object\flight;
-use object\glider;
-use object\log;
-use object\pilot;
+use classes\geometry;
+use classes\lat_lng;
+use JetBrains\PhpStorm\Pure;
+use model\club;
+use model\flight;
+use model\glider;
+use model\log;
+use model\pilot;
 
 class track {
-    
-    /** @var  log $log */
-    protected $log;
-    public $id;
-    public $temp = false;
-    
-    public $track_data;
-    
-    /** @var glider club */
-    private $glider;
-    
-    /** @var flight club */
-    private $flight;
-    
-    /** @var pilot club */
-    private $pilot;
 
-    /** @var club club */
-    private $club;
-    
+    public $id;
+    public bool $temp = false;
+    public $track_data;
     /** @var task */
-    public $od, $or, $tr, $ft;
-    
+    public task $od;
+    public task $or;
+    public task $tr;
+    public task $ft;
+    /** @var  log $log */
+    protected log $log;
+    /** @var glider club */
+    private glider $glider;
+    /** @var flight club */
+    private flight $flight;
+    /** @var pilot club */
+    private pilot $pilot;
+    /** @var club club */
+    private club $club;
+    private $log_file;
+    /**
+     * @var coordinate_bound
+     */
+    private coordinate_bound $bounds;
+
     public function __construct($id = null) {
         if ($id === null) {
             $this->temp = true;
@@ -51,31 +56,27 @@ class track {
             $this->log = new log(log::DEBUG, $this->get_file_loc() . '/info.txt');
         }
     }
-    
+
+    public function get_file_loc($id = null, $temp = null): string {
+        if (!isset($id)) {
+            $id = $this->id;
+        }
+        if (!isset($temp)) {
+            $temp = $this->temp;
+        }
+        return root . '/uploads/flight/' . ($temp ? 'temp/' : '') . $id;
+    }
+
     public function set_flight(flight $flight) {
         $this->flight = $flight;
     }
 
-    public function cleanup() {
-        unset($this->flight);
-        unset($this->or);
-        unset($this->od);
-        unset($this->tr);
-    }
-
-    public function get_timestamp() {
-        return strtotime($this->track_data->start_time);
-    }
-    
-    public function get_date($format = 'Y/m/d') {
-        return date($format, $this->get_timestamp());
-    }
-    
-    public function get_dim() {
+    public function get_dim(): int {
         return $this->track_data->has_height_data() ? 3 : 2;
     }
-    
-    public function get_duration($formatted = false) {
+
+    #[Pure]
+    public function get_duration($formatted = false): bool|string {
         if ($formatted) {
             return date('H:i:s', $this->track_data->duration);
         } else {
@@ -86,34 +87,17 @@ class track {
     public function get_task($type) {
         return $this->$type;
     }
-    
-    public function get_file_loc($id = null, $temp = null) {
-        if (!isset($id)) {
-            $id = $this->id;
-        }
-        if (!isset($temp)) {
-            $temp = $this->temp;
-        }
-        return root . '/uploads/flight/' . ($temp ? 'temp/' : '') . $id;
-    }
-    
-    public function get_kml_description() {
+
+    public function get_kml_description(): string {
         return '';
     }
-
-    public function set_from_parser(igc_parser $parser) {
-        $data['source'] = $file_path;
-        $res = exec("/usr/local/bin/igc_parser '" . json_encode($data) . "'");
-        $this->coordinate_set = json_decode($res);
-        return $this->coordinate_set;
-    }
-    
 
     public function get_split_parts() {
         return $this->track_data->sets;
     }
-    
-    public function get_season() {
+
+    #[Pure]
+    public function get_season(): bool|int|string {
         $season = $this->get_date('Y');
         if ($this->get_date('n') >= 11) {
             $season++;
@@ -121,34 +105,38 @@ class track {
         return $season;
     }
 
-    public function is_winter() {
+    #[Pure]
+    public function get_date($format = 'Y/m/d'): bool|string {
+        return date($format, $this->get_timestamp());
+    }
+
+    #[Pure]
+    public function get_timestamp(): bool|int {
+        return strtotime($this->track_data->start_time);
+    }
+
+    #[Pure]
+    public function is_winter(): bool {
         $month = $this->get_date('n');
         return (in_array($month, [1, 2, 12]));
     }
-    
-    public function get_data_file() {
-        if ($this->id) {
-            $loc = $this->get_file_loc() . '/track.json';
-            if (file_exists($loc)) {
-                return $loc;
-            }
-        }
-        return false;
-    }
-    
-    public function get_kmz() {
+
+    #[Pure]
+    public function get_kmz(): string {
         return $this->get_file_loc() . '/track.kmz';
     }
-    
-    public function get_kmz_earth() {
+
+    #[Pure]
+    public function get_kmz_earth(): string {
         return $this->get_file_loc() . '/track_earth.kmz';
     }
-    
-    public function get_kmz_raw() {
+
+    #[Pure]
+    public function get_kmz_raw(): string {
         return $this->get_file_loc() . '/track_raw.kmz';
     }
-    
-    public function load_track_data() {
+
+    public function load_track_data(): bool {
         if ($file_path = $this->get_data_file()) {
             $this->log->info("Flight Read");
         } else {
@@ -164,10 +152,21 @@ class track {
         return true;
     }
 
+    #[Pure]
+    public function get_data_file(): bool|string {
+        if ($this->id) {
+            $loc = $this->get_file_loc() . '/track.json';
+            if (file_exists($loc)) {
+                return $loc;
+            }
+        }
+        return false;
+    }
+
     public function set_id($id) {
         $this->id = $id;
     }
-    
+
     public function set_info() {
         if ($this->flight && $this->flight->fid) {
             $this->flight->lazy_load(['pid', 'gid', 'cid']);
@@ -177,15 +176,15 @@ class track {
         }
     }
 
-    public function set_task($coordinates) {
+    public function set_task($coordinates): defined_task {
         $points = explode(';', $coordinates);
         $task = new defined_task();
         /**
-         * @var $waypoints \classes\lat_lng[]
+         * @var $waypoints lat_lng[]
          */
         $waypoints = [];
-        foreach ($points as &$a) {
-            $point = \classes\geometry::os_to_lat_long($a);
+        foreach ($points as $a) {
+            $point = geometry::os_to_lat_long($a);
             $waypoints[] = $point;
         }
         if (count($waypoints) == 3 && $waypoints[0]->get_distance_to($waypoints[2]) < 800) {
@@ -203,7 +202,7 @@ class track {
         }
 
         for ($i = 0; $i < count($waypoints) - 1; $i++) {
-            $task->distance += $waypoints[$i]->get_distance_to($waypoints[$i+1]);
+            $task->distance += $waypoints[$i]->get_distance_to($waypoints[$i + 1]);
         }
         return $task;
     }

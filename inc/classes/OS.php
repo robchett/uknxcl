@@ -1,10 +1,11 @@
 <?php
+
 namespace classes;
 
 class OS {
 
     private static $cells;
-    private static $cell_codes = [
+    private static array $cell_codes = [
         'HY',
         'NA', 'NB', 'NC', 'ND',
         'NF', 'NG', 'NH', 'NJ', 'NK',
@@ -18,7 +19,7 @@ class OS {
         'SW', 'SX',
     ];
 
-    public static function cells() {
+    public static function cells(): array|collection {
         if (!isset(self::$cells)) {
             self::$cells = new collection();
             foreach (self::$cell_codes as $code) {

@@ -1,16 +1,19 @@
 <?php
+
 namespace module\add_flight\form;
 
 use classes\ajax;
+use classes\attribute_callable;
+use classes\attribute_list;
 use classes\email;
 use classes\jquery;
 use form\form;
 use html\node;
-use object\flight;
-use object\flight_type;
-use object\new_flight_notification;
+use model\flight;
+use model\flight_type;
+use model\new_flight_notification;
 use track\igc_parser;
-use track\track;
+use track\task;
 
 class igc_form extends form {
 
@@ -21,6 +24,12 @@ class igc_form extends form {
     public $temp_id;
     public $type;
     public $force_delay;
+    public string $title;
+    public string $name;
+    public $cid;
+    public $gid;
+    public $pid;
+    public string $vis_info;
 
     public function __construct() {
         parent::__construct([
@@ -28,27 +37,27 @@ class igc_form extends form {
                     ->set_attr('label', 'Pilot:')
                     ->set_attr('required', true)
                     ->set_attr('default', 'Choose A Pilot')
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => '\\form\\add_pilot_form:get_form'], 'Not in the list? Click here to add a new pilot'))
-                    ->set_attr('link_module', '\\object\\pilot')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => attribute_callable::create([\form\add_pilot_form::class, 'get_form'])], 'Not in the list? Click here to add a new pilot'))
+                    ->set_attr('link_module', \model\pilot::class)
                     ->set_attr('link_field', 'name')
                     ->set_attr('options', ['order' => 'name']),
                 form::create('field_link', 'gid')
                     ->set_attr('label', 'Glider:')
                     ->set_attr('required', true)
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => '\\form\\add_glider_form:get_form'], 'Not in the list? Click here to add a new glider'))
-                    ->set_attr('link_module', '\\object\\glider')
+                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => attribute_callable::create([\form\add_glider_form::class, 'get_form'])], 'Not in the list? Click here to add a new glider'))
+                    ->set_attr('link_module', \model\glider::class)
                     ->set_attr('link_field', ['manufacturer.title', 'name'])
                     ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
                 form::create('field_link', 'cid')
                     ->set_attr('label', 'Club:')
                     ->set_attr('required', true)
-                    ->set_attr('link_module', '\\object\\club')
+                    ->set_attr('link_module', \model\club::class)
                     ->set_attr('link_field', 'title')
                     ->set_attr('options', ['order' => 'title']),
                 form::create('field_link', 'lid')
                     ->set_attr('label', 'Launch:')
                     ->set_attr('required', true)
-                    ->set_attr('link_module', '\\object\\launch_type')
+                    ->set_attr('link_module', \model\launch_type::class)
                     ->set_attr('link_field', 'title'),
                 form::create('field_boolean', 'ridge')
                     ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
@@ -89,7 +98,7 @@ class igc_form extends form {
         }
     }
 
-    public function do_submit() {
+    public function do_submit(): bool {
         $flight = new flight();
         $flight->set_from_request();
         $flight->live = false;
@@ -108,11 +117,11 @@ class igc_form extends form {
             $this->force_delay = false;
             if (!$this->check_date($igc_parser)) {
                 $this->force_delay = true;
-                $flight->admin_info .= 'delayed as flight is old.' . "\n";
+                $flight->admin_info .= "delayed as flight is old.\n";
             }
 
             if ($igc_parser->get_validated() === 0) {
-                $flight->admin_info .= 'G record invalid.' . "\n";
+                $flight->admin_info .= "G record invalid.\n";
             }
             $flight->defined = ($this->type == 'task');
 
@@ -135,8 +144,8 @@ class igc_form extends form {
             if ($flight->defined) {
                 $task = $igc_parser->get_task('declared');
                 $flight->ftid = $task->type;
-                if ($flight->ftid == \track\task::TYPE_OPEN_DISTANCE) {
-                    $flight->ftid = \track\task::TYPE_GOAL;
+                if ($flight->ftid == task::TYPE_OPEN_DISTANCE) {
+                    $flight->ftid = task::TYPE_GOAL;
                 }
                 $flight->base_score = $task->get_distance();
                 $flight->duration = $task->get_duration();
@@ -150,11 +159,11 @@ class igc_form extends form {
             $flight->live = true;
             $flight->do_save();
 
-            jquery::colorbox(['html' => 'Your flight has been added successfully', 'className'=> 'success']);
+            jquery::colorbox(['html' => 'Your flight has been added successfully', 'className' => 'success']);
             $form = new igc_form();
-            ajax::update($form->get_html()->get());
+            ajax::update((string)$form->get_html());
             $users = new_flight_notification::get_all([]);
-            foreach($users as $user) {
+            foreach ($users as $user) {
                 $mail = new email();
                 $mail->load_template(root . '/template/email/basic.html');
                 $mail->set_recipients([$user->email]);
@@ -169,29 +178,24 @@ class igc_form extends form {
                 $mail->replacements = [
                     '[content]' => '
                         <h2>New flight added: ' . $flight->get_primary_key() . '</h2>
+                        <!--suppress HtmlDeprecatedAttribute -->
                         <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
                             <tr>
                                 <td>
                                     <a href="' . host . '/cms/edit/2/' . $flight->get_primary_key() . '">View in CMS</a>
                                 </td>
                             </tr>
-                        </table>'
+                        </table>',
                 ];
                 $mail->send();
-            };
+            }
         } else {
-            jquery::colorbox(['html' => 'Your flight has failed to save', 'className'=> 'success failure']);
+            jquery::colorbox(['html' => 'Your flight has failed to save', 'className' => 'success failure']);
         }
+        return true;
     }
 
-    public function do_validate() {
-        if (!$this->agree) {
-            $this->validation_errors['agree'] = 'You must agree to the terms to continue';
-        }
-        return parent::do_validate();
-    }
-
-    public function check_date(igc_parser $parser) {
+    public function check_date(igc_parser $parser): bool {
         $current_time = time();
         $closure_time = $current_time - (31 * 24 * 60 * 60);
         if (strtotime($parser->get_date()) >= $closure_time && strtotime($parser->get_date()) <= $current_time) {
@@ -199,5 +203,12 @@ class igc_form extends form {
         } else {
             return false;
         }
+    }
+
+    public function do_validate(): bool {
+        if (!$this->agree) {
+            $this->validation_errors['agree'] = 'You must agree to the terms to continue';
+        }
+        return parent::do_validate();
     }
 }

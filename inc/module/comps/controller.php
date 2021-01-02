@@ -2,14 +2,14 @@
 
 namespace module\comps;
 
+use classes\interfaces\model_interface;
 use classes\module;
-use module\comps\object\comp;
+use module\comps\model\comp;
 
 class controller extends module {
 
-    public $page = 'comp';
-    /** @var \module\comps\object current */
-    public $current;
+    /** @var comp current */
+    public model_interface $current;
 
     public function __controller(array $path) {
         $this->view = 'comp_list';
@@ -35,13 +35,4 @@ class controller extends module {
         }
         parent::ajax_load();
     }
-
-    public function do_generate_all() {
-        $comps = comp::get_all([]);
-        $comps->iterate(function (comp $comp) {
-            $comp->do_zip_to_comp();
-        }
-        );
-    }
-
 }

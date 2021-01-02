@@ -2,19 +2,136 @@
 
 namespace classes;
 
-use object\flight_type;
-use object\launch_type;
+use classes\get as _get;
+use JetBrains\PhpStorm\NoReturn;
+use JetBrains\PhpStorm\Pure;
+use model\flight_type;
+use model\launch_type;
 
-class get extends \core\classes\get {
+class get {
 
+    public static array $cms_settings = [];
     protected static $type_array;
+    protected static $flight_type;
+    protected static array $launch_letter = [
+        launch_type::FOOT  => '',
+        launch_type::AERO  => 'Aero',
+        launch_type::WINCH => 'Winch',
+    ];
+    protected static $launch_title;
+
+    #[Pure]
+    static function ent($html): string {
+        return htmlentities(html_entity_decode($html));
+    }
+
+    #[Pure]
+    public static function __class_name($object): bool|string {
+        if (is_string($object)) {
+            $name = trim($object, '\\');
+        } else {
+            $name = trim(get_class($object), '\\');
+        }
+        if (($pos = strrpos($name, '\\')) !== false) {
+            $pos++;
+        }
+        return substr($name, $pos);
+    }
+
+    public static function recursive_glob($root, $pattern, $flags = 0): array {
+        $files = [];
+        $directories = glob('/' . trim($root, '/') . '/*', GLOB_ONLYDIR);
+        if ($directories) {
+            foreach ($directories as $dir) {
+                $files = array_merge($files, self::recursive_glob($dir, $pattern, $flags));
+            }
+        }
+        $root_files = glob('/' . trim($root, '/') . '/' . $pattern);
+        if ($root_files) {
+            $files = array_merge($files, $root_files);
+        }
+        return $files;
+    }
+
+    public static function setting($setting, $default = '') {
+        if (!self::$cms_settings) {
+            $res = db::select('_cms_setting')
+                ->add_field_to_retrieve('key')
+                ->add_field_to_retrieve('value')
+                ->execute();
+            while ($obj = $res->fetchObject()) {
+                self::$cms_settings[$obj->key] = $obj->value;
+            }
+        }
+        return isset(self::$cms_settings[$setting]) ? self::$cms_settings[$setting] : $default;
+    }
+
+    public static function __namespace($object, $index = null) {
+        $name = trim(get_class($object), '\\');
+        if (isset($index)) {
+            return array_reverse(explode('\\', substr($name, 0, strrpos($name, '\\'))))[$index];
+        } else {
+            return substr($name, 0, strrpos($name, '\\'));
+        }
+    }
+
+    public static function unique_fn($table, $field, $str): string {
+        $base_fn = _get::fn($str);
+        if (db::select($table)->add_field_to_retrieve($field)->filter($field . '=:fn', ['fn' => $base_fn])->execute()->rowCount()) {
+            $cnt = 0;
+            do {
+                $fn = $base_fn . '_' . ++$cnt;
+            } while (db::select($table)->add_field_to_retrieve($field)->filter($field . '=:fn', ['fn' => $fn])->execute()->rowCount());
+            return $fn;
+        } else {
+            return $base_fn;
+        }
+
+    }
+
+    public static function fn($str): string {
+        return trim(str_replace([' ', '.', ',', '-', '?', '#'], '_', strtolower($str)), '_');
+    }
+
+    static function trim_root($string): array|string {
+        return str_replace(root, '', $string);
+    }
+
+    #[Pure]
+    static function ordinal($num): string {
+        if (!in_array(($num % 100), [11, 12, 13])) {
+            switch ($num % 10) {
+                // Handle 1st, 2nd, 3rd
+                case 1:
+                    return $num . 'st';
+                case 2:
+                    return $num . 'nd';
+                case 3:
+                    return $num . 'rd';
+            }
+        }
+        return $num . 'th';
+    }
+
+    #[NoReturn]
+    public static function header_redirect($url = '', $code = 404) {
+        header('Location:' . (!strstr('http', $url) ? 'http://' . host . '/' . trim($url, '/') : $url), $code);
+        die();
+    }
+
+    static function bool($a): string {
+        if ($a)
+            return "Yes";
+        else
+            return "No";
+    }
 
     static function type($int) {
         if (!isset(self::$type_array)) {
             $types = flight_type::get_all(['ftid', 'fn']);
             $types->iterate(function (flight_type $type) {
-                    self::$type_array[$type->ftid] = $type->fn;
-                }
+                self::$type_array[$type->ftid] = $type->fn;
+            }
             );
         }
         if (isset(self::$type_array[$int])) {
@@ -23,14 +140,12 @@ class get extends \core\classes\get {
         return false;
     }
 
-    protected static $flight_type;
-
     static function flight_type($int) {
         if (!isset(self::$flight_type)) {
             $types = flight_type::get_all(['ftid', 'title']);
             $types->iterate(function (flight_type $type) {
-                    self::$flight_type[$type->ftid] = $type->title;
-                }
+                self::$flight_type[$type->ftid] = $type->title;
+            }
             );
         }
         if (isset(self::$flight_type[$int])) {
@@ -39,14 +154,12 @@ class get extends \core\classes\get {
         return false;
     }
 
-    protected static $launch_letter;
-
-    static function  launch_letter($int) {
+    static function launch_letter($int): mixed {
         if (!isset(self::$launch_letter)) {
             $types = launch_type::get_all(['lid', 'fn']);
             $types->iterate(function (launch_type $type) {
-                    self::$launch_letter[$type->lid] = $type->fn;
-                }
+                self::$launch_letter[$type->lid] = $type->fn;
+            }
             );
         }
         if (isset(self::$launch_letter[$int])) {
@@ -55,14 +168,12 @@ class get extends \core\classes\get {
         return false;
     }
 
-    protected static $launch_title;
-
-    static function  launch($int) {
+    static function launch($int) {
         if (!self::$launch_title) {
             $types = launch_type::get_all(['lid', 'title']);
             $types->iterate(function (launch_type $type) {
-                    self::$launch_title[$type->lid] = $type->title;
-                }
+                self::$launch_title[$type->lid] = $type->title;
+            }
             );
         }
         if (isset(self::$launch_title[$int])) {
@@ -71,7 +182,7 @@ class get extends \core\classes\get {
         return false;
     }
 
-    static function colour($i) {
+    static function colour($i): string {
         $colour = [
             "FF0000",
             "EF000F",
@@ -93,7 +204,7 @@ class get extends \core\classes\get {
         return $colour[$i % 16];
     }
 
-    static function kml_colour($i) {
+    static function kml_colour($i): string {
         switch ($i % 9) {
             case (1) :
                 return 'FF0000'; // Blue
@@ -117,7 +228,7 @@ class get extends \core\classes\get {
         return '';
     }
 
-    static function js_colour($i) {
+    static function js_colour($i): string {
         switch ($i % 9) {
             case (1) :
                 return '0000FF'; // Blue

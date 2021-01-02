@@ -2,13 +2,14 @@
 
 namespace module\news;
 
+use classes\interfaces\model_interface;
 use classes\module;
-use module\news\object\article;
+use module\news\model\article;
 
 class controller extends module {
 
-    /** @var  \module\news\object\article */
-    public $current;
+    /** @var article */
+    public model_interface $current;
 
     public function __controller(array $path) {
         if (count($path) > 1) {
@@ -20,6 +21,11 @@ class controller extends module {
         parent::__controller($path);
     }
 
+    public function set_current($aid) {
+        $this->current = new article();
+        $this->current->do_retrieve_from_id([], $aid);
+    }
+
     public function show_full() {
         $this->view = 'post';
         $this->set_view();
@@ -27,11 +33,6 @@ class controller extends module {
         if ($this->current->aid) {
             $this->ajax_load();
         }
-    }
-
-    public function set_current($aid) {
-        $this->current = new article();
-        $this->current->do_retrieve_from_id([], $aid);
     }
 
 }

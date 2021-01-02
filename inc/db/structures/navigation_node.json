@@ -1,0 +1,48 @@
+{
+  "title": "Navigation Node",
+  "tablename": "navigation_node",
+  "primary_key": "nnid",
+  "group": "Page Management",
+  "namespace": "",
+  "fieldset": {
+    "nnid": {
+      "type": "int",
+      "length": 6,
+      "autoincrement": true,
+      "primary": true,
+      "list": false,
+      "filter": false,
+      "required": false,
+      "editable": false
+    },
+    "parent_nnid": {
+      "type": "link",
+      "length": 6,
+      "default": 0,
+      "list": 0,
+      "filter": 0,
+      "module": "navigation_node",
+      "field": "title",
+      "required": false
+    },
+    //@include 'default.json'
+    "title": {
+      "type": "string",
+      "length": 64,
+      "default": ""
+    },
+    "link": {
+      "type": "string",
+      "length": 128,
+      "default": ""
+    }
+  },
+  "dependencies": [],
+  "settings": {},
+  "indexes": {
+    "primary": "nnid",
+    "standard": [
+      //@include 'default_indexes.json'
+    ]
+  }
+}

@@ -1,13 +1,14 @@
 <?php
+
 namespace module\stats;
 
 use classes\module;
-use object\flight;
+use model\flight;
 
 class controller extends module {
 
 
-    public function get_stats() {
+    public function get_stats(): array {
         return flight::get_statistics();
     }
 }

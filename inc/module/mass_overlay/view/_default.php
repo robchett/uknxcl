@@ -2,29 +2,32 @@
 
 namespace module\mass_overlay\view;
 
-use classes\ajax;
-use classes\view;
-use core\html\node;
-use object\flight;
-use traits\twig_view;
+use module\mass_overlay\controller;
+use template\html;
 
-/** @property \module\mass_overlay\controller $module */
-class _default extends \template\html {
-    use twig_view;
+/** @property controller $module */
+class _default extends html {
 
-    /**
-     * @return \html\node
-     */
-    public function get_template_data() {
-        $coordinates = [];
-        foreach($this->module->current->get_flights() as $flight) {
+    public function get_view(): string {
+        $table = $this->module->current;
+        $coordinates = '';
+        foreach ($table->get_flights() as $flight) {
             if ($flight->coords) {
-                $coordinates[$flight->get_primary_key()] = $flight->coords;
+                $coordinates .= "map.add_flight_coordinates('{$flight->coords}', {$flight->get_primary_key()}, false);";
             }
         }
-        return [
-            'flights' => $coordinates,
-            'table' => $this->module->current->get_table()
-        ];
+        return "
+        <h2>The following flights are displayed on the map</h2>
+<div id='generated_tables'>{$table->get_table()}</div>
+
+<script>
+    var map = map || [];
+    map.push(function () {
+        map.clear();
+        $coordinates
+        var bound = new google.maps.LatLngBounds(new google.maps.LatLng(57.326521, -6.551285), new google.maps.LatLng(50.875311, 2.127914));
+        map.internal_map.fitBounds(bound);
+    });
+</script>";
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace module\latest;
 
 use classes\module;

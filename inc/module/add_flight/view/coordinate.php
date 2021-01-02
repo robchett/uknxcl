@@ -1,24 +1,25 @@
 <?php
+
 namespace module\add_flight\view;
 
-use classes\ajax;
 use classes\get;
-use classes\view;
-use html\node;
 use module\add_flight\form\coordinates_form;
-use traits\twig_view;
+use template\html;
 
-class coordinate extends \template\html {
-    use twig_view;
+class coordinate extends html {
 
-    public function get_page_selector() {
+    public function get_page_selector(): string {
         return get::__namespace($this->module, 0) . '-coordinate';
     }
 
-    function get_template_data() {
+    function get_view(): string {
         $form1 = new coordinates_form();
-        return [
-            'form_1' => $form1->get_html()->get(),
-        ];
+        return "
+<div class='add_flight_section coordinate'>
+    <div class='callout callout-primary'>
+        {$form1->get_html()}
+    </div>
+    <a class='back button' href='/add_flight'>Back</a>
+</div>";
     }
 }

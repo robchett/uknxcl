@@ -1,11 +1,10 @@
 <?php
+
 namespace module\add_flight;
 
 use classes\module;
 
 class controller extends module {
-
-    public $page = 'add_flight';
 
     public function __controller(array $path) {
         $this->view = 'type_select';

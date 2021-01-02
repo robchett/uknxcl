@@ -1,0 +1,87 @@
+{
+  "title": "CMS Fields",
+  "primary_key": "fid",
+  "namespace": "cms",
+  "tablename": "_cms_field",
+  "group": "CMS Settings",
+  "fieldset": {
+    "fid": {
+      "type": "int",
+      "length": 6,
+      "autoincrement": true,
+      "primary": true,
+      "list": false,
+      "filter": false,
+      "required": false,
+      "editable": false
+    },
+    "parent_fid": {
+      "type": "link",
+      "length": 6,
+      "default": 0,
+      "list": 0,
+      "filter": 0,
+      "module": "_cms_field",
+      "field": "title",
+      "required": false
+    },
+    //@include 'default.json'
+    "field_name": {
+      "type": "string",
+      "length": 32
+    },
+    "title": {
+      "type": "string",
+      "length": 32
+    },
+    "type": {
+      "type": "string",
+      "length": 16
+    },
+    "mid": {
+      "type": "link",
+      "module": "_cms_module",
+      "field": "title"
+    },
+    "link_module": {
+      "type": "int",
+      "length": 6,
+      "required": false
+    },
+    "link_field": {
+      "type": "int",
+      "length": 6,
+      "required": false
+    },
+    "list": {
+      "type": "boolean",
+      "length": 1,
+      "default": 1
+    },
+    "filter": {
+      "type": "boolean",
+      "length": 1,
+      "default": 1
+    },
+    "required": {
+      "type": "boolean",
+      "length": 1,
+      "default": 1
+    },
+    "editable": {
+      "type": "boolean",
+      "length": 1,
+      "default": 1
+    }
+  },
+  "dependencies": [
+    "_cms_module"
+  ],
+  "settings": {},
+  "indexes": {
+    "primary": "fid",
+    "standard": [
+      //@include 'default_indexes.json'
+    ]
+  }
+}

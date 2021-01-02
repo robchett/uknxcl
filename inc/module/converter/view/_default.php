@@ -1,18 +1,21 @@
 <?php
+
 namespace module\converter\view;
 
-use classes\view;
-use html\node;
 use module\converter\form;
-use traits\twig_view;
+use template\html;
 
-class _default extends \template\html {
-    use twig_view;
+class _default extends html {
 
-    function get_template_data() {
+    function get_view(): string {
         $form1 = new form\coordinate_conversion_form();
-        return [
-            'form_1' => $form1->get_html()->get(),
-        ];
+        return "
+<div>
+    <h1 class='page-header'>UKNXCL Conversion Tools</h1>
+    <p>Enter lat/lng values as decimal or space separated for seconds</p>
+    <div class='callout callout-primary'>
+        {$form1->get_html()}
+    </div>
+</div>";
     }
 }
