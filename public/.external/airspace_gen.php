@@ -407,10 +407,11 @@ foreach ($classes as $c) {
 ";
 }
 $out .= '</Document>';
-file_put_contents(root . '/resources/airspace.kml', $out);
+file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/public/resources/airspace.kml', $out);
 
 $zip = new ZipArchive();
-$zip->open(root . '/resources/airspace.kmz', ZipArchive::OVERWRITE);
-$zip->addFile(root . '/resources/airspace.kml');
+$zip->open($_SERVER['DOCUMENT_ROOT'] . '/public/resources/airspace.kmz', ZipArchive::OVERWRITE);
+$zip->addFile($_SERVER['DOCUMENT_ROOT'] . '/public/resources/airspace.kml');
+$zip->addFile($_SERVER['DOCUMENT_ROOT'] . '/public/resources/airspace.kml');
 $zip->close();
 
