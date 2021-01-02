@@ -199,7 +199,7 @@ function UKNXCL_Map($container, callbacks) {
 
     this.load_airspace = function () {
         if (this.isMap()) {
-            $.fn.ajax_factory('\\object\\airspace', 'load_js');
+            $.fn.ajax_factory('\\model\\airspace', 'load_js');
         } else {
             this.parseKML('/resources/airspace.kmz', this.airspace);
         }
@@ -408,7 +408,7 @@ function Track(id, temp, split) {
 
     this.add_nxcl_data = function (callback) {
         $.ajax({
-            url: '?module=\\object\\flight&act=get_js&id=' + this.id,
+            url: '?module=\\model\\flight&act=get_js&id=' + this.id,
             context: this,
             cache: false,
             type: 'POST',
