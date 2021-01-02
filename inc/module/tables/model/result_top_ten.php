@@ -10,8 +10,10 @@ class result_top_ten extends result {
 
     function make_table(league_table $data): string {
         $html = '';
-        for ($i = 1; $i < 5; $i++) {
-            $where = $data->where . ' AND personal = 0 AND `delayed` = 0 AND ftid=' . $i;
+        for ($i = 1; $i <= 5; $i++) {
+            $where = $data->where;
+            $where[] = 'personal = 0';
+            $where[] = 'ftid = ' . $i;
             $flights = flight::get_all(
                 [
                     'fid',
@@ -39,7 +41,7 @@ class result_top_ten extends result {
                         "pilot p"         => "flight.pid=p.pid",
                         'manufacturer gm' => 'g.mid = gm.mid',
                     ],
-                    'where'      => $where,
+                    'where'      => implode(" AND ", $where),
                     'order'      => 'score DESC',
                     'limit'      => 10,
                     'parameters' => $data->parameters,
@@ -61,10 +63,10 @@ class result_top_ten extends result {
                             function (flight $flight, $count) use (&$html, $data) {
                                 $count++;
                                 return node::create('tr', [],
-                                    "<td>{$count}</td><td>{$flight->p_name}</td><td>{$flight->c_name}<td>" .
-                                    ($data->class_table_alias == 'p' ? "<td>{$flight->g_name}<td>" : '') .
+                                    "<td>{$count}</td><td>{$flight->p_name}</td><td>{$flight->c_name}</td>" .
+                                    ($data->class_table_alias == 'p' ? "<td>{$flight->g_name}</td>" : '') .
                                     $flight->to_print() .
-                                    "<td>{$flight->coords}<td>"
+                                    "<td>{$flight->coords}</td>"
                                 );
                             }
                         )
@@ -72,7 +74,7 @@ class result_top_ten extends result {
                 );
             }
         }
-        return $html;
+        return '<div id="table_wrapper">' . $html . '</div>';
     }
 
 

@@ -31,7 +31,7 @@ class result_league extends result {
             $array->uasort(['\module\tables\model\league_table', 'cmp']);
             $class1 = 1;
             $class5 = 1;
-            $html = node::create('div.table_wrapper', [],
+            $html = node::create('div#table_wrapper.table_wrapper', [],
                 node::create('h3.heading', [], $data->Title) .
                 ($data->options->show_top_4 ? $data->ShowTop4($data->WHERE) : '') .
                 node::create('table.results.main', [],

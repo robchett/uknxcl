@@ -50,10 +50,10 @@ class result_club extends result {
         });
         $club_array->uasort(['\module\tables\model\league_table', 'cmp']);
 
-        return node::create('div.table_wrapper', [],
+        return node::create('div#table_wrapper.table_wrapper', [],
             node::create('h3.heading', [], $data->Title) .
             $club_array->iterate_return(function (club $club, $i) use ($data) {
-                return node::create('div.table_wrapper.inner', [],
+                return node::create('div#table_wrapper.table_wrapper.inner', [],
                     $club->writeClubSemiHead($i + 1) .
                     node::create('table.results.main.flights_' . $data->max_flights, [],
                         $data->write_table_header($data->max_flights, $data->class_primary_key) .
