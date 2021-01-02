@@ -99,9 +99,9 @@ div#pop {
 
 a.download {
   display: inline-block !important;
-  width: 70px;
+  width: 70px !important;
   height: 76px;
-  background: url('/.core/images/sprites.png') -81px 0px;
+  background: url('/img/sprites.png') -81px 0px;
   text-indent: -9999px;
   &.kml {
     background-position: -1px 0px;
