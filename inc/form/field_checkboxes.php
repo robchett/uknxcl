@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 class field_checkboxes extends field {
 
     public array $options = [];
-    public array|string $value = [];
+    public int|array|string $value = [];
 
     public function __construct($name, $options) {
         $this->options = $options;
