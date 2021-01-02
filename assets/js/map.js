@@ -388,7 +388,7 @@ function Track(id, temp, split) {
 
     this.add_google_data = function () {
         if (map.isMap()) {
-            map.GeoXMLsingle.parse('?module=\\object\\flight&act=download&type=kml' + this.temp + this.split + '&id=' + this.id, null, this.id);
+            map.GeoXMLsingle.parse('?module=\\model\\flight&act=download&type=kml' + this.temp + this.split + '&id=' + this.id, null, this.id);
         } else {
             map.parseKML('/uploads/flight/' + this.temp + this.id + '/track_earth.kmz', this);
         }
