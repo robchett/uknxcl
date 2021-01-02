@@ -848,10 +848,6 @@ geoXML3.combineOptions = function (overrides, defaults) {
     }
     return result;
 };
-
-// Retrieve an XML document from url and pass it to callback as a DOM document
-geoXML3.fetchers = [];
-
 // parse text to XML doc
 /**
  * Parses the given XML string and returns the parsed document in a
@@ -880,16 +876,11 @@ geoXML3.fetchXML = function (url, callback) {
     }
 
     var xhrFetcher = {};
-    if (!!geoXML3.fetchers.length) {
-        xhrFetcher = geoXML3.fetchers.pop();
-    } else {
-        if (!!window.XMLHttpRequest) {
-            xhrFetcher.fetcher = new window.XMLHttpRequest(); // Most browsers
-        } else if (!!window.ActiveXObject) {
-            xhrFetcher.fetcher = new window.ActiveXObject('Microsoft.XMLHTTP'); // Some IE
-        }
+    if (!!window.XMLHttpRequest) {
+        xhrFetcher.fetcher = new window.XMLHttpRequest(); // Most browsers
+    } else if (!!window.ActiveXObject) {
+        xhrFetcher.fetcher = new window.ActiveXObject('Microsoft.XMLHTTP'); // Some IE
     }
-
     if (!xhrFetcher.fetcher) {
         geoXML3.log('Unable to create XHR object');
         callback(null);
@@ -910,8 +901,6 @@ geoXML3.fetchXML = function (url, callback) {
                     // Returned successfully
                     callback(geoXML3.xmlParse(xhrFetcher.fetcher.responseText));
                 }
-                // We're done with this fetcher object
-                geoXML3.fetchers.push(xhrFetcher);
             }
         };
         xhrFetcher.xhrtimeout = setTimeout(timeoutHandler, 60000);
