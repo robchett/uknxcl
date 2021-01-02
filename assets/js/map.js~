@@ -470,9 +470,8 @@ function Track(id, temp, split) {
         </li>\
     </ul>\
 </div>"
-        );
+        )
             map.swap(this);
-            $("body").addClass('interface-visible');
         }
     };
 
@@ -534,9 +533,7 @@ function Track(id, temp, split) {
 
     this.load = function () {
         this.add_google_data();
-        this.add_nxcl_data(function () {
-            ths.is_ready()
-        });
+        this.add_nxcl_data(function () {ths.is_ready()});
     }
 }
 

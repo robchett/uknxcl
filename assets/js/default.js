@@ -35,7 +35,7 @@ $(document).ready(function () {
     });
 
     $body.on('click', '.kmltree .expander', function () {
-        var $li = $(this).parent();
+        var $li = $(this).parents('kmltree-item').eq(0);
         if ($li.hasClass('open')) {
             $li.removeClass('open');
             $li.find('li').removeClass('open');

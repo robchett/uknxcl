@@ -9,9 +9,6 @@
   z-index: 999999;
   float: left;
   .load_airspace {
-    height: 38px;
-    line-height: 38px;
-    border-left-width: 50px;
     border-right: 0;
   }
   span.toggle {
@@ -33,11 +30,12 @@
     right: auto;
   }
   #tree_content {
+    margin-top: 50px;
     height: 100%;
     overflow: scroll;
   }
   #airspace_tree {
-    
+    padding-top: 10px;
   }
 }
 
@@ -291,4 +289,14 @@ body.waypoint_mode {
 
 #superOverlays {
   width: 100px !important;
+}
+
+.kmltree {
+  padding-top: 10px;
+  &-item-title {
+    font-size: 18px;
+    border-bottom: 1px solid $primary;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+  }
 }
