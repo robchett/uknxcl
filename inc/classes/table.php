@@ -477,9 +477,10 @@ class table implements model_interface {
     /**
      * @return int
      */
-    public function do_cms_update(): int {
+    public static function do_cms_update(): int {
+        $t = new static;
         if (core::is_admin()) {
-            _db::update(_get::__class_name($this))->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field($this->get_primary_key_name(), $_REQUEST['id'])->execute();
+            _db::update(_get::__class_name($t))->add_value($_REQUEST['field'], $_REQUEST['value'])->filter_field($t->get_primary_key_name(), $_REQUEST['id'])->execute();
         }
         return 1;
     }
