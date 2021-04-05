@@ -11,7 +11,7 @@ class paginate {
     public $npp;
     public $page;
     public attribute_callable $act;
-    public string $title;
+    public string $title = '';
     public $post_title;
     public array $post_data = [];
 
