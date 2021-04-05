@@ -26,7 +26,7 @@ class flight_type extends table {
      * @param bool $defined
      * @return int
      */
-    public static function get_multiplier($type, int $season = 2001, bool $defined = false): int {
+    public static function get_multiplier($type, int $season = 2001, bool $defined = false): float {
         if (!isset(self::$all_rows)) {
             self::$all_rows = flight_type::get_all([]);
         }
