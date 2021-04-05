@@ -715,6 +715,7 @@ class table implements model_interface {
      */
     public function get_cms_list(): string {
         $fields = $this->get_fields(true);
+        array_walk($fields, fn($f) => $f->parent_form = $this);
         $json = ["mid" => static::get_module_id(),"id" => $this->get_primary_key()];
         $live_attributes = attribute_list::create(['href' => '#', 'data-ajax-click' => attribute_callable::create([$this, 'do_toggle_live']), 'data-ajax-post' => json_encode($json)]);
         $up_attributes = attribute_list::create(['data-ajax-click' => attribute_callable::create([$this,'do_reorder']), 'data-ajax-post' => json_encode($json + ["dir"=> "up"])]);
