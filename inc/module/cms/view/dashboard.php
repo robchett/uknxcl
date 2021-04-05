@@ -61,7 +61,7 @@ class dashboard extends cms_view {
         <td><a href='/cms/module/2/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->get_date_string('d/m/Y')}</a></td>
         <td><a href='/cms/module/3/{$flight->pilot->pid}' title='Pilot: {$flight->pilot->name}'>{$flight->pilot->name}</a></td>
         <td><a href='/cms/module/4/{$flight->glider->gid}' title='Glider: {$flight->glider->name}'>{$flight->glider->name}</a></td>
-        <td><a href='/cms/module/12/{$flight->club->cid}' title='Club: {$flight->club->name}'>{$flight->club->name}</a></td>
+        <td><a href='/cms/module/12/{$flight->club->cid}' title='Club: {$flight->club->title}'>{$flight->club->title}</a></td>
         <td class='col-md-5'>{$flight->admin_info}</td>
         <td>{$flight->get_delayed_string()}</td>
     </tr>"
