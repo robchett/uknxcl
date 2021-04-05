@@ -208,7 +208,7 @@ class controller extends module {
         return $nodes;
     }
 
-    public function do_undelete() {
+    public static function do_undelete() {
         $module = new _cms_module([], $_REQUEST['mid']);
         $object = $module->get_class();
         $class = $module->get_class_name();
@@ -222,7 +222,7 @@ class controller extends module {
         ajax::update($list->get_table());
     }
 
-    public function do_delete() {
+    public static function do_delete() {
         $module = new _cms_module([], $_REQUEST['mid']);
         $object = $module->get_class();
         $class = $module->get_class_name();
