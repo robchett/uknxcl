@@ -735,7 +735,7 @@ class table implements model_interface {
     /**
      *
      */
-    public function do_reorder() {
+    public static function do_reorder() {
         if (isset($_REQUEST['id'])) {
             /** @var table $object */
             static::$retrieve_unlive = true;
@@ -753,7 +753,7 @@ class table implements model_interface {
         }
     }
 
-    public function do_toggle_live() {
+    public static function do_toggle_live() {
         if (isset($_REQUEST['id'])) {
             static::$retrieve_unlive = true;
             $object = new static(['live'], $_REQUEST['id']);
@@ -767,7 +767,7 @@ class table implements model_interface {
         }
     }
 
-    public function do_toggle_expand() {
+    public static function do_toggle_expand() {
         if (isset($_REQUEST['id'])) {
             $module = new _cms_module();
             $module->do_retrieve([], ['where_equals' => ['mid' => $_REQUEST['mid']]]);
