@@ -28,7 +28,7 @@ class auto_loader {
             static::$file_paths[$class] = $path;
         }
 
-        if ($path) {
+        if (file_exists($path)) {
             require_once($path);
             if ($depth == 1) {
                 if (method_exists($class, 'set_statics')) {
