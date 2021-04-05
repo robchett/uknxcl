@@ -42,7 +42,7 @@ class league_table_options {
     #[Pure]
     public function __construct($settings, $parent) {
         $this->parent = $parent;
-        $this->year = date('Y') - 1;
+        $this->year = date('Y');
         if (!is_null($settings)) {
             foreach ($settings as $key => $value) {
                 $this->$key = $value;
