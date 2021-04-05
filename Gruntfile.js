@@ -61,7 +61,7 @@ module.exports = function (grunt) {
                     src + 'js/core/01_jquery.js',
                     src + 'js/core/02_ajax.js',
                     src + 'js/core/07_content_collapse.js',
-                    src + 'js/cms/*.js'
+                    src + 'js/cms/bootstrap/*.js'
                 ],
                 dest: target + 'js/cms.js',
                 nonull: true
