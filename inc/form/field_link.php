@@ -58,9 +58,7 @@ class field_link extends field {
             $this->options['order'] = $obj->get_primary_key_name();
         }
         $options = $class::get_all(array_merge($fields, [$obj->get_primary_key_name(), 'parent_' . $obj->get_primary_key_name()]), $this->options);
-        if (!$this->required) {
-            $html .= '<option value="0">- Please Select -</option>';
-        }
+        $html .= '<option value="0">- Please Select -</option>';
 
         $parents = new collection();
         $options->iterate(/* @var table $object */ function ($object) use (&$parents) {
