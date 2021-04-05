@@ -209,7 +209,7 @@ JS;
                 "<p>Are you sure you want to do this?<p>"
             ], [
                 node::create('button.btn.btn-default', ['data-dismiss' => 'modal'], 'Cancel') .
-                node::create('button#undelete.btn.btn-primary', ['data-dismiss' => 'modal', 'data-ajax-click' => 'cms:do_undelete'], 'Un-delete')
+                node::create('button#undelete.btn.btn-primary', ['data-dismiss' => 'modal', 'data-ajax-click' => attribute_callable::create([controller::class, 'do_undelete'])], 'Un-delete')
             ]),
             modal::create('true_delete_modal', [
                 'class' => ['true_delete_modal', 'modal', 'fade'],
@@ -223,7 +223,7 @@ JS;
                 node::create('h2', [], 'This cannot be reversed!'), "<p>Are you sure you want to do this?<p>",
             ], [
                 node::create('button.btn.btn-default', ['data-dismiss' => 'modal'], 'Cancel') .
-                node::create('button#undelete.btn.btn-primary', ['data-dismiss' => 'modal', 'data-ajax-click' => 'cms:do_delete'], 'Delete')
+                node::create('button#undelete.btn.btn-primary', ['data-dismiss' => 'modal', 'data-ajax-click' => attribute_callable::create([controller::class, 'do_delete'])], 'Delete')
             ])
         ];
     }
