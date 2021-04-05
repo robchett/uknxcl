@@ -21,7 +21,7 @@ class cms_filter_form extends form {
     /**
      * @var int|mixed
      */
-    private $_mid;
+    public $_mid;
 
     public function __construct($mid = 0) {
         if (ajax && !$mid) {
