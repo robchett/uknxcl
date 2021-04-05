@@ -213,7 +213,7 @@ class controller extends module {
         $object = $module->get_class();
         $class = $module->get_class_name();
         $class::$retrieve_deleted = true;
-        $object->do_retrieve_from_id(['deleted'], $_REQUEST['id']);
+        $object->do_retrieve_from_id([], $_REQUEST['id']);
         if ($object->get_primary_key()) {
             $object->deleted = false;
             $object->do_save();
@@ -227,7 +227,7 @@ class controller extends module {
         $object = $module->get_class();
         $class = $module->get_class_name();
         $class::$retrieve_deleted = true;
-        $object->do_retrieve_from_id(['deleted'], $_REQUEST['id']);
+        $object->do_retrieve_from_id([], $_REQUEST['id']);
         if ($object->get_primary_key()) {
             if ($object->deleted) {
                 db::delete(get::__class_name($class))->filter($object->get_primary_key_name() . '=' . $_REQUEST['id'])->execute();
