@@ -714,8 +714,10 @@ class table implements model_interface {
      * @return string
      */
     public function get_cms_list(): string {
-        $fields = $this->get_fields(true);
-        array_walk($fields, fn($f) => $f && $f->parent_form = $this);
+        $fields = $this->get_fields(true)->getArrayCopy();
+        foreach ($fields as $field) {
+            $field->parent_form = $this;
+        }
         $json = ["mid" => static::get_module_id(),"id" => $this->get_primary_key()];
         $live_attributes = attribute_list::create(['href' => '#', 'data-ajax-click' => attribute_callable::create([$this, 'do_toggle_live']), 'data-ajax-post' => json_encode($json)]);
         $up_attributes = attribute_list::create(['data-ajax-click' => attribute_callable::create([$this,'do_reorder']), 'data-ajax-post' => json_encode($json + ["dir"=> "up"])]);
@@ -730,7 +732,7 @@ class table implements model_interface {
         <td class='bnt-col'><a class='btn btn-primary' $live_attributes>" . icon::get($this->live ? 'ok' : 'remove') . "</a></td>
         " . ($nestable ? "<td class='edit " . ($this->_has_child ? '' : '.no_expand') . "'>" . ($this->_has_child ? "<a class='expand btn btn-primary' $expand_attributes>" . icon::get(!$this->_is_expanded ? 'plus' : 'minus') . "</a>": '') . "</td>" : '') . "
         <td class='btn-col2'><a class='btn btn-primary' $up_attributes>" . icon::get('arrow-up')  . "</a><a class='btn btn-primary' $down_attributes>" . icon::get('arrow-down') . "</a></td>
-        " . array_reduce(array_filter($fields->getArrayCopy(), fn($field) => $field->list), fn($a, $field) => $a . "<td class='" . get_class($field) . "'>{$field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->get_primary_key())}</td>") . " 
+        " . array_reduce(array_filter($fields, fn($field) => $field->list), fn($a, $field) => $a . "<td class='" . get_class($field) . "'>{$field->get_cms_list_wrapper(isset($this->{$field->field_name}) ? $this->{$field->field_name} : '', get_class($this), $this->get_primary_key())}</td>") . " 
         <td class='btn-col'>" . ($this->deleted ? "<button class='delete btn btn-info' $undelete_attributes><s>" . icon::get('trash') . "</s></button><button class='delete btn btn-warning' $true_delete_attributes><s>" . icon::get('fire') . "</s></button>" : "<button class='delete btn btn-warning' $delete_attributes>" . icon::get('trash') . "</button");
     }
 
