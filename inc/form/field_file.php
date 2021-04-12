@@ -4,6 +4,7 @@ namespace form;
 
 use classes\icon;
 use html\node;
+use model\flight;
 use RuntimeException;
 
 class field_file extends field {
