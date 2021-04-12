@@ -13,12 +13,8 @@ class field_file extends field {
     public bool $external = false;
 
     public function get_cms_list_wrapper($value, $object_class, $id): string {
-        if (isset($this->parent_form->{$this->field_name}) && !empty($this->parent_form->{$this->field_name})) {
-            $this->attributes['href'] = $this->parent_form->{$this->field_name};
-            return node::create('a.btn.btn-success', $this->attributes, icon::get('save'));
-        } else {
-            return node::create('span.btn.btn-default', ['disabled' => 'disabled'], icon::get('save'));
-        }
+        $this->attributes['href'] = $this->get_download_path(flight::DOWNLOAD_IGC);
+        return node::create('a.btn.btn-success', $this->attributes, icon::get('save'));
     }
 
     public function get_html_wrapper(): string {
