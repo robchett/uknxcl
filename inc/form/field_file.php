@@ -13,7 +13,7 @@ class field_file extends field {
     public bool $external = false;
 
     public function get_cms_list_wrapper($value, $object_class, $id): string {
-        $this->attributes['href'] = $this->get_download_path(flight::DOWNLOAD_IGC);
+        $this->attributes['href'] = $this->parent_form->get_download_path(flight::DOWNLOAD_IGC);
         return node::create('a.btn.btn-success', $this->attributes, icon::get('save'));
     }
 
