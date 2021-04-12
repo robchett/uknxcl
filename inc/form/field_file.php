@@ -14,7 +14,7 @@ class field_file extends field {
     public bool $external = false;
 
     public function get_cms_list_wrapper($value, $object_class, $id): string {
-        $this->attributes['href'] = $this->parent_form->get_download_path(flight::DOWNLOAD_IGC);
+        $this->attributes['href'] = 'http://uknxcl.co.uk/?module=\model\flight&act=download&id=' . $this->parent_form->get_primary_key() . '&type=igc';
         return node::create('a.btn.btn-success', $this->attributes, icon::get('save'));
     }
 
