@@ -187,7 +187,7 @@ class flight extends table {
             $ext = end($pathArray);
             header("Content-type: application/octet-stream");
             header("Cache-control: private");
-            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . ($temp ? $this->date : $id) . '.' . $ext . '"');
+            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $this->pilot->name) . '-' . ($temp ? $id : $this->date) . '.' . $ext . '"');
             header("Content-length: $fsize");
             echo file_get_contents($fullPath);
             die();
