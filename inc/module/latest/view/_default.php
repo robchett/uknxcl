@@ -8,7 +8,11 @@ use template\html;
 class _default extends html {
 
     function get_view(): string {
-        $flights = flight::get_all(['flight.*', 'pilot.name', 'pilot.pid'], ['join' => ['pilot' => 'flight.pid = pilot.pid'], 'where' => '`delayed` = 0 AND personal = 0', 'limit' => 40, 'order' => 'fid DESC']);
+        if (isset($_REQUEST['date']) && ($date = strtotime($_REQUEST['date']))) {
+            $flights = flight::get_all(['flight.*', 'pilot.name', 'pilot.pid'], ['join' => ['pilot' => 'flight.pid = pilot.pid'], 'where' => '`delayed` = 0 AND date = "' . date('Y-m-d', $date) . '"', 'order' => 'fid DESC']);
+        } else {
+            $flights = flight::get_all(['flight.*', 'pilot.name', 'pilot.pid'], ['join' => ['pilot' => 'flight.pid = pilot.pid'], 'where' => '`delayed` = 0 AND personal = 0', 'limit' => 40, 'order' => 'fid DESC']);
+        }
         return "
 <h1 class='page-header'>Latest</h1>
 <div class='table_wrapper'>
