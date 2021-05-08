@@ -72,7 +72,7 @@ class igc_parser {
 
     #[Pure]
     public function get_part_count(): int {
-        return $this->data->sets;
+        return count($this->data->sets);
     }
 
     public function is_task_completed(): bool {
