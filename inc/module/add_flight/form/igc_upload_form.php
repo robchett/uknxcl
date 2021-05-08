@@ -160,9 +160,9 @@ class igc_upload_form extends form {
         $parts = [];
         foreach ($track->get_split_parts() as $key => $part) {
             $parts[] = node::create('tr', ['style' => 'color:#' . get::kml_colour($key)], [
-                "<td>{'Part: ' . $key}<td>",
-                "<td>{$part->duration}s<td>",
-                "<td>{$part->points}<td>",
+                "<td>{'Part: ' . $key}</td>",
+                "<td>{$part->duration}s</td>",
+                "<td>{$part->points}</td>",
                 node::create('td a.choose.button', [
                     'data-ajax-click'  => attribute_callable::create([$this, 'do_choose_track']),
                     'data-ajax-post'   => '{"track":' . $track->id . ', "section": ' . $key . '}',
@@ -172,9 +172,9 @@ class igc_upload_form extends form {
         }
         return node::create('table', [], [
             node::create('thead tr', [], [
-                "<th>Part<th>",
-                "<th>Duration<th>",
-                "<th>Points<th>",
+                "<th>Part</th>",
+                "<th>Duration</th>",
+                "<th>Points</th>",
                 node::create('th', []),
             ]),
             "<tbody>{$parts}<tbody>",
