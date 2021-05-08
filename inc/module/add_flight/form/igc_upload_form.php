@@ -177,7 +177,7 @@ class igc_upload_form extends form {
                 "<th>Points</th>",
                 node::create('th', []),
             ]),
-            "<tbody>{$parts}<tbody>",
+            "<tbody>" .implode('', $parts) . "<tbody>",
         ]);
     }
 
