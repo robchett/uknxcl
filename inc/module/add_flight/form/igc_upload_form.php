@@ -225,8 +225,9 @@ class igc_upload_form extends form {
         return '';
     }
 
-    public function do_choose_track() {
-        $this->do_calc_score($_REQUEST['track'], (int)$_REQUEST['section']);
+    public static function do_choose_track() {
+        $class = new static();
+        $class->do_calc_score($_REQUEST['track'], (int)$_REQUEST['section']);
     }
 
     public static function reset() {
