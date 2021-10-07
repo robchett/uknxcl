@@ -28,7 +28,7 @@ class core {
 
 
     public function __construct() {
-        self::$js[] = 'https://maps.google.com/maps/api/js?libraries=geometry';
+        self::$js[] = 'https://maps.google.com/maps/api/js?libraries=geometry&key=AIzaSyDwHv2tWlg74MaQhqt42v_kJBUmyVL1e4Q';
         self::$js[] = 'https://www.google.com/jsapi';
         self::$singleton = $this;
         $this->set_path((string) ($_REQUEST['url'] ?? uri));
