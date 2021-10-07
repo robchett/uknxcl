@@ -2,16 +2,18 @@
 
 namespace module\latest\view;
 
+use classes\tableOptions;
 use model\flight;
 use template\html;
 
+/** @extends html<\module\latest\controller, false> */
 class _default extends html {
 
     function get_view(): string {
         if (isset($_REQUEST['date']) && ($date = strtotime($_REQUEST['date']))) {
-            $flights = flight::get_all(['flight.*', 'pilot.name', 'pilot.pid'], ['join' => ['pilot' => 'flight.pid = pilot.pid'], 'where' => '`delayed` = 0 AND date = "' . date('Y-m-d', $date) . '"', 'order' => 'fid DESC']);
+            $flights = flight::get_all(new tableOptions(join: ['pilot' => 'flight.pid = pilot.pid'], where: '`delayed` = 0 AND date = "' . date('Y-m-d', $date) . '"', order: 'fid DESC'));
         } else {
-            $flights = flight::get_all(['flight.*', 'pilot.name', 'pilot.pid'], ['join' => ['pilot' => 'flight.pid = pilot.pid'], 'where' => '`delayed` = 0 AND personal = 0', 'limit' => 40, 'order' => 'fid DESC']);
+            $flights = flight::get_all(new tableOptions(join: ['pilot' => 'flight.pid = pilot.pid'], where: '`delayed` = 0 AND personal = 0', limit: 40, order: 'fid DESC'));
         }
         return "
 <h1 class='page-header'>Latest</h1>
@@ -34,7 +36,7 @@ class _default extends html {
                 <td class='left'>{$flight->format_date($flight->date, 'd/m/y')}</td>
                 <td class='left'>{$flight->format_date($flight->created, 'd/m/y')}</td>
                 {$flight->to_print()}
-            </tr>")}
+            </tr>", '')}
         </tbody>
     </table>
 </div>";

@@ -2,7 +2,7 @@
 
 namespace classes;
 
-use BadMethodCallException;
+use Exception;
 use InvalidArgumentException;
 
 class session {
@@ -10,33 +10,30 @@ class session {
     protected static bool $started = false;
     protected static bool $modified = false;
 
-    public static function stop() {
+    public static function stop(): void {
         if (static::$started) {
             session_write_close();
         }
     }
 
     /**
-     * @ ...string
+     * @param string[] $path
      * @return mixed
      */
-    public static function get(/** ...$input */): mixed {
-        $input = func_get_args();
-        if (count($input) == 0) {
-            throw new BadMethodCallException('Please pass at least one parameter to session::get');
-        }
+    public static function get(...$path): mixed {
         static::start();
         $var = $_SESSION;
-        foreach ($input as $key) {
+        foreach ($path as $key) {
             if (!isset($var[$key])) {
-                throw new InvalidArgumentException('$_SESSION[' . implode('][', $input) . '] has not been set');
+                throw new InvalidArgumentException('$_SESSION[' . implode('][', $path) . '] has not been set');
             }
+            /** @var array|scalar */
             $var = $var[$key];
         }
         return $var;
     }
 
-    protected static function start() {
+    protected static function start(): void {
         if (!static::$started) {
             session_start();
             static::$started = true;
@@ -44,68 +41,61 @@ class session {
     }
 
     /**
-     * @ ...string
+     * @param string[] $path
      * @return bool
      */
-    public static function is_set(/** ...$input */): bool {
-        $input = func_get_args();
-        if (count($input) == 0) {
-            throw new BadMethodCallException('Please pass at least one parameter to session::is_set');
-        }
+    public static function is_set(...$path): bool {
         static::start();
         $var = $_SESSION;
-        foreach ($input as $key) {
+        foreach ($path as $key) {
             if (!isset($var[$key])) {
                 return false;
             }
+            /** @var array|scalar */
             $var = $var[$key];
         }
         return true;
     }
 
     /**
-     * @ ...string
+     * @param string[] $path
      * @return void
      */
-    public static function un_set(/** ...$input */) {
-        $input = func_get_args();
-        if (count($input) == 0) {
-            throw new BadMethodCallException('Please pass at least one parameter to session::is_set');
-        }
+    public static function un_set(...$path): void {
         static::start();
         static::$modified = true;
-        $final = array_pop($input);
+        $final = array_pop($path);
         $var = &$_SESSION;
-        foreach ($input as $key) {
+        foreach ($path as $key) {
             if (!isset($var[$key])) {
-                $var[$key] = [];
+                return;
             }
+            /** @var array */
             $var = &$var[$key];
         }
         unset($var[$final]);
     }
 
     /**
-     * @ mixed $value
-     * @ ...string
+     * @param mixed $value
+     * @param string[] $input
      * @return void
      */
-    public static function set(/** $value, ...$input */) {
-        $input = func_get_args();
-        if (count($input) < 2) {
-            throw new BadMethodCallException('Please pass at least two parameters to session::set');
-        }
+    public static function set(mixed $value, ...$input): void {
         static::start();
         static::$modified = true;
-        $value = array_shift($input);
         $final = array_pop($input);
         $var = &$_SESSION;
         foreach ($input as $key) {
-            if (!isset($var[$key])) {
-                $var[$key] = [];
+            if (isset($var[$key]) && !is_array($var[$key])) {
+                throw new Exception('Session variable overwritten with path');
             }
+            /** @psalm-suppress PossiblyInvalidArrayAssignment, MixedAssignment */
+            $var[$key] ??= [];
+            /** @var array|scalar */
             $var = &$var[$key];
         }
+        /** @psalm-suppress PossiblyInvalidArrayAssignment, MixedAssignment */
         $var[$final] = $value;
     }
 }

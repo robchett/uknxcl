@@ -1,1 +1,40 @@
-<?phpnamespace module\tables\model;use html\node;use model\flight;class result_list extends result {    function make_table(league_table $data): string {        return node::create('div#table_wrapper.table_wrapper', [],            node::create('h3.heading', [], $data->Title .                node::create('table.Pilot.main.results', [],                    node::create('thead tr', [],                        node::create('th', ['style' => 'width:45px'], 'Flight No') .                        node::create('th', ['style' => 'width:60px'], 'Name') .                        node::create('th', ['style' => 'width:60px'], 'Date') .                        node::create('th', ['style' => 'width:90px'], 'Club') .                        node::create('th', ['style' => 'width:95px'], 'Glider') .                        node::create('th', ['style' => 'width:60px'], 'Score') .                        node::create('th', ['style' => 'width:298px'], 'Flight Waypoints')                    ) .                    $data->flights->iterate_return(                        function (flight $flight) {                            return node::create('tr', [],                                "<td>{$flight->fid}</td><td>{$flight->p_name}</td><td>{$flight->date}</td><td>{$flight->c_name}</td><td>{$flight->g_name}<td>" .                                node::create('td', [], $flight->to_print()) .                                "<td>{$flight->coords}<td>"                            );                        }                    )                )            )        );    }}
+<?php
+
+namespace module\tables\model;
+
+use html\node;
+use model\flight;
+
+class result_list extends result {
+
+    function make_table(league_table $data): string {
+        return "
+        <div id='table_wrapper' class='table_wrapper'>
+            <h3 class='heading'>$data->Title</h3>
+            <table class='Pilot main results'>
+                <thead>
+                    <tr>
+                        <th style='width:45px'>Flight No</th>
+                        <th style='width:60px'>Name</th>
+                        <th style='width:60px'>Date</th>
+                        <th style='width:90px'>Club</th>
+                        <th style='width:95px'>Glider</th>
+                        <th style='width:60px'>Score</th>
+                        <th style'=width:298px'>Flight Waypoints</th>
+                    </tr>
+                </thead>
+                " . $data->get_flights()->iterate_return(fn (flight $flight): string =>
+                    "<tr>
+                        <td>{$flight->fid}</td>
+                        <td>{$data->getTitle($flight)}</td>
+                        <td>{$flight->date}</td>
+                        <td>{$data->getSubTitle($flight)}</td>
+                        <td>{$flight->glider->name}</td>
+                        <td>{$flight->to_print()}</td>
+                        <td>{$flight->coords}<td>
+                    </tr>"
+                ) . "
+            </table>
+        </div>";
+    }
+}

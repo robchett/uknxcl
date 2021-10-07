@@ -28,19 +28,19 @@
     $body.on('click', null, function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
-            if ($target.attr('data-ajax-click') || $target.parent('a').attr('data-ajax-click')) {
-                if (!$target.attr('data-ajax-click')) {
+            if ($target.attr('data-ajaxclick') || $target.parent('a').attr('data-ajaxclick')) {
+                if (!$target.attr('data-ajaxclick')) {
                     $target = $target.parent('a');
                 }
                 event.preventDefault();
-                var arr = $target.data('ajax-click').split(':');
+                var arr = $target.data('ajaxclick').split(':');
                 var module = arr[0];
                 var act = arr[1];
                 var options = {};
-                if ($target.data('ajax-shroud')) {
-                    options.loading_target = $target.data('ajax-shroud');
+                if ($target.data('ajaxshroud')) {
+                    options.loading_target = $target.data('ajaxshroud');
                 }
-                var data = $target.data('ajax-post') || {};
+                var data = $target.data('ajaxpost') || {};
                 data['origin'] = $target.attr('id');
                 $.fn.ajax_factory(module, act, data, options);
             } else if ($.fn.ajax_factory.defaults.load_pages_ajax && ($target.is('a') || ($target = $target.parent('a')).length)) {
@@ -72,30 +72,30 @@
     $body.on('change', ':input', function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
-            if ($target.attr('data-ajax-change')) {
+            if ($target.attr('data-ajaxchange')) {
                 var options = {};
                 event.preventDefault();
-                var arr = $target.attr('data-ajax-change').split(':');
+                var arr = $target.attr('data-ajaxchange').split(':');
                 var module = arr[0];
                 var act = arr[1];
-                var data = $target.data('ajax-post') || {};
+                var data = $target.data('ajaxpost') || {};
                 if ($target.attr('type') === 'checkbox') {
                     data.value = ($target.is(':checked') ? 1 : 0 );
                 } else {
                     data.value = $target.val();
                 }
                 data['origin'] = $target.attr('id');
-                if ($target.data('ajax-shroud')) {
-                    options.loading_target = $target.data('ajax-shroud');
+                if ($target.data('ajaxshroud')) {
+                    options.loading_target = $target.data('ajaxshroud');
                 }
                 $.fn.ajax_factory(module, act, data, options);
             } else {
                 var $parent = $target.parents('form').eq(0);
-                if ($parent.data('ajax-change')) {
-                    var arr = $parent.attr('data-ajax-change').split(':');
+                if ($parent.data('ajaxchange')) {
+                    var arr = $parent.attr('data-ajaxchange').split(':');
                     var module = arr[0];
                     var act = arr[1];
-                    var ajax_shroud = $parent.attr('data-ajax-shroud');
+                    var ajax_shroud = $parent.attr('data-ajaxshroud');
                     var data = get_form_data($parent);
                     var options = {loading_target: ajax_shroud};
                     data.ajax_origin = $parent.id;
@@ -117,7 +117,7 @@
         var arr = $(this).attr('action').split(':');
         var module = arr[0];
         var act = arr[1];
-        var ajax_shroud = $(this).attr('data-ajax-shroud');
+        var ajax_shroud = $(this).attr('data-ajaxshroud');
         var data = get_form_data($(this));
         var options = $.fn.extend($(this).data(), {loading_target: ajax_shroud});
         data.ajax_origin = $(e.target)[0].id;
@@ -125,10 +125,10 @@
         return false;
     });
     $body.on('submit', 'form.noajax', function () {
-        var ajax_shroud = $(this).attr('data-ajax-shroud');
+        var ajax_shroud = $(this).attr('data-ajaxshroud');
         var div = add_loading_shroud(ajax_shroud);
-        if ($(this).data('ajax-socket')) {
-            var socketId = add_socket_io($(this).data('ajax-socket'), div);
+        if ($(this).data('ajaxsocket')) {
+            var socketId = add_socket_io($(this).data('ajaxsocket'), div);
             if (!$(this).find('input[name=data-socket]').length) {
                 var input = document.createElement('input');
                 input.className = 'hidden';
@@ -143,8 +143,8 @@
         options = options || {};
         post = post || {};
         var div = add_loading_shroud(options.loading_target);
-        if (options.ajaxSocket) {
-            post['data-socket'] = add_socket_io(options.ajaxSocket, div);
+        if (options.ajaxsocket) {
+            post['data-socket'] = add_socket_io(options.ajaxsocket, div);
         }
         post['module'] = module;
         post['act'] = act;
@@ -255,11 +255,7 @@ function handle_json_response(json) {
     });
     if (typeof json.push_state != "undefined") {
         $.fn.ajax_factory.states[json.push_state.url] = json.push_state.data;
-        if (json.push_state.push) {
-            window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
-        } else if (json.push_state.replace) {
-            window.history.replaceState(json.push_state.data, json.push_state.title, json.push_state.url);
-        }
+        window.history.pushState(json.push_state, json.push_state.title, json.push_state.url);
     }
     if ($.fn.ajax_factory.defaults.complete) {
         $.fn.ajax_factory.defaults.complete.each(function (method, i, json) {
@@ -303,7 +299,7 @@ function add_loading_shroud(ajax_shroud) {
     return false;
 }
 var socketId = false;
-function add_socket_io(ajaxSocket, write_element) {
+function add_socket_io(ajaxsocket, write_element) {
     if (!socketId) {
         socketId = randomString(32, 'aA#');
         if (write_element) {
@@ -554,7 +550,7 @@ function randomString(length, chars) {
 
     page_callback: function (json) {
         if (json && json.push_state) {
-            var $id = $(json.push_state.data.id);
+            var $id = $(json.push_state.id);
             if($id.length) {
                 this.toggle_page($id);
             }
@@ -2029,7 +2025,7 @@ $(document).ready(function () {
     });
 
     $body.on('click', '.kmltree .expander', function () {
-        var $li = $(this).parent();
+        var $li = $(this).parents('kmltree-item').eq(0);
         if ($li.hasClass('open')) {
             $li.removeClass('open');
             $li.find('li').removeClass('open');
@@ -3424,10 +3420,6 @@ geoXML3.combineOptions = function (overrides, defaults) {
     }
     return result;
 };
-
-// Retrieve an XML document from url and pass it to callback as a DOM document
-geoXML3.fetchers = [];
-
 // parse text to XML doc
 /**
  * Parses the given XML string and returns the parsed document in a
@@ -3456,16 +3448,11 @@ geoXML3.fetchXML = function (url, callback) {
     }
 
     var xhrFetcher = {};
-    if (!!geoXML3.fetchers.length) {
-        xhrFetcher = geoXML3.fetchers.pop();
-    } else {
-        if (!!window.XMLHttpRequest) {
-            xhrFetcher.fetcher = new window.XMLHttpRequest(); // Most browsers
-        } else if (!!window.ActiveXObject) {
-            xhrFetcher.fetcher = new window.ActiveXObject('Microsoft.XMLHTTP'); // Some IE
-        }
+    if (!!window.XMLHttpRequest) {
+        xhrFetcher.fetcher = new window.XMLHttpRequest(); // Most browsers
+    } else if (!!window.ActiveXObject) {
+        xhrFetcher.fetcher = new window.ActiveXObject('Microsoft.XMLHTTP'); // Some IE
     }
-
     if (!xhrFetcher.fetcher) {
         geoXML3.log('Unable to create XHR object');
         callback(null);
@@ -3486,8 +3473,6 @@ geoXML3.fetchXML = function (url, callback) {
                     // Returned successfully
                     callback(geoXML3.xmlParse(xhrFetcher.fetcher.responseText));
                 }
-                // We're done with this fetcher object
-                geoXML3.fetchers.push(xhrFetcher);
             }
         };
         xhrFetcher.xhrtimeout = setTimeout(timeoutHandler, 60000);
@@ -3710,7 +3695,7 @@ function UKNXCL_Map($container, callbacks) {
 
     this.load_airspace = function () {
         if (this.isMap()) {
-            $.fn.ajax_factory('\\object\\airspace', 'load_js');
+            $.fn.ajax_factory('\\model\\airspace', 'load_js');
         } else {
             this.parseKML('/resources/airspace.kmz', this.airspace);
         }
@@ -3763,7 +3748,7 @@ function UKNXCL_Map($container, callbacks) {
 
     this.add_flight_coordinates = function (coordinate_string, id) {
         this.$tree.find('.track_' + id).remove();
-        this.$tree.append('<div class="track_' + id + '"><div class="kmltree" data-post=\'{"id":' + id + '}\'><ul class="kmltree"><li data-path=\'{"type":"coordinates","path":[]}\' class="kmltree-item check KmlFolder visible closed open"><div class="toggler"></div>Flight ' + id + '<ul><li data-path=\'{"type":"flight","path":[0]}\' class="kmltree-item check KmlFolder visible open"></li></ul></div></div>');
+        this.$tree.append('<div class="track_' + id + '"><div class="kmltree" data-post=\'{"id":' + id + '}\'><ul class="kmltree"><li data-path=\'{"type":"coordinates","path":[]}\' class="kmltree-item check KmlFolder visible closed open"><div class="tree_title"><div class="toggler"></div>Flight ' + id + '<div><ul><li data-path=\'{"type":"flight","path":[0]}\' class="kmltree-item check KmlFolder visible open"></li></ul></div></div>');
         var lat_lng_array = [];
         var coordinates = coordinate_string.split(';');
 
@@ -3899,7 +3884,7 @@ function Track(id, temp, split) {
 
     this.add_google_data = function () {
         if (map.isMap()) {
-            map.GeoXMLsingle.parse('?module=\\object\\flight&act=download&type=kml' + this.temp + this.split + '&id=' + this.id, null, this.id);
+            map.GeoXMLsingle.parse('?module=\\model\\flight&act=download&type=kml' + this.temp + this.split + '&id=' + this.id, null, this.id);
         } else {
             map.parseKML('/uploads/flight/' + this.temp + this.id + '/track_earth.kmz', this);
         }
@@ -3919,7 +3904,7 @@ function Track(id, temp, split) {
 
     this.add_nxcl_data = function (callback) {
         $.ajax({
-            url: '?module=\\object\\flight&act=get_js&id=' + this.id,
+            url: '?module=\\model\\flight&act=get_js&id=' + this.id,
             context: this,
             cache: false,
             type: 'POST',
@@ -3952,7 +3937,7 @@ function Track(id, temp, split) {
 <div class='kmltree' data-post='{\"id\":" + this.id + "}'>\
     <ul>\
         <li data-path='{\"type\":\"flight\",\"path\":[false]}' class=\"kmltree-item check KmlFolder visible open\">\
-            <div class=\"expander\"></div><div class=\"toggler\"></div>Flight: " + this.id + "\
+            <div class='kmltree-item-title'><div class=\"expander\"></div><div class=\"toggler\"></div>Flight: " + this.id + "</div>\
             <ul>\
                 <li data-path='{\"type\":\"flight\",\"path\":[0]}' class=\"kmltree-item check KmlFolder visible closed\">\
                     <div class=\"toggler\"></div>Flight\
@@ -3981,8 +3966,9 @@ function Track(id, temp, split) {
         </li>\
     </ul>\
 </div>"
-        )
+        );
             map.swap(this);
+            $("body").addClass('interface-visible');
         }
     };
 
@@ -4044,7 +4030,9 @@ function Track(id, temp, split) {
 
     this.load = function () {
         this.add_google_data();
-        this.add_nxcl_data(function () {ths.is_ready()});
+        this.add_nxcl_data(function () {
+            ths.is_ready()
+        });
     }
 }
 
@@ -4465,7 +4453,7 @@ UKNXCL_Map.KmlPath = function (event, ths) {
     this.root = '';
     this.kml = '';
     this.root_data = ths.parents('div.kmltree').eq(0).data('post');
-    this.$li = ths.parent();
+    this.$li = ths.parents('li').eq(0);
     this.data = this.$li.data("path");
     this.$parent_li = this.$li.parents("li");
 
@@ -4839,9 +4827,9 @@ Number.prototype.round = function (dp) {
 
         var coordinates = this.get_coordinates();
         $('#decOR, #decOD, #decTR').each(function () {
-            var obj = $(this).data('ajax-post');
+            var obj = $(this).data('ajaxpost');
             obj.coordinates = coordinates;
-            $(this).data('ajax-post', obj);
+            $(this).data('ajaxpost', obj);
         });
         reload_scrollpane();
     };

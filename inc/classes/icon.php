@@ -6,7 +6,9 @@ use html\node;
 
 class icon {
 
-    public static function get($icon, $tag = 'span', $attributes = []): string {
+    /** @param array{class?: string[]} $attributes */
+    public static function get(string $icon, string $tag = 'span', array $attributes = []): string {
+        $attributes['class'] ??= [];
         $attributes['class'][] = 'glyphicon';
         $attributes['class'][] = 'glyphicon-' . $icon;
         $attr_string = node::get_attributes($attributes);

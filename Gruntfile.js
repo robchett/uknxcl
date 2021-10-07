@@ -68,6 +68,10 @@ module.exports = function (grunt) {
             }
         },
         sass: {
+            options: {
+                implementation: require('node-sass'),
+                sourceMap: true
+            },
             css: {
                 cwd: src + '/scss',
                 expand: true,

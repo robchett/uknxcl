@@ -2,13 +2,15 @@
 
 namespace module\news\view;
 
+use classes\tableOptions;
 use module\news\model\article;
 use template\html;
 
+/** @extends html<\module\news\controller, false> */
 class _default extends html {
 
     function get_view(): string {
-        $articles = article::get_all(['aid', 'date', 'title', 'poster', 'post', 'snippet',], ['order' => 'date DESC', 'where' => 'parent_aid=0']);
+        $articles = article::get_all(new tableOptions(order: 'date DESC', where: 'parent_aid=0'));
         return "
 <div id='list_wrapper'>
     {$articles->reduce(fn($_, article $article) => "$_
@@ -22,7 +24,7 @@ class _default extends html {
             {$article->get_snippet()}
             <a class='button' href='{$article->get_url()}'>Read more</a>
         </div>
-    </article>")}
+    </article>", '')}
 </div>";
     }
 }

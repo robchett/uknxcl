@@ -8,6 +8,7 @@ use module\planner\controller;
 use module\planner\form;
 use template\html;
 
+/** @extends html<\module\planner\controller, false> */
 class _default extends html {
 
     public function get_view(): string {
@@ -32,14 +33,14 @@ class _default extends html {
     <ul id='flight_types'>
         <li>
             An open distance flight of 5 or less points can be saved as a declaration of intent by clicking
-            <a id='decOD' class='button inline' data-ajax-click='$callable' data-ajax-post='{"coordinates": "", "ftid":{$GO_ID}}' disabled>Here</a>
+            <a id='decOD' class='button inline' data-ajaxclick='$callable' data-ajaxpost='{"coordinates": "", "ftid":{$GO_ID}}' disabled>Here</a>
         </li>
         <li>
             An out and return of 3 points where the 3rd is also the 1st can be saved as a declaration of intent by clicking
-            <a id='decOR' class='button inline' data-ajax-click='$callable' data-ajax-post='{"coordinates": "", "ftid":{$OR_ID}}' disabled>Here</a></li>
+            <a id='decOR' class='button inline' data-ajaxclick='$callable' data-ajaxpost='{"coordinates": "", "ftid":{$OR_ID}}' disabled>Here</a></li>
         <li>
             A triangle of 4 points where the 4th is also the 1st can be saved as a declaration of intent by clicking
-            <a id='decTR' class='button inline' data-ajax-click='$callable' data-ajax-post='{"coordinates": "", "ftid":{$TR_ID}}' disabled>Here</a>
+            <a id='decTR' class='button inline' data-ajaxclick='$callable' data-ajaxpost='{"coordinates": "", "ftid":{$TR_ID}}' disabled>Here</a>
         </li>
     </ul>
     <div id='path_wrapper'>

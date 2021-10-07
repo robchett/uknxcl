@@ -2283,7 +2283,6 @@ form {
         text-align: left;
         height: 31px; }
         form#igc_upload_form #console table td a.button {
-          background-color: #ffffff;
           height: 24px;
           line-height: 24px;
           padding: 0 5px; }
@@ -2794,9 +2793,6 @@ div.kmltree-loading span {
   z-index: 999999;
   float: left; }
   #map_interface_3d .load_airspace {
-    height: 38px;
-    line-height: 38px;
-    border-left-width: 50px;
     border-right: 0; }
   #map_interface_3d span.toggle {
     position: absolute;
@@ -2815,8 +2811,11 @@ div.kmltree-loading span {
     left: 0;
     right: auto; }
   #map_interface_3d #tree_content {
+    margin-top: 50px;
     height: 100%;
     overflow: scroll; }
+  #map_interface_3d #airspace_tree {
+    padding-top: 10px; }
 
 .interface-visible #map_interface_3d {
   width: 250px; }
@@ -3018,6 +3017,14 @@ body.waypoint_mode #waypoint_mode_help {
 
 #superOverlays {
   width: 100px !important; }
+
+.kmltree {
+  padding-top: 10px; }
+  .kmltree-item-title {
+    font-size: 18px;
+    border-bottom: 1px solid #0c3f6b;
+    padding-bottom: 5px;
+    margin-bottom: 5px; }
 
 /* NEWS BOX */
 div#news article {
@@ -3298,9 +3305,9 @@ div#pop {
 
 a.download {
   display: inline-block !important;
-  width: 70px;
+  width: 70px !important;
   height: 76px;
-  background: url("/.core/images/sprites.png") -81px 0px;
+  background: url("/img/sprites.png") -81px 0px;
   text-indent: -9999px; }
   a.download.kml {
     background-position: -1px 0px; }
@@ -3586,3 +3593,5 @@ table {
     width: 100%; } }
 
 /* generated with grunt-sass-globbing */
+
+/*# sourceMappingURL=styles.css.map */

@@ -3,11 +3,20 @@
 namespace model;
 
 use classes\table;
+use classes\interfaces\model_interface;
 
+class new_flight_notification implements model_interface {
+    use table;
 
-class new_flight_notification extends table {
-
-
-    public $email;
-
+    public function __construct(
+        public bool $live,
+        public bool $deleted,
+        public int $created,
+        public int $ts,
+        public int $position,
+        public int $nfid,
+        public string $email,
+    )
+    {
+    }
 }

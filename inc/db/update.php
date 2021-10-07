@@ -9,8 +9,7 @@ use PDOStatement;
 
 class update extends _query {
 
-    public bool $retrieve_unlive = true;
-    public bool $retrieve_deleted = true;
+    /** @var array<string, scalar> */
     protected array $values = [];
 
     public function execute(): bool|PDOStatement {
@@ -28,7 +27,10 @@ class update extends _query {
         return implode(', ', $sql);
     }
 
-    public function add_value($field, $value): static {
+    /**
+     * @param scalar $value
+     */
+    public function add_value(string $field, mixed $value): static {
         $this->values[$field] = $value;
         return $this;
     }

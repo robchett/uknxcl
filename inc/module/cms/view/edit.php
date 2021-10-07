@@ -7,10 +7,15 @@ use module\cms\controller;
 
 class edit extends cms_view {
 
-    /** @var controller */
-    public \classes\module $module;
-
     public function get_view(): string {
-        return node::create('div', [], node::create('h2.container-fluid.page-header', [], 'Edit a ' . get_class($this->module->current)) . ($this->module->current->is_deleted() ? node::create('div.container div.bs-callout.bs-callout-warning p', [], 'This element is deleted') : '') . (!$this->module->current->is_live() && $this->module->current->get_primary_key() ? node::create('div.container div.bs-callout.bs-callout-warning p', [], 'This element is not live') : '') . $this->module->current->get_cms_edit() . ($this->module->current->get_primary_key() ? $this->module->get_sub_modules() : ''));
+        if (!$this->current) {
+            return 'Item not found';
+        }
+        return node::create('div', [], 
+            node::create('h2.container-fluid.page-header', [], 'Edit a ' . $this->schema->table_name) . 
+            ($this->current->is_deleted() ? node::create('div.container div.bs-callout.bs-callout-warning p', [], 'This element is deleted') : '') . 
+            (!$this->current->is_live() && $this->current->get_primary_key() ? node::create('div.container div.bs-callout.bs-callout-warning p', [], 'This element is not live') : '') . 
+            $this->current->get_cms_edit()
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace module\cms\view;
 
+use classes\tableOptions;
 use model\flight;
 use model\glider;
 use model\pilot;
@@ -37,11 +38,10 @@ class dashboard extends cms_view {
     }
 
     public function get_latest_flights(): string {
-        $flights = flight::get_all(['fid', 'date', 'pilot.pid', 'pilot.name', 'glider.gid', 'glider.name', 'club.cid', 'club.title', 'admin_info', 'delayed'], [
-            'join'  => flight::$default_joins,
-            'limit' => 14,
-            'order' => 'fid DESC',
-        ]);
+        $flights = flight::get_all(new tableOptions(
+            limit: '14',
+            order: 'fid DESC',
+        ));
         return "
 <table id='latest_flights' class='module table table-striped'>
     <thead>
@@ -55,7 +55,7 @@ class dashboard extends cms_view {
             <th>Delayed</th>
         </tr>
     </thead>
-    {$flights->reduce(fn($_, flight $flight) => $_ . "
+    {$flights->reduce(fn(string $_, flight $flight): string => $_ . "
     <tr>
         <td><a href='/cms/module/2/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->fid}</a></td>
         <td><a href='/cms/module/2/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->get_date_string('d/m/Y')}</a></td>
@@ -64,13 +64,13 @@ class dashboard extends cms_view {
         <td><a href='/cms/module/12/{$flight->club->cid}' title='Club: {$flight->club->title}'>{$flight->club->title}</a></td>
         <td class='col-md-5'>{$flight->admin_info}</td>
         <td>{$flight->get_delayed_string()}</td>
-    </tr>"
+    </tr>", ''
     )}
 </table>";
     }
 
     public function get_latest_pilots(): string {
-        $pilots = pilot::get_all(['pid', 'name', 'bhpa_no', 'email'], ['limit' => 5, 'order' => 'pid DESC']);
+        $pilots = pilot::get_all(new tableOptions(limit: '5', order: 'pid DESC'));
         return "
 <table id='latest_pilots' class='module table table-striped'>
     <thead>
@@ -81,19 +81,19 @@ class dashboard extends cms_view {
             <th>Email</th>
         </tr>
     </thead>
-    {$pilots->reduce(fn($_, pilot $pilot) => $_ . "
+    {$pilots->reduce(fn(string $acc, pilot $pilot): string => $acc . "
     <tr>
         <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->pid}</a></td>
         <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->name}</a></td>
         <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->bhpa_no}</a></td>
         <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->email}</a></td>
-    </tr>"
+    </tr>", ''
     )}
 </table>";
     }
 
     public function get_latest_gliders(): string {
-        $gliders = glider::get_all(['gid', 'name', 'manufacturer.title'], ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'limit' => 5, 'order' => 'gid DESC']);
+        $gliders = glider::get_all(new tableOptions(join: ['manufacturer' => 'manufacturer.mid = glider.mid'], limit: '5', order: 'gid DESC'));
         return "
 <table id='latest_pilots' class='module table table-striped'>
     <thead>
@@ -103,12 +103,12 @@ class dashboard extends cms_view {
             <th>Manufacturer</th>
         </tr>
     </thead>
-    {$gliders->reduce(fn($_, glider $glider) => $_ . "
+    {$gliders->reduce(fn(string $_, glider $glider): string => $_ . "
     <tr>
         <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->gid}</a></td>
         <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->name}</a></td>
         <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->manufacturer->title}</a></td>
-    </tr>"
+    </tr>", ''
     )}
 </table>";
     }

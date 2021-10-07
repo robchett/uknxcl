@@ -3,9 +3,12 @@
 namespace model;
 
 use classes\table;
+use classes\table_array;
+use classes\tableOptions;
+use classes\interfaces\model_interface;
 
-
-class flight_type extends table {
+class flight_type  implements model_interface {
+    use table;
 
 
     const OD_ID = 1;
@@ -13,25 +16,38 @@ class flight_type extends table {
     const GO_ID = 3;
     const TR_ID = 4;
     const FT_ID = 5;
-    protected static $all_rows;
-    public $multi;
-    public $multi_defined;
-    public $ftid;
-    public $fn;
-    public string $title;
+    /**
+     * @var ?table_array<self>
+     */
+    protected static ?table_array $all_rows;
+
+    public function __construct(
+        public bool $live,
+        public bool $deleted,
+        public int $created,
+        public int $ts,
+        public int $position,
+        public int $ftid,
+        public string $title,
+        public string $fn,
+        public float $multi,
+        public float $multi_defined,
+        public float $multi_old,
+        public float $multi_defined_old,
+    )
+    {
+    }
 
     /**
-     * @param $type
+     * @param int $type
      * @param int $season
      * @param bool $defined
-     * @return int
+     * @return float
      */
-    public static function get_multiplier($type, int $season = 2001, bool $defined = false): float {
-        if (!isset(self::$all_rows)) {
-            self::$all_rows = flight_type::get_all([]);
-        }
+    public static function get_multiplier(int $type, int $season = 2001, bool $defined = false): float {
+        self::$all_rows ??= flight_type::get_all(new tableOptions());
         if ($defined && $type == static::OD_ID) {
-            $type = static::GO_ID;
+            $type = self::GO_ID;
         }
         foreach (self::$all_rows as $flight_type) {
             if ($flight_type->ftid == $type) {
@@ -45,14 +61,8 @@ class flight_type extends table {
         return 1;
     }
 
-    /**
-     * @param $type
-     * @return string
-     */
-    public static function get_type($type): string {
-        if (!isset(self::$all_rows)) {
-            self::$all_rows = flight_type::get_all([]);
-        }
+    public static function get_type(int $type): string {
+        self::$all_rows ??= flight_type::get_all(new tableOptions());
         foreach (self::$all_rows as $flight_type) {
             if ($flight_type->ftid == $type) {
                 return $flight_type->title;

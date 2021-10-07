@@ -2,22 +2,18 @@
 
 namespace module\add_flight;
 
+use classes\ajax;
 use classes\module;
+use module\add_flight\view\_default;
+use template\html;
 
-class controller extends module {
+class controller extends module
+{
 
-    public function __controller(array $path) {
-        $this->view = 'type_select';
-        if (isset($path[1])) {
-            $this->view = $path[1];
-        }
-        parent::__controller($path);
-    }
-
-    public function ajax_load() {
-        if (isset($_REQUEST['sub'])) {
-            $this->view = $_REQUEST['sub'];
-        }
-        parent::ajax_load();
+    /** @param string[] $path */
+    public function __construct(array $path)
+    {
+        $this->view_object = new _default($this, false);
+        parent::__construct($path);
     }
 }

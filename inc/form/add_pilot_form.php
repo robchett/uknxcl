@@ -2,52 +2,59 @@
 
 namespace form;
 
+use classes\ajax;
 use classes\jquery;
+use classes\tableOptions;
 use html\node;
 use model\pilot;
+use module\add_flight\form\igc_form;
 
-class add_pilot_form extends form {
-
+class add_pilot_form extends form
+{
+    public string $name;
     public int $bhpa_no;
     public string $email;
-    public string $name;
-    public string $gender;
-    public string $rating;
-    public pilot $pilot;
+    public int $gid;
+    public int $prid;
 
-    public function __construct() {
-        $this->pilot = new pilot();
-        parent::__construct($this->pilot->get_fields());
-        $this->get_field_from_name('pid')->set_attr('hidden', true)->set_attr('required', false);
-        $this->get_field_from_name('name')->set_attr('label', 'Name')->set_attr('required', true);
-        $this->get_field_from_name('bhpa_no')->set_attr('label', 'BHPA Number')->set_attr('required', true);
-        $this->get_field_from_name('email')->set_attr('label', 'Email');
-        $this->get_field_from_name('gender')->set_attr('label', 'Gender')->set_attr('options', ['M' => 'Male', 'F' => 'Female']);
-        $this->get_field_from_name('rating')->set_attr('label', 'Rating')->set_attr('options', [1 => 'Club', 2 => 'Advanced']);
+    public function __construct()
+    {
+        parent::__construct([
+            new field_string('name', label: 'Name'),
+            new field_int('bhpa_no', label: 'BHPA Number'),
+            new field_email('email', label: 'Email'),
+            new field_select('gid', options: [1 => 'Male', 2 => 'Female'], label: 'Gender'),
+            new field_select('prid', options: [1 => 'Club', 2 => 'Advanced'], label: 'Rating'),
+        ]);
 
         $this->id = 'new_pilot_form';
         $this->h2 = 'Create a new pilot';
-        $this->attributes['class'][] = 'form-compact';
+        $this->attributes->class[] = 'form-compact';
         $this->wrapper_class[] = 'callout';
         $this->wrapper_class[] = 'callout-primary';
     }
 
-    public static function get_form() {
-        $t = new static();
-        jquery::colorbox(['html' => (string)$t->get_html()]);
+    public static function get_form(): void
+    {
+        $t = new self();
+        jquery::colorbox(['html' => $t->get_html()]);
     }
 
-    public function do_submit(): bool {
-        $this->pilot->name = ucwords($this->name);
-        $this->pilot->gender = $this->gender;
-        $this->pilot->bhpa_no = $this->bhpa_no;
-        $this->pilot->email = $this->email;
-        $this->pilot->rating = $this->rating;
-        $this->pilot->do_save();
-        if ($this->pilot->pid) {
-            $this->pilot->do_update_selector();
+    public function do_submit(): bool
+    {
+        if($id = pilot::do_save([
+            'name' => ucwords($this->name),
+            'gid' => $this->gid,
+            'prid' => $this->prid,
+            'bhpa_no' => $this->bhpa_no,
+            'email' => $this->email,
+        ])) {
+            $field = new \form\field_link('pid', link_module: pilot::class, link_field: 'name', options: new tableOptions(order: 'name'));
+            $form = new igc_form;
+            $form->pid = $id;
+            ajax::update($field->get_html($form));
+            jquery::colorbox(['html' => node::create('div.callout.callout-primary', [], node::create('h2.page-header', [], $this->name) . "<p>Added to the database<p>")]);
         }
-        jquery::colorbox(['html' => (string)node::create('div.callout.callout-primary', [], node::create('h2.page-header', [], $this->name) . "<p>Added to the database<p>")]);
         return true;
     }
 }

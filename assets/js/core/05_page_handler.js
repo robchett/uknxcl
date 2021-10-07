@@ -17,7 +17,7 @@ var page_handeler = {
 
     page_callback: function (json) {
         if (json && json.push_state) {
-            var $id = $(json.push_state.data.id);
+            var $id = $(json.push_state.id);
             if($id.length) {
                 this.toggle_page($id);
             }

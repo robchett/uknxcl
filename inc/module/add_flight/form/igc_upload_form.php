@@ -4,6 +4,7 @@ namespace module\add_flight\form;
 
 use classes\ajax;
 use classes\attribute_callable;
+use classes\attribute_list;
 use classes\get;
 use core;
 use form\form;
@@ -11,6 +12,8 @@ use html\node;
 use model\flight_type;
 use track\defined_task;
 use track\igc_parser;
+use track\igcPartResult;
+use track\igcResult;
 
 class igc_upload_form extends form {
 
@@ -33,33 +36,30 @@ class igc_upload_form extends form {
         We were unable to parse the flight. Please check the IGC<br/>
         If you think the problem is us (likely) please let us know and we\'ll investigate';
 
-    public $coords;
-    public $file;
+    public string $coords;
+    public string $file;
 
     public function __construct() {
         $fields = [
-            form::create('field_file', 'kml')
-                ->set_attr('label', '')
-                ->set_attr('required', true)
-                ->set_attr('external', true),
-            form::create('field_string', 'coords')
-                ->set_attr('label', 'Defined flight coordinates')
-                ->set_attr('required_parent', 'defined')
-                ->set_attr('wrapper_class', ['callout', 'callout-tertiary', 'cf'])
-                ->set_attr('required', false)
-                ->set_attr('pre_text', "<p>To submit a defined flight enter the coordinates below in 'XX000000;XX000000' format, with no ending \';\'<p>" . node::create('p i', [], "If you have declared your flight in your IGC file, they you don't need to do so again here."))
-                ->set_attr('post_text', node::create('p.defined_info'))
-                ->add_wrapper_class('coordinates'),
+            new \form\field_file('kml',
+                label: '',
+                required: true,),
+            new \form\field_string('coords',
+                label: 'Defined flight coordinates',
+                wrapper_class: ['callout', 'callout-tertiary', 'cf', 'coordinates'],
+                required: false,
+                pre_text: "<p>To submit a defined flight enter the coordinates below in 'XX000000;XX000000' format, with no ending \';\'<p>" . node::create('p i', [], "If you have declared your flight in your IGC file, they you don't need to do so again here."),
+                post_text: node::create('p.defined_info'),                
+            )
         ];
         parent::__construct($fields);
         $this->submit = 'Calculate';
         $this->pre_text = "<p>Upload a flight here to calculate scores, whilst the flight is being processed please feel free to complete tbe rest of the form below<p>";
         $this->post_text =
             node::create('div#kml_calc div#console a.calc', [], 'Calculate!') .
-            node::create('div.callout.callout-secondary', [], [
-                "<p>Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates<p>",
-                "<p>On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.<p>",
-            ]);
+            node::create('div.callout.callout-secondary', [], "<p>Please note that depending on the flight this may take anywhere between 10 seconds and 5 mins. You can still use the other functions of the league while this calculates<p>
+                <p>On submit the flight will be read by the system to make sure it conforms for the rules. It will then be displayed on the map.<p>",
+            );
         $this->has_submit = false;
         $this->id = 'igc_upload_form';
         $this->h2 = 'Upload Form';
@@ -82,7 +82,7 @@ class igc_upload_form extends form {
         mkdir(root . '/.cache/' . $time);
         $file = root . '/.cache/' . $time . '/track.igc';
         if (isset($_FILES['kml'])) {
-            move_uploaded_file($_FILES['kml']['tmp_name'], $file);
+            move_uploaded_file((string) $_FILES['kml']['tmp_name'], $file);
         } else {
             copy($this->file, $file);
         }
@@ -91,7 +91,7 @@ class igc_upload_form extends form {
         return true;
     }
 
-    public function do_calc_score($id, $section = null) {
+    public function do_calc_score(int $id, ?int $section = null): void {
         $file = root . '/.cache/' . $id . '/track.igc';
 
         $igc_parser = new igc_parser();
@@ -101,13 +101,10 @@ class igc_upload_form extends form {
         ];
 
         if ($this->coords) {
-            $task = new defined_task();
-            $task->create_from_coordinates($this->coords);
+            $task = defined_task::create_from_coordinates($this->coords);
             $data['task'] = [
                 'type'        => 'os_gridref',
-                'coordinates' => array_map(function ($coordinate) {
-                    return $coordinate->os_gridref;
-                }, $task->coordinates),
+                'coordinates' => array_map(fn ($coordinate) => $coordinate['os_gridref'], $task->coordinates),
             ];
         }
 
@@ -115,124 +112,128 @@ class igc_upload_form extends form {
             $data['section'] = $section;
         }
 
-        $parsed = $igc_parser->exec($id, $data);
+        $parser = $igc_parser->exec($id, $data);
 
         $html = '';
 
-        if ($parsed) {
-            if (!$this->check_date($igc_parser)) {
-                $html .= node::create('p.error', [], static::OUT_OF_BOUNDS_TEXT);
+        if ($parser === false) {
+            $html .= node::create('p.callout.callout-warning', [], self::PARSE_FAILED);
+        } else {
+            if (!$this->check_date($parser)) {
+                $html .= node::create('p.error', [], self::OUT_OF_BOUNDS_TEXT);
             }
 
-            $validated = $igc_parser->get_validated();
-            if ($validated === 0) {
-                $html .= node::create('p.callout.callout-warning', [], static::NOT_VALID);
+            $validated = $parser->validated;
+            if ($validated === false) {
+                $html .= node::create('p.callout.callout-warning', [], self::NOT_VALID);
             } /*else if ($validated === null) {
-                $html .= node::create('p.callout.callout-warning', [], static::NO_VALIDATION);
+                $html .= node::create('p.callout.callout-warning', [], self::NO_VALIDATION);
             }*/
 
-            if ($igc_parser->get_part_count() > 1) {
+            if ($parser instanceof igcPartResult) {
                 $split = "1";
-                $html .= $this->get_choose_track_html($igc_parser);
+                $html .= $this->get_choose_track_html($parser);
             } else {
                 $split = "0";
-                $html .= $this->get_choose_score_html($igc_parser);
+                $html .= $this->get_choose_score_html($parser);
             }
             ajax::add_script('map.add_flight(' . $id . ',1,1,1,' . $split . ');');
-        } else {
-            $html .= node::create('p.callout.callout-warning', [], static::PARSE_FAILED);
         }
 
         ajax::update('<div id="console">' . $html . '</div>');
     }
 
-    public function check_date(igc_parser $parser): bool {
+    public function check_date(igcResult|igcPartResult $parser): bool {
         $current_time = time();
         $closure_time = $current_time - (31 * 24 * 60 * 60);
-        if (strtotime($parser->get_date()) >= $closure_time && strtotime($parser->get_date()) <= $current_time) {
-            return true;
-        } else {
-            return false;
-        }
+        return (strtotime($parser->date) >= $closure_time && strtotime($parser->date) <= $current_time);
     }
 
-    private function get_choose_track_html(igc_parser $track): string {
+    private function get_choose_track_html(igcPartResult $track): string {
         $parts = [];
-        foreach ($track->get_split_parts() as $key => $part) {
-            $parts[] = node::create('tr', ['style' => 'color:#' . get::kml_colour($key)], [
-                "<td>Part: {$key}</td>",
-                "<td>{$part->duration}s</td>",
-                "<td>{$part->points}</td>",
-                node::create('td a.choose.button', [
-                    'data-ajax-click'  => attribute_callable::create([$this, 'do_choose_track']),
-                    'data-ajax-post'   => '{"track":' . $track->id . ', "section": ' . $key . '}',
-                    'data-ajax-shroud' => '#igc_upload_form_wrapper',
-                ], 'Choose'),
-            ]);
+        foreach ($track->sets as $key => $part) { 
+            $parts[] = "<tr style='color:#" . get::kml_colour($key) . "'> 
+                <td>Part: {$key}</td>
+                <td>{$part->duration}s</td>
+                <td>{$part->points}</td>
+                <td><a class='choose button'" . new attribute_list(
+                    dataAjaxClick: attribute_callable::create([$this, 'do_choose_track']),
+                    dataAjaxPost: '{"track":' . $track->id . ', "section": ' . $key . '}',
+                    dataAjaxShroud: '#igc_upload_form_wrapper',
+                ) . ">Choose</a></td>
+            </tr>";
         }
-        return node::create('table', [], [
-            node::create('thead tr', [], [
-                "<th>Part</th>",
-                "<th>Duration</th>",
-                "<th>Points</th>",
-                node::create('th', []),
-            ]),
-            "<tbody>" .implode('', $parts) . "<tbody>",
-        ]);
+        return "
+        <table>
+            <thead>
+                <tr>
+                    <th>Part</th>
+                    <th>Duration</th>
+                    <th>Points</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                " . implode('', $parts) . "
+            <tbody>
+        </table>";
     }
 
-    private function get_choose_score_html(igc_parser $parser): string {
-        return node::create('table', [], [
-            node::create('thead tr', [], [
-                "<th>Type<th>",
-                "<th>Base Score / Multiplier<th>",
-                "<th>Score<th>",
-            ]),
-            node::create('tbody', [], [
-                $this->get_task_select_html($parser, 'open_distance', flight_type::get_multiplier(flight_type::OD_ID)),
-                $this->get_task_select_html($parser, 'out_and_return', flight_type::get_multiplier(flight_type::OR_ID)),
-                $this->get_task_select_html($parser, 'triangle', flight_type::get_multiplier(flight_type::TR_ID)),
-                $this->get_task_select_html($parser, 'flat_triangle', flight_type::get_multiplier(flight_type::FT_ID)),
-                $this->get_defined_task_select_html($parser),
-            ]),
-        ]);
+    private function get_choose_score_html(igcResult $parser): string {
+        return "
+        <table>
+            <thead>
+                <tr>
+                    <th>Type<th>
+                    <th>Base Score / Multiplier<th>
+                    <th>Score<th>
+                </tr>
+            </thead>
+            <tbody>
+                " . $this->get_task_select_html($parser, 'open_distance', flight_type::get_multiplier(flight_type::OD_ID)) . "
+                " . $this->get_task_select_html($parser, 'out_and_return', flight_type::get_multiplier(flight_type::OR_ID)) . "
+                " . $this->get_task_select_html($parser, 'triangle', flight_type::get_multiplier(flight_type::TR_ID)) . "
+                " . $this->get_task_select_html($parser, 'flat_triangle', flight_type::get_multiplier(flight_type::FT_ID)) . "
+                " . $this->get_defined_task_select_html($parser) . "
+            </tbody>
+        </table>";
     }
 
-    private function get_task_select_html(igc_parser $parser, $type, $multi): string {
+    private function get_task_select_html(igcResult $parser, string $type, float $multi): string {
         if ($task = $parser->get_task($type)) {
-            return node::create('tr', [], [
-                "<td>{$task->title}<td>",
-                node::create('td', [], number_format($task->distance, 2) . ' / ' . number_format($multi, 2)),
-                node::create('td', [], number_format($task->distance * $multi, 2)),
-                node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"' . $task->type . '"}'], 'Choose'),
-            ]);
+            return "
+            <tr>
+                <td>{$task->title}<td>
+                <td>" . number_format($task->distance, 2) . " / " . number_format($multi, 2) . "</td>
+                <td>" . number_format($task->distance * $multi, 2) . "</td>
+                <td><a class='button score_select' data-post='{\"track\":{$parser->id},\"type\":\"{$task->type}\"}'>Choose</a></td>
+            </tr>";
         }
         return '';
     }
 
-    private function get_defined_task_select_html(igc_parser $parser): string {
+    private function get_defined_task_select_html(igcResult $parser): string {
         if ($task = $parser->get_task('declared')) {
-            $multiplier = flight_type::get_multiplier($task->type, date('Y'), true);
-            return node::create('tr', [], [
-                "<td>{$task->title}<td>",
-                node::create('td', [], number_format($task->distance, 3) . ' / ' . number_format($multiplier, 2)),
-                node::create('td', [], number_format($task->distance * $multiplier, 3)),
-                $parser->is_task_completed() ?
-                    node::create('td a.button.score_select', ['data-post' => '{"track":' . $parser->id . ',"type":"task"}'], 'Choose') :
-                    node::create('td span.button.score_select', [], 'Not Valid'),
-            ]);
+            $multiplier = flight_type::get_multiplier($task->type, (int) date('Y'), true);
+            return "
+            <tr>
+                <td>{$task->title}<td>
+                <td>" . number_format($task->distance, 3) . ' / ' . number_format($multiplier, 2) . "</td>
+                <td>" . number_format($task->distance * $multiplier, 3) . "</td>
+                " . ($parser->is_task_completed() ? "<td><a class='button score_select' data-post='{\"track\":{$parser->id},\"type\":\"task\"}'>Choose</a></td>" : node::create('td span.button.score_select', [], 'Not Valid')) . "
+            </tr>";
         }
         return '';
     }
 
-    public static function do_choose_track() {
-        $class = new static();
-        $class->do_calc_score($_REQUEST['track'], (int)$_REQUEST['section']);
+    public static function do_choose_track(): void {
+        $class = new self();
+        $class->do_calc_score((int) $_REQUEST['track'], (int)$_REQUEST['section']);
     }
 
-    public static function reset() {
-        $t = new static();
-        ajax::update((string)$t->get_html());
+    public static function reset(): void {
+        $t = new self();
+        ajax::update($t->get_html());
     }
 
     public function get_html(): string {
@@ -241,7 +242,7 @@ class igc_upload_form extends form {
         if (!isset($this->kml) || empty($this->kml)) {
             $script .= '$("#kml_calc").hide();';
         }
-        if (!isset($this->coords) || !$this->coords) {
+        if (!$this->coords) {
             $script .= '$("#add_flight_box .fieldset_1").hide();';
         }
         if (ajax) {

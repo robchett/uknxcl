@@ -4,19 +4,27 @@ namespace module\mass_overlay;
 
 use classes\module;
 use module\tables\model\league_table;
+use module\tables\view\skywings;
 
 class controller extends module {
-    public function __controller(array $path) {
+    
+    /** @param string[] $path */
+    public function __construct(array $path) {
         $end_count = 1;
+        $view = match($path[1] ?? '') {
+            'skywings' => skywings::class,
+            default => view\_default::class
+        };
+    
         if (isset($path[1]) && file_exists(root . '/inc/module/tables/view/' . $path[1] . '.php')) {
-            $this->view = $path[1];
             $end_count++;
         }
-        $this->current = new  league_table();
-        $this->current->base_url = '/mass_overlay';
+        $current = new  league_table();
+        $current->base_url = '/mass_overlay';
         if (isset($path[$end_count])) {
-            $this->current->set_default(league_table::decode_url(end($path)));
+            $current->set_default(league_table::decode_url(end($path)));
         }
-        parent::__controller($path);
+        $this->view_object = new $view($this, $current);
+        parent::__construct($path);
     }
 }

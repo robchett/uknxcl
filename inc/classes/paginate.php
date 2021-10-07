@@ -6,37 +6,39 @@ use html\node;
 
 class paginate {
 
-    public $total;
-    public $base_url;
-    public $npp;
-    public $page;
+    public int $total;
+    public string $base_url;
+    public int $npp;
+    public int $page;
     public attribute_callable $act;
     public string $title = '';
-    public $post_title;
+    public string $post_title = '';
     public array $post_data = [];
 
     public function __toString(): string {
-        return (string)$this->get();
+        return $this->get();
     }
 
     public function get(): string {
         $output = "";
+        $options = [];
         if ($this->npp && $this->total > $this->npp) {
-            $pages = ceil($this->total / $this->npp);
+            $pages = (int) ceil($this->total / $this->npp);
             if ($this->title) {
                 $output .= "<span class='title'>{$this->do_replace($this->title)}</span>";
             }
-            if ($pages > 40) {
-                $options['data-ajax-change'] = $this->act;
-                $options['data-ajax-post'] = $this->post_data;
+            if ($pages > 10) {
+                $options['dataAjaxChange'] = $this->act;
+                $options['dataAjaxPost'] = json_encode($this->post_data);
                 $options['class'][] = 'form-control';
                 $attrs = node::get_attributes($options);
-                $options = array_reduce(range(1, $pages), fn($a, $i) => $a . "<option value='$i' " . ($this->page == $i ? "selected" : ""). ">$i</option>", "");
+                $options = array_reduce(range(1, $pages), fn(string $a, int $i) => $a . "<option value='$i' " . ($this->page == $i ? "selected" : ""). ">$i</option>", "");
                 $output .= "<select {$attrs}>$options</select>";
             } else {
-                $lis = array_reduce(range(0, $pages), function ($a, $i) {
-                    $options['data-ajax-click'] = $this->act;
-                    $options['data-ajax-post'] = $this->post_data + ['value' => $i];
+                $lis = array_reduce(range(1, $pages), function (string $a, int $i) {
+                    $options = [];
+                    $options['dataAjaxClick'] = $this->act;
+                    $options['dataAjaxPost'] = json_encode($this->post_data + ['value' => $i]);
                     $li_options = ($this->page == $i) ? ['class' => ['active']] : [];
                     $li_attrs = node::get_attributes($li_options);
                     $attrs = node::get_attributes($options);
@@ -51,12 +53,10 @@ class paginate {
         return "<div class='paginate'>$output</div>";
     }
 
-    public function do_replace($source) {
-        foreach ($this as $key => $value) {
-            if (!is_array($value)) {
-                $source = str_replace('{' . $key . '}', $value, $source);
-            }
-        }
+    public function do_replace(string $source): string {
+        $source = str_replace('{npp}', (string) $this->npp, $source);
+        $source = str_replace('{page}', (string) $this->page, $source);
+        $source = str_replace('{total}', (string) $this->total, $source);
         return $source;
     }
 

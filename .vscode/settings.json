@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "formatter_kml.h": "c",
+        "formatter.h": "c",
+        "clearsilver.h": "c"
+    }
+}

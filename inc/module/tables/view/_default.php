@@ -10,20 +10,16 @@ use module\tables\form\table_gen_form_basic;
 use module\tables\model\league_table;
 use template\html;
 
+/** @extends html<\module\tables\controller, league_table> */
 class _default extends html {
 
-    /** @var controller */
-    public module $module;
-
-
     public function get_view(): string {
-        /** @var league_table $table */
-        $table = $this->module->current;
+        $table = $this->current;
         $form1 = new table_gen_form_basic();
-        $form1->set_from_options($table->options);
+        $form1->set_from_options($table);
         $form1->post_submit_text = $this->get_key();
         $form2 = new table_gen_form();
-        $form2->set_from_options($table->options);
+        $form2->set_from_options($table);
         $form2->post_submit_text = $this->get_key();
 
         return "
@@ -33,7 +29,8 @@ class _default extends html {
     {$form1->get_html()}
     {$form2->get_html()}
 </div>
-<div id='generated_tables'>{$table->get_table()}
+<div id='generated_tables'>
+    {$table->get_table()}
     <a class='show_all button' href='{$table->get_show_all_url()}' target='_blank'>Show all on map</a>
 </div>
 

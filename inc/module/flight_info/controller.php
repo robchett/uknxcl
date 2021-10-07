@@ -6,22 +6,16 @@ use classes\get;
 use classes\interfaces\model_interface;
 use classes\module;
 use model\flight;
+use module\flight_info\view\flight as ViewFlight;
 
 class controller extends module {
 
-    /** @var flight current */
-    public model_interface $current;
-
-    public function __controller(array $path) {
+    /** @param string[] $path */
+    public function __construct(array $path) {
         if (isset($path[1])) {
-            $this->view = 'flight';
-            $this->current = new flight();
-            $this->current->do_retrieve(flight::$default_fields, ['where_equals' => ['fid' => $path[1]], 'join' => flight::$default_joins]);
-            if (!$this->current->fid) {
-                get::header_redirect('/flight_info');
-            }
+            $this->view_object = new ViewFlight($this, flight::getFromId((int) $path[1]));
         }
-        parent::__controller($path);
+        parent::__construct($path);
     }
 
 }

@@ -8,10 +8,7 @@ use PDOStatement;
 
 class select extends _query {
 
-    /**
-     * @return false|PDOStatement
-     */
-    public function execute(): bool|PDOStatement {
+    public function execute(): PDOStatement {
         $query = 'SELECT ' . $this->get_fields() . ' FROM ' . $this->table . $this->get_joins() . $this->get_filters() . $this->get_groupings() . $this->get_order() . ' ' . $this->get_limit();
         return _db::query($query, $this->parameters);
     }

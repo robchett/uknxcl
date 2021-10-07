@@ -1,43 +1,37 @@
 <?php
 
 use classes\ajax;
-use classes\ini;
 use classes\module;
 use classes\page_config;
 use classes\push_state;
 use classes\session;
 use JetBrains\PhpStorm\NoReturn;
-use JetBrains\PhpStorm\Pure;
 
 class core {
 
-    public static array $push_state_ajax_calls = [];
-
     /** @var core */
     public static core $singleton;
+    /** @var string[] */
     public static array $inline_script = [];
+    /** @var string[] */
     public static array $global_script = [];
+    /** @var string[] */
     public static array $js = ['/js/script.js'];
+    /** @var string[] */
     public static array $css = ['/css/styles.css'];
-    /** @var page_config */
-    public static page_config $page_config;
-    /** @var int */
     public int $pagination_page;
     public int $pid = 0;
+    /** @var string[] */
     public array $path = [];
     public string $module_name = '';
-    /** @var module */
     public module $module;
 
-    /**
-     *
-     */
+
     public function __construct() {
-        self::$js[] = 'http://maps.google.com/maps/api/js?libraries=geometry';
+        self::$js[] = 'https://maps.google.com/maps/api/js?libraries=geometry';
         self::$js[] = 'https://www.google.com/jsapi';
-        self::$page_config = new page_config();
         self::$singleton = $this;
-        $this->set_path(isset($_REQUEST['url']) ?: uri);
+        $this->set_path((string) ($_REQUEST['url'] ?? uri));
         define('cms', $this->path && $this->path[0] == 'cms');
         if (isset($_REQUEST['module'])) {
             $this->do_ajax();
@@ -45,10 +39,7 @@ class core {
         $this->load_page();
     }
 
-    /**
-     * @param $uri
-     */
-    public function set_path($uri) {
+    public function set_path(string $uri): void {
         $uri_no_qs = trim(parse_url($uri, PHP_URL_PATH), '/');
         if ($uri_no_qs) {
             $this->path = explode('/', $uri_no_qs);
@@ -57,21 +48,18 @@ class core {
         define('clean_uri', implode('/', $this->path));
     }
 
-    public function get_page_from_path() {
+    public function get_page_from_path(): int {
         $count = count($this->path);
         if ($count >= 2 && $this->path[$count - 2] == 'page' && is_numeric(end($this->path))) {
             $page = end($this->path);
-            unset($this->path[$count - 1]);
-            unset($this->path[$count - 2]);
-            return $page;
+            return (int) $page;
         }
         return 1;
     }
 
-    #[NoReturn]
-    public function do_ajax() {
-        $class = $_REQUEST['module'];
-        $function = $_REQUEST['act'];
+    public function do_ajax(): void {
+        $class = (string) $_REQUEST['module'];
+        $function = (string) $_REQUEST['act'];
         if ($class == 'core' || $class == 'this') {
             $module = 'core';
         } else {
@@ -86,9 +74,12 @@ class core {
             if ($class->hasMethod($function)) {
                 $method = new ReflectionMethod($module, $function);
                 if ($method->isStatic()) {
+                    /** @psalm-suppress MixedMethodCall */
                     $module::$function();
                 } else if ($module != 'core') {
+                    /** @psalm-suppress MixedMethodCall */
                     $object = new $module;
+                    /** @psalm-suppress MixedMethodCall */
                     $object->$function();
                 } else {
                     $this->$function();
@@ -99,60 +90,46 @@ class core {
         exit();
     }
 
-    /**
-     *
-     */
-    public function load_page() {
-        if ($this->path) {
-            if (!is_numeric($this->path[0])) {
-                $this->module_name = $this->path[0];
-            } else {
-                $this->module_name = 'pages';
-            }
-        } else {
-            $this->module_name = ini::get('site', 'default_module', 'pages');
+    public function load_page(): void {
+        $this->module_name = 'pages';
+        if ($this->path && !is_numeric($this->path[0])) {
+            $this->module_name = $this->path[0];
         }
+        
+        $module = match ($this->module_name) {
+            'add_flight' => \module\add_flight\controller::class,
+            'cms' => \module\cms\controller::class,
+            'comps' => \module\comps\controller::class,
+            'converter' => \module\converter\controller::class,
+            'flight_info' => \module\flight_info\controller::class,
+            'latest' => \module\latest\controller::class,
+            'mass_overlay' => \module\mass_overlay\controller::class,
+            'news' => \module\news\controller::class,
+            'planner' => \module\planner\controller::class,
+            'stats' => \module\stats\controller::class,
+            'tables' => \module\tables\controller::class, 
+            default => \module\pages\controller::class,
+        };
 
-        if (!class_exists('module\\' . $this->module_name . '\controller')) {
-            throw new Exception("Module $this->module_name is not defined");
-        }
-
-        $class_name = 'module\\' . $this->module_name . '\controller';
-        $this->module = new $class_name();
-        $this->module->__controller($this->path);
+        $this->module = new $module($this->path);
         $this->module->page = $this->pagination_page;
-        if (!ajax) {
-            $content = $this->module->view_object->get_page();
-            $ajax = false;
-        } else {
-            $content = $this->module->view_object->get();
-            $ajax = ajax::current();
-        }
-        $push_state = $this->module->get_push_state();
-        if ($push_state) {
-            $push_state->data->actions = array_merge($push_state->data->actions, self::$push_state_ajax_calls);
-        }
+        $push_state = $this->module->view_object->get_push_state();
 
         if (!ajax) {
             if ($push_state) {
-                $push_state->type = push_state::REPLACE;
                 $push_state->get();
-            }
-            echo $content;
+            }  
+            echo $this->module->view_object->get_page();
         } else {
-            ajax::set_current($ajax);
+            $this->module->view_object->get();
             if ($push_state) {
                 ajax::push_state($push_state);
             }
-            $class = new ReflectionClass('\classes\ajax');
-            $function = $class->getMethod('inject');
-            $function->invokeArgs(null, $content);
         }
     }
 
     /**
      * @param int $ignore_count The number of steps to ignore
-     * @return string
      */
     public static function get_backtrace(int $ignore_count = 0): string {
         $trace = debug_backtrace();
@@ -166,7 +143,7 @@ class core {
             $html .= '<tr>
             ' . (isset($step['file']) ? '<td>' . $step['file'] . '</td>' : '') . '
             ' . (isset($step['line']) ? '<td>' . $step['line'] . '</td>' : '') . '
-            <td>' . (isset($step['class']) ? $step['class'] . (isset($step['type']) ? $step['type'] : '::') : '') . $step['function'] . '()</td>
+            <td>' . (isset($step['class']) ? $step['class'] . ($step['type'] ?? '::') : '') . $step['function'] . '()</td>
             </tr>';
         }
         $html .= '</table>';
@@ -177,10 +154,6 @@ class core {
         return session::is_set('admin');
     }
 
-    /**
-     * @return string
-     */
-    #[Pure]
     public function get_js(): string {
         $script = '';
         $inner = '';
@@ -195,9 +168,6 @@ class core {
         return $script;
     }
 
-    /**
-     * @return string
-     */
     public function get_css(): string {
         $html = '';
         foreach (self::$css as $css) {

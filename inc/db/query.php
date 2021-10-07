@@ -2,26 +2,30 @@
 
 namespace db;
 
-
-use JetBrains\PhpStorm\Pure;
-
 abstract class query {
 
+    /** @var array<string, scalar> */
     protected array $parameters = [];
+    /** @var string[] */
     protected array $fields = [];
-    protected $table;
+    protected string $table;
+    /** @var array<string, array{type: string, where: string[]}> */
     protected array $joins = [];
+    /** @var string[] */
     protected array $filters = [];
+    /** @var string[] */
     protected array $order = [];
+    /** @var string[] */
     protected array $groupings = [];
     protected string $limit = '';
 
-    public function __construct($table) {
+    public function __construct(string $table) {
         $this->table = $table;
     }
 
-    public function retrieve($fields): static {
-        if ($fields === (array)$fields) {
+    /** @param string[]|string $fields */
+    public function retrieve(array|string $fields): static {
+        if (is_array($fields)) {
             foreach ($fields as $field) {
                 $this->add_field_to_retrieve($field);
             }
@@ -31,17 +35,21 @@ abstract class query {
         return $this;
     }
 
-    public function add_field_to_retrieve($field): static {
+    public function add_field_to_retrieve(string $field): static {
         $this->fields[] = $field;
         return $this;
     }
 
-    public function set_base_table($table): static {
+    public function set_base_table(string $table): static {
         $this->table = $table;
         return $this;
     }
 
-    public function add_join($table, $where, $parameters = [], $type = 'LEFT'): static {
+    /**
+     * @param string[]|string $where
+     * @param array<string, scalar> $parameters
+     */
+    public function add_join(string $table, array|string $where, array $parameters = [], string $type = 'LEFT'): static {
         if (!isset($this->joins[$table]['where'])) {
             $this->joins[$table]['where'] = [];
         }
@@ -57,7 +65,7 @@ abstract class query {
         return $this;
     }
 
-    public function filter_field($field, $value, $operator = '='): static {
+    public function filter_field(string $field, string|int|float|bool $value, string $operator = '='): static {
         $field_name = 'filter_' . (count($this->parameters) + 1);
         if (strstr($field, '.') === false && strstr($field, ' AS ') === false) {
             $field = '`' . $field . '`';
@@ -67,8 +75,12 @@ abstract class query {
         return $this;
     }
 
-    public function filter($clauses, $parameters = []): static {
-        if ($clauses === (array)$clauses) {
+    /**
+     * @param string[]|string $clauses
+     * @param array<string, scalar> $parameters
+     */
+    public function filter(array|string $clauses, array $parameters = []): static {
+        if (is_array($clauses)) {
             foreach ($clauses as $clause) {
                 $this->add_filter($clause);
             }
@@ -79,23 +91,24 @@ abstract class query {
         return $this;
     }
 
-    protected function add_filter($clause, $parameters = []): static {
+    /** @param array<string, scalar> $parameters */
+    protected function add_filter(string $clause, array $parameters = []): static {
         $this->filters[] = $clause;
         $this->parameters = array_merge($this->parameters, $parameters);
         return $this;
     }
 
-    public function add_order($term): static {
+    public function add_order(string $term): static {
         $this->order[] = $term;
         return $this;
     }
 
-    public function add_grouping($field): static {
+    public function add_grouping(string $field): static {
         $this->groupings[] = $field;
         return $this;
     }
 
-    abstract public function execute();
+    abstract public function execute(): mixed;
 
     protected function get_joins(): string {
         $sql = '';
@@ -105,7 +118,6 @@ abstract class query {
         return $sql;
     }
 
-    #[Pure]
     protected function get_filters(): string {
         if ($this->filters) {
             return ' WHERE ' . implode(' AND ', $this->filters);
@@ -113,7 +125,6 @@ abstract class query {
         return '';
     }
 
-    #[Pure]
     protected function get_groupings(): string {
         if ($this->groupings) {
             return ' GROUP BY ' . implode(',', $this->groupings);
@@ -128,12 +139,11 @@ abstract class query {
         return '';
     }
 
-    public function set_limit($limit): static {
+    public function set_limit(string $limit): static {
         $this->limit = $limit;
         return $this;
     }
 
-    #[Pure]
     protected function get_order(): string {
         if ($this->order) {
             return ' ORDER BY ' . implode(',', $this->order);
@@ -141,7 +151,7 @@ abstract class query {
         return '';
     }
 
-    public function set_order($term): static {
+    public function set_order(string $term): static {
         $this->order = [$term];
         return $this;
     }

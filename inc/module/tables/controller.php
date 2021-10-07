@@ -3,26 +3,28 @@
 namespace module\tables;
 
 use classes\module;
+use module\tables\model\league_table;
+use module\tables\view\_default;
+use module\tables\view\skywings;
 
 class controller extends module {
 
-    public function __controller(array $path) {
-        $layout = '';
+    /** @param string[] $path */
+    public function __construct(array $path) {
         $end_count = 1;
+        $view = match($path[1] ?? '') {
+            'skywings' => skywings::class,
+            default => view\_default::class
+        };
         if (isset($path[1]) && file_exists(root . '/inc/module/tables/view/' . $path[1] . '.php')) {
-            $this->view = $path[1];
             $end_count++;
         }
-        $this->current = new model\league_table();
+        $layout = '';
         if (isset($path[$end_count]) && !strstr($path[$end_count], '-')) {
             $layout = $path[$end_count];
         }
-        if (isset($path[$end_count])) {
-            $this->current->set_default(model\league_table::decode_url(end($path)));
-        }
-        if ($layout) {
-            $this->current->set_layout_from_url($layout);
-        }
-        parent::__controller($path);
+        $options = isset($path[$end_count]) ? model\league_table::decode_url(end($path)) : [];
+        $this->view_object = new $view($this, model\league_table::fromUrl($layout, $options)); 
+        parent::__construct($path);
     }
 }

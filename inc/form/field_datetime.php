@@ -2,36 +2,79 @@
 
 namespace form;
 
-use JetBrains\PhpStorm\Pure;
+use classes\attribute_list;
+use classes\interfaces\model_interface;
+use classes\table;
 
-class field_datetime extends field {
+/**
+ * @extends field<int>
+ */
+class field_datetime extends field
+{
 
-    public function __construct($title, $options = []) {
-        parent::__construct($title, $options);
-        $this->attributes['pattern'] = '[0-9]{2}/[0-9]{2}/[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}';
+    /**
+     * @param string[] $class
+     * @param string[] $wrapper_class
+     * @param int $default
+     */
+    public function __construct(
+        string $field_name,
+        int $fid = 0,
+        bool $filter = false,
+        string $label = '',
+        bool $list = true,
+        bool $live = true,
+        string $pre_text = '',
+        string $post_text = '',
+        bool $raw = false,
+        bool $required = true,
+        ?attribute_list $attributes = null,
+        bool $hidden =  false,
+        bool $disabled = false,
+        array $class = ['form-control'],
+        array $wrapper_class = [],
+        mixed $default = 0
+    ) {
+        $attributes ??= new attribute_list();
+        $attributes->pattern = '[0-9]{2}/[0-9]{2}/[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}';
+        parent::__construct(
+            $field_name,
+            $fid,
+            $filter,
+            $label,
+            $list,
+            $live,
+            $pre_text,
+            $post_text,
+            $raw,
+            $required,
+            $attributes,
+            $hidden,
+            $disabled,
+            $class,
+            $wrapper_class,
+            $default
+        );
     }
 
-    #[Pure]
-    public static function sanitise_from_db($value): bool|int {
+    public static function sanitise_from_db(string $value): bool|int
+    {
         return strtotime($value);
     }
 
-    public function set_value($val) {
-        $this->parent_form->{$this->field_name} = date('d/m/Y h:i:s', strtotime($val));
+    public function get_html(form $form): string
+    {
+        $attributes = $this->set_standard_attributes($this->attributes);
+        return '<input ' . $attributes . ' value="' . date('d/m/Y h:i:s', $this->get_value($form)) . '"/>';
     }
 
-    public function get_html(): string {
-        $attributes = $this->attributes;
-        $this->set_standard_attributes($attributes);
-        return '<input ' . static::get_attributes($attributes) . ' value="' . date('d/m/Y h:i:s', strtotime($this->parent_form->{$this->field_name})) . '"/>';
+    public function mysql_value(mixed $value): string
+    {
+        return date('Y-m-d h:i:s', $value);
     }
 
-    public function mysql_value($value): bool|string {
-        return date('Y-m-d h:i:s', strtotime(str_replace('/', '-', $value)));
-    }
-
-    #[Pure]
-    public function get_cms_list_wrapper($value, $object_class, $id): bool|string {
-        return date('d/m/Y @h:i:s', strtotime($value));
+    public function get_cms_list_wrapper(model_interface $form, mixed $value, string $object_class, int $id): string
+    {
+        return date('d/m/Y @h:i:s', $value) ?: '';
     }
 }

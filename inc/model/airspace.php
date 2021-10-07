@@ -6,7 +6,7 @@ use classes\ajax;
 
 class airspace {
 
-    public function load_js() {
+    public function load_js(): void {
         ajax::add_script("
     map.airspace.load = function (type) {
         if (!this.isLoaded(type)) {

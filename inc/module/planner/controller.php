@@ -4,23 +4,26 @@ namespace module\planner;
 
 use classes\jquery;
 use classes\module;
+use module\planner\model\declaration;
+use module\planner\view\_default;
 
 class controller extends module {
 
     public string $import_string = '';
 
-    public function __controller(array $path) {
+    /** @param string[] $path */
+    public function __construct(array $path) {
+        $this->view_object = new _default($this, false);
         if (isset($path[1])) {
-            $this->import_string = filter_var(urldecode($path[1]), FILTER_SANITIZE_STRING);
+            $this->import_string = (string) filter_var(urldecode($path[1]), FILTER_SANITIZE_STRING);
         }
-        parent::__controller($path);
+        parent::__construct($path);
     }
 
-    public static function get_form() {
+    public static function get_form(): void {
         if (isset($_REQUEST['ftid']) && isset($_REQUEST['coordinates'])) {
-            $dec = new model\declaration();
-            $form = $dec->get_form();
-            jquery::colorbox(['html' => (string)$form->get_html()]);
+            $form = declaration::get_form();
+            jquery::colorbox(['html' => $form->get_html()]);
         }
     }
 }

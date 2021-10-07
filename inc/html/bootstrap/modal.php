@@ -2,52 +2,40 @@
 
 namespace html\bootstrap;
 
+use classes\attribute_list;
 use html\node;
-use JetBrains\PhpStorm\Pure;
 
-class modal {
+final class modal
+{
 
-    public string $title;
-    public $body;
-    public $footer;
-    public $id;
-    public array $attributes;
-
-    /**
-     * @param $id
-     * @param array $attributes
-     * @param null $title
-     * @param null $body
-     * @param null $footer
-     */
-    public function __construct($id, $attributes = [], $title = null, $body = null, $footer = null) {
-        $this->title = $title;
-        $this->footer = $footer;
-        $this->body = $body;
-        $this->id = $id;
-        $this->attributes = $attributes;
+    public function __construct(
+        public string $id,
+        public attribute_list $attributes,
+        public string $title = '',
+        public string $body = '',
+        public string $footer = ''
+    ) {
     }
 
-    /**
-     * @param $id
-     * @param array $attributes
-     * @param null $title
-     * @param null $body
-     * @param null $footer
-     *
-     * @return modal
-     */
-    #[Pure]
-    public static function create($id, array $attributes = [], $title = null, $body = null, $footer = null): modal {
-        return new static($id, $attributes, $title, $body, $footer);
+    public static function create(string $id, attribute_list $attributes, string $title = '', string $body = '', string $footer = ''): self
+    {
+        return new self($id, $attributes, $title, $body, $footer);
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->get();
     }
 
-    public function get(): string {
-        return node::create('div#' . $this->id . '.modal.fade', $this->attributes, node::create('div.modal-dialog div.modal-content', [], node::create('div.modal-header', [], $this->title) . node::create('div.modal-body', [], $this->body) . node::create('div.modal-footer', [], $this->footer)));
+    public function get(): string
+    {
+        return "
+        <div id='{$this->id}' class='modal fade' {$this->attributes}>
+            <div class='modal-dialog'><div class='modal-content'>
+                <div class='modal-header'>{$this->title}</div>
+                <div class='modal-body'>{$this->body}</div>
+                <div class='modal-footer'>{$this->footer}</div>
+            </div>
+        </div>";
     }
-
-} 
+}

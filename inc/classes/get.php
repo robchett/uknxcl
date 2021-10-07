@@ -4,41 +4,39 @@ namespace classes;
 
 use classes\get as _get;
 use JetBrains\PhpStorm\NoReturn;
-use JetBrains\PhpStorm\Pure;
 use model\flight_type;
 use model\launch_type;
 
 class get {
 
-    public static array $cms_settings = [];
-    protected static $type_array;
-    protected static $flight_type;
+    /** @var ?array<int, string> */
+    protected static ?array $flight_type;
+    /** @var ?array<int, string> */
+    protected static ?array $type_array;
+    /** @var array<int, string>  */
     protected static array $launch_letter = [
         launch_type::FOOT  => '',
         launch_type::AERO  => 'Aero',
         launch_type::WINCH => 'Winch',
     ];
-    protected static $launch_title;
+    /** @var ?array<int, string> */
+    protected static ?array $launch_title = [
+        launch_type::FOOT  => 'Foot',
+        launch_type::AERO  => 'Aero',
+        launch_type::WINCH => 'Winch',
+    ];
 
-    #[Pure]
-    static function ent($html): string {
+    static function ent(string $html): string {
         return htmlentities(html_entity_decode($html));
     }
 
-    #[Pure]
-    public static function __class_name($object): bool|string {
-        if (is_string($object)) {
-            $name = trim($object, '\\');
-        } else {
-            $name = trim(get_class($object), '\\');
-        }
-        if (($pos = strrpos($name, '\\')) !== false) {
-            $pos++;
-        }
-        return substr($name, $pos);
+    /** @param class-string|object $object */
+    public static function __class_name(string|object $object): string {
+        $name = is_string($object) ? $object : get_class($object);
+        return trim($name, '\\');
     }
 
-    public static function recursive_glob($root, $pattern, $flags = 0): array {
+    public static function recursive_glob(string $root, string $pattern, int $flags = 0): array {
         $files = [];
         $directories = glob('/' . trim($root, '/') . '/*', GLOB_ONLYDIR);
         if ($directories) {
@@ -53,29 +51,25 @@ class get {
         return $files;
     }
 
-    public static function setting($setting, $default = '') {
-        if (!self::$cms_settings) {
-            $res = db::select('_cms_setting')
-                ->add_field_to_retrieve('key')
-                ->add_field_to_retrieve('value')
-                ->execute();
-            while ($obj = $res->fetchObject()) {
-                self::$cms_settings[$obj->key] = $obj->value;
-            }
-        }
-        return isset(self::$cms_settings[$setting]) ? self::$cms_settings[$setting] : $default;
-    }
-
-    public static function __namespace($object, $index = null) {
+    public static function __namespace(object $object, ?int $index = null): string {
         $name = trim(get_class($object), '\\');
+        if (($offset = strrpos($name, '\\')) === false) {
+            return '';
+        }
         if (isset($index)) {
-            return array_reverse(explode('\\', substr($name, 0, strrpos($name, '\\'))))[$index];
+            return array_reverse(explode('\\', substr($name, 0, $offset)))[$index];
         } else {
-            return substr($name, 0, strrpos($name, '\\'));
+            return substr($name, 0, $offset);
         }
     }
 
-    public static function unique_fn($table, $field, $str): string {
+    public static function __basename(string|object $object): string {
+        $name = is_string($object) ? $object : get_class($object);
+        $parts = explode('\\', $name);
+        return array_pop($parts);
+    }
+
+    public static function unique_fn(string $table, string $field, string $str): string {
         $base_fn = _get::fn($str);
         if (db::select($table)->add_field_to_retrieve($field)->filter($field . '=:fn', ['fn' => $base_fn])->execute()->rowCount()) {
             $cnt = 0;
@@ -89,16 +83,15 @@ class get {
 
     }
 
-    public static function fn($str): string {
+    public static function fn(string $str): string {
         return trim(str_replace([' ', '.', ',', '-', '?', '#'], '_', strtolower($str)), '_');
     }
 
-    static function trim_root($string): array|string {
+    static function trim_root(string $string): string {
         return str_replace(root, '', $string);
     }
 
-    #[Pure]
-    static function ordinal($num): string {
+    static function ordinal(int $num): string {
         if (!in_array(($num % 100), [11, 12, 13])) {
             switch ($num % 10) {
                 // Handle 1st, 2nd, 3rd
@@ -113,76 +106,54 @@ class get {
         return $num . 'th';
     }
 
-    #[NoReturn]
-    public static function header_redirect($url = '', $code = 404) {
-        header('Location:' . (!strstr('http', $url) ? 'http://' . host . '/' . trim($url, '/') : $url), $code);
+
+    /**
+     * @noreturn
+     */
+    public static function header_redirect(string $url = '', int $code = 404): void {
+        header('Location:' . (!str_starts_with($url, 'http') ? 'https://' . host . '/' . trim($url, '/') : $url), true, $code);
         die();
     }
 
-    static function bool($a): string {
+    static function bool(bool $a): string {
         if ($a)
             return "Yes";
         else
             return "No";
     }
 
-    static function type($int) {
+    static function type(int $int): string|false {
         if (!isset(self::$type_array)) {
-            $types = flight_type::get_all(['ftid', 'fn']);
+            $types = flight_type::get_all(new tableOptions());
             $types->iterate(function (flight_type $type) {
                 self::$type_array[$type->ftid] = $type->fn;
             }
             );
         }
-        if (isset(self::$type_array[$int])) {
-            return self::$type_array[$int];
-        }
-        return false;
+        return self::$type_array[$int] ?? false;
     }
 
-    static function flight_type($int) {
+    static function flight_type(int $int): string|false {
         if (!isset(self::$flight_type)) {
-            $types = flight_type::get_all(['ftid', 'title']);
+            $types = flight_type::get_all(new tableOptions());
             $types->iterate(function (flight_type $type) {
                 self::$flight_type[$type->ftid] = $type->title;
             }
             );
         }
-        if (isset(self::$flight_type[$int])) {
-            return self::$flight_type[$int];
-        }
-        return false;
+        return self::$flight_type[$int] ?? false;
+
     }
 
-    static function launch_letter($int): mixed {
-        if (!isset(self::$launch_letter)) {
-            $types = launch_type::get_all(['lid', 'fn']);
-            $types->iterate(function (launch_type $type) {
-                self::$launch_letter[$type->lid] = $type->fn;
-            }
-            );
-        }
-        if (isset(self::$launch_letter[$int])) {
-            return self::$launch_letter[$int];
-        }
-        return false;
+    static function launch_letter(int $int): string|false {
+        return self::$launch_letter[$int] ?? false;
     }
 
-    static function launch($int) {
-        if (!self::$launch_title) {
-            $types = launch_type::get_all(['lid', 'title']);
-            $types->iterate(function (launch_type $type) {
-                self::$launch_title[$type->lid] = $type->title;
-            }
-            );
-        }
-        if (isset(self::$launch_title[$int])) {
-            return self::$launch_title[$int];
-        }
-        return false;
+    static function launch(int $int): string|false {
+        return self::$launch_title[$int] ?? false;
     }
 
-    static function colour($i): string {
+    static function colour(int $i): string {
         $colour = [
             "FF0000",
             "EF000F",
@@ -204,7 +175,7 @@ class get {
         return $colour[$i % 16];
     }
 
-    static function kml_colour($i): string {
+    static function kml_colour(int $i): string {
         switch ($i % 9) {
             case (1) :
                 return 'FF0000'; // Blue
@@ -228,7 +199,7 @@ class get {
         return '';
     }
 
-    static function js_colour($i): string {
+    static function js_colour(int $i): string {
         switch ($i % 9) {
             case (1) :
                 return '0000FF'; // Blue

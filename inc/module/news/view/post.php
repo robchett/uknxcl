@@ -6,13 +6,14 @@ use classes\module;
 use module\news\controller;
 use template\html;
 
+/** @extends html<\module\news\controller, \module\news\model\article> */
 class post extends html {
 
     /** @var controller */
     public module $module;
 
     public function get_view(): string {
-        $article = $this->module->current;
+        $article = $this->current;
         return "
 <div id='article_wrapper' class='editable_content'>
     <article>

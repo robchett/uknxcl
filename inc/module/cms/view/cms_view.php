@@ -6,30 +6,24 @@ use classes\get;
 use module\cms\controller;
 use template\cms\html;
 
-/**
- * Class cms_view
- *
- * @package cms
- * @property controller $module
- */
-abstract class cms_view extends html {
+abstract class cms_view extends html
+{
 
-    /**
-     * @return string|array
-     */
-    public function get(): string|array {
-        return (string)$this->get_view();
+    public function get(): string
+    {
+        return $this->get_view();
     }
 
-    public function get_title_tag() {
+    public function get_title_tag(): string
+    {
         $parts = [parent::get_title_tag(), 'CMS', ucwords(str_replace('_', ' ', get::__class_name($this)))];
-        if (isset($this->module->current)) {
-            $parts[] = ucwords(str_replace('_', ' ', get::__class_name($this->module->current)));
-            if ($this->module->current->get_primary_key()) {
-                if ($title = $this->module->current->get_title()) {
+        if ($this->current) {
+            $parts[] = ucwords(str_replace('_', ' ', $this->schema->table_name));
+            if ($this->current->get_primary_key()) {
+                if ($title = $this->current->get_title()) {
                     $parts[] = $title;
                 } else {
-                    $parts[] = $this->module->current->get_primary_key();
+                    $parts[] = $this->current->get_primary_key();
                 }
             }
         }

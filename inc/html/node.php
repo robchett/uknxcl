@@ -2,25 +2,20 @@
 
 namespace html;
 
+use classes\attribute_list;
 use Stringable;
 
 class node implements Stringable {
 
-    public $parent;
-    protected $type = '';
-    protected $id = '';
+    public node $parent;
+    protected string $type = '';
+    protected string $id = '';
     protected string $content = '';
+    /** @var string[] */
     protected array $class = [];
-    protected array $attributes = [];
-    protected array $children = [];
-    protected ?node $pointer = null;
+    protected attribute_list $attributes;
 
-    /**
-     * @param $type
-     * @param string $content
-     * @param array $attr
-     */
-    public function __construct($type, $attr = [], $content = '') {
+    public function __construct(string $type, attribute_list $attributes, string $content = '') {
         $nodes = explode(' ', $type, 2);
         if (strstr($nodes[0], '#')) {
             [$this->type, $id] = explode('#', $nodes[0], 2);
@@ -37,91 +32,54 @@ class node implements Stringable {
             $this->type = $nodes[0];
         }
         if (isset($nodes[1])) {
-            $node = static::create($nodes[1], $attr, $content);
-            $this->add_child($node);
-            $this->pointer = $node;
-            $attr = [];
-        } else if (is_array($content)) {
-            $this->children = $content;
+            $this->content = static::create($nodes[1], $attributes, $content);
+            $this->attributes = new attribute_list();
         } else {
             $this->content = $content;
+            $this->attributes = $attributes;
         }
-        $this->attributes = $attr;
     }
 
-    /**
-     * @param $type
-     * @param string $content
-     * @param array $attr
-     * @return static
-     */
-    public static function create($type, $attr = [], $content = ''): static {
-        return new static($type, $attr, $content);
+    public static function create(string $type, array|attribute_list $attr = null, string $content = ''): string {
+        $attr ??= new attribute_list();
+        /** @psalm-suppress MixedArgument */
+        if (is_array($attr)) $attr = new attribute_list(...$attr);
+        return (string) new self($type, $attr, $content);
     }
 
-    /**
-     * @param node $child
-     * @return string
-     */
-    public function add_child(node $child): string {
-        if ($this->pointer) {
-            $this->pointer->add_child($child);
-        } else {
-            $this->children[] = $child;
-            $child->parent = $this;
-        }
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function __toString(): string {
         return $this->get();
     }
 
-    /**
-     * @return string|null
-     */
-    public function get(): ?string {
-        $attributes = $this->attributes;
-        $this->set_standard_attributes($attributes);
+    public function get(): string {
+        $attributes = $this->set_standard_attributes($this->attributes);
         if ($this->id) {
-            $attributes['id'] = str_replace(' ', '-', $this->id);
+            $attributes->id = str_replace(' ', '-', $this->id);
         }
         if ($this->class) {
-            if (!isset($attributes['class']))
-                $attributes['class'] = [];
-            $attributes['class'] = array_merge($attributes['class'], $this->class);
+            $attributes->class = array_merge($attributes->class, $this->class);
         }
         $html = '';
         if ($this->type == '-') {
             $html .= $this->combine_nodes($this->content);
-            /** @var node $child */
-            foreach ($this->children as $child) {
-                $html .= $child;
-            }
         } else if ($this->is_self_closing()) {
-            $html .= '<' . $this->type . static::get_attributes($attributes) . '/>';
+            $html .= '<' . $this->type . $attributes . '/>';
         } else {
-            $html .= '<' . $this->type . static::get_attributes($attributes) . '>';
+            $html .= '<' . $this->type . $attributes . '>';
             $html .= $this->combine_nodes($this->content);
-            /** @var node $child */
-            foreach ($this->children as $child) {
-                $html .= $child;
-            }
             $html .= '</' . $this->type . '>';
         }
         return $html;
     }
 
-    /**
-     * @param $attributes
-     */
-    public function set_standard_attributes(&$attributes) {
+    public function set_standard_attributes(attribute_list $attributes): attribute_list {
+        return $attributes;
     }
 
-    protected function combine_nodes($nodes): string {
+    /**
+     * @param string[]|string $nodes
+     */
+    protected function combine_nodes(array|string $nodes): string {
         if (is_array($nodes)) {
             $html = '';
             foreach ($nodes as $node) {
@@ -137,26 +95,20 @@ class node implements Stringable {
         return ($this->type == 'input');
     }
 
-    /**
-     * @param $attributes
-     *
-     * @return string
-     */
-    public static function get_attributes($attributes): string {
+    public static function get_attributes(array $attributes): string {
         $html = '';
+        /** @psalm-suppress MixedAssignment */
         foreach ($attributes as $attr => $value) {
+            if (is_null($value) || (is_array($value) && empty($value))) {
+                continue;
+            }
+            /** @psalm-suppress MixedArgumentTypeCoercion, MixedArgument, MixedOperand */
             if (is_array($value)) {
                 if ($attr == 'class') {
                     $html .= ' ' . $attr . '="' . htmlentities(implode(' ', $value), ENT_QUOTES) . '"';
-                } else if ($attr == 'style') {
-                    $styles = [];
-                    foreach ($value as $_attr => $_value) {
-                        $styles[] = $_attr . ':' . $_value;
-                    }
-                    $html .= ' ' . $attr . '="' . htmlentities(implode(';', $styles), ENT_QUOTES) . '"';
-                } else {
-                    $html .= ' ' . $attr . '=\'' . json_encode($value) . '\'';
                 }
+            } elseif (str_starts_with($attr, 'data')) {
+                $html .= ' data-' . strtolower(substr($attr, 4)) . '="' . htmlentities($value, ENT_QUOTES) . '"';
             } else {
                 $html .= ' ' . $attr . '="' . htmlentities($value, ENT_QUOTES) . '"';
             }
@@ -164,30 +116,8 @@ class node implements Stringable {
         return $html;
     }
 
-    public function nest(...$children): string {
-        if ($this->pointer) {
-            $this->pointer->nest($children);
-        } else {
-            if (is_array($children)) {
-                foreach ($children as $child) {
-                    if (is_array($child)) {
-                        $this->nest($child);
-                    } else if ($child) {
-                        $this->add_child($child);
-                    }
-                }
-            }
-        }
-        return $this;
-    }
-
-    public function add_class(string $classes): static {
-        $this->class[] = $classes;
-        return $this;
-    }
-
-    public function add_attribute($name, $val): string {
-        $this->attributes[$name] = $val;
+    public function add_attribute(string $name, mixed $val): self {
+        $this->attributes->$name = $val;
         return $this;
     }
 }

@@ -6,13 +6,11 @@ use classes\module;
 use module\flight_info\controller;
 use template\html;
 
+/** @extends html<\module\flight_info\controller, \model\flight> */
 class flight extends html {
 
-    /** @var controller */
-    public module $module;
-
     function get_view(): string {
-        $flight = $this->module->current;
+        $flight = $this->current;
         $res = "
 <div class='flight_wrapper'>
     <h1>{$flight->pilot->name} <span>{$flight->format_date($flight->date)}</span></h1>

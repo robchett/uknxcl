@@ -39,9 +39,9 @@ function Planner(parent) {
 
         var coordinates = this.get_coordinates();
         $('#decOR, #decOD, #decTR').each(function () {
-            var obj = $(this).data('ajax-post');
+            var obj = $(this).data('ajaxpost');
             obj.coordinates = coordinates;
-            $(this).data('ajax-post', obj);
+            $(this).data('ajaxpost', obj);
         });
         reload_scrollpane();
     };

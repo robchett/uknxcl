@@ -23,19 +23,19 @@ $(document).ready(function () {
     $body.on('click', null, function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
-            if ($target.attr('data-ajax-click') || $target.parent('a').attr('data-ajax-click')) {
-                if (!$target.attr('data-ajax-click')) {
+            if ($target.attr('data-ajaxclick') || $target.parent('a').attr('data-ajaxclick')) {
+                if (!$target.attr('data-ajaxclick')) {
                     $target = $target.parent('a');
                 }
                 event.preventDefault();
-                var arr = $target.data('ajax-click').split(':');
+                var arr = $target.data('ajaxclick').split(':');
                 var module = arr[0];
                 var act = arr[1];
                 var options = {};
-                if ($target.data('ajax-shroud')) {
-                    options.loading_target = $target.data('ajax-shroud');
+                if ($target.data('ajaxshroud')) {
+                    options.loading_target = $target.data('ajaxshroud');
                 }
-                var data = $target.data('ajax-post') || {};
+                var data = $target.data('ajaxpost') || {};
                 data['origin'] = $target.attr('id');
                 $.fn.ajax_factory(module, act, data, options);
             } else if ($.fn.ajax_factory.defaults.load_pages_ajax && ($target.is('a') || ($target = $target.parent('a')).length)) {
@@ -67,30 +67,30 @@ $(document).ready(function () {
     $body.on('change', ':input', function (event) {
         var $target = $(event.target);
         if (!$target.attr('disabled') && !$target.hasClass('disabled')) {
-            if ($target.attr('data-ajax-change')) {
+            if ($target.attr('data-ajaxchange')) {
                 var options = {};
                 event.preventDefault();
-                var arr = $target.attr('data-ajax-change').split(':');
+                var arr = $target.attr('data-ajaxchange').split(':');
                 var module = arr[0];
                 var act = arr[1];
-                var data = $target.data('ajax-post') || {};
+                var data = $target.data('ajaxpost') || {};
                 if ($target.attr('type') === 'checkbox') {
                     data.value = ($target.is(':checked') ? 1 : 0 );
                 } else {
                     data.value = $target.val();
                 }
                 data['origin'] = $target.attr('id');
-                if ($target.data('ajax-shroud')) {
-                    options.loading_target = $target.data('ajax-shroud');
+                if ($target.data('ajaxshroud')) {
+                    options.loading_target = $target.data('ajaxshroud');
                 }
                 $.fn.ajax_factory(module, act, data, options);
             } else {
                 var $parent = $target.parents('form').eq(0);
-                if ($parent.data('ajax-change')) {
-                    var arr = $parent.attr('data-ajax-change').split(':');
+                if ($parent.data('ajaxchange')) {
+                    var arr = $parent.attr('data-ajaxchange').split(':');
                     var module = arr[0];
                     var act = arr[1];
-                    var ajax_shroud = $parent.attr('data-ajax-shroud');
+                    var ajax_shroud = $parent.attr('data-ajaxshroud');
                     var data = get_form_data($parent);
                     var options = {loading_target: ajax_shroud};
                     data.ajax_origin = $parent.id;
@@ -112,7 +112,7 @@ $(document).ready(function () {
         var arr = $(this).attr('action').split(':');
         var module = arr[0];
         var act = arr[1];
-        var ajax_shroud = $(this).attr('data-ajax-shroud');
+        var ajax_shroud = $(this).attr('data-ajaxshroud');
         var data = get_form_data($(this));
         var options = $.fn.extend($(this).data(), {loading_target: ajax_shroud});
         data.ajax_origin = $(e.target)[0].id;
@@ -120,10 +120,10 @@ $(document).ready(function () {
         return false;
     });
     $body.on('submit', 'form.noajax', function () {
-        var ajax_shroud = $(this).attr('data-ajax-shroud');
+        var ajax_shroud = $(this).attr('data-ajaxshroud');
         var div = add_loading_shroud(ajax_shroud);
-        if ($(this).data('ajax-socket')) {
-            var socketId = add_socket_io($(this).data('ajax-socket'), div);
+        if ($(this).data('ajaxsocket')) {
+            var socketId = add_socket_io($(this).data('ajaxsocket'), div);
             if (!$(this).find('input[name=data-socket]').length) {
                 var input = document.createElement('input');
                 input.className = 'hidden';
@@ -138,8 +138,8 @@ $(document).ready(function () {
         options = options || {};
         post = post || {};
         var div = add_loading_shroud(options.loading_target);
-        if (options.ajaxSocket) {
-            post['data-socket'] = add_socket_io(options.ajaxSocket, div);
+        if (options.ajaxsocket) {
+            post['data-socket'] = add_socket_io(options.ajaxsocket, div);
         }
         post['module'] = module;
         post['act'] = act;
@@ -250,11 +250,7 @@ function handle_json_response(json) {
     });
     if (typeof json.push_state != "undefined") {
         $.fn.ajax_factory.states[json.push_state.url] = json.push_state.data;
-        if (json.push_state.push) {
-            window.history.pushState(json.push_state.data, json.push_state.title, json.push_state.url);
-        } else if (json.push_state.replace) {
-            window.history.replaceState(json.push_state.data, json.push_state.title, json.push_state.url);
-        }
+        window.history.pushState(json.push_state, json.push_state.title, json.push_state.url);
     }
     if ($.fn.ajax_factory.defaults.complete) {
         $.fn.ajax_factory.defaults.complete.each(function (method, i, json) {
@@ -298,7 +294,7 @@ function add_loading_shroud(ajax_shroud) {
     return false;
 }
 var socketId = false;
-function add_socket_io(ajaxSocket, write_element) {
+function add_socket_io(ajaxsocket, write_element) {
     if (!socketId) {
         socketId = randomString(32, 'aA#');
         if (write_element) {

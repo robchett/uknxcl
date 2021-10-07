@@ -7,82 +7,122 @@ use classes\attribute_callable;
 use classes\attribute_list;
 use classes\email;
 use classes\jquery;
+use classes\tableOptions;
+use Exception;
+use form\add_glider_form;
+use form\add_pilot_form;
 use form\form;
 use html\node;
+use model\club;
 use model\flight;
 use model\flight_type;
+use model\glider;
+use model\launch_type;
 use model\new_flight_notification;
+use model\pilot;
 use track\igc_parser;
+use track\igcPartResult;
+use track\igcResult;
 use track\task;
 
-class igc_form extends form {
+class igc_form extends form
+{
 
-    public $delay;
-    public $agree;
-    public $defined;
-    public $ridge;
-    public $temp_id;
-    public $type;
-    public $force_delay;
+    public bool $delay;
+    public bool $personal;
+    public bool $agree;
+    public bool $defined;
+    public bool $ridge;
+    public int $temp_id;
+    public string $type;
+    public bool $force_delay;
     public string $title;
     public string $name;
-    public $cid;
-    public $gid;
-    public $pid;
+    public int $cid;
+    public int $gid;
+    public int $pid;
+    public int $lid;
     public string $vis_info;
+    public string $admin_info;
 
-    public function __construct() {
-        parent::__construct([
-                form::create('field_link', 'pid')
-                    ->set_attr('label', 'Pilot:')
-                    ->set_attr('required', true)
-                    ->set_attr('default', 'Choose A Pilot')
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => attribute_callable::create([\form\add_pilot_form::class, 'get_form'])], 'Not in the list? Click here to add a new pilot'))
-                    ->set_attr('link_module', \model\pilot::class)
-                    ->set_attr('link_field', 'name')
-                    ->set_attr('options', ['order' => 'name']),
-                form::create('field_link', 'gid')
-                    ->set_attr('label', 'Glider:')
-                    ->set_attr('required', true)
-                    ->set_attr('post_text', node::create('a', ['data-ajax-click' => attribute_callable::create([\form\add_glider_form::class, 'get_form'])], 'Not in the list? Click here to add a new glider'))
-                    ->set_attr('link_module', \model\glider::class)
-                    ->set_attr('link_field', ['manufacturer.title', 'name'])
-                    ->set_attr('options', ['join' => ['manufacturer' => 'manufacturer.mid = glider.mid'], 'order' => 'manufacturer.title, glider.name']),
-                form::create('field_link', 'cid')
-                    ->set_attr('label', 'Club:')
-                    ->set_attr('required', true)
-                    ->set_attr('link_module', \model\club::class)
-                    ->set_attr('link_field', 'title')
-                    ->set_attr('options', ['order' => 'title']),
-                form::create('field_link', 'lid')
-                    ->set_attr('label', 'Launch:')
-                    ->set_attr('required', true)
-                    ->set_attr('link_module', \model\launch_type::class)
-                    ->set_attr('link_field', 'title'),
-                form::create('field_boolean', 'ridge')
-                    ->set_attr('label', 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers')
-                    ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'vis_info')
-                    ->set_attr('label', 'Please write any extra information you wish to be made public here')
-                    ->set_attr('required', false)
-                    ->add_wrapper_class('long_text'),
-                form::create('field_textarea', 'admin_info')
-                    ->set_attr('label', 'Please write any extra information you wish to be seen by the admin team here')
-                    ->set_attr('required', false)
-                    ->add_wrapper_class('long_text'),
-                form::create('field_boolean', 'delay')
-                    ->set_attr('label', 'Publication of the flight should be delayed until it has been inspected by the admin team.'),
-                form::create('field_boolean', 'personal')
-                    ->set_attr('label', 'Show the flight in your personal log only / the flight was flown outside of the UK'),
-                form::create('field_boolean', 'agree')
-                    ->set_attr('label', 'The NXCL is free to publish the flight to the public and to be passed on to skywings for publication. The flight has not broken any airspace laws')
-                    ->set_attr('required', true),
-                form::create('field_int', 'temp_id')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
-                form::create('field_string', 'type')
-                    ->set_attr('required', true)
-                    ->set_attr('hidden', true),
+    public function __construct()
+    {
+        parent::__construct(
+            [
+                new \form\field_link(
+                    'pid',
+                    label: 'Pilot:',
+                    required: true,
+                    defaultText: 'Choose A Pilot',
+                    post_text: node::create('a', ['dataAjaxClick' => attribute_callable::create([add_pilot_form::class, 'get_form'])], 'Not in the list? Click here to add a new pilot'),
+                    link_module: pilot::class,
+                    link_field: 'name',
+                    options: new tableOptions(order: 'name')
+                ),
+                new \form\field_link(
+                    'gid',
+                    label: 'Glider:',
+                    required: true,
+                    post_text: node::create('a', ['dataAjaxClick' => attribute_callable::create([add_glider_form::class, 'get_form'])], 'Not in the list? Click here to add a new glider'),
+                    link_module: glider::class,
+                    link_field: ['manufacturer.title', 'name'],
+                    options: new tableOptions(join: ['manufacturer' => 'manufacturer.mid = glider.mid'], order: 'manufacturer.title, glider.name')
+                ),
+                new \form\field_link(
+                    'cid',
+                    label: 'Club:',
+                    required: true,
+                    link_module: club::class,
+                    link_field: 'title',
+                    options: new tableOptions(order: 'title'),
+                ),
+                new \form\field_link(
+                    'lid',
+                    label: 'Launch:',
+                    required: true,
+                    link_module: launch_type::class,
+                    link_field: 'title',
+                ),
+                new \form\field_boolean(
+                    'ridge',
+                    label: 'The flight was predominantly in ridge lift, so according to the rules will not qualify for multipliers',
+                    wrapper_class: ['long_text'],
+                ),
+                new \form\field_textarea(
+                    'vis_info',
+                    label: 'Please write any extra information you wish to be made public here',
+                    required: false,
+                    wrapper_class: ['long_text'],
+                ),
+                new \form\field_textarea(
+                    'admin_info',
+                    label: 'Please write any extra information you wish to be seen by the admin team here',
+                    required: false,
+                    wrapper_class: ['long_text'],
+                ),
+                new \form\field_boolean(
+                    'delay',
+                    label: 'Publication of the flight should be delayed until it has been inspected by the admin team.',
+                ),
+                new \form\field_boolean(
+                    'personal',
+                    label: 'Show the flight in your personal log only / the flight was flown outside of the UK',
+                ),
+                new \form\field_boolean(
+                    'agree',
+                    label: 'The NXCL is free to publish the flight to the public and to be passed on to skywings for publication. The flight has not broken any airspace laws',
+                    required: true,
+                ),
+                new \form\field_int(
+                    'temp_id',
+                    required: true,
+                    hidden: true,
+                ),
+                new \form\field_string(
+                    'type',
+                    required: true,
+                    hidden: true,
+                ),
             ]
         );
 
@@ -91,98 +131,108 @@ class igc_form extends form {
         $this->name = 'igc';
         $this->title = 'Add Flight Form';
 
-        $this->attributes['class'][] = 'form-compact';
-
-        if (!ajax) {
-            $this->submittable = false;
-        }
+        $this->attributes->class[] = 'form-compact';
     }
 
-    public function do_submit(): bool {
-        $flight = new flight();
-        $flight->set_from_request();
-        $flight->live = false;
-        $flight->do_save();
+    public function do_submit(): bool
+    {
+        $igc_parser = igc_parser::load_data($this->temp_id);
+        if ($igc_parser instanceof igcPartResult || !$igc_parser) {
+            throw new Exception('Track invalid');
+        }
 
-        if ($flight->fid) {
-            $flight->move_temp_files($this->temp_id);
+        $date = strtotime($igc_parser->get_date());
+        $season = (int) date('Y', $date);
+        if (date('m', $date) >= 11) {
+            $season++;
+        }
 
-            $igc_parser = new igc_parser();
-            $igc_parser->load_data($flight->fid, false);
+        if (!$this->check_date($igc_parser)) {
+            $this->delay = true;
+            $this->admin_info .= "delayed as flight is old.\n";
+        }
 
-            $flight->did = $igc_parser->has_height_data() ? 3 : 2;
-            $flight->winter = $igc_parser->is_winter();
-            $flight->set_date(strtotime($igc_parser->get_date()));
+        if ($igc_parser->validated === false) {
+            $this->admin_info .= "G record invalid.\n";
+        }
 
-            $this->force_delay = false;
-            if (!$this->check_date($igc_parser)) {
-                $this->force_delay = true;
-                $flight->admin_info .= "delayed as flight is old.\n";
-            }
+        $tracks = [
+            'ftid' => 0,
+            'base_score' => 0,
+            'duration' => 0,
+            'coords' => 0
+        ];
+        foreach (['od' => 'open_distance', 'or' => 'out_and_return', 'tr' => 'triangle', 'ft' => 'flat_triangle'] as $task_id => $name) {
+            if ($task = $igc_parser->get_task($name)) {
+                $tracks[$task_id . '_score'] = $task->get_distance();
+                $tracks[$task_id . '_time'] = $task->get_duration();
+                $tracks[$task_id . '_coordinates'] = $task->get_gridref();
 
-            if ($igc_parser->get_validated() === 0) {
-                $flight->admin_info .= "G record invalid.\n";
-            }
-            $flight->defined = ($this->type == 'task');
-
-            $flight->duration = $igc_parser->get_duration();
-
-            foreach (['od' => 'open_distance', 'or' => 'out_and_return', 'tr' => 'triangle', 'ft' => 'flat_triangle'] as $task_id => $name) {
-                if ($task = $igc_parser->get_task($name)) {
-                    $flight->{$task_id . '_score'} = $task->get_distance();
-                    $flight->{$task_id . '_time'} = $task->get_duration();
-                    $flight->{$task_id . '_coordinates'} = $task->get_gridref();
-
-                    if ($this->type == $task->type) {
-                        $flight->ftid = $this->type;
-                        $flight->base_score = $task->get_distance();
-                        $flight->duration = $task->get_duration();
-                        $flight->coords = $task->get_gridref();
-                    }
+                if ($this->type == $task->type) {
+                    $tracks['ftid'] = $this->type;
+                    $tracks['base_score'] = $task->get_distance();
+                    $tracks['duration'] = $task->get_duration();
+                    $tracks['coords'] = $task->get_gridref();
                 }
             }
-            if ($flight->defined) {
-                $task = $igc_parser->get_task('declared');
-                $flight->ftid = $task->type;
-                if ($flight->ftid == task::TYPE_OPEN_DISTANCE) {
-                    $flight->ftid = task::TYPE_GOAL;
-                }
-                $flight->base_score = $task->get_distance();
-                $flight->duration = $task->get_duration();
-                $flight->coords = $task->get_gridref();
+        }
+        if ($this->type == 'task' && ($task = $igc_parser->get_task('declared'))) {
+            $tracks['ftid'] = $task->type;
+            if ($tracks['ftid'] == task::TYPE_OPEN_DISTANCE) {
+                $tracks['ftid'] = task::TYPE_GOAL;
             }
+            $tracks['base_score'] = $task->get_distance();
+            $tracks['duration'] = $task->get_duration();
+            $tracks['coords'] = $task->get_gridref();
+        }
 
-            $flight->multi = (!$flight->ridge ? flight_type::get_multiplier($flight->ftid, $igc_parser->get_date('Y'), $flight->defined) : 1);
-            $flight->score = $flight->multi * $flight->base_score;
+        $tracks['multi'] = (!$this->ridge ? flight_type::get_multiplier($tracks['ftid'], (int) $igc_parser->get_date('Y'), $this->type == 'task') : 1);
+        $tracks['score'] = $tracks['multi'] * $tracks['base_score'];
 
-            $flight->delayed = $this->force_delay || $this->delay;
-            $flight->live = true;
-            $flight->do_save();
+        $fid = flight::do_save([
+            'pid' => $this->pid,
+            'gid' => $this->gid,
+            'cid' => $this->cid,
+            'lid' => $this->lid,
+            'ridge' => $this->ridge,
+            'vis_info' => $this->vis_info,
+            'admin_info' => $this->admin_info,
+            'delayed' => $this->delay,
+            'personal' => $this->personal,
+            'did' => $igc_parser->has_height_data() ? 3 : 2,
+            'winter' => $igc_parser->is_winter(),
+            'date' => $date,
+            'season' => $season,
+            'defined' => $this->type == 'task',
+            'duration' => $igc_parser->get_duration(),
+        ] + $tracks);
 
+        if ($fid) {
+            flight::move_temp_files($fid, $this->temp_id);
             jquery::colorbox(['html' => 'Your flight has been added successfully', 'className' => 'success']);
             $form = new igc_form();
-            ajax::update((string)$form->get_html());
-            $users = new_flight_notification::get_all([]);
+            ajax::update($form->get_html());
+            $users = new_flight_notification::get_all(new tableOptions());
             foreach ($users as $user) {
                 $mail = new email();
                 $mail->load_template(root . '/template/email/basic.html');
                 $mail->set_recipients([$user->email]);
                 $subject = 'New flight added';
-                if ($flight->delayed) {
+                if ($this->delay) {
                     $subject .= ' - Delayed';
                 }
-                if ($igc_parser->get_validated() === 0) {
+                if ($igc_parser->validated === false) {
                     $subject .= ' - G record invalid';
                 }
                 $mail->set_subject($subject);
                 $mail->replacements = [
                     '[content]' => '
-                        <h2>New flight added: ' . $flight->get_primary_key() . '</h2>
+                        <h2>New flight added: ' . $fid . '</h2>
                         <!--suppress HtmlDeprecatedAttribute -->
                         <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
                             <tr>
                                 <td>
-                                    <a href="' . host . '/cms/edit/2/' . $flight->get_primary_key() . '">View in CMS</a>
+                                    <a href="' . host . '/cms/edit/2/' . $fid . '">View in CMS</a>
                                 </td>
                             </tr>
                         </table>',
@@ -195,7 +245,8 @@ class igc_form extends form {
         return true;
     }
 
-    public function check_date(igc_parser $parser): bool {
+    public function check_date(igcResult $parser): bool
+    {
         $current_time = time();
         $closure_time = $current_time - (31 * 24 * 60 * 60);
         if (strtotime($parser->get_date()) >= $closure_time && strtotime($parser->get_date()) <= $current_time) {
@@ -205,7 +256,8 @@ class igc_form extends form {
         }
     }
 
-    public function do_validate(): bool {
+    public function do_validate(): bool
+    {
         if (!$this->agree) {
             $this->validation_errors['agree'] = 'You must agree to the terms to continue';
         }

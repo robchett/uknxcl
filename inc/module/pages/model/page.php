@@ -4,27 +4,33 @@ namespace module\pages\model;
 
 use classes\get;
 use classes\table;
+use classes\interfaces\model_interface;
 use module\pages\controller;
 
-
-class page extends table {
-
-
-    public string $nav_title;
-    public string $direct_link;
-    public bool $nav;
-    public int $pid;
-    public string $body = '';
-    public string $module_name;
-    public string $title = '';
-    public string $icon;
-    /** @var ?string */
-    public ?string $info;
+class page implements model_interface {
+    use table;
 
 
-    /**
-     * @return string
-     */
+    public function __construct(
+        public bool $live,
+        public bool $deleted,
+        public int $created,
+        public int $ts,
+        public int $position,
+        public int $pid,
+        public string $nav_title,
+        public string $direct_link,
+        public bool $nav,
+        public string $body,
+        public string $module_name,
+        public string $title,
+        public string $icon,
+        public string $info,
+        public string $fn,
+    )
+    {
+    }
+    
     public function get_url(): string {
         if ($this->pid == controller::$homepage_id) {
             return '/';

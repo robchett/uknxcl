@@ -3,13 +3,16 @@
 namespace module\mass_overlay\view;
 
 use module\mass_overlay\controller;
+use module\tables\model\league_table;
 use template\html;
 
-/** @property controller $module */
-class _default extends html {
+/** @extends html<\module\mass_overlay\controller, league_table> */
+class _default extends html
+{
 
-    public function get_view(): string {
-        $table = $this->module->current;
+    public function get_view(): string
+    {
+        $table = $this->current;
         $coordinates = '';
         foreach ($table->get_flights() as $flight) {
             if ($flight->coords) {

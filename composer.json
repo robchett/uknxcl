@@ -1,5 +1,14 @@
 {
     "require": {
-        "twig/twig": "~1.0"
+        "twig/twig": "~1.0",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-memcached": "*",
+        "ext-zip": "*",
+        "ext-pdo": "*",
+        "aws/aws-sdk-php": "^3.196"
+    },
+    "require-dev": {
+        "vimeo/psalm": "^4.7"
     }
 }

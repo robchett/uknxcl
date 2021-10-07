@@ -6,10 +6,8 @@ use classes\module;
 use module\stats\controller;
 use template\html;
 
+/** @extends html<\module\stats\controller, false> */
 class _default extends html {
-
-    /** @var controller */
-    public module $module;
 
     public function get_view(): string {
         $stats = $this->module->get_stats();

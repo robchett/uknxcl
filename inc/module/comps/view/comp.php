@@ -5,22 +5,25 @@ namespace module\comps\view;
 use classes\module;
 use template\html;
 
+/** 
+ * @extends html<\module\comps\controller, \module\comps\model\comp>
+ * 
+ */
 class comp extends html {
 
-    /** @vat \module\comps\controller */
-    public module $module;
-
     function get_view(): string {
-        $file = file_get_contents($this->module->current->get_js_file());
+        $file = file_get_contents($this->current->get_js_file());
         $flights = '';
         $turnpoints = '';
-        if ($data = json_decode($file)) {
-            for ($i = 0; $i < $data->turnpoints; $i++) {
+        /** @var array{turnpoints: int, flights: array{pilot: string}[]} $data */
+        $data = json_decode($file, true);
+        if ($data) {
+            for ($i = 0; $i < $data['turnpoints']; $i++) {
                 $turnpoints .= "<th>Turnpoint {$i}</th>";
             }
-            foreach ($data->flights as $f) {
-                $flights .= "<tr><td>{$f->pilot}</td>";
-                for ($i = 0; $i < $data->turnpoints; $i++) {
+            foreach ($data['flights'] as $f) {
+                $flights .= "<tr><td>{$f['pilot']}</td>";
+                for ($i = 0; $i < $data['turnpoints']; $i++) {
                     $hit = $f[$i] > 0 ? '&#10004;' : '&#10006;';
                     $flights .= "<td>{$hit}</td>";
                 }
@@ -46,7 +49,7 @@ class comp extends html {
     var load_callback = load_callback || [];
     load_callback.push(function () {
         map.callback(function (map) {
-            map.add_comp({$this->module->current->get_primary_key()})
+            map.add_comp({$this->current->get_primary_key()})
         });
     });
 </script>";

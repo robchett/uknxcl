@@ -2,13 +2,15 @@
 
 namespace module\comps\view;
 
+use classes\tableOptions;
 use module\comps\model\comp;
 use template\html;
 
+/** @extends html<\module\comps\controller, false> */
 class comp_list extends html {
 
     function get_view(): string {
-        $comps = comp::get_all(['type', 'round', 'task', 'comp.title AS title', 'date', 'cid', 'comp_group.title', 'file'], ['join' => ['comp_group' => 'comp.cgid = comp_group.cgid'], 'order' => 'date DESC, round DESC, task DESC, comp.cgid ASC']);
+        $comps = comp::get_all(new tableOptions(join: ['comp_group' => 'comp.cgid = comp_group.cgid'], order: 'date DESC, round DESC, task DESC, comp.cgid ASC'));
         return "
 <div id='comp_wrapper'>
     <div id='comp_inner'>
@@ -27,7 +29,7 @@ class comp_list extends html {
                 </tr>
                 </thead>
                 <tbody>
-                {$comps->reduce(fn($_, comp $comp) => "$_
+                {$comps->reduce(fn(string $_, comp $comp): string => "$_
                     <tr>
                         <td class='left'>{$comp->type}</td>
                         <td class='left'>{$comp->round}</td>
@@ -36,7 +38,7 @@ class comp_list extends html {
                         <td class='left'>{$comp->title}</td>
                         <td class='left'>{$comp->format_date($comp->date,'d/m/Y')}</td>
                         <td class='left'><a class='button' href='{$comp->get_url()}' data-click='{$comp->get_primary_key()}'>View</a></td>
-                    </tr>")}
+                    </tr>", '')}
                 </tbody>
             </table>
         </div>

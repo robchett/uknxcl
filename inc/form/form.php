@@ -3,129 +3,68 @@
 namespace form;
 
 use classes\ajax;
+use classes\attribute_list;
 use classes\get;
+use classes\interfaces\model_interface;
+use classes\table;
 use Exception;
-use form\field as _field;
-use form\field_file as _field_file;
+use form\field_file;
 use html\node;
 use ReflectionClass;
-use ReflectionException;
 
-/**
- * Class form
- * @package form
- */
 abstract class form {
 
+    /**
+     * @var array{int, int, string}
+     */
     public array $bootstrap = [2, 10, 'form-horizontal'];
-
-    /**
-     * @var string
-     */
     public string $action = '';
-    /**
-     * @var string
-     */
     public string $method = 'post';
-    /**
-     * @var string
-     */
     public string $content = '';
     /** @var field[] $fields */
     public array $fields = [];
-    /**
-     * @var string
-     */
     public string $h2 = '';
-    /**
-     * @var string
-     */
     public string $description = '';
-    /**
-     * @var
-     */
-    public $target;
-    /**
-     * @var bool
-     */
     public bool $use_ajax = true;
-    /**
-     * @var string
-     */
     public string $pre_text = '';
-    /**
-     * @var string
-     */
     public string $post_fields_text = '';
-    /**
-     * @var string
-     */
+    public string $pre_fields_text = '';
     public string $post_text = '';
-    /**
-     * @var string
-     */
     public string $submit = 'Submit';
-    /**
-     * @var string
-     */
     public string $id = 'form';
-    /**
-     * @var bool
-     */
     public bool $submittable = true;
-    /**
-     * @var bool
-     */
     public bool $has_submit = true;
-    /**
-     * @var array
-     */
-    public array $attributes = [];
-    /**
-     * @var array
-     */
+    public attribute_list $attributes;
+    /** @var array<string, string> */
     public array $validation_errors = [];
+    /** @var string[] */
     public array $wrapper_class = ['form_wrapper'];
+    /** @var string[] */
     public array $field_wrapper_class = ['form-group'];
-    public array $submit_attributes = ['type' => 'submit'];
-    protected $table_object;
+    public attribute_list $submit_attributes;
+    protected model_interface|form $table_object;
 
     /**
-     * @param $fields
+     * @param field[] $fields
      */
-    public function __construct($fields) {
+    public function __construct(array $fields) {
+        $this->attributes = new attribute_list();
+        $this->submit_attributes = new attribute_list(type: 'submit', class: ['btn', 'btn-default']);
         $this->fields = [];
         foreach ($fields as $field) {
             $this->add_field($field);
         }
     }
 
-    public function add_field(_field $field) {
-        $field->parent_form = $this;
-        $this->{$field->field_name} = $field->value;
-        if ($field instanceof _field_file) {
+    public function add_field(field $field): void {
+        $this->{$field->field_name} = $field->value ?? $field->default;
+        if ($field instanceof field_file) {
             $this->use_ajax = false;
         }
         $this->fields[$field->field_name] = $field;
     }
 
-    /**
-     * @return field
-     * @throws ReflectionException
-     */
-    public static function create(): object {
-        $args = func_get_args();
-        $class_name = 'form\\' . $args[0];
-        unset($args[0]);
-        $class = new ReflectionClass($class_name);
-        return $class->newInstanceArgs($args);
-    }
-
-    /**
-     * @param      $object
-     * @param bool $change_target
-     */
-    public function set_from_object($object, $change_target = true) {
+    public function set_from_object(model_interface|form $object, bool $change_target = true): void {
         $this->table_object = $object;
         foreach ($this->fields as $field) {
             if (isset($object->{$field->field_name})) {
@@ -135,29 +74,6 @@ abstract class form {
         if ($change_target) {
             $this->action = get_class($object) . ':do_form_submit';
         }
-    }
-
-    public function get_table_class(): bool|string {
-        return get::__class_name($this->get_table_object());
-    }
-
-    public function get_table_object() {
-        if (!$this->table_object) {
-            trigger_error('Trying to access a forms table object before set_from_object has been called.');
-        }
-        return $this->table_object;
-    }
-
-    /**
-     * @param $field_name
-     * @return bool
-     */
-    public function remove_field($field_name): bool {
-        if (!cms) {
-            unset($this->fields[$field_name]);
-            return true;
-        }
-        return false;
     }
 
     public function do_form_submit(): bool {
@@ -172,123 +88,99 @@ abstract class form {
         }
     }
 
-    /**
-     *
-     */
-    public function set_from_request() {
+    public function set_from_request(): void {
         foreach ($this->fields as $field) {
             if (isset($_REQUEST[$field->field_name])) {
-                $field->set_from_request();
+                $field->set_from_request($this);
             }
         }
     }
 
-    /**
-     * @return bool
-     */
     public function do_validate(): bool {
         foreach ($this->fields as $field) {
-            $field->do_validate($this->validation_errors);
+            [$ok, $error] = $field->do_validate($this); 
+            if (!$ok) {
+                $this->validation_errors[$field->field_name] = $error;
+            }
         }
-        return count($this->validation_errors) ? false : true;
+        return !count($this->validation_errors);
     }
 
-    /**
-     * @return bool
-     */
     abstract public function do_submit(): bool;
 
-    /**
-     *
-     */
-    public function do_invalidate_form() {
-        foreach ($this->validation_errors as $key => $val) {
+    public function do_invalidate_form(): void {
+        foreach ($this->validation_errors as $key => $_) {
             $field = $this->get_field_from_name($key);
-            $field->add_class('has-error');
-            $field->add_wrapper_class('has-error');
+            $field->class[] ='has-error';
+            $field->wrapper_class[] = 'has-error';
         }
-        ajax::update((string)$this->get_html());
+        ajax::update($this->get_html());
     }
 
     /**
-     * @param $name
-     * @return mixed
      * @throws Exception
      */
-    public function get_field_from_name($name): mixed {
+    public function get_field_from_name(string $name): field {
         if ($this->has_field($name)) {
             return $this->fields[$name];
         }
         throw new Exception('Field ' . $name . ' not found in ' . get_called_class());
     }
 
-    public function has_field($name): bool {
+    public function has_field(string $name): bool {
         return isset($this->fields[$name]);
     }
 
-    /**
-     * @return string
-     */
     public function get_html(): string {
         if (!$this->use_ajax) {
             if (!$this->action) {
                 $this->action = '/index.php?module=' . get_class($this) . '&act=do_form_submit&no_ajax=on&ajax_origin=' . $this->id;
             }
-            $this->attributes['target'] = 'form_target_' . $this->id;
-            $this->attributes['enctype'] = 'multipart/form-data';
+            $this->attributes->target = 'form_target_' . $this->id;
+            $this->attributes->enctype = 'multipart/form-data';
         }
-        $html = node::create('div#' . $this->id . '_wrapper.' . implode('.', $this->wrapper_class));
-        $this->attributes = array_merge(['name' => $this->id, 'method' => $this->method, 'action' => !empty($this->action) ? $this->action : get_class($this) . ':do_form_submit', 'data-ajax-shroud' => '#' . $this->id,], $this->attributes);
-        $this->attributes['class'][] = $this->bootstrap[2];
+        $this->attributes->name ??= $this->id;
+        $this->attributes->method ??= $this->method;
+        $this->attributes->action ??= !empty($this->action) ? $this->action : get_class($this) . ':do_form_submit';
+        $this->attributes->dataAjaxShroud ??= '#' . $this->id;
+        $this->attributes->class[] = $this->bootstrap[2];
+        $html = '';
         if ($this->h2) {
-            $html->nest(node::create('h2.form_title', [], $this->h2));
+            $html .= '<h2 class="form_title">' . $this->h2 . '</h2>';
         }
-        $html->nest($this->get_html_body());
+        $html .= $this->get_html_body();
         if (!$this->use_ajax) {
-            $html->add_child(node::create('iframe#form_target_' . $this->id . '.form_frame', ['style' => 'display:none', 'src' => '/blank.html', 'name' => 'form_target_' . $this->id]));
+            $html .= '<iframe id="form_target_' . $this->id . '" class="form_frame" style="display:none" src="/blank.html" name="form_target_' . $this->id . '"></iframe>';
         }
-        return $html;
+        return '<div id="' . $this->id . '_wrapper" class="' . implode(' ', $this->wrapper_class) . '">' . $html . '</div>';
     }
 
-    /**
-     * @return node
-     */
-    public function get_html_body(): node {
-        $form = node::create('form#' . $this->id . '.' . ($this->use_ajax ? 'ajax' : 'noajax'), $this->attributes);
+    public function get_html_body(): string {
+        $this->attributes->class[] = ($this->use_ajax ? 'ajax' : 'noajax');
+        $this->attributes->id = $this->id;
+        $form = '<form' . $this->attributes . '>';
         if (!empty($this->pre_fields_text)) {
-            $form->nest(node::create('div.pre_fields_text', [], $this->pre_fields_text));
+            $form .= '<div class="pre_fields_text">' . $this->pre_fields_text . '</div>';
         }
-        $form->nest(...$this->get_fields_html());
+        $form .= $this->get_fields_html();
         if (!empty($this->post_fields_text)) {
-            $form->nest(node::create('div.post_fields_text', [], $this->post_fields_text));
+            $form .= '<div class="post_fields_text">' . $this->post_fields_text . '</div>';
         }
-        $form->nest($this->get_hidden_fields());
+        $form .= $this->get_hidden_fields();
         if (!empty($this->post_text)) {
-            $form->nest(node::create('div.post_text', [], $this->post_text));
+            $form .= '<div class="post_text">' . $this->post_text . '</div>';
         }
+        $form .= '</form>';
         return $form;
     }
 
-    /**
-     * @return array
-     */
-    public function get_fields_html(): array {
+    public function get_fields_html(): string {
         $field_sets = [];
         $fields = [];
         $field_set_title = '';
         foreach ($this->fields as $field) {
-            if (!$field->hidden) {
-                if (isset($field->fieldset) && $field_set_title != $field->fieldset) {
-                    $field_set = $this->get_field_set($fields, count($field_sets), $field_set_title);
-                    if ($field_set) {
-                        $field_sets[] = $field_set;
-                        $field_set_title = $field->fieldset;
-                        $fields = [];
-                    }
-                }
-                if ($inner = $field->get_html_wrapper()) {
-                    $fields[] = node::create('div#' . $this->id . '_field_' . $field->field_name . $field->get_wrapper_class(), ['data-for' => $this->id], $inner);
-                }
+            if (!$field->hidden && ($inner = $field->get_html_wrapper($this))) {
+                $fields[] = "<div id='{$this->id}_field_{$field->field_name}' class='{$field->get_wrapper_class($this)}' dataFor='$this->id'>$inner</div>";
             }
         }
         if ($this->has_submit) {
@@ -298,53 +190,44 @@ abstract class form {
         if ($field_set) {
             $field_sets[] = $field_set;
         }
-        return $field_sets;
+        return implode('', $field_sets);
     }
 
     /**
-     * @param $fields
-     * @param int $index
-     * @param string $title
-     *
-     * @return false|node
+     * @param string[] $fields
      */
-    protected function get_field_set($fields, $index = 1, $title = ''): bool|node {
+    protected function get_field_set(array $fields, int $index = 1, string $title = ''): string {
         if ($fields) {
-            $field_set = node::create('fieldset.fieldset_' . $index, []);
+            $field_set = '<fieldset class="fieldset_' . $index . '">';
             if ($title) {
-                $field_set->nest("<legend>{$title}<legend>");
+                $field_set .= "<legend>{$title}</legend>";
             }
-            $field_set->nest(...$fields);
+            $field_set .= implode("", $fields);
+            $field_set .= '</fieldset>';
             return $field_set;
         }
-        return false;
+        return '';
     }
 
-    /**
-     * @return node
-     */
-    public function get_submit(): node {
-        if ($this->has_submit) {
-            $field = node::create('div.form-group div.col-md-offset-' . $this->bootstrap[0] . '.col-md-' . $this->bootstrap[1], [], node::create('button.btn.btn-default', $this->submit_attributes, $this->submit));
-            if (!$this->submittable) {
-                $field->add_attribute('disabled', 'disabled');
-            }
-            return $field;
+    public function get_submit(): string {
+        if (!$this->has_submit) {
+            return '';
         }
-        return node::create('');
+
+        if (!$this->submittable) {
+            $this->submit_attributes->disabled = 'disabled';
+        }
+        return "<div class='form-group'><div class='col-md-offset-{$this->bootstrap[0]} col-md-{$this->bootstrap[1]}'><button{$this->submit_attributes}>$this->submit</button></div></div>";
     }
 
-    /**
-     * @return node
-     */
-    public function get_hidden_fields(): node {
+    public function get_hidden_fields(): string {
         $hidden = [];
         foreach ($this->fields as $field) {
             if ($field->hidden) {
-                $hidden[] = $field->get_html_wrapper();
+                $hidden[] = $field->get_html_wrapper($this);
             }
 
         }
-        return $hidden ? node::create('div.hidden', [], $hidden) : node::create('-');
+        return $hidden ? '<div class="hidden">' . implode('', $hidden) . '</div>' : '';
     }
 }

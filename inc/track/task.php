@@ -2,6 +2,10 @@
 
 namespace track;
 
+/**
+ * @psalm-import-type JsonTask from igc_parser
+ * @psalm-import-type JsonCoordinate from igc_parser
+ */
 class task {
 
     const TYPE_OPEN_DISTANCE = 1;
@@ -12,42 +16,53 @@ class task {
 
     static array $names = [self::TYPE_OPEN_DISTANCE => 'Open Distance', self::TYPE_OUT_AND_RETURN => 'Out & Return', self::TYPE_TRIANGLE => 'Triangle', self::TYPE_FLAT_TRIANGLE => 'Flat Triangle',];
 
-    public $duration;
-    public $distance;
-    public $type;
-    public $coordinates;
+    public int $duration;
+    public float $distance;
+    public int $type;
+    /** @var JsonCoordinate[] */
+    public array $coordinates;
     public string $title;
-    public $waypoints;
+    public array $waypoints;
 
-
-    public function __construct() {
+    /**
+     * @param JsonTask $data
+     */
+    public function __construct(array $data) {
+        $this->duration = $data['duration'];
+        $this->distance = $data['distance'];
+        /** @psalm-suppress MixedAssignment */
+        $this->coordinates = $data['coordinates']; 
+        $this->type = match($data['type']) {
+            '0' => self::TYPE_OPEN_DISTANCE,
+            '1' => self::TYPE_OUT_AND_RETURN,
+            '2' => self::TYPE_GOAL,
+            '3' => self::TYPE_TRIANGLE,
+            '4' => self::TYPE_FLAT_TRIANGLE,
+        };
+        $this->title = (string) static::$names[$this->type];
     }
 
-    public function load_from_data($data) {
+    public function load_from_data(array $data): void {
 
     }
 
-    public function get_distance() {
+    public function get_distance(): float {
         return $this->distance;
     }
 
-    public function get_duration() {
+    public function get_duration(): int {
         return $this->duration;
     }
 
     public function get_gridref(): string {
         $coords = [];
         foreach ($this->coordinates as $coordinate) {
-            $coords[] = $coordinate->os_gridref;
+            $coords[] = $coordinate['os_gridref'];
         }
         return implode(';', $coords);
     }
 
-    public function set_from_data($data) {
-        $this->duration = $data->duration;
-        $this->distance = $data->distance;
-        $this->coordinates = $data->coordinates;
-        $this->type = $data->type + 1;
-        $this->title = static::$names[$this->type];
+    public function set_from_data(array $data): void {
+
     }
 }

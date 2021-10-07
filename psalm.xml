@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="1"
+    resolveFromConfigFile="true"
+    autoloader="index.php"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <file name="index.php" />
+        <directory name="inc" />
+        <file name="vendor/autoload.php" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <directory name="inc/.cache" />
+        </ignoreFiles>
+    </projectFiles>
+    <stubs>
+        <file name="index.php" />
+    </stubs>
+    <issueHandlers>
+        <PropertyNotSetInConstructor errorLevel="suppress" />
+    </issueHandlers>
+</psalm>

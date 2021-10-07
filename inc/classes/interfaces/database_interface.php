@@ -3,85 +3,36 @@
 namespace classes\interfaces;
 
 use db\select;
+use classes\tableOptions;
 
-/**
- * Class database_interface
- */
-interface database_interface {
+interface database_interface
+{
 
-    /**
-     * @param string $host
-     * @param string $db
-     * @param string $username
-     * @param string $password
-     * @param string $name
-     * @return bool
-     */
     public static function connect(string $host, string $db, string $username, string $password, string $name = 'new'): bool;
 
-    /**
-     * @param $str
-     * @return string
-     */
-    public static function esc($str): string;
+    public static function esc(string $str): string;
+
+    public static function fetchAll(\PDOStatement $res, string $class = 'stdClass'): array;
 
     /**
-     * @param $res
-     * @param string $class
-     * @return array
+     * @param string $object
+     * @param string[] $fields_to_retrieve
      */
-    public static function fetchAll($res, string $class = 'stdClass'): array;
+    public static function get_query(
+        string $object,
+        array $fields_to_retrieve,
+        tableOptions $options
+    ): select;
 
-    /**
-     * @param $object
-     * @param array $fields_to_retrieve
-     * @param $options
-     * @return select
-     */
-    public static function get_query($object, array $fields_to_retrieve, $options): select;
+    public static function insert_id(): string;
 
-    /**
-     * @return ?int
-     */
-    public static function insert_id(): ?int;
+    public static function num(\PDOStatement $res): int;
 
-    /**
-     * @param $res
-     * @return int
-     */
-    public static function num($res): int;
+    /** @param array<string, scalar> $params */
+    public static function result(string $sql, array $params = []): ?array;
 
-    /**
-     * @param $sql
-     * @param array $params
-     * @return ?array
-     */
-    public static function result($sql, array $params = []): ?array;
+    /** @param array<string, scalar> $params */
+    public static function query(string $sql, array $params = [], bool $throwable = false): mixed;
 
-    /**
-     * @param $sql
-     * @param array $params
-     * @param bool $throwable
-     * @return mixed
-     */
-    public static function query($sql, array $params = [], bool $throwable = false): mixed;
-
-    /**
-     * @param $res
-     * @return array|bool
-     */
-    public static function fetch($res): array|bool;
-
-    /**
-     * @param $table
-     * @return bool
-     */
-    public static function table_exists($table): bool;
-
-    /**
-     * @param $table
-     * @param $column
-     * @return bool
-     */
-    public static function column_exists(string $table, string $column): bool;
+    public static function fetch(\PDOStatement $res): array|false;
 }

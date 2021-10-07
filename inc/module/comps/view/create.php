@@ -8,14 +8,11 @@ use model\flight;
 use model\pilot;
 use template\html;
 
+/** @extends html<\module\comps\controller, \module\comps\model\comp> */
 class create extends html {
 
-    /** @vat \module\comps\controller */
-    public module $module;
-
-
     public function get_view(): string {
-        $root = root . '/uploads/comp/' . $this->module->current->get_primary_key();
+        $root = root . '/uploads/comp/' . $this->current->get_primary_key();
         $files = glob($root . '/*.igc');
 
         $flights = '';
@@ -26,18 +23,17 @@ class create extends html {
             $name = preg_replace('/[0-9.\-_\/]/', ' ', $name);
             $name = preg_replace('/\s+/', ' ', $name);
             $name = trim($name);
-            $pilot = new pilot();
             $parts = explode(' ', $name);
+            $pilot = pilot::get(new \classes\tableOptions(where_equals: ['name' => $name])) ?: pilot::get(new \classes\tableOptions(where_equals: ['name' => implode(' ', array_reverse($parts))]));
             $match = '';
-            if ($pilot->do_retrieve([], ['where_equals' => ['name' => $name]]) || $pilot->do_retrieve([], ['where_equals' => ['name' => implode(' ', array_reverse($parts))]])) {
-                $flight = new flight();
-                $match = $flight->do_retrieve([], ['where_equals' => ['pid' => $pilot->get_primary_key(), 'date' => date('Y-m-d', $this->module->current->date)]]) ? ' (Processed)' : '';
+            if ($pilot) {
+                $match = flight::get(new \classes\tableOptions(where_equals: ['pid' => $pilot->get_primary_key(), 'date' => date('Y-m-d', $this->current->date)])) ? ' (Processed)' : '';
             }
-            $data = json_encode(['path' => $file, 'name' => $name, 'cid' => $this->module->current->get_primary_key()]);
+            $data = json_encode(['path' => $file, 'name' => $name, 'cid' => $this->current->get_primary_key()]);
             $callable = attribute_callable::create([\module\comps\model\comp::class, 'add_flight']);
             $flights .= "
 <li>
-    <a class='btn' data-ajax-post='{$data}'  data-ajax-click='$callable'>Process flight for {$name}$match</a>
+    <a class='btn' data-ajaxpost='{$data}'  data-ajaxclick='$callable'>Process flight for {$name}$match</a>
 </li>";
         }
         return "

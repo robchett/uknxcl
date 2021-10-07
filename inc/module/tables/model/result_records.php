@@ -5,101 +5,72 @@ namespace module\tables\model;
 use html\node;
 use model\flight;
 
-class result_records extends result {
+class result_records extends result
+{
 
 
-    function make_table(league_table $data): string {
-        return node::create('div#table_wrapper.table_wrapper', [],
-            node::create('h3', [], 'Results') .
-            node::create('table.results.main', [],
-                node::create('thead tr', [],
-                    "<th>Type</th><th>Class</th><th>Gender</th><th>Name</th><th>Score</th><th>Date</th>"
-                ) .
-                node::create('tbody', [],
-                    $this->get_flights(1, 'Open Distance') .
-                    $this->get_flights(3, 'Goal', true) .
-                    $this->get_flights(2, 'Out and return (Open)', 0) .
-                    $this->get_flights(2, 'Out and return (Defined)', 1) .
-                    $this->get_flights(4, 'Triangle (Open)', 0) .
-                    $this->get_flights(4, 'Triangle (Defined)', 1)
-                )
+    function make_table(league_table $data): string
+    {
+        return "
+        <div id='table_wrapper' class='table_wrapper'>
+            <h3>Results</h2>
+            <table class='results main'>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Class</th>
+                        <th>Gender</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    " . $this->get_flights($data, 1, 'Open Distance') . "
+                    " . $this->get_flights($data, 3, 'Goal', true) . "
+                    " . $this->get_flights($data, 2, 'Out and return (Open)', false) . "
+                    " . $this->get_flights($data, 2, 'Out and return (Defined)', true) . "
+                    " . $this->get_flights($data, 4, 'Triangle (Open)', false) . "
+                    " . $this->get_flights($data, 4, 'Triangle (Defined)', true) . "
+                </tbody>
+            </table>
+        </div>";
+    }
+
+    function get_flights(league_table $data, int $type, string $title, bool $defined = false): string
+    {
+        return "<tr><td class='title' colspan=6><h2>$title</h2></td></tr>" .
+            $this->get_flight($data, $type, 1, 1) .
+            $this->get_flight($data, $type, 5, 1) .
+            $this->get_flight($data, $type, 1, 2) .
+            $this->get_flight($data, $type, 5, 2);
+    }
+
+    protected function get_flight(league_table $data, int $ftid, int $class, int $gender): string
+    {
+        if ($flight = flight::get(
+            new \classes\tableOptions(
+                where_equals: [
+                    'flight.ftid'     => $ftid,
+                    'flight__glider.class'  => $class,
+                    'flight__pilot.gid' => $gender,
+                ],
+                order: 'base_score DESC',
             )
-        );
-    }
-
-    function get_flights($type, $title, $defined = null): string {
-        return node::create('tr td.title', ['colspan' => '6'], '<h2>' . $title . '</h2>') .
-            $this->get_flight($type, 1, 'M') .
-            $this->get_flight($type, 5, 'M') .
-            $this->get_flight($type, 1, 'F') .
-            $this->get_flight($type, 5, 'F') .
-            (isset($defined) && $defined ?
-                $this->get_flight_defined($type, 1, 'M') .
-                $this->get_flight_defined($type, 5, 'M') .
-                $this->get_flight_defined($type, 1, 'F') .
-                $this->get_flight_defined($type, 5, 'F') : '');
-    }
-
-    protected function get_flight($ftid, $class, $gender): string {
-        $flight = new flight();
-        if ($flight->do_retrieve(
-            [
-                'fid',
-                'p.name AS p_name',
-                'base_score',
-                'date',
-            ],
-            [
-                'join'         => [
-                    'pilot p'  => 'p.pid = flight.pid',
-                    'glider g' => 'g.gid = flight.gid',
-                ],
-                'where_equals' => [
-                    'ftid'     => $ftid,
-                    'g.class'  => $class,
-                    'p.gender' => $gender,
-
-                ],
-                'order'        => 'base_score DESC',
-            ]
         )) {
-            return node::create('tr', [],
-                "<td>Distance</td><td>{$class}</td><td>{$gender}</td><td>{$flight->p_name}</td><td>{$flight->base_score}</td>" .
-                node::create('td', [], date('d/m/Y', $flight->date))
-            );
-        }
-        return '';
-    }
-
-    protected function get_flight_defined($ftid, $class, $gender): string {
-        $flight = new flight();
-        if ($flight->do_retrieve(
-            [
-                'fid',
-                'p.name AS p_name',
-                'base_score',
-                'date',
-                'speed',
-            ],
-            [
-                'join'         => [
-                    'pilot p'  => 'p.pid = flight.pid',
-                    'glider g' => 'g.gid = flight.gid',
-                ],
-                'where_equals' => [
-                    'ftid'     => $ftid,
-                    'g.class'  => $class,
-                    'p.gender' => $gender,
-
-                ],
-                'order'        => 'speed DESC',
-           ]
-        )) {
-            return node::create('tr', [],
-                "<td>Speed</td><td>{$class}</td><td>{$gender}</td><td>{$flight->p_name}</td>" .
-                node::create('td', [], number_format($flight->speed, 2)) .
-                node::create('td', [], date('d/m/Y', $flight->date))
-            );
+            $g = match ($gender) {
+                1 => 'M',
+                2 => 'F',
+            };
+            return "
+            <tr>
+                <td>Distance</td>
+                <td>{$class}</td>
+                <td>{$g}</td>
+                <td>{$data->getTitle($flight)}</td>
+                <td>{$flight->base_score}</td>
+                <td>" . date('d/m/Y', $flight->date) . "</td>
+            </tr>";
         }
         return '';
     }

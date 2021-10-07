@@ -4,68 +4,84 @@ namespace model;
 
 use classes\ajax;
 use classes\table;
+use classes\interfaces\model_interface;
 use form\form;
-use JetBrains\PhpStorm\Pure;
+use module\tables\model\league_table;
 
-class scorable extends table {
+class scorable implements model_interface {
+    use table;
 
-    public $bhpa_no;
     public int $class = 1;
-    public string $club;
-    public $email;
+    /** @var string[] */
     public array $flights = [];
-    public $gender;
-    public $glider;
-    public $id;
-    public $max_flights;
-    public string $name;
-    public int $number_of_flights = 0;
+    /** @var flight[] */
+    public array $flightObjects = [];
+    /** @var 'table'|'csv' */
     public string $output_function = 'table';
-    public $pid;
-    public $rating;
-    public int $score = 0;
-    public int $total = 0;
+    public int $max_flights = 6;
+    public int $number_of_flights = 0;
+    public float $score = 0;
+    public float $total = 0;
+    public bool $defined = false;
+    public bool $undefined = false;
+    public int $used_flights = 0;
 
-    public string $primary_name = 'name';
-    public string $secondary_name = 'glider';
-    public ?string $tertiary_name = 'club';
-
-    /**
-     * @param flight $flight
-     */
-    public function add_flight(flight $flight) {
-        if (count($this->flights) < $this->max_flights) {
-            $this->score += $flight->score;
-            $this->flights[] = (string)$flight->to_print();
-        }
+    public function add_flight(flight $flight, bool $official): void {
         $this->total += $flight->score;
         $this->number_of_flights++;
+
+        if ($this->max_flights == $this->used_flights) {
+            return;
+        }
+        if (!$official) {
+            $this->_add_flight($flight);
+            return;
+        }
+        // First 4 flights can be anything
+        if ($this->used_flights <= $this->max_flights - 2) {
+            $this->_add_flight($flight);
+            return;
+        } 
+        // Now look for a goal and open distance flight.
+        // If we already have a defined or open distance flight then we can safely accept this one. Otherwise see if it matches either requirement
+        if ($this->used_flights == $this->max_flights - 2 && ($this->defined || $this->undefined || $flight->defined || $flight->ftid == 1)) {
+            $this->_add_flight($flight);
+            return;
+        }
+        // Only accept the last flight if we've had both requirements or it matches the last one.
+        if ($this->used_flights == $this->max_flights - 1 && (($this->defined || $this->undefined) && ($flight->defined && $this->undefined) || ($flight->ftid == 1 && $this->defined))) {
+            $this->_add_flight($flight);
+            return;
+        }
     }
 
-    /**
-     *
-     */
-    public function do_update_selector() {
-        $field = form::create('field_link', 'pid')->set_attr('link_module', \model\pilot::class)->set_attr('link_field', 'name')->set_attr('options', ['order' => 'name']);
-        $field->parent_form = $this;
-        ajax::update($field->get_html());
+    private function _add_flight(flight $flight): void {
+        $this->score += $flight->score;
+        $this->flights[] = $flight->to_print();
+        $this->flightObjects[] = $flight;
+        $this->used_flights++;
+        if ($flight->defined) {
+            $this->defined = true;
+        }
+        if ($flight->ftid == 1) {
+            $this->undefined = true;
+        }
     }
 
-    /**
-     * @param $pos
-     * @return string
-     */
-    public function output($pos): string {
-        return $this->{'output_' . $this->output_function}($pos);
+    function set_from_flight(flight $flight, int $num = 6, bool $split = false): void {
+        $this->max_flights = $num;
+        $this->class = $split ? $flight->glider->class : 1;
     }
 
-    /**
-     * @param $pos
-     * @return string
-     */
-    #[Pure]
-    public function output_csv($pos): string {
-        $csv = $pos . ',\'' . $this->name . '\',\'' . $this->glider . '/' . $this->club . '\',' . strip_tags(implode(',', $this->flights));
+    public function output(league_table $leauge_table, int $pos): string {
+        return match($this->output_function) {
+            'table' => $this->output_table($leauge_table, $pos),
+            'csv' => $this->output_csv($leauge_table, $pos),
+        };
+    }
+
+    public function output_csv(league_table $leauge_table, int $pos): string {
+        $csv = $pos . ',\'' . $leauge_table->getTitle($this->flightObjects[0]) . '\',\'' . $leauge_table->getSubTitle($this->flightObjects[0]) . '/' . $leauge_table->getTertiaryTitle($this->flightObjects[0]) . '\',' . strip_tags(implode(',', $this->flights));
         for ($i = $this->number_of_flights; $i < $this->max_flights - 1; $i++) {
             $csv .= ',';
         }
@@ -73,12 +89,7 @@ class scorable extends table {
         return $csv;
     }
 
-    /**
-     * @param $pos
-     * @return string
-     */
-    #[Pure]
-    public function output_table($pos): string {
+    public function output_table(league_table $leauge_table, int $pos): string {
         $flights = implode('', $this->flights);
         for ($i = count($this->flights); $i < $this->max_flights; $i++) {
             $flights .= '<td class="left"></td>';
@@ -86,31 +97,11 @@ class scorable extends table {
         return '
 <tr class="class' . $this->class . '">
     <td class="left">' . $pos . '</td>
-    <td class="left">' . $this->{$this->primary_name} . '</td>
-    <td class="left">' . $this->{$this->secondary_name} . ($this->tertiary_name ? '<br/>' . $this->{$this->tertiary_name} : '') . '</td>
+    <td class="left">' . $leauge_table->getTitle($this->flightObjects[0]) . '</td>
+    <td class="left">' . $leauge_table->getSubTitle($this->flightObjects[0]) . '<br/>' . $leauge_table->getTertiaryTitle($this->flightObjects[0]) . '</td>
     ' . $flights . '
     <td class="left">' . $this->score . ($this->score == $this->total ? '' : '<br/>' . $this->total) . ' (' . $this->number_of_flights . ')</td>
 </tr>';
-    }
-
-    /**
-     * @param flight $flight
-     * @param int $num
-     * @param bool $split
-     */
-    public function set_from_flight(flight $flight, $num = 6, $split = false) {
-        $this->max_flights = $num;
-        $this->club = $flight->c_name;
-        $this->glider = $flight->g_name;
-        $this->score += $flight->score;
-        $this->total += $flight->score;
-        $this->number_of_flights++;
-        $this->flights[] = (string)$flight->to_print();
-        if ($split)
-            $this->class = $flight->class; else
-            $this->class = 1;
-        $this->id = $flight->ClassID;
-        $this->name = $flight->p_name;
     }
 }
 

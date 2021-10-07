@@ -5,15 +5,14 @@ namespace db;
 use classes\cache;
 use classes\db as _db;
 use db\query as _query;
-use JetBrains\PhpStorm\Pure;
 
 class insert extends _query {
 
+    /** @var array<string, scalar> */
     protected array $values = [];
-    protected $mode;
+    protected string $mode;
 
-    #[Pure]
-    public function __construct($table, $mode = '') {
+    public function __construct(string $table, string $mode = '') {
         parent::__construct($table);
         $this->mode = $mode;
     }
@@ -35,7 +34,8 @@ class insert extends _query {
         return implode(', ', $sql);
     }
 
-    public function add_value($field, $value): static {
+    /** @param scalar $value */
+    public function add_value(string $field, mixed $value): static {
         $this->values[$field] = $value;
         return $this;
     }

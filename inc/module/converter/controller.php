@@ -7,13 +7,11 @@ use core;
 
 class controller extends module {
 
-    public function __controller(array $path) {
-        core::$page_config->title_tag = 'Converter';
-        $this->view = '_default';
-        if (isset($path[1]) && !empty($path[1])) {
-            $this->view = $path[1];
-        }
-        parent::__controller($path);
+    /** @param string[] $path */
+    public function __construct(array $path) {
+        $this->view_object = new view\_default($this, false);
+        parent::__construct($path);
+        $this->view_object->title_tag = 'Converter';
     }
 
 }

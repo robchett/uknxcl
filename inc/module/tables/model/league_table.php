@@ -4,115 +4,167 @@ namespace module\tables\model;
 
 use classes\get;
 use classes\interfaces\model_interface;
+use classes\table;
 use classes\table_array;
+use classes\tableOptions;
 use html\node;
 use JetBrains\PhpStorm\NoReturn;
+use model\club;
 use model\flight;
 use model\flight_type;
+use model\glider;
 use model\launch_type;
+use model\manufacturer;
 use model\pilot;
-use model\pilot_official;
 use model\scorable;
 use stdClass;
 
-class league_table implements model_interface {
+class league_table
+{
 
-    /** @var flight[] */
-    public ?table_array $flights = null;
-    public $league = null;
-    public array $where = [];
+    const PRESET_Main = '0';
+    const PRESET_Class1 = '14';
+    const PRESET_Class5 = '13';
+    const PRESET_Foot = '1';
+    const PRESET_Aero = '2';
+    const PRESET_Winch = '3';
+    const PRESET_Defined = '5';
+    const PRESET_Winter = '4';
+    const PRESET_Female = '6';
+    const PRESET_Club = '8';
+    const PRESET_ClubOfficial = '7';
+    const PRESET_TopTens = '9';
+    const PRESET_TopTensNoMultiplier = '15';
+    const PRESET_Pilot = '10';
+    const PRESET_Hangies = '12';
+    const PRESET_Records = '16';
+    const PRESET_Dales = '17';
+
+    const LAYOUT_LEAGUE = 0;
+    const LAYOUT_CLUB = 1;
+    const LAYOUT_PILOT_LOG = 2;
+    const LAYOUT_TOP_TEN = 3;
+    const LAYOUT_LIST = 4;
+    const LAYOUT_RECORDS = 5;
+
     public bool $show_multipliers = false;
     public string $ScoreType = 'score';
     public string $OrderBy = 'score';
-    public $Title = null;
-    public string $class = '\model\pilot';
-    public string $class_primary_key = 'pid';
+    public string $Title = '';
     public string $year_title = 'All Time';
     public string $class_table_alias = 'p';
-    public string $official_class = '\model\pilot_official';
-    public string $SClass = '\model\club';
-    public string $S_alias = 'c';
     public int $max_flights = 6;
     public string $WHERE = '';
-    public $date = null;
-    public array $in = [];
-    public array $parameters = [];
     public string $base_url = '/tables';
-    /** @var league_table_options */
-    public league_table_options $options;
     private string $modifier_string = '';
-    /** @var result */
     private result $result;
 
-    function __construct(stdClass $settings = null) {
-        $this->set_default($settings);
+    /**
+     * @param list<int> $launches
+     * @param list<int> $types
+     * @param list<string> $flown_through
+     * @param list<string> $launch_areas
+     */
+    public function __construct(
+        public bool $official = true,
+        public int $pilot_id = -1,
+        public int $club_id = -1,
+        public array $launches = [1, 2, 3],
+        public array $types = [1, 2, 3, 4, 5],
+        public bool $winter = false,
+        public bool $defined = false,
+        public int $gender = -1,
+        public bool $show_top_4 = false,
+        public int $dimensions = -1,
+        public bool $ridge = false,
+        public bool $no_multipliers = false,
+        public string $year = '',
+        public int $glider_class = -1,
+        public int $layout = 0,
+        public bool $hangies = false,
+        public bool $split_classes = false,
+        public bool $glider_mode = false,
+        public int $minimum_score = 10,
+        public ?string $date = null,
+        public array $flown_through = [],
+        public array $launch_areas = [],
+        public bool $handicap = false,
+        public float $handicap_kingpost = 1,
+        public float $handicap_rigid = 1,
+    ) {
+        $this->year = date('Y');
     }
 
-    public function set_default($settings) {
-        $this->options = new league_table_options($settings, $this);
-    }
-
-    public static function decode_url($url): stdClass {
-        $object = new stdClass();
+    public static function decode_url(string $url): array
+    {
+        $object = [];
         $decode = urldecode($url);
         $decode_parts = explode(',', $decode);
         foreach ($decode_parts as $part) {
-            $key_val = explode('~', $part, 2);
-            if (count($key_val) == 2) {
-                if (strpos($key_val[1], '[') === 0) {
-                    $key_val[1] = explode('|', substr($key_val[1], 1, strlen($key_val[1]) - 2));
+            [$key, $val] = [null, null] + explode('~', $part, 2);
+            if (!is_null($key) && !is_null($val)) {
+                /** @var string $val */
+                if (str_starts_with($val, '[')) {
+                    $val = explode('|', substr($val, 1, strlen($val) - 2));
                 }
-                $object->{$key_val[0]} = $key_val[1];
+                $object[$key] = $val;
             }
         }
         return $object;
     }
 
-    public static function cmp($a, $b): int {
+    public static function cmp(scorable|club|manufacturer $a, scorable|club|manufacturer $b): int
+    {
         if ($a->score == $b->score) {
             return 0;
         }
         return ($a->score > $b->score) ? -1 : 1;
     }
 
-    public function get_show_all_url(): array|string {
+    public function get_show_all_url(): string
+    {
         return str_replace('/tables/', '/mass_overlay/', $this->get_url());
     }
 
-    public function get_url(): string {
+    public function get_url(): string
+    {
         $ignore_fields = [
             'parent',
             'layout',
         ];
-        $url_parts = new stdClass();
-        $default = new league_table_options(null, $this);
-        foreach ($this->options as $option => $value) {
+        $url_parts = [];
+        $default = new self();
+        /** @psalm-suppress MixedAssignment */
+        foreach ((array) $this as $option => $value) {
             if (!in_array($option, $ignore_fields) && ((!isset($default->$option) && !is_null($value)) || $default->$option != $value)) {
-                $url_parts->$option = $value;
+                $url_parts[$option] = $value;
             }
         }
         return $this->base_url . '/' . $this->get_layout_url() . self::encode_url($url_parts);
     }
 
-    public function get_layout_url(): string {
-        switch ($this->options->layout) {
-            case league_table_options::LAYOUT_LEAGUE:
+    public function get_layout_url(): string
+    {
+        switch ($this->layout) {
+            case league_table::LAYOUT_LEAGUE:
                 return '';
-            case league_table_options::LAYOUT_CLUB:
+            case league_table::LAYOUT_CLUB:
                 return 'club/';
-            case league_table_options::LAYOUT_PILOT_LOG:
+            case league_table::LAYOUT_PILOT_LOG:
                 return 'pilot_log/';
-            case league_table_options::LAYOUT_TOP_TEN:
+            case league_table::LAYOUT_TOP_TEN:
                 return 'top_ten/';
-            case league_table_options::LAYOUT_LIST:
+            case league_table::LAYOUT_LIST:
                 return 'list/';
-            case league_table_options::LAYOUT_RECORDS:
+            case league_table::LAYOUT_RECORDS:
                 return 'records/';
         }
         return '';
     }
 
-    public static function encode_url($parts): string {
+    public static function encode_url(array $parts): string
+    {
+        /** @psalm-suppress MixedAssignment */
         foreach ($parts as &$part) {
             if (is_array($part)) {
                 $part = str_replace([',', '"'], ['|', ''], json_encode($part));
@@ -122,406 +174,617 @@ class league_table implements model_interface {
         return urlencode($json);
     }
 
-    public function get_primary_key(): bool|string {
+    public function get_primary_key(): bool|string
+    {
         return hash('md5', $this->get_url());
     }
 
-    public function set_from_request() {
-        $this->in = $_REQUEST;
-        if (isset ($this->in ['year']) && $this->in ['year'] != '') {
-            $this->set_year($this->in ['year']);
+    public function set_from_request(): void
+    {
+        if (isset($_REQUEST['year']) && $_REQUEST['year'] != '') {
+            $this->year = (string) $_REQUEST['year'];
         } else {
+            $this->year = 'all_time';
             $this->Title = 'All Time';
         }
-        if (isset ($this->in ['Flights'])) {
-            $this->max_flights = $this->in ['Flights'];
+        if (isset($_REQUEST['Flights'])) {
+            $this->max_flights = (int) $_REQUEST['Flights'];
         }
-        if (isset ($this->in ['layout'])) {
-            $this->options->layout = $this->in ['layout'];
+        if (isset($_REQUEST['layout'])) {
+            $this->layout = (int) $_REQUEST['layout'];
         }
-        if (isset ($this->in ['pages'])) {
-            $this->options->set_official(1);
+        if (isset($_REQUEST['pages'])) {
+            $this->official = true;
             $this->Title .= ' Official';
         }
-        if (isset ($this->in ['base'])) {
+        if (isset($_REQUEST['base'])) {
             $this->ScoreType = 'base_score';
         }
-        if (isset ($this->in ['pilot']) && $this->in['layout'] == 2) {
-            $this->options->set_pilot_id($this->in ['pilot']);
+        if (isset($_REQUEST['pilot'], $_REQUEST['layout']) && $_REQUEST['layout'] == 2) {
+            $this->pilot_id = (int) $_REQUEST['pilot'];
         }
-        if (isset ($this->in ['handicap_kingpost']) && is_numeric($this->in ['handicap_kingpost'])) {
-            $this->options->handicap_kingpost = $this->in ['handicap_kingpost'];
+        if (isset($_REQUEST['handicap_kingpost']) && is_numeric($_REQUEST['handicap_kingpost'])) {
+            $this->handicap_kingpost = (float) $_REQUEST['handicap_kingpost'];
         }
-        if (isset ($this->in ['handicap_rigid']) && is_numeric($this->in ['handicap_rigid'])) {
-            $this->options->handicap_rigid = $this->in ['handicap_rigid'];
+        if (isset($_REQUEST['handicap_rigid']) && is_numeric($_REQUEST['handicap_rigid'])) {
+            $this->handicap_rigid = (float) $_REQUEST['handicap_rigid'];
         }
-        if (isset ($this->in ['minimum_score'])) {
-            $this->options->set_minimum_score($this->in ['minimum_score']);
+        if (isset($_REQUEST['minimum_score'])) {
+            $this->minimum_score = (int) $_REQUEST['minimum_score'];
         }
-        if (isset ($this->in ['official'])) {
-            $this->options->set_official(1);
+        if (isset($_REQUEST['official'])) {
+            $this->official = true;
         }
-        if (isset ($this->in ['league']) && $this->in ['league'] == 'hangies') {
-            $this->where[] = 'hangies = 1';
-            $this->options->set_minimum_score(0);
+        if (isset($_REQUEST['league']) && $_REQUEST['league'] == 'hangies') {
+            $this->hangies = true;
+            $this->minimum_score = 0;
         }
-        if (isset ($this->in ['glider_class'])) {
-            $this->options->set_class($this->in ['glider_class']);
-            $this->Title .= ' Class ' . $this->in['glider_class'];
+        if (isset($_REQUEST['glider_class'])) {
+            $this->glider_class = (int) $_REQUEST['glider_class'];
+            if ($_REQUEST['glider_class'] != -1) {
+                $this->Title .= ' Class ' . ((int)$_REQUEST['glider_class']);
+            }
         }
-        if (isset ($this->in ['winter'])) {
-            $this->options->set_winter($this->in ['winter']);
+        if (isset($_REQUEST['winter'])) {
+            $this->winter = (bool) $_REQUEST['winter'];
         }
-        if (isset ($this->in ['defined'])) {
-            $this->options->set_defined($this->in ['defined']);
+        if (isset($_REQUEST['defined'])) {
+            $this->defined = (bool) $_REQUEST['defined'];
         }
-        if (isset ($this->in ['gender'])) {
-            $this->options->set_gender($this->in ['gender']);
+        if (isset($_REQUEST['gender'])) {
+            $this->gender = (int) $_REQUEST['gender'];
         }
-        if (isset ($this->in ['dimensions'])) {
-            $this->options->set_dimensions($this->in['dimensions']);
+        if (isset($_REQUEST['dimensions'])) {
+            $this->dimensions = (int) $_REQUEST['dimensions'];
         }
-        if (isset ($this->in ['ridge'])) {
-            $this->options->set_ridge($this->in['ridge']);
+        if (isset($_REQUEST['ridge'])) {
+            $this->ridge = (bool) $_REQUEST['ridge'];
         }
-        if (isset ($this->in ['Date'])) {
-            $this->options->set_date($this->in['Date']);
+        if (isset($_REQUEST['Date'])) {
+            $this->set_date((string) $_REQUEST['Date']);
         }
-        if (isset ($this->in ['no_multipliers'])) {
-            $this->options->no_multipliers = true;
+        if (isset($_REQUEST['no_multipliers'])) {
+            $this->no_multipliers = true;
         }
         // Removing launch and flight type from sql.
-        if (isset($this->in['launches'])) {
-            if (!in_array(launch_type::WINCH, $this->in['launches'])) {
-                $this->options->remove_launch(launch_type::WINCH);
+        if (isset($_REQUEST['launches']) && is_array($_REQUEST['launches'])) {
+            $launches = [];
+            if (in_array(launch_type::WINCH, $_REQUEST['launches'])) {
+                $launches[] = launch_type::WINCH;
             }
-            if (!in_array(launch_type::FOOT, $this->in['launches'])) {
-                $this->options->remove_launch(launch_type::FOOT);
+            if (in_array(launch_type::FOOT, $_REQUEST['launches'])) {
+                $launches[] = launch_type::FOOT;
             }
-            if (!in_array(launch_type::AERO, $this->in['launches'])) {
-                $this->options->remove_launch(launch_type::AERO);
+            if (in_array(launch_type::AERO, $_REQUEST['launches'])) {
+                $launches[] = launch_type::AERO;
             }
+            $this->launches = $launches;
         }
-        if (isset($this->in['types'])) {
-            if (!in_array(flight_type::OD_ID, $this->in['types'])) {
-                $this->options->remove_flight_type(flight_type::OD_ID);
+        if (isset($_REQUEST['types']) && is_array($_REQUEST['types'])) {
+            $flight_type = [];
+            if (in_array(flight_type::OD_ID, $_REQUEST['types'])) {
+                $flight_type[] = flight_type::OD_ID;
             }
-            if (!in_array(flight_type::OR_ID, $this->in['types'])) {
-                $this->options->remove_flight_type(flight_type::OR_ID);
+            if (in_array(flight_type::OR_ID, $_REQUEST['types'])) {
+                $flight_type[] = flight_type::OR_ID;
             }
-            if (!in_array(flight_type::GO_ID, $this->in['types'])) {
-                $this->options->remove_flight_type(flight_type::GO_ID);
+            if (in_array(flight_type::GO_ID, $_REQUEST['types'])) {
+                $flight_type[] = flight_type::GO_ID;
             }
-            if (!in_array(flight_type::TR_ID, $this->in['types'])) {
-                $this->options->remove_flight_type(flight_type::TR_ID);
+            if (in_array(flight_type::TR_ID, $_REQUEST['types'])) {
+                $flight_type[] = flight_type::TR_ID;
             }
-            if (!in_array(flight_type::FT_ID, $this->in['types'])) {
-                $this->options->remove_flight_type(flight_type::FT_ID);
+            if (in_array(flight_type::FT_ID, $_REQUEST['types'])) {
+                $flight_type[] = flight_type::FT_ID;
             }
+            $this->types = $flight_type;
         }
 
         // Choose Classes (glider/pilot), and append official if needed  - default pilot
-        if (isset ($this->in ['object']) && $this->in ['object'] == 'Glider') {
-            $this->options->glider_mode = true;
+        if (isset($_REQUEST['object']) && $_REQUEST['object'] == 'Glider') {
+            $this->glider_mode = true;
         }
 
-        if (isset($this->in ['flown_through'])) {
-            $this->options->set_flown_through($this->in ['flown_through']);
+        if (isset($_REQUEST['flown_through'])) {
+            $this->set_flown_through((string) $_REQUEST['flown_through']);
         }
 
-        $this->options->show_top_4 = isset ($this->in ['show_top_4']);
-        $this->options->split_classes = isset ($this->in ['split_classes']);
-        $this->options->handicap = isset ($this->in ['handicap']);
+        $this->show_top_4 = isset($_REQUEST['show_top_4']);
+        $this->split_classes = isset($_REQUEST['split_classes']);
+        $this->handicap = isset($_REQUEST['handicap']);
     }
 
-    public function set_year($year_string) {
-        $this->options->set_year($year_string);
-    }
-
-    public function set_glider_view() {
-        $this->class = '\model\glider';
-        $this->class_primary_key = 'gid';
-        $this->class_table_alias = 'g';
-        $this->official_class = '\model\glider_official';
-        $this->SClass = '\model\manufacturer';
-        $this->S_alias = 'gm';
-    }
-
-    public function use_preset($type, $year) {
+    public function use_preset(string $type, string $year): void
+    {
         switch ($type) {
-            case(0):
-                $this->options->set_official(1);
+            case (self::PRESET_Main):
+                $this->official = true;
                 if ($year > 2012) {
-                    $this->options->set_dimensions(1);
+                    $this->dimensions = 1;
                 }
                 break;
-
-            case(1):
-                $this->options->remove_launch(launch_type::AERO);
-                $this->options->remove_launch(launch_type::WINCH);
+            case (self::PRESET_Foot):
+                $this->launches = [launch_type::FOOT];
                 break;
-
-            case(2):
-                $this->options->remove_launch(launch_type::FOOT);
-                $this->options->remove_launch(launch_type::WINCH);
+            case (self::PRESET_Aero):
+                $this->launches = [launch_type::AERO];
                 break;
-
-            case(3):
-                $this->options->remove_launch(launch_type::AERO);
-                $this->options->remove_launch(launch_type::FOOT);
+            case (self::PRESET_Winch):
+                $this->launches = [launch_type::WINCH];
                 break;
-
-            case(4):
-                $this->options->set_winter(1);
+            case (self::PRESET_Winter):
+                $this->winter = true;
                 break;
-
-            case(5):
-                $this->options->set_defined(1);
+            case (self::PRESET_Defined):
+                $this->defined = true;
                 break;
-
-            case(6):
-                $this->options->set_gender('F');
+            case (self::PRESET_Female):
+                $this->gender = 2;
                 break;
-
-            case(7):
-                $this->options->layout = league_table_options::LAYOUT_CLUB;
+            case (self::PRESET_ClubOfficial):
+                $this->layout = league_table::LAYOUT_CLUB;
                 break;
-            case(8):
-                $this->options->set_official(0);
-                $this->options->layout = league_table_options::LAYOUT_CLUB;
+            case (self::PRESET_Club):
+                $this->official = false;
+                $this->layout = league_table::LAYOUT_CLUB;
                 break;
-
-            case(9):
-                $this->options->layout = league_table_options::LAYOUT_TOP_TEN;
+            case (self::PRESET_TopTens):
+                $this->layout = league_table::LAYOUT_TOP_TEN;
                 break;
-
-            case(10):
-                $this->options->layout = league_table_options::LAYOUT_PILOT_LOG;
+            case (self::PRESET_Pilot):
+                $this->layout = league_table::LAYOUT_PILOT_LOG;
                 break;
-
-            case(11):
-                $this->options->set_dimensions(3);
-                $this->options->set_official(1);
+            case (self::PRESET_Hangies):
+                $this->hangies = true;
                 break;
-
-            case(12):
-                $this->where[] = 'hangies = 1';
+            case (self::PRESET_Class5):
+                $this->glider_class = 5;
+                $this->official = true;
                 break;
-
-            case(13):
-                $this->options->set_class(5);
-                $this->options->set_official(1);
+            case (self::PRESET_Class1):
+                $this->glider_class = 1;
+                $this->official = true;
                 break;
-
-            case(14):
-                $this->options->set_class(1);
-                $this->options->set_official(1);
+            case (self::PRESET_TopTensNoMultiplier):
+                $this->layout = league_table::LAYOUT_TOP_TEN;
+                $this->no_multipliers = true;
                 break;
-
-            case(15):
-                $this->options->layout = league_table_options::LAYOUT_TOP_TEN;
-                $this->options->no_multipliers = true;
+            case (self::PRESET_Records):
+                $this->layout = league_table::LAYOUT_RECORDS;
                 break;
-
-            case(16):
-                $this->options->layout = league_table_options::LAYOUT_RECORDS;
-                break;
-
-            case(17):
-                $this->options->set_club_id(31);
-                $this->options->set_launched_from('SD,SE,NY');
+            case (self::PRESET_Dales):
+                $this->club_id = 31;
+                $this->set_launched_from('SD,SE,NY');
                 break;
         }
     }
 
-    public function set_layout_from_url($url) {
-        switch ($url) {
-            case '':
-                $this->options->layout = league_table_options::LAYOUT_LEAGUE;
-                break;
-            case 'club':
-                $this->options->layout = league_table_options::LAYOUT_CLUB;
-                break;
-            case 'pilot_log':
-                $this->options->layout = league_table_options::LAYOUT_PILOT_LOG;
-                break;
-            case 'top_ten':
-                $this->options->layout = league_table_options::LAYOUT_TOP_TEN;
-                break;
-            case'records':
-                $this->options->layout = league_table_options::LAYOUT_RECORDS;
-                break;
-            case'list':
-                $this->options->layout = league_table_options::LAYOUT_LIST;
-                break;
+    /** 
+     * @psalm-suppress InvalidReturnStatement, MoreSpecificReturnType
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_sql(): array
+    {
+        $where = [];
+        $params = [];
+        $addOptions = function (array $arr) use (&$where, &$params): void {
+            /** @psalm-suppress all */
+            $where = array_merge($where, $arr[0]);
+            /** @psalm-suppress all */
+            $params = array_merge($params, $arr[1]);
+        };
+        $this->get_multipliers();
+        $this->get_glider_mode();
+
+        if ($this->hangies) {
+            /** @psalm-suppress all */
+            $where[] = 'hangies = 1';
+        }
+
+        $addOptions($this->get_winter());
+        $addOptions($this->get_defined());
+        $addOptions($this->get_gender());
+        $addOptions($this->get_dimensions());
+        $addOptions($this->get_ridge());
+        $addOptions($this->get_date());
+        $addOptions($this->get_launch_string());
+        $addOptions($this->get_flight_type_string());
+        $addOptions($this->get_year());
+        $addOptions($this->get_class());
+        $addOptions($this->get_pilot_id());
+        $addOptions($this->get_club_id());
+        $addOptions($this->get_flown_through());
+        $addOptions($this->get_launched_from());
+        $addOptions($this->get_minimum_score());
+        /** @psalm-suppress all */
+        return [$where, $params];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_winter(): array
+    {
+        if (!$this->winter) {
+            return [[], []];
+        }
+        return [['winter=:winter'], ['winter' => $this->winter]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_defined(): array
+    {
+        if (!$this->defined) {
+            return [[], []];
+        }
+        return [['`defined` = :def'], ['def' => $this->defined]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_gender(): array
+    {
+        if ($this->gender == -1) {
+            return [[], []];
+        }
+        return [['flight__pilot.gid = :gender'], ['gender' => $this->gender]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_dimensions(): array
+    {
+        if ($this->dimensions == -1 || $this->dimensions == 0) {
+            return [[], []];
+        }
+        if ($this->dimensions == 1) {
+            return [['flight.did > 1'], []];
+        }
+        return [['flight.did = :did'], ['did' => $this->dimensions]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_ridge(): array
+    {
+        if (!$this->ridge) {
+            return [[], []];
+        }
+        return [['flight.ridge=:ridge'], ['ridge' => $this->ridge]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_date(): array
+    {
+        if (is_null($this->date)) {
+            return [[], []];
+        }
+        return [['date=:date'], ['date' => $this->date]];
+    }
+
+    public function set_date(string $value): void
+    {
+        $time = @strtotime($value) ?: $value;
+        if (is_numeric($time) && $time) {
+            $this->date = $value;
         }
     }
 
-    #[NoReturn]
-    public function generate_csv() {
-        $flights = flight::get_all([
-            'p.pid AS p_pid',
-            'p.name AS p_name',
-            'c.title AS c_title',
-            'g.class AS g_class',
-            'g.name AS g_name',
-            'score',
-            'defined',
-            'lid'], [
-            'join'  => [
-                'glider g' => 'flight.gid=g.gid',
-                'pilot p'  => 'p.pid = flight.pid',
-                'club c'   => 'c.cid=flight.cid'],
-            'where' => '`delayed`=0 AND personal=0 AND score>10 AND season = 2012']);
-        $array = new table_array();
-        $flights->iterate(
-            function (flight $flight) use (&$array) {
-                if (isset ($array [$flight->p_pid])) {
-                    $array [$flight->p_pid]->add_flight($flight);
-                } else {
-                    $array [$flight->p_pid] = new pilot_official();
-                    $array [$flight->p_pid]->set_from_flight($flight, 6, 0);
-                    $array [$flight->p_pid]->output_function = 'csv';
-                }
+    public function get_multipliers(): void
+    {
+        if ($this->no_multipliers) {
+            $this->ScoreType = "base_score";
+            $this->OrderBy = "base_score";
+        }
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_launch_string(): array
+    {
+        if (!count($this->launches) == 3 || !$this->launches) {
+            return [[], []];
+        }
+        return [['flight.lid IN (' . implode(',', $this->launches) . ')'], []];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_flight_type_string(): array
+    {
+        if (count($this->types) == 5) {
+            return [[], []];
+        }
+        return [['flight.ftid IN (' . implode(',', $this->types) . ')'], []];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_year(): array
+    {
+        if ($this->year == 'all_time') {
+            return [[], []];
+        }
+        $param_count = 0;
+        $parts = [];
+        $str_parts = [];
+
+        $params = [];
+        $groups = explode(',', $this->year);
+        foreach ($groups as $group) {
+            $c = explode('-', $group);
+            if (count($c) > 1 && count($c) < 3) {
+                $parts[] = '(season BETWEEN :year' . $param_count . ' AND :year' . ($param_count + 1) . ')';
+                $str_parts[] = $c[0] . '-' . $c[1];
+                $params['year' . ($param_count++)] = $c[0];
+                $params['year' . ($param_count++)] = $c[1];
+            } else {
+                $parts[] = 'season=:year' . $param_count;
+                $str_parts[] = $group;
+                $params['year' . ($param_count++)] = $group;
             }
-        );
-        $array->uasort(['\module\tables\model\league_table', 'cmp']);
+        }
+        /** @psalm-suppress all */
+        if (!$parts) {
+            return [[], []];
+        }
+        $this->year_title = implode(',', $str_parts);
+        return [['(' . implode('OR', $parts) . ')'], $params];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_class(): array
+    {
+        if ($this->glider_class == -1) {
+            return [[], []];
+        }
+        return [['flight__glider.class = :glider_class'], ['glider_class' => $this->glider_class]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_pilot_id(): array
+    {
+        if ($this->pilot_id == -1) {
+            return [[], []];
+        }
+        return [['flight__pilot.pid=:pid'], ['pid' => $this->pilot_id]];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_club_id(): array
+    {
+        if ($this->club_id == -1) {
+            return [[], []];
+        }
+        return [['flight__club.cid=:cid'], ['cid' => $this->club_id]];
+    }
+
+    public function get_glider_mode(): void
+    {
+        if ($this->glider_mode) {
+            $this->class_table_alias = 'g';
+        }
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_flown_through(): array
+    {
+        if (!$this->flown_through) {
+            return [[], []];
+        }
+        $sql = [];
+        foreach ($this->flown_through as $grid) {
+            if (ctype_alpha($grid)) {
+                $sql[] = 'os_codes LIKE "%' . $grid . '%" OR coords LIKE "%' . $grid . '%"';
+            }
+        }
+        return $sql ? [['(' . implode(' OR ', $sql) . ')'], []] : [[], []];
+    }
+
+    public function set_flown_through(string $grid_refs): array
+    {
+        $parts = explode(',', $grid_refs);
+        $out = [];
+        foreach ($parts as $ref) {
+            if (strlen($ref) == 2) {
+                $out[] = strtoupper($ref);
+            }
+        }
+        return $out;
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_launched_from(): array
+    {
+        if (!$this->launch_areas) {
+            return [[], []];
+        }
+        $sql = [];
+        foreach ($this->launch_areas as $grid) {
+            if (ctype_alpha($grid)) {
+                $sql[] = 'os_codes LIKE "%' . $grid . '%"';
+            }
+        }
+        return $sql ? [['(' . implode(' OR ', $sql) . ')'], []] : [[], []];
+    }
+
+    /** 
+     * @return array{string[], array<string, scalar>}
+     **/
+    public function get_minimum_score(): array
+    {
+        if (!$this->minimum_score) {
+            return [[], []];
+        }
+        return [[$this->ScoreType . ' > ' . $this->minimum_score], []];
+    }
+
+    public function set_launched_from(string $grid_refs): array
+    {
+        $parts = explode(',', $grid_refs);
+        $out = [];
+        foreach ($parts as $ref) {
+            if (strlen($ref) == 2) {
+                $out[] = strtoupper($ref);
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    public static function fromUrl(string $url, array $options): static
+    {
+        $options['layout'] = match ($url) {
+            '' => league_table::LAYOUT_LEAGUE,
+            'club' => league_table::LAYOUT_CLUB,
+            'pilot_log' => league_table::LAYOUT_PILOT_LOG,
+            'top_ten' => league_table::LAYOUT_TOP_TEN,
+            'records' => league_table::LAYOUT_RECORDS,
+            'list' => league_table::LAYOUT_LIST,
+        };
+
+        /** @psalm-suppress all */
+        return new static(...$options);
+    }
+
+    /**
+     * @no-return
+     */
+    public function generate_csv(): void
+    {
+        $flights = flight::get_all(new tableOptions(where: '`delayed`=0 AND personal=0 AND score>10 AND season = 2012'));
+        /** @var table_array<scorable> */
+        $array = new table_array();
+        foreach ($flights as $flight) {
+            if (!isset($array[$flight->pilot->pid])) {
+                $array[$flight->pilot->pid] = $this->getScorable($flight);
+                $array[$flight->pilot->pid]->set_from_flight($flight, 6, false);
+                $array[$flight->pilot->pid]->output_function = 'csv';
+            }
+            $array[$flight->pilot->pid]->add_flight($flight, $this->official);
+        }
+        $array->uasort([self::class, 'cmp']);
         $class1 = $class5 = 1;
-        echo node::create('pre', [], "Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total\n" .
-            $array->iterate_return(function (scorable $pilot) use (&$class1, &$class5) {
-                if ($pilot->class == 1) {
-                    $class1++;
-                    return $pilot->output($class1);
-                } else {
-                    $class5++;
-                    return $pilot->output($class5);
-                }
-            })
-        );
+        $csv = "Pos ,Name ,Glider ,Club ,Best ,Second ,Third ,Forth ,Fifth ,Sixth ,Total\n";
+        foreach ($array as $pilot) {
+            if ($pilot->class == 1) {
+                $class1++;
+                $csv .= $pilot->output($this, $class1);
+            } else {
+                $class5++;
+                $csv .= $pilot->output($this, $class5);
+            }
+        }
+        echo node::create('pre', [], $csv);
         die();
     }
 
-    public function get_table(): string {
-        if ($this->options->pilot_id) {
-            $this->options->layout = league_table_options::LAYOUT_PILOT_LOG;
+    public function get_table(): string
+    {
+        if ($this->pilot_id !== -1) {
+            $this->layout = league_table::LAYOUT_PILOT_LOG;
         }
-        switch ($this->options->layout) {
-            case(league_table_options::LAYOUT_LEAGUE):
+        switch ($this->layout) {
+            case (league_table::LAYOUT_LEAGUE):
                 $this->result = new result_league();
                 $this->Title .= ' League';
                 break;
-            case(league_table_options::LAYOUT_CLUB):
+            case (league_table::LAYOUT_CLUB):
                 $this->result = new result_club();
                 $this->Title .= ' Club League';
                 break;
-            case(league_table_options::LAYOUT_PILOT_LOG):
+            case (league_table::LAYOUT_PILOT_LOG):
                 $this->result = new result_pilot();
-                $pilot = new pilot();
-                $pilot->do_retrieve_from_id(['name'], $this->options->pilot_id);
-                $this->Title .= ' Pilot Log (' . $pilot->name . ')';
-                $this->options->set_minimum_score(0);
+                if ($pilot = pilot::getFromId($this->pilot_id)) {
+                    /** @psalm-suppress all */
+                    $this->Title .= ' Pilot Log (' . $pilot->name . ')';
+                } else {
+                    $this->Title .= ' Pilot not found';
+                }
+                $this->minimum_score = 0;
                 break;
-            case(league_table_options::LAYOUT_TOP_TEN):
+            case (league_table::LAYOUT_TOP_TEN):
                 $this->result = new result_top_ten();
                 $this->Title .= ' Top 10s';
                 break;
-            case(league_table_options::LAYOUT_RECORDS):
+            case (league_table::LAYOUT_RECORDS):
                 $this->result = new result_records();
                 return $this->result->make_table($this);
-            case(league_table_options::LAYOUT_LIST):
+            case (league_table::LAYOUT_LIST):
                 $this->OrderBy = 'date';
                 $this->result = new result_list();
                 $this->Title .= ' List';
                 break;
         }
-
-        if ($this->options->official) {
-            $this->class = $this->official_class;
-        }
-
-        $this->get_flights();
         return $this->result->make_table($this);
-
     }
 
-    public function set_modifier_string() {
-        $this->modifier_string = $this->ScoreType . ($this->options->handicap ? ' * IF(g.kingpost,' . $this->options->handicap_kingpost . ',1) * IF(g.class = 5,' . $this->options->handicap_rigid . ',1) ' : '');
+    public function set_modifier_string(): void
+    {
+        $this->modifier_string = $this->ScoreType . ($this->handicap ? ' * IF(g.kingpost,' . $this->handicap_kingpost . ',1) * IF(g.class = 5,' . $this->handicap_rigid . ',1) ' : '');
     }
 
-    function write_table_header($flights, $type = 'pid'): string {
+    function write_table_header(int $flights, string $type = 'p'): string
+    {
         $inner_html = '';
         foreach (range(1, $flights) as $pos) {
             $inner_html .= node::create('th.left', [], get::ordinal($pos));
-
         }
-        return node::create('thead', [],
-            node::create('tr', [],
-                "<th class='pos left'>Pos</th><th class='name left'>Name</th>" .
-                node::create('th.club.left', [], ($type == 'pid' ? 'Club / Glider' : 'Manufacturer')) .
-                $inner_html .
-                "<th class='tot left'>Total</th>"
-            )
-        );
-    }
-
-    function getFlights($year): int {
-        if ($year >= 2003 || $year == "All Time") {
-            return 6;
-        } else {
-            return 5;
-        }
+        return "
+        <thead>
+            <tr>
+                <th class='pos left'>Pos</th>
+                <th class='name left'>Name</th>
+                <th class='club left'>" . ($type == 'p' ? 'Club / Glider' : 'Manufacturer') . "</th>
+                $inner_html
+                <th class='tot left'>Total</th>
+            </tr>
+        </thead>";
     }
 
     /**
-     * @return table_array|flight[]
+     * @return table_array<flight>
      */
-    public function get_flights(): array|table_array {
-        if (!$this->flights) {
-            $this->options->get_sql();
-            $this->set_modifier_string();
-
-            $this->where[] = '`delayed`=0';
-            $where = implode(' AND ', $this->where);
-            if (isset ($this->type) && $this->type == league_table_options::LAYOUT_PILOT_LOG) {
-                $where .= ' AND p.pid=' . $this->options->pilot_id;
-                $this->OrderBy = "date";
-            } else {
-                $where .= " AND personal=0 ";
-            }
-
-            $this->flights = flight::get_all([
-                'fid',
-                'p.pid AS p_pid',
-                'g.gid',
-                $this->class_table_alias . '.' . $this->class_primary_key . ' AS ClassID',
-                'p.name AS p_name',
-                $this->S_alias . '.title AS c_name',
-                'g.class AS class',
-                'g.name AS g_name',
-                'gm.title AS gm_title',
-                'g.kingpost AS g_kingpost',
-                'did',
-                'defined',
-                'lid',
-                'multi',
-                'ftid',
-                $this->modifier_string . ' AS score',
-                'date',
-                'coords'],
-                [
-                    'join'       => [
-                        'glider g'        => 'flight.gid=g.gid',
-                        'club c'          => 'flight.cid=c.cid',
-                        'pilot p'         => 'flight.pid=p.pid',
-                        'manufacturer gm' => 'g.mid = gm.mid',
-                    ],
-                    'where'      => $where,
-                    'order'      => $this->OrderBy . ' DESC',
-                    'parameters' => $this->parameters,
-                ]
-            );
+    public function get_flights(): table_array
+    {
+        [$where, $parameters] = $this->get_sql();
+        $this->set_modifier_string();
+        $where[] = '`delayed`=0';
+        $where = implode(' AND ', $where);
+        if (isset($this->type) && $this->type == league_table::LAYOUT_PILOT_LOG) {
+            $where .= ' AND p.pid=' . ($this->pilot_id);
+            $this->OrderBy = "date";
+        } else {
+            $where .= " AND personal=0 ";
         }
-        return $this->flights;
+
+        return flight::get_all(new tableOptions(
+            where: $where,
+            order: $this->OrderBy . ' DESC',
+            parameters: $parameters,
+        ));
     }
 
     /**
@@ -529,10 +792,10 @@ class league_table implements model_interface {
      *
      * @param $where - a complete sql WHERE clause
      * @param array $params
-     *
-     * @return string
      */
-    public function ShowTop4($where, array $params = []): string {
+    public function ShowTop4(): string
+    {
+        [$where, $params] = $this->get_sql();
         $html = '';
         $launch_by_number = [1 => 'Foot', 2 => 'Aerotow', 3 => 'Winch'];
         $where['delayed'] = '`delayed`=:delayed';
@@ -546,19 +809,18 @@ class league_table implements model_interface {
             $params['lid'] = $j;
             $html .= '<tr><td>' . $val . '</td>';
             for ($i = 1; $i < 5; $i++) {
-                $where_extend .= ' AND ftid=:ftid';
+                $where_extend .= ' AND flight.ftid=:ftid';
                 $params['ftid'] = $i;
-                $flight = new flight();
-                $flight->do_retrieve(['flight.*', $this->class . '.name AS name', 'glider.class AS class'], [
-                        'join'       => flight::$default_joins,
-                        'where'      => $where_extend,
-                        'order'      => 'score DESC',
-                        'parameters' => $params,
-                    ]
+                $flight = flight::get(
+                    new \classes\tableOptions(
+                        where: $where_extend,
+                        order: 'score DESC',
+                        parameters: $params,
+                    )
                 );
-                if (isset($flight->fid) && $flight->fid) {
-                    $prefix = $flight->name . ' (' . ($flight->class == 5 ? 'R' : 'F') . ') ';
-                    $html .= (string)$flight->to_print($prefix);
+                if ($flight) {
+                    $prefix = $flight->pilot->name . ' (' . ($flight->glider->class == 5 ? 'R' : 'F') . ') ';
+                    $html .= $flight->to_print($prefix);
                 } else {
                     $html .= "<td>No Flights Fit<td>";
                 }
@@ -566,17 +828,65 @@ class league_table implements model_interface {
             $html .= '</tr>';
         }
 
-        return node::create('table.top4.main.results', [],
-            node::create('thead', [],
-                node::create('tr', [],
-                    node::create('th', ['style' => 'width:52px'], 'Category') .
-                    node::create('th', ['style' => 'width:155px;color:black'], 'Open Dist') .
-                    node::create('th', ['style' => 'width:155px;color:green'], 'Out & Return') .
-                    node::create('th', ['style' => 'width:155px;color:red'], 'Goal') .
-                    node::create('th', ['style' => 'width:155px;color:blue'], 'Triangle')
-                )
-            ) .
-            $html
-        );
+        return "
+        <table class='top4 main results'>
+            <thead>
+                <tr>
+                    <th style='width:52px'>Category</th>
+                    <th style='width:155px;color:black'>Open Dist</th>
+                    <th style='width:155px;color:green'>Out & Return</th>
+                    <th style='width:155px;color:red'>Goal</th>
+                    <th style='width:155px;color:blue'>Triangle</th>
+                </tr>
+            </thead>
+        </table>" . $html;
+    }
+
+    public function getScorable(flight $f): scorable
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->pilot,
+            'g' => $f->glider,
+        };
+    }
+
+    public function getSubScorable(flight $f): club|manufacturer
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->club,
+            'g' => $f->glider->manufacturer,
+        };
+    }
+
+    public function getID(flight $f): int
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->pilot->pid,
+            'g' => $f->glider->gid,
+        };
+    }
+
+    public function getTitle(flight $f): string
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->pilot->name,
+            'g' => $f->glider->name,
+        };
+    }
+
+    public function getSubTitle(flight $f): string
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->club->title,
+            'g' => $f->glider->manufacturer->title,
+        };
+    }
+
+    public function getTertiaryTitle(flight $f): string
+    {
+        return match ($this->class_table_alias) {
+            'p' => $f->glider->name,
+            'g' => '',
+        };
     }
 }

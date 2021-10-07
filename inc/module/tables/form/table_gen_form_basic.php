@@ -4,35 +4,60 @@ namespace module\tables\form;
 
 use classes\ajax;
 use classes\get;
+use classes\tableOptions;
 use core;
 use form\field;
 use form\form;
 use html\node;
 use JetBrains\PhpStorm\NoReturn;
+use model\pilot;
 use module\tables\model as _model;
-use module\tables\model\league_table_options;
+use module\tables\model\league_table;
 
-class table_gen_form_basic extends form {
+class table_gen_form_basic extends form
+{
 
-    public $glider_mode;
-    public $no_min;
-    public $pilot;
-    public $split_classes;
-    public $type;
-    public $year;
+    public bool $glider_mode;
+    public bool $no_min;
+    public int $pilot;
+    public bool $split_classes;
+    public string $type;
+    public string $year;
     public string $shroud;
     public string $post_submit_text;
 
-    public function __construct() {
+    public function __construct()
+    {
         $years = ['all_time' => 'All Time'];
         foreach (range(date('Y'), 1991) as $year) {
-            $years[$year] = $year;
+            $years[(string) $year] = (string) $year;
         }
-        $fields = [form::create('field_select', 'type')->set_attr('options', [0 => 'Main', 14 => 'Class1', 13 => 'Class5', 1 => 'Foot', 2 => 'Aero', 3 => 'Winch', 5 => 'Defined', 4 => 'Winter', 6 => 'Female', 8 => 'Club', 7 => 'Club (Official)', 9 => 'Top Tens', 15 => 'Top Tens (1x)', 10 => 'Pilot', 12 => 'Hangies', 16 => 'Records', 17 => 'Dales',])->set_attr('label', 'League Type'), form::create('field_select', 'year')->set_attr('options', $years)->set_attr('label', 'Year')->set_attr('value', date('Y'))->set_attr('required', true), form::create('field_link', 'pilot')->set_attr('label', 'Pilot:')->set_attr('link_module', \model\pilot::class)->set_attr('link_field', 'name')->set_attr('options', ['order' => 'name ASC'])->set_attr('help', 'Select a pilot to display flight for|Only works if Pilot is selected in Table Type.')->set_attr('required', true)->set_attr('disabled', true), form::create('field_boolean', 'no_min')->set_attr('label', 'No Minimum Distance'), form::create('field_boolean', 'split_classes')->set_attr('label', 'Split Class 1 & 5'), form::create('field_boolean', 'glider_mode')->set_attr('label', 'Score gliders not pilots'),];
-        /** @var field $field */
-        foreach ($fields as $field) {
-            $field->set_attr('required', false);
-        }
+        $fields = [
+            new \form\field_select('type', options: [
+                league_table::PRESET_Main => 'Main',
+                league_table::PRESET_Class1 => 'Class1',
+                league_table::PRESET_Class5 => 'Class5',
+                league_table::PRESET_Foot => 'Foot',
+                league_table::PRESET_Aero => 'Aero',
+                league_table::PRESET_Winch => 'Winch',
+                league_table::PRESET_Defined => 'Defined',
+                league_table::PRESET_Winter => 'Winter',
+                league_table::PRESET_Female => 'Female',
+                league_table::PRESET_Club => 'Club',
+                league_table::PRESET_ClubOfficial => 'Club (Official)',
+                league_table::PRESET_TopTens => 'Top Tens',
+                league_table::PRESET_TopTensNoMultiplier => 'Top Tens (1x)',
+                league_table::PRESET_Pilot => 'Pilot',
+                league_table::PRESET_Hangies => 'Hangies',
+                league_table::PRESET_Records => 'Records',
+                league_table::PRESET_Dales => 'Dales',
+            ], label: 'League Type', required: false,),
+            new \form\field_select('year', options: $years, label: 'Year', default: date('Y',), required: false,),
+            new \form\field_link('pilot', label: 'Pilot:', link_module: pilot::class, link_field: 'name', options: new tableOptions(order: 'name ASC'), required: false, disabled: true,),
+            new \form\field_boolean('no_min', label: 'No Minimum Distance', required: false,),
+            new \form\field_boolean('split_classes', label: 'Split Class 1 & 5', required: false,),
+            new \form\field_boolean('glider_mode', label: 'Score gliders not pilots', required: false,),
+        ];
 
         parent::__construct($fields);
         $this->id = 'basic_tables';
@@ -43,21 +68,24 @@ class table_gen_form_basic extends form {
         //$this->h2 = 'Options';
     }
 
-    /**
-     * @return node
-     */
-    public function get_submit(): node {
-        if ($this->has_submit) {
-            $field = node::create('div.form-group.submit-group div.col-md-offset-' . $this->bootstrap[0] . '.col-md-' . $this->bootstrap[1], [], [node::create('button.btn.btn-default', $this->submit_attributes, $this->submit), node::create('a.form_toggle', ['data-show' => 'advanced_tables_wrapper'], 'Advanced View')]);
-            if (!$this->submittable) {
-                $field->add_attribute('disabled', 'disabled');
-            }
-            return $field;
+    public function get_submit(): string
+    {
+        if (!$this->has_submit) {
+            return '';
         }
-        return node::create('');
+        if (!$this->submittable) {
+            $this->submit_attributes->disabled = 'disabled';
+        }
+        $field = node::create(
+            'div.form-group.submit-group div.col-md-offset-' . $this->bootstrap[0] . '.col-md-' . $this->bootstrap[1],
+            [],
+            node::create('button.btn.btn-default', $this->submit_attributes, $this->submit) . node::create('a.form_toggle', ['dataShow' => 'advanced_tables_wrapper'], 'Advanced View')
+        );
+        return $field;
     }
 
-    public function get_html(): string {
+    public function get_html(): string
+    {
         core::$inline_script[] = '$("#' . $this->id . ' #type").change(function() {
             if($(this).val() == 10) {
                 $("#' . $this->id . ' #pilot").attr("disabled", false);
@@ -68,9 +96,10 @@ class table_gen_form_basic extends form {
         return parent::get_html();
     }
 
-    public function set_from_options(league_table_options $options) {
-        foreach ($options as $key => $value) {
-            if ($this->has_field($key)) {
+    public function set_from_options(league_table $options): void
+    {
+        foreach ((array) $options as $key => $value) {
+            if ($this->has_field((string) $key)) {
                 $this->$key = $value;
             }
         }
@@ -78,44 +107,44 @@ class table_gen_form_basic extends form {
             $this->no_min = true;
         }
         switch ($options->layout) {
-            case league_table_options::LAYOUT_PILOT_LOG :
-                $this->type = 10;
-                break;
-            case league_table_options::LAYOUT_TOP_TEN :
+            case league_table::LAYOUT_PILOT_LOG:
+                $this->type = league_table::PRESET_Pilot;
+                break; 
+            case league_table::LAYOUT_TOP_TEN:
                 if ($options->no_multipliers) {
-                    $this->type = 15;
+                    $this->type = league_table::PRESET_TopTensNoMultiplier;
                 } else {
-                    $this->type = 9;
+                    $this->type = league_table::PRESET_TopTens;
                 }
                 break;
-            case league_table_options::LAYOUT_CLUB :
+            case league_table::LAYOUT_CLUB:
                 if ($options->official) {
-                    $this->type = 7;
+                    $this->type = league_table::PRESET_ClubOfficial;
                 } else {
-                    $this->type = 8;
+                    $this->type = league_table::PRESET_Club;
                 }
                 break;
-            case league_table_options::LAYOUT_RECORDS :
-                $this->type = 16;
+            case league_table::LAYOUT_RECORDS:
+                $this->type = league_table::PRESET_Records;
                 break;
         }
         if (!$this->type) {
             if ($options->gender == 2) {
-                $this->type = 6;
+                $this->type = league_table::PRESET_Female;
             } else if ($options->glider_class == 1) {
-                $this->type = 14;
+                $this->type = league_table::PRESET_Class1;
             } else if ($options->glider_class == 5) {
-                $this->type = 13;
+                $this->type = league_table::PRESET_Class5;
             } else if ($options->launches == [1]) {
-                $this->type = 1;
+                $this->type = league_table::PRESET_Foot;
             } else if ($options->launches == [2]) {
-                $this->type = 2;
+                $this->type = league_table::PRESET_Aero;
             } else if ($options->launches == [3]) {
-                $this->type = 3;
+                $this->type = league_table::PRESET_Winch;
             } else if ($options->defined) {
-                $this->type = 5;
+                $this->type = league_table::PRESET_Defined;
             } else if ($options->winter) {
-                $this->type = 4;
+                $this->type = league_table::PRESET_Winter;
             }
         }
         if ($options->pilot_id) {
@@ -124,22 +153,22 @@ class table_gen_form_basic extends form {
         }
     }
 
-    #[NoReturn]
-    public function do_submit(): bool {
-        $table = new _model\league_table();
+    public function do_submit(): bool
+    {
+        $table = new _model\league_table(); 
         $table->use_preset($this->type, $this->year);
         if ($this->type == 10) {
-            $table->options->pilot_id = $this->pilot;
+            $table->pilot_id = $this->pilot;
         }
-        $table->set_year($this->year);
+        $table->year = $this->year;
         if ($this->no_min) {
-            $table->options->minimum_score = 0;
+            $table->minimum_score = 0;
         }
         if ($this->glider_mode) {
-            $table->options->glider_mode = true;
+            $table->glider_mode = true;
         }
         if ($this->split_classes) {
-            $table->options->split_classes = true;
+            $table->split_classes = true;
         }
         ajax::update($table->get_table());
         return true;

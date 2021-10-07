@@ -5,6 +5,7 @@ namespace module\converter\view;
 use module\converter\form;
 use template\html;
 
+/** @extends html<\module\converter\controller, false> */
 class _default extends html {
 
     function get_view(): string {

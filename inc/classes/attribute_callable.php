@@ -2,27 +2,31 @@
 
 namespace classes;
 
-use form\field;
-use html\node;
+use Exception;
+use ReflectionClass;
+use Stringable;
 
-class attribute_callable implements \Stringable {
+final class attribute_callable implements Stringable {
 
-    public static function create(callable $arr): static {
-        if (!is_array($arr)) throw new \Exception("Callable is not stringable");
+    public static function create(callable $arr): self {
+        if (!is_array($arr)) throw new Exception("Callable is not stringable");
         if (is_object($arr[0])) {
             $arr[0] = $arr[0]::class;
         }
-        $class = new \ReflectionClass($arr[0]);
+        $class = new ReflectionClass($arr[0]);
         $reflection = $class->getMethod($arr[1]);
-        if (!$reflection->isStatic()) throw new \Exception("Callable is not static");
-        return new static($arr);
+        if (!$reflection->isStatic()) throw new Exception("Callable is not static");
+        return new self($arr);
     }
 
     public static function callback(callable $c): callable {
         return $c;
     }
 
-    public function __construct(public $callable) {
+    /** @param array{class-string, string} $callable */
+    public function __construct(
+        public array $callable
+    ) {
 
     }
 

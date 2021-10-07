@@ -7,17 +7,13 @@ use Memcached;
 
 class cache implements interfaces\cache_interface {
 
-    /**
-     * @const int Connection error has occurred possible Memcached not installed.
-     */
     const ERROR_CONNECT = 1;
     const DEFAULT_CACHE_TIME = 86400;
     public static ?Memcached $current = null;
+    /** @var string[] */
     protected static array $ignore_tables = ['_cache_dependants', '_compiler_keys'];
-    /**
-     * @var null
-     */
-    private static $dependants = null;
+    /** @var string[] */
+    private static ?array $dependants;
 
     /**
      * @param string $instance_id
@@ -41,10 +37,16 @@ class cache implements interfaces\cache_interface {
      * Flush the current cache pool
      */
     public static function flush(): bool {
-        return self::$current->flush();
+        return (bool) self::$current->flush();
     }
 
-    public static function grab($key, callable $callback, $dependencies = ['global'], $time = null) {
+    /**
+     * @template T
+     * @param callable(): T $callback
+     * @param string[] $dependencies
+     * @return T
+     */
+    public static function grab(string $key, callable $callback, array $dependencies = ['global'], ?int $time = null) {
         $cacheResult = cache::get($key, $dependencies);
         if (!$cacheResult->success) {
             $data = $callback();
@@ -56,7 +58,7 @@ class cache implements interfaces\cache_interface {
 
     /**
      * @param string $key the key to retrieve.
-     * @param array $dependencies table dependencies.
+     * @param string[] $dependencies table dependencies.
      * @return cacheResult
      */
     public static function get(string $key, array $dependencies = ['global']): cacheResult {
@@ -71,47 +73,36 @@ class cache implements interfaces\cache_interface {
     }
 
     /**
-     * @param $key
-     * @param array $dependencies
-     * @return string
+     * @param string[] $dependencies
      */
-    protected static function get_key($key, array $dependencies): string {
-        if (!self::$dependants) {
-            self::load_dependants();
-        }
+    protected static function get_key(string $key, array $dependencies): string {
+        self::$dependants ??= self::load_dependants();
         $salt = '';
         foreach ($dependencies as $dependant) {
             if (!isset(self::$dependants[$dependant])) {
                 self::break_cache($dependant);
             }
-            $salt .= isset(self::$dependants[$dependant]) ? self::$dependants[$dependant] : 0;
+            $salt .= self::$dependants[$dependant] ?? 0;
         }
-        $key = md5($salt . $key);
-        return $key;
+        return md5($salt . $key);
     }
 
     /**
      * Load the table dependencies for dynamic cache breaking.
+     * @return string[]
      */
-    private static function load_dependants() {
-        self::$dependants = [];
+    private static function load_dependants(): array {
+        $dependants = [];
         if (class_exists('\classes\db')) {
-            if (!db::table_exists('_cache_dependants')) {
-                db::create_table('_cache_dependants',
-                    [
-                        'key'  => 'INT',
-                        'hash' => 'BINARY(16)',
-                    ]
-                );
-            }
             $res = db::query('SELECT * FROM _cache_dependants');
             while ($row = db::fetch($res)) {
-                self::$dependants[$row['key']] = $row['hash'];
+                $dependants[$row['key']] = $row['hash'];
             }
         }
+        return $dependants;
     }
 
-    public static function break_cache($table) {
+    public static function break_cache(string $table): void {
         if (in_array($table, static::$ignore_tables)) {
             return;
         }
@@ -121,23 +112,23 @@ class cache implements interfaces\cache_interface {
     }
 
     /**
-     * @param array $data associative array of key => value to be added the the cache table.
-     * @param array $dependencies table dependencies.
-     * @param null $cache_time Cache time in seconds, 0 for not breaking
+     * @param array<string, mixed> $data associative array of key => value to be added the the cache table.
+     * @param string[] $dependencies table dependencies.
+     * @param ?int $cache_time Cache time in seconds, 0 for not breaking
      * @return bool returns true on successful add or false on failure.
      */
-    public static function set(array $data, array $dependencies = ['global'], $cache_time = null): bool {
+    public static function set(array $data, array $dependencies = ['global'], ?int $cache_time = null): bool {
         if (self::$current == null) {
             return false;
         }
         if (is_null($cache_time)) {
             $cache_time = self::DEFAULT_CACHE_TIME;
         }
-        $ok = true;
+        $ok = 1;
         foreach ($data as $key => $value) {
             $new_key = self::get_key($key, $dependencies);
             $ok &= self::$current->set($new_key, $value, $cache_time);
         }
-        return $ok;
+        return (bool) $ok;
     }
 }

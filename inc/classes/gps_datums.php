@@ -3,10 +3,16 @@
 namespace classes;
 
 use Exception;
-use JetBrains\PhpStorm\Pure;
 
+/**
+ * Class gps_datums
+ * @package classes
+ * @psalm-type Ellipse=array{a: float, b: float}
+ * @psalm-type Transform=array{tx: float, ty: float, tz: float, rx: float, ry: float, rz: float, s: float}
+ */
 class gps_datums {
 
+    /** @var array<string, Ellipse> */
     private static array $ellipse = [
         'WGS84'        => ['a' => 6378137, 'b' => 6356752.3142],
         'GRS80'        => ['a' => 6378137, 'b' => 6356752.314140],
@@ -15,12 +21,13 @@ class gps_datums {
         'Intl1924'     => ['a' => 6378388.000, 'b' => 6356911.946],
     ];
 
+    /** @var array<string, Transform> */
     private static array $transform = [
         'OSGB36'  => ['tx' => -446.448, 'ty' => 125.157, 'tz' => -542.060, 'rx' => -0.1502, 'ry' => -0.2470, 'rz' => -0.8421, 's' => 20.4894],
-        'ED50'    => ['tx' => 89.5, 'ty' => 93.8, 'tz' => 123.1, 'rx' => 0.0, 'ry' => 0.0, 'rz' => 0.156, 's' => -1.2],
-        'Irl1975' => ['tx' => -482.530, 'ty' => 130.596, 'tz' => -564.557, 'rx' => -1.042, 'ry' => -0.214, 'rz' => -0.631, 's' => -8.150]];
+        'ED50'    => ['tx' => 89.5,     'ty' => 93.8,    'tz' => 123.1,    'rx' => 0.0,     'ry' => 0.0,     'rz' => 0.156,   's' => -1.2],
+        'Irl1975' => ['tx' => -482.530, 'ty' => 130.596, 'tz' => -564.557, 'rx' => -1.042,  'ry' => -0.214,  'rz' => -0.631,  's' => -8.150]];
 
-    public static function convert(lat_lng $point, $from, $to): lat_lng {
+    public static function convert(lat_lng $point, string $from, string $to): lat_lng {
         if (!isset(self::$ellipse[$from]) && !isset(self::$ellipse[$to])) {
             throw new Exception('The transform for this conversion doesn\'t exitst. Please add a Helmert transform');
         }
@@ -39,11 +46,18 @@ class gps_datums {
         $e1 = self::$ellipse[$from];
         $e2 = self::$ellipse[$to];
 
+        /** @psalm-suppress ArgumentTypeCoercion */
         return self::__convert($point, $e1, $e2, $transform);
     }
 
-    #[Pure]
-    private static function __convert(lat_lng $point, $source_ellipse, $target_ellipse, $transform): lat_lng {
+    /**
+     * @param lat_lng $point
+     * @param Ellipse $source_ellipse
+     * @param Ellipse $target_ellipse
+     * @param Transform $transform
+     * @return lat_lng
+     */
+    private static function __convert(lat_lng $point, array $source_ellipse, array $target_ellipse, array $transform): lat_lng {
         $lat = $point->lat(true);
         $lon = $point->lng(true);
 
