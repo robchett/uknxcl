@@ -160,27 +160,28 @@ class flight implements model_interface {
 
     public static function download(): void {
         $id = (int)$_REQUEST['id'];
-        $flight = self::get(new \classes\tableOptions(join: ['pilot' => 'flight.pid=pilot.pid'], where_equals: ['flight.fid' => $id]));
+        $flight = self::get(new \classes\tableOptions(where_equals: ['flight.fid' => $id]));
         $temp = isset($_REQUEST['temp']);
         $type = (string) $_REQUEST['type'];
         if ($type == self::DOWNLOAD_KML && isset($_REQUEST['split'])) {
             $type = self::DOWNLOAD_KML_SPLIT;
         }
-        if ($flight && ($flight->fid || $temp)) {
-            $fullPath = $flight->get_download_path($type, $temp);
+        if (($flight && $flight->fid || $temp)) {
+            $fullPath = self::_get_download_path($id, $type, $temp);
             $fsize = filesize($fullPath);
             $pathArray = explode('.', $fullPath);
             $ext = end($pathArray);
             header("Content-type: application/octet-stream");
             header("Cache-control: private");
-            header('Content-Disposition: filename="' . $id . '-' . str_replace(' ', '_', $flight->pilot->name) . '-' . ($temp ? $id : $flight->date) . '.' . $ext . '"');
+            $name = $flight ? $flight->pilot->name . '-' . $flight->date : ''; 
+            header('Content-Disposition: filename="' . $id . '-' .  $name . '.' . $ext . '"');
             header("Content-length: $fsize");
             echo file_get_contents($fullPath);
             die();
         }
     }
 
-    public function get_download_path(string $type, bool $tmp = false): string {
+    private static function _get_download_path(int $id, string $type, bool $tmp): string {
         $filename = match ($type) {
             static::DOWNLOAD_KML => 'track.kml',
             static::DOWNLOAD_KML_EARTH => 'track_earth.kml',
@@ -188,7 +189,11 @@ class flight implements model_interface {
             static::DOWNLOAD_JSON => 'track.js',
             default => 'track.igc',
         };
-        return root . ($tmp ? '/.cache/' : '/uploads/flight/') . $this->get_primary_key() . '/' . $filename;
+        return root . ($tmp ? '/.cache/' : '/uploads/flight/') . $id . '/' . $filename;
+    }
+
+    public function get_download_path(string $type, bool $tmp = false): string {
+        return static::_get_download_path($this->get_primary_key(), $type, false);
     }
 
     public function get_best_score(): array {
