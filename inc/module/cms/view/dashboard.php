@@ -19,16 +19,16 @@ class dashboard extends cms_view {
     <div id='summaries'>
         <div>
             <div class='col-md-6'>
-                <h4><a href='/cms/module/2' title='View all flights'>Latest Flights</a></h4>
+                <h4><a href='/cms/module/flight' title='View all flights'>Latest Flights</a></h4>
                 $flights
             </div> 
             <div class='col-md-6'>
                 <div>
-                    <h4><a href='/cms/module/3' title='View all pilots'>Latest Pilots</a></h4>
+                    <h4><a href='/cms/module/pilot' title='View all pilots'>Latest Pilots</a></h4>
                     $pilots
                 </div>
                 <div>
-                    <h4><a href='/cms/module/12' title='View all gliders'>Latest Gliders</a></h4>
+                    <h4><a href='/cms/module/glider' title='View all gliders'>Latest Gliders</a></h4>
                     $gliders
                 </div>
             </div>
@@ -57,11 +57,11 @@ class dashboard extends cms_view {
     </thead>
     {$flights->reduce(fn(string $_, flight $flight): string => $_ . "
     <tr>
-        <td><a href='/cms/module/2/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->fid}</a></td>
-        <td><a href='/cms/module/2/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->get_date_string('d/m/Y')}</a></td>
-        <td><a href='/cms/module/3/{$flight->pilot->pid}' title='Pilot: {$flight->pilot->name}'>{$flight->pilot->name}</a></td>
-        <td><a href='/cms/module/4/{$flight->glider->gid}' title='Glider: {$flight->glider->name}'>{$flight->glider->name}</a></td>
-        <td><a href='/cms/module/12/{$flight->club->cid}' title='Club: {$flight->club->title}'>{$flight->club->title}</a></td>
+        <td><a href='/cms/module/flight/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->fid}</a></td>
+        <td><a href='/cms/module/flight/{$flight->fid}' title='Flight: {$flight->fid}'>{$flight->get_date_string('d/m/Y')}</a></td>
+        <td><a href='/cms/module/pilot/{$flight->pilot->pid}' title='Pilot: {$flight->pilot->name}'>{$flight->pilot->name}</a></td>
+        <td><a href='/cms/module/glider/{$flight->glider->gid}' title='Glider: {$flight->glider->name}'>{$flight->glider->name}</a></td>
+        <td><a href='/cms/module/club/{$flight->club->cid}' title='Club: {$flight->club->title}'>{$flight->club->title}</a></td>
         <td class='col-md-5'>{$flight->admin_info}</td>
         <td>{$flight->get_delayed_string()}</td>
     </tr>", ''
@@ -83,10 +83,10 @@ class dashboard extends cms_view {
     </thead>
     {$pilots->reduce(fn(string $acc, pilot $pilot): string => $acc . "
     <tr>
-        <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->pid}</a></td>
-        <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->name}</a></td>
-        <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->bhpa_no}</a></td>
-        <td><a href='/cms/module/3/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->email}</a></td>
+        <td><a href='/cms/module/pilot/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->pid}</a></td>
+        <td><a href='/cms/module/pilot/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->name}</a></td>
+        <td><a href='/cms/module/pilot/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->bhpa_no}</a></td>
+        <td><a href='/cms/module/pilot/{$pilot->pid}' title='Pilot: {$pilot->name}'>{$pilot->email}</a></td>
     </tr>", ''
     )}
 </table>";
@@ -105,9 +105,9 @@ class dashboard extends cms_view {
     </thead>
     {$gliders->reduce(fn(string $_, glider $glider): string => $_ . "
     <tr>
-        <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->gid}</a></td>
-        <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->name}</a></td>
-        <td><a href='/cms/module/4/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->manufacturer->title}</a></td>
+        <td><a href='/cms/module/glider/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->gid}</a></td>
+        <td><a href='/cms/module/glider/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->name}</a></td>
+        <td><a href='/cms/module/glider/{$glider->gid}' title='Glider: {$glider->name}'>{$glider->manufacturer->title}</a></td>
     </tr>", ''
     )}
 </table>";
