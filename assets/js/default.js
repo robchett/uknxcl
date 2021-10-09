@@ -5,8 +5,8 @@ var $body;
 var load_callback = new LoadCallback(load_callback || []);
 $(document).ready(function () {
     $body = $("body");
-    load_callback.trigger();
     map = new UKNXCL_Map($("#map_wrapper"), map);
+    load_callback.trigger();
     if (typeof google != 'undefined') {
         map.load_map();
     } else {

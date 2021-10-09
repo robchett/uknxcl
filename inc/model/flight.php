@@ -295,10 +295,11 @@ class flight implements model_interface {
                 <a class='download kml' href='{$files['kml']}' rel='external' download>Download KML</a>
             </td>
         </tr>",
-            false => "
-        <td class='center view coords' colspan='2'>
-            <a class='button' href='#' onclick='map.add_flight_coordinates('{$this->coords}',{$this->get_primary_key()});return false;'>Add coordinates to Map</a>
-        </td>",
+            false => "<tr>
+            <td class='center view coords' colspan='2'>
+                <a class='button' href='#' onclick='map.add_flight_coordinates('{$this->coords}',{$this->get_primary_key()});return false;'>Add coordinates to Map</a>
+            </td>
+        </tr>",
         };
 
         return "
