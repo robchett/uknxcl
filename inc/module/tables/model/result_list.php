@@ -27,11 +27,11 @@ class result_list extends result {
                     "<tr>
                         <td>{$flight->fid}</td>
                         <td>{$data->getTitle($flight)}</td>
-                        <td>{$flight->date}</td>
+                        <td>{$flight->format_date($flight->date, 'd/m/y')}</td>
                         <td>{$data->getSubTitle($flight)}</td>
                         <td>{$flight->glider->name}</td>
-                        <td>{$flight->to_print()}</td>
-                        <td>{$flight->coords}<td>
+                        {$flight->to_print()}
+                        <td>{$flight->coords}</td>
                     </tr>"
                 ) . "
             </table>
