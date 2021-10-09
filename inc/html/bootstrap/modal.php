@@ -31,10 +31,12 @@ final class modal
     {
         return "
         <div id='{$this->id}' class='modal fade' {$this->attributes}>
-            <div class='modal-dialog'><div class='modal-content'>
-                <div class='modal-header'>{$this->title}</div>
-                <div class='modal-body'>{$this->body}</div>
-                <div class='modal-footer'>{$this->footer}</div>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>{$this->title}</div>
+                    <div class='modal-body'>{$this->body}</div>
+                    <div class='modal-footer'>{$this->footer}</div>
+                </div>
             </div>
         </div>";
     }

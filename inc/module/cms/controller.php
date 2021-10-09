@@ -56,12 +56,6 @@ class controller extends module
         parent::__construct($path);
     }
 
-    public function get_inner(): string
-    {
-        $list = new model\_cms_table_list($this->module, $this->page);
-        return $list->get_table();
-    }
-
     public function get_main_nav(): string
     {
         $groups = schema::getGroups();

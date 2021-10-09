@@ -127,9 +127,7 @@ class _cms_table_list
 
     public function get_table_rows(table_array $elements, string $class = ''): string
     {
-        return $elements->reduce(fn (string $acc, model_interface $obj): string => $acc .
-            node::create('tr#' . get::__class_name($obj) . $obj->get_primary_key() . ($obj->deleted ? '.danger.deleted' : '') . $class . '.vertical-align', [], $obj->get_cms_list())
-        ); 
+        return $elements->reduce(fn (string $acc, model_interface $obj): string => $acc . node::create('tr#' . get::__class_name($obj) . $obj->get_primary_key() . ($obj->deleted ? '.danger.deleted' : '') . $class . '.vertical-align', [], $obj->get_cms_list()), ''); 
     }
 
     protected function get_delete_modal(): string

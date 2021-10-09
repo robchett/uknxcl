@@ -72,9 +72,10 @@ class table_array extends _collection {
     public function get_total_count():int {
         if ($this->options->limit) {
             $options = clone $this->options;
+            $module = schema::getFromClass($this->class);
             $options->limit = '';
             /** @var array{int} */
-            $query = db::get_query($this->class, ['COUNT(*)'], $options)->execute()->fetch();
+            $query = db::get_query($module->table_name, ['COUNT(*)'], $options)->execute()->fetch();
             return $query[0];
         }
         return $this->count();
