@@ -54,6 +54,8 @@ class result_records extends result
                     'flight.ftid'     => $ftid,
                     'flight__glider.class'  => $class,
                     'flight__pilot.gid' => $gender,
+                    'flight.personal' => false,
+                    'flight.delayed' => false,
                 ],
                 order: 'base_score DESC',
             )
