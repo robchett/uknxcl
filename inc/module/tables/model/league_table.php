@@ -473,6 +473,7 @@ class league_table
     {
         $time = @strtotime($value) ?: $value;
         if (is_numeric($time) && $time) {
+            $this->year = 'all_time';
             $this->date = $value;
         }
     }
@@ -657,7 +658,7 @@ class league_table
     public static function fromUrl(string $url, array $options): static
     {
         $options['layout'] = match ($url) {
-            '' => league_table::LAYOUT_LEAGUE,
+            default => league_table::LAYOUT_LEAGUE,
             'club' => league_table::LAYOUT_CLUB,
             'pilot_log' => league_table::LAYOUT_PILOT_LOG,
             'top_ten' => league_table::LAYOUT_TOP_TEN,
