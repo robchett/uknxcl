@@ -1995,8 +1995,8 @@ var $body;
 var load_callback = new LoadCallback(load_callback || []);
 $(document).ready(function () {
     $body = $("body");
-    load_callback.trigger();
     map = new UKNXCL_Map($("#map_wrapper"), map);
+    load_callback.trigger();
     if (typeof google != 'undefined') {
         map.load_map();
     } else {
@@ -3524,7 +3524,7 @@ function UKNXCL_Map($container, callbacks) {
     this._callbacks = callbacks || [];
     this.push = this.callback = function (callable) {
         if (!this.initialised) {
-            this._callbacks = callable;
+            this._callbacks.push(callable);
             return true;
         }
         if (typeof callable == 'function') {

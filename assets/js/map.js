@@ -28,7 +28,7 @@ function UKNXCL_Map($container, callbacks) {
     this._callbacks = callbacks || [];
     this.push = this.callback = function (callable) {
         if (!this.initialised) {
-            this._callbacks = callable;
+            this._callbacks.push(callable);
             return true;
         }
         if (typeof callable == 'function') {
