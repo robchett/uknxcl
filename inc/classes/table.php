@@ -32,9 +32,13 @@ trait table
         return $this::get_schema()->table_name;
     }
 
-    public static function getFromId(int $id): self|false
+    public static function getFromId(int $id, ?tableOptions $options = null): self|false
     {
-        return static::get(new tableOptions(limit: '1', where_equals: [schema::getFromClass(get_called_class())->primary_key => $id]));
+        $options ??= new tableOptions();
+        $options->limit = '1';
+        $options->where_equals = [schema::getFromClass(get_called_class())->primary_key => $id];
+
+        return static::get($options);
     }
 
     /** @psalm-suppress MoreSpecificReturnType */
@@ -106,10 +110,13 @@ trait table
     {
         if (core::is_admin() && is_scalar($_REQUEST['value'])) {
             $module = self::get_schema();
-            return (int) db::update($module->table_name)
+            db::update($module->table_name)
                 ->add_value((string) $_REQUEST['field'], $_REQUEST['value'])
                 ->filter_field($module->primary_key, (int) $_REQUEST['id'])
                 ->execute();
+            $class = $module->object;
+            $obj = $class::getFromId($_REQUEST['id']);
+            ajax::update(_cms_table_list::get_table_row($obj, ''));            
         }
         return 1;
     }
@@ -157,11 +164,18 @@ trait table
         $query->add_value('live', (int) ($data['live'] ?? true));
         $query->add_value('deleted', (int) ($data['deleted'] ?? false));
         $query->add_value('ts', date('Y-m-d H:i:s'));
-        if ($key = (int) $query->execute()) {
-            foreach ($module->fields as $field) {
-                if ($field instanceof field_file) {
-                    $field->do_upload_file($module, $key);
-                }
+        $statement = $query->execute();
+        if ($statement === false) {
+            return 0;
+        }
+        if ($query instanceof update) {
+            $key = $data[$module->primary_key];
+        } else {
+            $key = (int) db::insert_id();
+        }
+        foreach ($module->fields as $field) {
+            if ($field instanceof field_file) {
+                $field->do_upload_file($module, $key);
             }
         }
         return $key;
@@ -224,11 +238,12 @@ trait table
         $live_attributes = new attribute_list(href: '#', dataAjaxClick: attribute_callable::create([$this, 'do_toggle_live']), dataAjaxPost: json_encode($json));
         $up_attributes = new attribute_list(dataAjaxClick: attribute_callable::create([$this, 'do_reorder']), dataAjaxPost: json_encode($json + ["dir" => "up"]));
         $down_attributes = new attribute_list(dataAjaxClick: attribute_callable::create([$this, 'do_reorder']), dataAjaxPost: json_encode($json + ["dir" => "down"]));
-        $delete_attributes = $undelete_attributes = $true_delete_attributes = new attribute_list(dataAjaxPost: json_encode($json), dataToggle: 'modal', dataTarget: '#delete_modal');
+        $delete_attributes = new attribute_list(dataAjaxPost: json_encode($json), dataToggle: 'modal', dataTarget: '#delete_modal');
+        $undelete_attributes = clone $delete_attributes;
+        $true_delete_attributes = clone $delete_attributes;
         $undelete_attributes->dataTarget = '#undelete_modal';
         $true_delete_attributes->dataTarget = '#true_delete_modal';
-        return "
-        <td class='btn-col'><a class='btn btn-primary' href='/cms/edit/" . static::get_schema()->table_name . "/{$this->get_primary_key()}'>" . icon::get('pencil') . "</a></td>
+        return "<td class='btn-col'><a class='btn btn-primary' href='/cms/edit/" . static::get_schema()->table_name . "/{$this->get_primary_key()}'>" . icon::get('pencil') . "</a></td>
         <td class='bnt-col'><a class='btn btn-primary' $live_attributes>" . icon::get($this->live ? 'ok' : 'remove') . "</a></td>
         <td class='btn-col2'><a class='btn btn-primary' $up_attributes>" . icon::get('arrow-up')  . "</a><a class='btn btn-primary' $down_attributes>" . icon::get('arrow-down') . "</a></td>
         " . array_reduce(array_filter($fields, fn ($field) => $field->list), fn (string $a, field $field) => $a . "<td class='" . get_class($field) . "'>{$field->get_cms_list_wrapper($this,$this->{$field->field_name} ?? '', get_class($this),$this->get_primary_key())}</td>", "") . " 

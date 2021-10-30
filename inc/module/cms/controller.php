@@ -16,6 +16,7 @@ use form\schema;
 use html\node;
 use module\cms\form\new_module_form;
 use module\cms\model;
+use module\cms\model\_cms_table_list;
 use module\cms\view\cms_view;
 use module\cms\view\dashboard;
 use module\cms\view\edit;
@@ -82,23 +83,24 @@ class controller extends module
     public static function do_undelete(): void
     {
         $module = schema::getSchemas()[(string) $_REQUEST['mid']];
-        $module->object::do_save([$module->primary_key => $_REQUEST['id'], 'deleted' => false]);
-        $list = new model\_cms_table_list($module, 1);
-        ajax::update($list->get_table());
+        if ($object = $module->object::getFromId((int) $_REQUEST['id'], new tableOptions(retrieve_unlive: true, retrieve_deleted: true))) {
+            $module->object::do_save([$module->primary_key => (int) $_REQUEST['id'], 'deleted' => false]);
+            $object->deleted = false;
+            ajax::update(_cms_table_list::get_table_row($object));
+        }
     }
 
     public static function do_delete(): void
     {
-        $module = schema::getSchemas()[(string) $_REQUEST['mid']];
-        if ($object = $module->object::getFromId((int) $_REQUEST['id'])) {
+        $module = schema::getFromClass((string) $_REQUEST['mid']);
+        if ($object = $module->object::getFromId((int) $_REQUEST['id'], new tableOptions(retrieve_unlive: true, retrieve_deleted: true))) {
             if ($object->deleted) {
                 db::delete($module->table_name)->filter($object->get_primary_key_name() . '= :id', ['id' => (int) $_REQUEST['id']])->execute();
             } else {
                 $object->deleted = true;
-                $module->object::do_save([$module->primary_key => $_REQUEST['id'], 'deleted' => true]);
+                $module->object::do_save([$module->primary_key => (int) $_REQUEST['id'], 'deleted' => true]);
             }
+            ajax::update(_cms_table_list::get_table_row($object));
         }
-        $list = new model\_cms_table_list($module, 1);
-        ajax::update($list->get_table());
     }
 }

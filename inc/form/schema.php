@@ -105,8 +105,12 @@ class schema
      */
     public function getFetchQuery(tableOptions $options): array {
         [$rawFields, $options] = $this->set_default_retrieve($options); 
-        $options->where_equals[$this->table_name . '.deleted'] = 0;
-        $options->where_equals[$this->table_name . '.live'] = 1;
+        if (!$options->retrieve_deleted) {
+            $options->where_equals[$this->table_name . '.deleted'] = 0;
+        }
+        if (!$options->retrieve_unlive) {
+            $options->where_equals[$this->table_name . '.live'] = 1;
+        }
         $fields = $aliases = [];
         foreach ($rawFields as $f) {
             if (str_contains($f, '.')) {

@@ -45,7 +45,7 @@ interface model_interface
 
     public function format_date(string|int $date, string $format = 'Y-m-d'): bool|string;
 
-    public static function getFromId(int $id): self|false;
+    public static function getFromId(int $id, ?tableOptions $options = null): self|false;
 
     public static function get(tableOptions $options): self|false;
 
