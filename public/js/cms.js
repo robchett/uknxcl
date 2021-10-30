@@ -1477,7 +1477,8 @@ function add_socket_io(ajaxsocket, write_element) {
       var data    = $this.data('bs.modal')
       var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
 
-      if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
+      if (!data) $this.data('bs.modal', (data = new Modal(this, options)));
+      data.$element.find('[data-ajaxclick]').data('ajaxpost', data.options.ajaxpost);
       if (typeof option == 'string') data[option](_relatedTarget)
       else if (options.show) data.show(_relatedTarget)
     })
