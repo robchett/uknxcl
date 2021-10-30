@@ -6,6 +6,7 @@ use core;
 use DOMDocument;
 use DOMXPath;
 use stdClass;
+use Exception;
 
 class ajax {
 
@@ -40,14 +41,10 @@ class ajax {
             $o->html = '';
             /** @psalm-suppress NullReference */
             $id = (string) ($node->attributes->getNamedItem('id')->nodeValue ?? '');
-            /** @psalm-suppress NullReference */
-            $class = (string) ($node->attributes->getNamedItem('class')->nodeValue ?? '');
-            if ($id) {
-                $o->id .= '#' . $id;
+            if (!$id) {
+                throw new Exception('Update element must have an ID');
             }
-            if ($class) {
-                $o->id .= '.' . trim(str_replace(' ', '.', $class));
-            }
+            $o->id .= '#' . $id;
             foreach ($node->childNodes as $subnode) {
                 $o->html .= $dom->saveXML($subnode);
             }

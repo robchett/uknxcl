@@ -63,6 +63,8 @@ class _cms_table_list
         if ($this->npp && $parent_id === 0) {
             $options->limit = ($this->page - 1) * $this->npp . ',' . $this->npp;
         }
+        $options->retrieve_deleted = true;
+        $options->retrieve_deleted = true;
         return $this->module->object::get_all($options);
     }
 
@@ -127,7 +129,11 @@ class _cms_table_list
 
     public function get_table_rows(table_array $elements, string $class = ''): string
     {
-        return $elements->reduce(fn (string $acc, model_interface $obj): string => $acc . node::create('tr#' . get::__class_name($obj) . $obj->get_primary_key() . ($obj->deleted ? '.danger.deleted' : '') . $class . '.vertical-align', [], $obj->get_cms_list()), ''); 
+        return $elements->reduce(fn (string $acc, model_interface $obj): string => $acc . self::get_table_row($obj, $class), ''); 
+    }
+
+    public static function get_table_row(model_interface $obj, string $class = ''): string {
+        return node::create('tr#' . get::__basename($obj) . $obj->get_primary_key() . ($obj->deleted ? '.danger.deleted' : '') . $class . '.vertical-align', [], $obj->get_cms_list());
     }
 
     protected function get_delete_modal(): string
