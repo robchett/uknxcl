@@ -41,8 +41,9 @@ class result_club extends result
                 $club = $data->getSubScorable($pilot->flightObjects[0]);                 
                 $club->set_from_pilot($data, $pilot, $pilots);
                 $club_array[$subtitle] = $club;
+            } else {
+                $club_array[$subtitle]->AddSub($data, $pilot);
             }
-            $club_array[$subtitle]->AddSub($data, $pilot);
         });
         $club_array->uasort([league_table::class, 'cmp']);
 
