@@ -43,7 +43,7 @@ class result_top_ten extends result {
                             <td>{$data->getTitle($flight)}</td>
                             <td>{$data->getSubTitle($flight)}</td>
                             " . ($data->class_table_alias == 'p' ? "<td>{$flight->glider->name}</td>" : '') . "
-                            {$flight->to_print()}
+                            {$flight->to_print('', $data->ScoreType)}
                             <td>{$flight->coords}</td>
                         </tr>";
                     }, '')                       

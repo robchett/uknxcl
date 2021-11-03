@@ -391,7 +391,8 @@ class flight implements model_interface {
         }
     }
 
-    function to_print(string $prefix = ''): string {
+    /** @param 'score'|'base_score' $scoreType */
+    function to_print(string $prefix = '', string $scoreType = 'score'): string {
         if ($this->did == 3) {
             $lead = '';
             $i = 'kml';
@@ -405,7 +406,7 @@ class flight implements model_interface {
         if ($this->defined)
             $d = "defined"; else
             $d = "";
-        $b = round($this->score, 2);
+        $b = round((float) $this->$scoreType, 2);
         $type = get::type($this->ftid);
         return '
 <td class="left" style="width: 60px">
