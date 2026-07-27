@@ -38,18 +38,18 @@ class scorable implements model_interface {
             return;
         }
         // First 4 flights can be anything
-        if ($this->used_flights <= $this->max_flights - 2) {
+        if ($this->used_flights < $this->max_flights - 2) {
             $this->_add_flight($flight);
             return;
         } 
+
         // Now look for a goal and open distance flight.
-        // If we already have a defined or open distance flight then we can safely accept this one. Otherwise see if it matches either requirement
-        if ($this->used_flights == $this->max_flights - 2 && ($this->defined || $this->undefined || $flight->defined || $flight->ftid == 1)) {
-            $this->_add_flight($flight);
-            return;
-        }
         // Only accept the last flight if we've had both requirements or it matches the last one.
-        if ($this->used_flights == $this->max_flights - 1 && (($this->defined || $this->undefined) && ($flight->defined && $this->undefined) || ($flight->ftid == 1 && $this->defined))) {
+        if (
+            ($this->defined && $this->undefined) // If we already have a defined and open distance flight then we can safely accept this one
+            || ($flight->defined && !$this->defined) 
+            || ($flight->ftid == 1 && !$this->undefined)
+        ) {
             $this->_add_flight($flight);
             return;
         }
